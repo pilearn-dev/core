@@ -1,0 +1,127 @@
+/* Buttons */
+
+/*button {
+    font: inherit;
+    padding: 2px 20px;
+    border: none;
+    background-color: #eeeeee;
+    color: black;
+    border-radius: 5px;
+    cursor: pointer;
+    border-bottom: 3px solid #afafaf;
+    border-right: 2px solid #afafaf;
+}
+button.red-btn {
+    color: white;
+    background-color: #BB7253;
+    border-bottom: 3px solid #7B3203;
+    border-right: 2px solid #7B3203;
+}
+button.yellow-btn {
+    color: white;
+    background-color: #BBBB53;
+    border-bottom: 3px solid #7B7B03;
+    border-right: 2px solid #7B7B03;
+}
+button.green-btn {
+    background-color: #72BB53;
+    color: white;
+    border-bottom: 3px solid #306b16;
+    border-right: 2px solid #306b16;
+}
+button.blue-btn {
+    color: white;
+    background-color: #5372BB;
+    border-bottom: 3px solid #03327B;
+    border-right: 2px solid #03327B;
+}*/
+button {
+    font: inherit;
+    padding: 4px 20px;
+    background-color: #eeeeee;
+    color: black;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 1px solid #afafaf;
+    box-shadow: 0px -1px 1px #999 inset;
+    transition: all .2s ease;
+}
+button:focus:not(:active) {
+  box-shadow: 0px -1px 1px #999 inset, 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+button.danger-btn {
+  color: white;
+  background-color: #BB7253;
+  border: 1px solid #7B3203;
+  box-shadow: 0px -1px 1px #633 inset;
+}
+button.danger-btn:focus:not(:active) {
+  box-shadow: 0px -1px 1px #733 inset, 0 0 0 3px rgba(100, 0, 0, 0.3);
+}
+button.warn-btn {
+  color: white;
+  background-color: #BBBB53;
+  border: 1px solid #7B7B03;
+  box-shadow: 0px -1px 1px #773 inset;
+}
+button.warn-btn:focus:not(:active) {
+  box-shadow: 0px -1px 1px #773 inset, 0 0 0 3px rgba(150, 150, 0, 0.3);
+}
+button.primary-btn {
+  color: white;
+  background-color: #5372BB;
+  border: 1px solid #03327B;
+  box-shadow: 0px -1px 1px #006 inset;
+}
+button.primary-btn:focus:not(:active) {
+  box-shadow: 0px -1px 1px #006 inset, 0 0 0 3px rgba(0, 0, 150, 0.3);
+}
+button.accept-btn {
+  background-color: #72BB53;
+  color: white;
+  border: 1px solid #306b16;
+  box-shadow: 0px -1px 1px #373 inset;
+}
+button.accept-btn:focus:not(:active) {
+  box-shadow: 0px -1px 1px #373 inset, 0 0 0 3px rgba(0, 200, 0, 0.3);
+}
+
+button:active {
+  box-shadow: none;
+  border-width: 1px;
+  position: static;
+  box-shadow: 0px 0px -5px inset;
+}
+button:hover {
+    background-color: #cccccc;
+}
+button.danger-btn:hover {
+    background-color: #9B6046;
+}
+button.warn-btn:hover {
+    background-color: #9B9646;
+}
+button.primary-btn:hover {
+    background-color: #46609B;
+}
+button.accept-btn:hover {
+    background-color: #609B46;
+}
+
+button.block-btn {
+    display: block;
+    margin: 3px 0;
+    font-size: 1.1em;
+}
+
+button.big-btn {
+    padding: 4px 30px;
+}
+
+@media all and (max-width: 800px) {
+    button {
+        padding: 10px 20px;
+        margin: 3px;
+    }
+}

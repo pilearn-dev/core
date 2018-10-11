@@ -1,0 +1,105 @@
+{% from "tools/_macro.html" import tools__nav %}
+{% extends "layout.html" %}
+{% block body %}
+    {{ tools__nav("user", user) }}
+    <h2>Werkzeuge &ndash; neuste Kurse</h2>
+    <div class="split-screen">
+      <aside>
+        <ol>
+          <li><a href="/tools/user/flags">Meldungen</a></li>
+          <li><a href="/tools/user/search">Suche</a></li>
+        </ol>
+      </aside>
+      <main>
+        <h3><a href="?">AdminOps für {{ data.getDetail("realname") }}</a> &ndash; Benutzer sperren</h3>
+        <p>Wähle einen Grund für die Sperrung
+        <div class="tool-ops" id="ban_reason_action">
+          <div class="tool-ops-selection">
+            <input type="radio" name="ban_reason_action" value="rule-violation" id="ban_reason_action_rule-violation">
+            <label for="ban_reason_action_rule-violation">
+              <h4>Regelverletzung <em class="duration">7d/14d/30d</em></h4>
+            </label>
+          </div>
+          <div class="tool-ops-selection">
+            <input type="radio" name="ban_reason_action" value="cool-down" id="ban_reason_action_cool-down">
+            <label for="ban_reason_action_cool-down">
+              <h4>Konfliktauflösung <em class="duration">1d&ndash;3d</em></h4>
+            </label>
+          </div>
+          <div class="tool-ops-selection">
+            <input type="radio" name="ban_reason_action" value="conflicts" id="ban_reason_action_conflicts">
+            <label for="ban_reason_action_conflicts">
+              <h4>Andauernde Konflikte <em class="duration">7d/14d</em></h4>
+            </label>
+          </div>
+          <div class="tool-ops-selection">
+            <input type="radio" name="ban_reason_action" value="sock-puppets" id="ban_reason_action_sock-puppets">
+            <label for="ban_reason_action_sock-puppets">
+              <h4>Unangebrachter Gebrauch von Zweitkonten <em class="duration">14d/30d/60d/365d</em></h4>
+            </label>
+          </div>
+          <div class="tool-ops-selection">
+            <input type="radio" name="ban_reason_action" value="spam" id="ban_reason_action_spam">
+            <label for="ban_reason_action_spam">
+              <h4>Verbreiten von Werbung <em class="duration">7d/14d/30d/365d</em></h4>
+            </label>
+          </div>
+          <div class="tool-ops-selection">
+            <input type="radio" name="ban_reason_action" value="offensive" id="ban_reason_action_offensive">
+            <label for="ban_reason_action_offensive">
+              <h4>Beleidigendes Verhalten <em class="duration">7d/14d/30d/365d</em></h4>
+            </label>
+          </div>
+          <div class="tool-ops-selection">
+            <input type="radio" name="ban_reason_action" value="no-positive-contribution" id="ban_reason_action_no-positive-contribution">
+            <label for="ban_reason_action_no-positive-contribution">
+              <h4>Keine Bereicherung für die Community <em class="duration">30d/60d/90d/180d/365d</em></h4>
+            </label>
+          </div>
+          <div class="tool-ops-selection">
+            <input type="radio" name="ban_reason_action" value="no-improvement" id="ban_reason_action_no-improvement">
+            <label for="ban_reason_action_no-improvement">
+              <h4>Unfähig unsere Regeln zu lernen <em class="duration">90d/180d/365d</em></h4>
+            </label>
+          </div>
+        </div>
+        <p>Bitte gebe die Länge der Sperrung in Tagen ein:</p>
+        {% if user.isDev() %}
+        <input type="number" id="ban_duration" min="1" max="3650">
+        {% else %}
+        <input type="number" id="ban_duration" min="1" max="365">
+        {% endif %}
+        &nbsp;<br>
+        <button id="ban_reason_do" class="primary-btn">Weiter &raquo;</button>
+        <script>
+          document.getElementById("ban_reason_do").addEventListener("click", function() {
+            selection = document.querySelector("#ban_reason_action :checked");
+            if(!selection) {
+              return;
+            }
+            duration = parseInt(document.querySelector("#ban_duration").value);
+            {% if user.isDev() %}
+            if(duration < 1 || duration > 3650) {
+              return;
+            }
+            {% else %}
+            if(duration < 1 || duration > 365) {
+              return;
+            }
+            {% endif %}
+            $post("user/{{ data.id }}/flag", {"type":"ban", "reason": selection.value, "duration": 24*duration}, function (e) {
+              window.location.href = "?";
+            })
+          })
+        </script>
+      </main>
+    </div>
+    <style media="screen">
+      .duration {
+        font-size: 0.85em;
+        margin: 0 3px;
+        display: inline-block;
+        color: #aa6;
+      }
+    </style>
+{% endblock %}

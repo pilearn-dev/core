@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block body %}
+    <div class="coursenav"><h2><a href="/help">Hilfethemen</a> &raquo; <a href="/help/category:{{ cat.getUrlPart() }}">{{ cat.getTitle() }}</a> &raquo; {{ entry.getTitle() }}</h2>
+    {% if user.isAdmin() %}
+    <p style="margin: 0; font-size: 0.8em;">{% if not entry.isActive() %}<span style="color: #d00;">inaktiver Eintrag</span>{% elif entry.isDeprecated() %}<span style="color: #aa0;">veralteter Eintrag</span>{% else %}aktiver Eintrag{% endif %} &ndash; {% if entry.mayAdminEdit() or user.isTeam() %}<a href="?editor=yes"><i class="fa fa-pencil"></i> Bearbeiten</a> &ndash; {% if user.isTeam() or entry.mayAdminCreateSubpage() %}<a href="/help/new:entry?parent={{ entry.id }}&category={{ cat.getUrlPart() }}">Neue Unterseite</a>{% endif %}{% else %}Bearbeitung nicht erlaubt{% endif %}</p>
+    {% endif %}</div>
+    {% if entry.isDeprecated() %}
+    <div class="post-warning">
+      <p>Dieser Eintrag betrifft eine frühere Version von &pi;-Learn und ist jetzt veraltet. Er wird möglicherweise bald entfernt.</p>
+      <p class="highlight-bold">Nutze diesen Eintrag bitte nicht als Beleg für irgendwelche Informationen über &pi;-Learn.</p>
+    </div>
+    {% endif %}
+    {% if not entry.isActive() %}<div class="deleted-section" style="padding: 10px;">{% endif %}
+    {% for i in entry.getAsJSON() %}
+     {% if i.type == "heading" %}
+       <h2>{{ i.data.text }}</h2>
+     {% elif i.type == "subheading" %}
+       <h3>{{ i.data.text }}</h3>
+     {% elif i.type == "subsubheading" %}
+       <h4>{{ i.data.text }}</h4>
+     {% elif i.type == "text" %}
+       {{ i.data.text|markdown }}
+     {% elif i.type == "separator" %}
+       <hr>
+     {% elif i.type == "warnbox" %}
+       <div class="warning">{{ i.data.text|markdown }}</div>
+     {% elif i.type == "errorbox" %}
+       <div class="user-warning">{{ i.data.text|markdown }}</div>
+     {% elif i.type == "quote" %}
+       <blockquote>{{ i.data.text|markdown }}</blockquote>
+     {% elif i.type == "image" %}
+       <a href="{{ i.data.source }}"><img src="{{ i.data.source }}"></a>
+     {% elif i.type == "condition-wiki" %}
+       <details>
+         <summary><strong>{{ i.data.condition }}</strong> &ndash; {{ i.data.title }}</summary>
+         {{ i.data.explanation|markdown }}
+       </details>
+     {% endif %}
+    {% endfor %}
+    {% if not entry.isActive() %}</div>{% endif %}
+{% endblock %}

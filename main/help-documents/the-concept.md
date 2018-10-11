@@ -1,0 +1,2 @@
+## [Hilfethemen](/help) / Konzept von &pi;-Learn
+Bei &pi;-Learn kannst du bei verschiedenen Kursen (Workshops) teilnehmen. Daf&uuml;r verdienst du dir Reputationspunkte. Je mehr Punkte du hast, desto mehr Berechtigungen hast du. Zum Beispiel kannst du im Forum Posts als hilfreich markieren oder Kurse bewerten oder dann am Ende auch selber Kurse erstellen oder bearbeiten.

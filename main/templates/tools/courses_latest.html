@@ -1,0 +1,38 @@
+{% from "tools/_macro.html" import tools__nav %}
+{% extends "layout.html" %}
+{% block body %}
+    {{ tools__nav("courses", user) }}
+    <h2>Werkzeuge &ndash; neuste Kurse</h2>
+    <div class="split-screen">
+      <aside>
+        <ol>
+          <li><a href="/tools/courses/latest" class="current">neuste Kurse</a></li>
+          <li><a href="/tools/courses/proposal-search">Vorschlagsuche</a></li>
+          <li><a href="/tools/courses/proposal-rank">Vorschlagsranking</a></li>
+        </ol>
+      </aside>
+      <main>
+        <p>Dies sind die letzten {{ num }} angenommenen Kursvorschläge (aka erstellten Kurse):</p>
+        <div class="course-list">
+          {% for course in courses %}
+           <div class="course-list-item{% if course.getDetail("state") == 0 %} deleted-section{% endif %}">
+              <div class="headline"><a href="/c/{{ course.id }}/info">{{ course.getTitle() }}</a></div>
+              <div class="shortdesc">
+                 <p>{{ course.getShortdesc() }}</p>
+              </div>
+              <div class="action">
+                <a href="/c/{{ course.id }}/proposal">Zum Vorschlag</a>
+              </div>
+           </div>
+          {% endfor %}
+        </div>
+        <div class="pagination">
+          <div class="pagination-label">Anzahl Vorschläge:</div>
+          <ul>
+            <li{% if num == 5 %} class="active"{% endif %}><a href="?num=5">5</a></li>
+            <li{% if num == 10 %} class="active"{% endif %}><a href="?num=10">10</a></li>
+            <li{% if num == 20 %} class="active"{% endif %}><a href="?num=20">20</a></li>
+          </ul>
+      </main>
+    </div>
+{% endblock %}

@@ -1,0 +1,183 @@
+<div class="flagging-modal" id="article_flag_dialog">
+    <div class="flagging-dialog">
+        <div class="close-link"><a href="#!" onclick="document.getElementById('article_flag_dialog').classList.remove('open');">&times;</a></div>
+        <h3>Diesen Artikel melden{% if stop.userrole=="a" or stop.userrole=="m" or stop.userrep >= stop.priv.forum_closeQuestion %} / schließen{% endif %}.</h3>
+        {% if stop.userrole=="a" or stop.userrole=="m" or stop.userrep >= stop.priv.forum_flag %}
+        <div id="article_flag_dialog-content-master">
+            <p>Bitte wähle einen Grund aus, aus dem du diesen Artikel melden{% if stop.userrole=="a" or stop.userrole=="m" or stop.userrep >= stop.priv.forum_closeQuestion %} / schließen{% endif %} möchtest:</p>
+            <div class="flagging-reason-list">
+                <label class="flagging-reason-item current">
+                    <input type="radio" id="article_flag_dialog-spam_reason" name="reason" value="spam">
+                    <h4><span class="flag">SPAM</span></h4>
+                    <p>Dieser Post enthält SPAM.</p>
+                </label>
+                <label class="flagging-reason-item">
+                    <input type="radio" id="article_flag_dialog-offensive_reason" name="reason" value="offensive">
+                    <h4><span class="flag">Beleidigung</span></h4>
+                    <p>Dieser Post enthält beleidigende Inhalte</p>
+                </label>
+                <label class="flagging-reason-item">
+                    <input type="radio" id="article_flag_dialog-duplicate_reason" name="reason" value="duplicate">
+                    <h4><span class="flag">exaktes Duplikat</span></h4>
+                    <p>Dieser Post ist ein exaktes Duplikat eines anderen Posts. Bitte dessen URL im Textfeld unten eintragen</p>
+                </label>
+                <label class="flagging-reason-item">
+                    <input type="radio" id="article_flag_dialog-close_reason" name="reason" value="close">
+                    <h4><span class="flag">Post soll geschlossen werden</span></h4>
+                    <p>Bitte wähle einen Grund</p>
+                    <select name="close_reason" id="close_reason-list">
+                        <option value="off-topic" id="close_reason_off_topic">Dieser Post gehört nicht in dieses Forum</option>
+                        <option value="unclear" id="close_reason_unclear">Dieser Post oder die Intentionen des Autors sind unklar</option>
+                        <option value="too-broad" id="close_reason_too_broad">Dieser Post ist nicht spezifisch genug / zu allgemein</option>
+                        <option value="too-spec" id="close_reason_too_specific">Dieser Post zu spezifisch und darum wahrscheinlich für andere Benutzer nicht hilfreich.</option>
+                    </select>
+                    <hr>
+                    <div id="close-reason-text">
+                        <p>Dieser Post gehört nicht in dieses Forum. Er entspricht nicht dem Thema dieses Kurses (im globalen Forum: enthält keine Fragen über &pi;-Learn, im Rahmen der <a href="/help/howto-0forum">Informationen übr das globale Forum</a>)</p>
+                        <p><b>Wenn dieser Post in ein anderes Forum gehören würde, melde dies bitte über `Anderes` den Moderatoren</b></p>
+                    </div>
+                </label>
+                <label class="flagging-reason-item">
+                    <input type="radio" id="article_flag_dialog-other_reason" name="reason" value="other">
+                    <h4>Anderes</h4>
+                    <p>Ein anderes Problem als die hier aufgeführten. Nutze das Eingabefeld um das Problem zu beschreiben</p>
+                </label>
+            </div>
+            <p>Wenn du noch etwas hinzufügen möchtest:</p>
+            {% if stop.userrole=="a" or stop.userrole=="m" or stop.userrep < stop.priv.forum_flag %}
+            <textarea style="max-height: 200px; min-height: 50px; height: 75px;" id="article_flag_dialog-message" name="other-reason" placeholder="Belege bitte deine Meldung durch Angabe von Links zu entsprechenden Posts."></textarea>
+            {% else %}
+            <textarea style="max-height: 200px; min-height: 50px; height: 75px;" id="article_flag_dialog-message" name="other-reason" placeholder="Belege bitte deine Meldung durch Angabe von Links zu entsprechenden Posts.                            Dies wird als Schließungsgrund angezeigt, wenn du den Post über `Anderes` schließt"></textarea>
+            {% endif %}
+            {% if stop.userrole=="a" or stop.userrole=="m" or stop.userrep >= stop.priv.forum_closeQuestion %}
+            <button class="less-annoying" id="article_flag_dialog-report_btn">Melden</button>
+            {% else %}
+            <button id="article_flag_dialog-report_btn">Melden</button>
+            {% endif %}
+            {% if stop.userrole=="a" or stop.userrole=="m" or stop.userrep >= stop.priv.forum_closeQuestion %}
+            <button class="primary-btn" id="article_flag_dialog-warn_btn">Schließen</button>
+            {% endif %}
+        </div>
+        {% else %}
+            <div class="error">
+                <h4>Privileg noch nicht erreicht</h4>
+                <p>Du benötigst mindestens <code>{{ stop.priv.forum_flag }}</code> Reputationspunkte um Posts melden zu können zugreifen zu dürfen.</p>
+                <p>Dir fehlen also noch <code>{{ stop.priv.forum_flag - stop.userrep }}</code> Reputationpunkt(e).</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% if not user.may("forum_closeQuestion") %}
+<script>
+    var flagging_id = "article_flag_dialog";
+    var flagging_article = "{{ article_id }}";
+    function update_article_flag_reason_view() {
+        text = document.getElementById("close-reason-text");
+        val = document.getElementById("close_reason-list").value;
+        if(val == "off-topic") {
+            text.innerHTML = '<p>Dieser Post gehört nicht in dieses Forum. Er entspricht nicht dem Thema dieses Kurses (im globalen Forum: enthält keine Fragen über &pi;-Learn, im Rahmen der <a href="/help/howto-0forum">Informationen übr das globale Forum</a>)</p><p><b>Wenn dieser Post in ein anderes Forum gehören würde, melde dies bitte über `Anderes` den Moderatoren</b></p>';
+        } else if(val == "unclear") {
+            text.innerHTML = '<p>Es ist nicht klar, was der Autor dieses Posts für eine Frage hat oder was sein Problem ist. Der Autor soll weitere Informationen hinzufügen, damit ihm geholfen werden kann.</p>';
+        } else if(val == "too-broad") {
+            text.innerHTML = '<p>Dieser Post erfordert eine äußerst lange und umfassende Antwort, seine Beantwortung würde sehr lange dauern oder er enthält mehrere Fragen. Der Autor soll das Problem enschränken und/oder mehrere Posts schreiben und/oder ein konkretes Beispiel anfügen.</p>';
+        } else if(val == "too-spec") {
+            text.innerHTML = '<p>Dieser Post ist zu speziell oder das angesprochene Problem kann nicht reproduziert werden. Seine Beantwortung wird zukünftigen Lesern wenig oder nicht helfen. Der Autor soll den Post etwas allgemeiner formulieren.</p>';
+        }
+    }
+    document.getElementById("close_reason-list").addEventListener("change", update_article_flag_reason_view)
+    update_article_flag_reason_view();
+</script>
+
+{% else %}
+
+
+<div class="flagging-modal" id="article_close_dialog">
+    <div class="flagging-dialog">
+        <div class="close-link"><a href="#!" onclick="document.getElementById('article_close_dialog').classList.remove('open');">&times;</a></div>
+        <h3>Diesen Artikel melden{% if stop.userrole=="a" or stop.userrole=="m" or stop.userrep >= stop.priv.forum_closeQuestion %} / schließen{% endif %}.</h3>
+        {% if stop.userrole=="a" or stop.userrole=="m" or stop.userrep >= stop.priv.forum_flag %}
+        <div id="article_close_dialog-content-master">
+            <p>Bitte wähle einen Grund aus, aus dem du diesen Artikel melden{% if stop.userrole=="a" or stop.userrole=="m" or stop.userrep >= stop.priv.forum_closeQuestion %} / schließen{% endif %} möchtest:</p>
+            <div class="flagging-reason-list">
+                <label class="flagging-reason-item current">
+                    <input type="radio" id="article_close_dialog-spam_reason" name="reason" value="spam">
+                    <h4><span class="flag">SPAM</span></h4>
+                    <p>Dieser Post enthält SPAM.</p>
+                </label>
+                <label class="flagging-reason-item">
+                    <input type="radio" id="article_close_dialog-offensive_reason" name="reason" value="offensive">
+                    <h4><span class="flag">Beleidigung</span></h4>
+                    <p>Dieser Post enthält beleidigende Inhalte</p>
+                </label>
+                <label class="flagging-reason-item">
+                    <input type="radio" id="article_close_dialog-duplicate_reason" name="reason" value="duplicate">
+                    <h4><span class="flag">exaktes Duplikat</span></h4>
+                    <p>Dieser Post ist ein exaktes Duplikat eines anderen Posts. Bitte dessen URL im Textfeld unten eintragen</p>
+                </label>
+                <label class="flagging-reason-item">
+                    <input type="radio" id="article_close_dialog-close_reason" name="reason" value="close">
+                    <h4><span class="flag">Post soll geschlossen werden</span></h4>
+                    <p>Bitte wähle einen Grund</p>
+                    <select name="close_reason" id="close_reason-list">
+                        <option value="off-topic" id="close_reason_off_topic">Dieser Post gehört nicht in dieses Forum</option>
+                        <option value="unclear" id="close_reason_unclear">Dieser Post oder die Intentionen des Autors sind unklar</option>
+                        <option value="too-broad" id="close_reason_too_broad">Dieser Post ist nicht spezifisch genug / zu allgemein</option>
+                        <option value="too-spec" id="close_reason_too_specific">Dieser Post zu spezifisch und darum wahrscheinlich für andere Benutzer nicht hilfreich.</option>
+                    </select>
+                    <hr>
+                    <div id="close-reason-text">
+                        <p>Dieser Post gehört nicht in dieses Forum. Er entspricht nicht dem Thema dieses Kurses (im globalen Forum: enthält keine Fragen über &pi;-Learn, im Rahmen der <a href="/help/howto-0forum">Informationen übr das globale Forum</a>)</p>
+                        <p><b>Wenn dieser Post in ein anderes Forum gehören würde, melde dies bitte über `Anderes` den Moderatoren</b></p>
+                    </div>
+                </label>
+                <label class="flagging-reason-item">
+                    <input type="radio" id="article_close_dialog-other_reason" name="reason" value="other">
+                    <h4>Anderes</h4>
+                    <p>Ein anderes Problem als die hier aufgeführten. Nutze das Eingabefeld um das Problem zu beschreiben</p>
+                </label>
+            </div>
+            <p>Wenn du noch etwas hinzufügen möchtest:</p>
+            {% if stop.userrole=="a" or stop.userrole=="m" or stop.userrep < stop.priv.forum_flag %}
+            <textarea style="max-height: 200px; min-height: 50px; height: 75px;" id="article_close_dialog-message" name="other-reason" placeholder="Belege bitte deine Meldung durch Angabe von Links zu entsprechenden Posts."></textarea>
+            {% else %}
+            <textarea style="max-height: 200px; min-height: 50px; height: 75px;" id="article_close_dialog-message" name="other-reason" placeholder="Belege bitte deine Meldung durch Angabe von Links zu entsprechenden Posts.                            Dies wird als Schließungsgrund angezeigt, wenn du den Post über `Anderes` schließt"></textarea>
+            {% endif %}
+            {% if stop.userrole=="a" or stop.userrole=="m" or stop.userrep >= stop.priv.forum_closeQuestion %}
+            <button class="less-annoying" id="article_close_dialog-report_btn">Melden</button>
+            {% else %}
+            <button id="article_close_dialog-report_btn">Melden</button>
+            {% endif %}
+            {% if stop.userrole=="a" or stop.userrole=="m" or stop.userrep >= stop.priv.forum_closeQuestion %}
+            <button class="yellow-btn" id="article_close_dialog-warn_btn">Schließen</button>
+            {% endif %}
+        </div>
+        {% else %}
+            <div class="error">
+                <h4>Privileg noch nicht erreicht</h4>
+                <p>Du benötigst mindestens <code>{{ stop.priv.forum_flag }}</code> Reputationspunkte um Posts melden zu können zugreifen zu dürfen.</p>
+                <p>Dir fehlen also noch <code>{{ stop.priv.forum_flag - stop.userrep }}</code> Reputationpunkt(e).</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+<script>
+    var flagging_id = "article_close_dialog";
+    var flagging_article = "{{ article_id }}";
+    function update_article_close_reason_view() {
+        text = document.getElementById("close-reason-text");
+        val = document.getElementById("close_reason-list").value;
+        if(val == "off-topic") {
+            text.innerHTML = '<p>Dieser Post gehört nicht in dieses Forum. Er entspricht nicht dem Thema dieses Kurses (im globalen Forum: enthält keine Fragen über &pi;-Learn, im Rahmen der <a href="/help/howto-0forum">Informationen übr das globale Forum</a>)</p><p><b>Wenn dieser Post in ein anderes Forum gehören würde, melde dies bitte über `Anderes` den Moderatoren</b></p>';
+        } else if(val == "unclear") {
+            text.innerHTML = '<p>Es ist nicht klar, was der Autor dieses Posts für eine Frage hat oder was sein Problem ist. Der Autor soll weitere Informationen hinzufügen, damit ihm geholfen werden kann.</p>';
+        } else if(val == "too-broad") {
+            text.innerHTML = '<p>Dieser Post erfordert eine äußerst lange und umfassende Antwort, seine Beantwortung würde sehr lange dauern oder er enthält mehrere Fragen. Der Autor soll das Problem enschränken und/oder mehrere Posts schreiben und/oder ein konkretes Beispiel anfügen.</p>';
+        } else if(val == "too-spec") {
+            text.innerHTML = '<p>Dieser Post ist zu speziell oder das angesprochene Problem kann nicht reproduziert werden. Seine Beantwortung wird zukünftigen Lesern wenig oder nicht helfen. Der Autor soll den Post etwas allgemeiner formulieren.</p>';
+        }
+    }
+    document.getElementById("close_reason-list").addEventListener("change", update_article_close_reason_view)
+    update_article_close_reason_view();
+</script>
+
+{% endif %}

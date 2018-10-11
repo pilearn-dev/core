@@ -1,0 +1,7 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h2 class="bigheading">Entscheide mit!</h2>
+    <p>
+        Hallo {{ user.getHTMLName()|safe }}! Bei dieser Seite von &pi;-Learn kannst du mitwählen.
+    </p>
+{% endblock %}

@@ -1,0 +1,274 @@
+/* user styles */
+
+/* - user profile badge */
+.user-profile-meta {
+  position: relative;
+  max-width: 100%;
+  min-height: 101px;
+  width: 230px;
+}
+.user-profile-badge {
+    padding: 5px;
+    background-color: #efefef;
+    display: flex;
+    flex-wrap: wrap;
+    z-index: 1000000001;
+    border: 1px solid #ddd;
+}
+.user-profile-badge.expanded {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100vw;
+    max-width: 400px;
+    border: none;
+    color: white;
+    padding: 7px;
+    border: 1px solid #222;
+    border-radius: 1px;
+    background-color: #555;
+}
+.user-profile-badge p {
+  margin: 2px 0;
+}
+@media all and (max-width: 800px) {
+  .user-profile-meta {
+    width: 100%;
+  }
+  .user-profile-badge {
+    width: 230px;
+  }
+  .user-profile-badge.expanded {
+    position: static;
+    width: 100%;
+  }
+}
+.user-profile-badge .image-area {
+    flex-grow: 1;
+    padding: 7.5px;
+    text-align: center;
+    max-width: 50px;
+    align-self: center;
+    page-break-after: avoid;
+    break-after: avoid;
+}
+.user-profile-badge .image-area img {
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    font-size: 9px;
+    line-height: 1;
+}
+.user-profile-badge .text-area {
+    flex-grow: 1;
+    page-break-before: avoid;
+    break-before: avoid;
+}
+.user-profile-badge .below-area {
+    flex-grow: 1;
+    page-break-before: always; /* CSS 2.1 syntax */
+    break-before: always; /* New syntax */
+    min-width: 100%;
+    border-top: 1px solid #ddd;
+    margin-top: 1px;
+    padding: 2px;
+    font-size: 0.8em;
+}
+.user-profile-badge .below-area a {
+  color: inherit;
+  transition: none;
+}
+.user-profile-badge .expandable {
+    display: none;
+}
+.user-profile-badge.expanded .expandable {
+    display: block;
+}
+.user-profile-badge h4 {
+    margin: 0;
+    font-weight: normal;
+    font-size: 14px;
+}
+.user-profile-badge h4 a {
+    color: black;
+    font-weight: bold;
+    transition: none;
+}
+.user-profile-badge.expanded h4 a {
+  color: white;
+}
+.user-profile-badge h4 a:hover {
+  text-decoration: underline;
+}
+.user-profile-badge .author-role {
+    font-size: 11px;
+    display: block;
+}
+.user-profile-badge .author-rep {
+  font-size: 11px;
+  font-weight: bold;
+  display: block;
+}
+.user-profile-badge.expanded .text-area, .user-profile-badge.expanded .image-area, .user-profile-badge.expanded .below-area {
+    flex-grow: 1;
+    width: auto;
+}
+
+/* - profile badge list */
+.user-card-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+.user-card-list .user-profile-badge {
+  margin: 5px;
+}
+
+
+/* - profile split */
+.profile-split {
+    display:flex;
+  padding: 5px;
+}
+.profile-split .profile-image {
+    flex-grow: 1;
+    width: 100%;
+    max-width: 150px;
+  border: 2px solid #ddd;
+  border-right: none;
+}
+.profile-split .profile-image img {
+    width: 100%;
+    height: auto;
+    padding: 10px;
+}
+.profile-split #aboutme {
+  flex-grow: 1;
+  margin: 0;
+}
+
+
+/* - labels */
+.user-label {
+    box-shadow: 0 0 2px #eee;
+    display: inline-block;
+    padding: 2px 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #efefef;
+    color: #444;
+}
+
+
+/* - annotations */
+.annotation-table {
+  box-shadow: 2px 2px 5px #aaa;
+  border: none;
+  table-layout: fixed;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.annotation-table tr {
+  background-color: #fff;
+}
+.annotation-table tr:first-of-type {
+  font-size: 16px;
+  padding: 0;
+  background-color: #666;
+  color: #fff;
+  border-bottom: 1px solid #ddd;
+}
+.annotation-table tr:first-of-type a {
+  color: #ccc;
+}
+.annotation-table tr:first-of-type a:hover {
+  color: #eee;
+}
+.annotation-table th, .annotation-table td {
+  border: none;
+}
+.annotation-table tr:not(:first-of-type):not(:last-of-type) {
+  border-bottom: 1px solid #ddd;
+}
+.annotation-table tr:not(:first-of-type) th, .annotation-table tr:not(:first-of-type) td {
+  text-align: left;
+  font-size: 0.9em;
+}
+.annotation-table tr:nth-child(2n+3):not(.deleted-section) {
+  background-color: #efefef;
+}
+.annotation-table .deleted-section {
+  display: table-row;
+  background-color: #fbb;
+}
+.annotation-table p {
+  margin: 2px 0;
+}
+.annotation-table .annot-centered {
+  text-align: center !important;
+}
+.annotation-table .annot-icon {
+  width: 70px;
+}
+.annotation-table td.annot-small {
+  font-size: 0.7em !important;
+  color: #666;
+  font-style: italic;
+}
+.annotation-table td > .annot-small {
+  font-size: 1em !important;
+  color: #666;
+  font-style: italic;
+}
+
+/* - user warning */
+.user-warning {
+  padding: 5px;
+  border: 2px dotted #d00;
+  color: #500;
+}
+.user-warning p {
+  margin: 0 1px;
+}
+.user-warning a {
+  padding: 1px 3px;
+  display: inline-block;
+  color: inherit;
+  text-decoration: underline;
+}
+.user-warning a:hover {
+  background-color: #fee;
+}
+
+/* - user lists */
+
+.user-list {
+  padding: 5px;
+  align-items: center;
+  background-color: #fff;
+  box-shadow: 0 0 3px #ddd;
+  display: flex;
+}
+.user-list img {
+  max-height: 40px;
+  max-width: 40px;
+  height: auto;
+  width: 100%;
+}
+.user-list i.fa.fa-user {
+  width: 40px;
+}
+.user-list a {
+  flex-grow: 1;
+}
+.user-list button {
+  margin: 0 3px;
+}
+@media all and (max-width: 600px) {
+  .user-list {
+    flex-wrap: wrap;
+  }
+  .user-list button {
+    margin: 3px;
+    padding: 4px 6px;
+  }
+}

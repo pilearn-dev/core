@@ -1,0 +1,32 @@
+/* HTTP errors */
+.httperror {
+  padding: 25px;
+  background-color: #fdd;
+  color: #600;
+  border: 1px solid #d00;
+  display: flex;
+}
+.httperror .img {
+  max-width: 300px;
+  padding: 10px;
+}
+.httperror div {
+  flex-grow: 1;
+  padding: 5px;
+}
+.httperror img {
+  width: 100%;
+}
+.httperror a {
+  color: #300;
+  font-weight: bold;
+  text-decoration: underline;;
+}
+.httperror hr {
+  border-color: #600;
+}
+@media all and (max-width: 600px) {
+  .httperror {
+    flex-direction: column;
+  }
+}

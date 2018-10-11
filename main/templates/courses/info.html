@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block body %}
+ <nav class="coursenav">
+   {% set topic = data.getTopic() %}
+   <h2>{{ data.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
+   {{ data.getByLine()|markdown }}
+   {% if data.getDetail("state") == 0 and not data.getCourseRole(user) >= 2 %}
+   {% elif data.isEnrolled(user) or not user.isLoggedIn() %}
+   <ul>
+     <li class="active"><a href="#!">Informationen</a></li>
+     <li><a href="/course/{{ data.id }}/{{ data.getLabel() }}/start">Kursinhalte</a></li>
+     <li><a href="/forum/{{ data.id }}/{{ data.getLabel() }}/list">Kursforum</a></li>
+   </ul>
+   {% if user.may("course_reviewEdits") or user.isMod() or data.getCourseRole(user) == 4 %}
+   <ul class="subnav">
+     <li class="active"><a href="#!">Überblick</a></li>
+     <li><a href="/course/{{ data.id }}/{{ data.getLabel() }}/edit">Bearbeiten</a></li>
+     {#<li><a href="/@/course/{{ data.id }}/{{ data.getLabel() }}/permissions">Benutzer</a></li>#}
+   </ul>
+   {% endif %}
+   {% else %}
+    <a href="/course/{{ data.id }}/{{ data.getLabel() }}/enroll"><button>Einschreiben</button></a>
+   {% endif %}
+ </nav>
+ <div class="split-screen big">
+ <main>
+   <p>{{ data.getShortdesc() }}</p>
+   <h3>Wovon handelt der Kurs?</h3>
+   <div class="text">
+     {{ data.getLongdesc()|markdown }}
+   </div>
+   <h3>Was benötigt man zur Teilnahme?</h3>
+   <div class="text">
+     {{ data.getRequirements()|markdown }}
+   </div>
+  </main>
+  <aside style="padding: 4px;">
+    <div class="big-sidebar-num">{{ data.getEnrolledCount() }}</div>
+    <div class="big-sidebar-num-label">Teilnehmer</div>
+    {% set pinnedArticles = data.getForum().getPinnedArticles() %}
+    {% if pinnedArticles|length > 0 %}
+    <h3>Wichtige Nachrichten</h3>
+      {% for article in pinnedArticles %}{% set gac=article.getAnswerCount() %}
+        <div class="forum-inline-article">
+          <div class="fia-score{% if article.hasAccepted() %} has-accepted{% elif gac > 0 %} is-answered{% endif %}" title="Dieser Beitrag hat {{ gac }} Antworten{% if article.hasAccepted() %}, von denen eine akzeptiert wurde{% else %}; es wurde keine akzeptiert{% endif %}. Die Bewertung des Beitrags ist {{ article.getScore() }}.">{{ article.getScore() }}</div>
+          <div class="fia-title"><a href="/f/0/{{ article.id }}">{{ article.getTitle() }}</a></div>
+        </div>
+      {% endfor %}
+    {% endif %}
+    <h3>Du hast eine Frage zum Kurs?</h3>
+    <p>Dann stelle diese im <a href="/f/{{ data.id }}">Kursforum</a>.</p>
+    <h3>Gefällt dir dieser Kurs?</h3>
+    <p>Vielleicht gefallen dir auch weitere Kurse zum Thema <a class="topic" href="/t/{{ topic.getName() }}">{{ topic.getTitle() }}</a> oder <a href="/course/propose">biete selber einen Kurs an</a>.</p>
+  </aside>
+  </div>
+{% endblock %}

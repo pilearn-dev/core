@@ -1,0 +1,346 @@
+{% extends "layout.html" %}
+{% block body %}
+<link rel="stylesheet" href="/static/css/simplemde.min.css">
+<script src="/static/js/simplemde.min.js"></script>
+{% if data.isDeleted() %}
+<div class="deleted-section">
+    <div class="error">
+      <p>Dieser Benutzeraccount wurde gelöscht.</p>
+    </div>
+{% elif data.isDisabled() %}
+  <div class="user-warning">{% set end=data.getBanEnd(True) %}
+      <p>Dieser Benutzer wurde <strong>{{ data.getBanReason() }}</strong> <span title="{{ end[1] }}">{{ end[2] }}</span> <a href="/help/users/banned">gesperrt.</a></p>
+    </div>
+{% endif %}
+  {% if user.isAdmin() or user.id == data.id %}
+    <div class="tabination">
+      <ul>
+        <li class="active"><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}">Profil</a></li>
+        <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/flags">Meldungen</a></li>
+        <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/reputation">Reputation</a></li>
+        {% if user.isAdmin() %}
+        <li><a href="/tools/user/ops/{{ data.id }}" target="_blank"><em>AdminOps</em></a></li>
+        {% else %}
+        <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/delete">Löschen</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  {% endif %}
+    <h2>
+      <span id="realname">{{ data.getDetail("realname") }}</span>
+      {% if user.isAdmin() or (data.id == user.id and not data.getDetail("frozen")) %}
+        <a href="#!" onclick="edit('realname')"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+      {% endif %}
+    </h2>
+    {% if user.isAdmin() or user.id == data.id %}
+      <h3>
+        Benutzername: <i id="name">{{ data.getDetail("name") }}</i>
+        {% if user.isAdmin() %}
+          <a href="#!" onclick="edit('name')"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+        {% endif %}
+      </h3>
+    {% endif %}
+    {% if data.getDetail("labels")|length != 0 %}
+      <p>
+          <b>Dieser Benutzer ist ein(e) </b>
+          {% for label in data.getDetail("labels") %}
+            <span class="user-label">{{ data.labels[label] }}</span>{% if not loop.last %}, {% endif %}
+          {% endfor %}
+          {% if user.isAdmin() %}
+            <a href="#!" onclick="document.getElementById('labels-modal').classList.add('open');"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+          {% endif %}
+      </p>
+    {% elif user.isAdmin() %}
+      <p><a href="#!" onclick="document.getElementById('labels-modal').classList.add('open');"><i class="fa fa-pencil" aria-hidden="true"></i> Label hinzufügen</a></p>
+    {% endif %}
+    {% if data.getDetail("profile_image") %}
+        <div class="profile-split">
+            <div class="profile-image">
+                <img src="{{ data.getDetail("profile_image") }}" alt="Profilbild von {{ data.getDetail("name") }}">
+            </div>
+    {% endif %}
+    <div class="text" id="aboutme">
+        {% if data.getDetail("aboutme") != "" %}
+        {{ data.getDetail("aboutme")|markdown }}
+        {% else %}
+        <p>
+            <i>Dieser Benutzer hat noch nichts über sich geschrieben.</i>
+            {% if data.id == user.id and not data.getDetail("frozen") %}
+                <br><b>Drücke auf <code>Bearbeiten</code>, um deinen Profiltext zu bearbeiten.</b>
+            {% endif %}
+        </p>
+        {% endif %}
+    </div>
+    {% if data.getDetail("profile_image") %}
+        </div>
+    {% endif %}
+    {% if user.isAdmin() or (data.id == user.id and not data.getDetail("frozen")) %}
+        <button class="primary-btn" onclick="edit('aboutme', this)"><i class="fa fa-pencil" aria-hidden="true"></i> Bearbeiten</button><div style="display:none;" id="aboutme_content">{{ data.getDetail("aboutme") }}</div><br>&nbsp;
+    {% endif %}
+    {% if data.getDetail("frozen") and (user.id==data.id or user.isAdmin()) %}
+      <p class="tiny" style="color: #d00; font-weight:bold;">Dieser Account wurde aufgrund von Meinungsverschiedenheiten über Benutzerkonteneigenschaften (Anzeigename, Selbstbeschreibung, ...) eingefroren.</p>
+    {% endif %}
+    <div class="flexible-table">
+        <table border="1">
+          {% if data.id == user.id %}
+            {% if data.getDetail("login_provider") == "local_account" %}
+            <tr>
+                <th>Passwort</th>
+                {% if data.getDetail("password") == "" %}
+                    <td id="password" style="width:100%;"><div class="warning">Bitte neues Passwort setzen!</div></td>
+                {% else %}
+                    <td id="password" style="width:100%;">*****</td>
+                {% endif %}
+                <td class="edit-column"><a href="#!" onclick="edit('password')"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
+            </tr>
+            <tr>
+                <th>E-Mail-Adresse</th>
+                <td id="email" style="width:100%;">{{ data.getDetail("email") }}</td>
+                <td class="edit-column">
+                  {% if not data.getDetail("frozen") %}
+                    <a href="#!" onclick="edit('email')"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+                  {% endif %}
+                </td>
+            </tr>
+            {% elif data.getDetail("login_provider") == "oauth:google" %}
+            <tr>
+                <th>E-Mail-Adresse</th>
+                <td id="email" style="width:100%;">{{ data.getDetail("email") }} <em>(verifiziert durch Google)</em></td>
+                <td class="edit-column"></td>
+            </tr>
+            {% endif %}
+          {% endif %}
+            <tr>
+                <th>Benutzerstatus</th>
+                {% if data.isDeleted() %}
+                    <td style="width:100%;">gelöscht</td>
+                {% elif data.isDisabled() %}
+                    <td style="width:100%;">gesperrt</td>
+                {% else %}
+                    <td style="width:100%;">aktiv</td>
+                {% endif %}
+                {% if data.id == user.id or user.isAdmin() %}
+                    <td class="edit-column"></td>
+                {% endif %}
+            </tr>
+            <tr>
+                <th>Benutzerrolle</th>
+                {% if data.isTeam() %}
+                <td style="font-style: italic; font-weight: bold; width: 100%;">&pi;-Learn Team {% if user.isTeam() %}<code>{{ data.getDetail("role") }}</code>{% endif %}</td>
+                {% else %}
+                    <td style="width:100%;">
+                        {% if data.isAdmin() %}
+                            Administrator
+                        {% elif data.isMod() %}
+                            Moderator
+                        {% else %}
+                            Standardbenutzer
+                        {% endif %}
+                        {% if user.isDev() and not data.isDev() and data.isEnabled() and data.id != user.id and not data.getDetail("frozen") %}
+                            <p class="tiny action-bar">
+                                <a href="#!" onclick="$post('user/set/role', {'new_value': 'administrator', 'userid': {{ data.id}} }, function(){window.location.reload();});">Administrator</a>
+                                <a href="#!" onclick="$post('user/set/role', {'new_value': 'moderator', 'userid': {{ data.id}} }, function(){window.location.reload();});">Moderator</a>
+                                <a href="#!" onclick="$post('user/set/role', {'new_value': 'user', 'userid': {{ data.id}} }, function(){window.location.reload();});">Standardbenutzer</a>
+                            </p>
+                        {% endif %}
+                    </td>
+                {% endif %}
+                {% if data.id == user.id or user.isAdmin() %}
+                    <td class="edit-column"></td>
+                {% endif %}
+            </tr>
+            <tr>
+                <th>Reputation</th>
+                <td style="width:100%;"><span class="badge" id="reputation">{{ data.getReputation() }}</span></td>
+                {% if user.isAdmin() or data.id == user.id %}
+                    <td class="edit-column"></td>
+                {% endif %}
+            </tr>
+        </table>
+        {% if user.isAdmin() and not data.isDev() and data.id != user.id %}
+            <p class="tiny action-bar">
+                {% if not data.isDeleted() %}
+                    <a href="#!" onclick="document.getElementById('privilege-modal').classList.add('open');">Privilegien entziehen</a>
+                    {% if not data.isDisabled() %}
+                    <a href="#!" onclick="document.getElementById('ban-modal').classList.add('open');">Benutzer sperren</a>
+                    {% else %}
+                    <a href="#!" onclick="$post('user/{{ data.id }}/flag', {'type':'unban'}, function (e) {window.location.reload();})">Benutzer entsperren</a>
+                    {% endif %}
+                    {% if not data.getDetail("frozen") %}
+                    <a href="#!" onclick="$post('user/set/frozen', {'new_value': '1', 'userid': {{ data.id}} }, function(){window.location.reload();});">Konto einfrieren</a>
+                    {% else %}
+                    <a href="#!" onclick="$post('user/set/frozen', {'new_value': '0', 'userid': {{ data.id}} }, function(){window.location.reload();});">Konto auftauen</a>
+                    {% endif %}
+                {% endif %}
+            </p>
+    </div>
+        {% else %}
+    </div>
+    &nbsp;
+        {% endif %}
+    {% if data.id == user.id or user.isAdmin() %}
+        <script src="/static/js/user_view.js"></script>
+    {% endif %}
+    {% if not data.isDeleted() and (not data.isDisabled() or user.id == data.id) %}
+        {% if data.id != user.id %}
+            {% if not user.may("general_reportUser") %}
+                <div><button disabled id="report-button">Melden</button></div>
+            {% else %}
+                <div><button id="report-button">Melden</button></div>
+            {% endif %}
+        {% else %}
+            <div><button id="report-button">Einen Administrator kontaktieren</button></div>
+        {% endif %}
+        {% set flagging_id = 'flag_user_' ~ data.id %}
+        {% set flagging_user = data.id %}
+        {% set flagging_user_role = data.getDetail("role") %}
+        {% include "flagging/user.html" %}
+        <script>
+            user_id = {{ data.id }};
+            dialogid = "{{ 'flag_user_' ~ data.id }}";
+            el = document.getElementById("report-button");
+            el.addEventListener("click", function() {
+                document.getElementById(dialogid).classList.toggle("open");
+            })
+        </script>
+    {% endif %}
+{% if data.isDeleted() %}
+</div>
+{% endif %}
+
+{% if user.isAdmin() and data.isEnabled() and not data.isDev() %}
+<div class="flagging-modal" id="privilege-modal">
+    <div class="flagging-dialog">
+        <div class="close-link"><a href="#!" onclick="document.getElementById('privilege-modal').classList.remove('open');">&times;</a></div>
+        <h3>Diesem Benutzer Privilegien entziehen</h3>
+        <p>Du kannst diesem Benutzer bestimmte Privilegien entziehen. Änderungen treten <b>sofort nach dem Umschalten der Checkbox</b> in Kraft.</p>
+        <div class="flagging-reason-list">
+        {% for priv in privileges.getAll() if data.may(priv, True) %}
+          {% if data.may(priv) %}
+          <label class="flagging-reason-item" id="toggle-privilege-{{ priv }}">
+              <input type="checkbox" checked onchange="self=this;$post('user/{{ data.id }}/toggle-privilege', {'privilege': '{{ priv }}'})" id="toggle-privilege-{{ priv }}">
+              <h4>{{ privileges.getSingleInformation(priv).name }}</h4>
+          </label>
+          {% else %}
+          <label class="flagging-reason-item" id="toggle-privilege-{{ priv }}">
+              <input type="checkbox" onchange="self=this;$post('user/{{ data.id }}/toggle-privilege', {'privilege': '{{ priv }}'})" id="toggle-privilege-{{ priv }}">
+              <h4>{{ privileges.getSingleInformation(priv).name }}</h4>
+          </label>
+          {% endif %}
+        {% else %}
+        <p>Dieser Benutzer hat noch keine Privilegien erhalten, die entzogen werden könnten. <i>Nutze im Notfall eine Sperrung</i></p>
+        {% endfor %}
+    </div>
+    <button onclick="document.getElementById('privilege-modal').classList.remove('open');">Fertig</button>
+    </div>
+</div>
+{% endif %}
+{% if user.isAdmin() and data.isEnabled() and not data.isDev() %}
+<div class="flagging-modal" id="ban-modal">
+    <div class="flagging-dialog">
+        <div class="close-link"><a href="#!" onclick="document.getElementById('ban-modal').classList.remove('open');">&times;</a></div>
+        <h3>Benutzer sperren</h3>
+        <p>Diesen Benutzer sperren, da er die Nutzungsbedingungen missachtet hat. <strong>Achtung, dies führt zu einer privaten Nachricht und einem Eintrag in den Anmerkungsverlauf</strong></p>
+        <label for="ban-reason">Benutzer <select id="ban-reason"><option value=""></option>{% for opt in data.BAN_REASON.keys()|sort %}<option value="{{ opt }}">{{ data.BAN_REASON[opt] }}</option>{% endfor %}</select> sperren</label>
+        <label for>Dauer</label>
+        <div style="padding: 5px; border: 1px solid #000; margin-left: 75px;" id="ban-duration">
+          <label for="ban-duration-2h" data-ban-recommended-for="50calm-down"><input id="ban-duration-2h" type="radio" name="ban-duration" value="2"> 2 Stunden</label>
+          <label for="ban-duration-1d" data-ban-recommended-for="50calm-down"><input id="ban-duration-1d" type="radio" name="ban-duration" value="24"> 1 Tag</label>
+          <label for="ban-duration-2d" data-ban-recommended-for="50calm-down"><input id="ban-duration-2d" type="radio" name="ban-duration" value="48"> 2 Tage</label>
+          <label for="ban-duration-1w" data-ban-recommended-for="40conflicts 20spam 30offensive 00rule-violation"><input id="ban-duration-1w" type="radio" name="ban-duration" value="168"> 1 Woche</label>
+          <label for="ban-duration-2w" data-ban-recommended-for="40conflicts 20spam 30offensive 00rule-violation"><input id="ban-duration-2w" type="radio" name="ban-duration" value="336"> 2 Wochen</label>
+          <label for="ban-duration-1m" data-ban-recommended-for="40conflicts 20spam 30offensive 00rule-violation"><input id="ban-duration-1m" type="radio" name="ban-duration" value="720"> 1 Monat</label>
+          <label for="ban-duration-3m" data-ban-recommended-for="40conflicts 20spam 30offensive 00rule-violation 10sockpuppets 60no-improvements 70no-contribution"><input id="ban-duration-3m" type="radio" name="ban-duration" value="2160"> 3 Monate</label>
+          <label for="ban-duration-1y" data-ban-recommended-for="40conflicts 20spam 30offensive 00rule-violation 10sockpuppets 60no-improvements 70no-contribution"><input id="ban-duration-1y" type="radio" name="ban-duration" value="8760"> 1 Jahr</label>
+          {% if not user.isTeam() %}
+          <label for="ban-duration-c" data-ban-recommended-for="@custom"><input id="ban-duration-c" type="radio" name="ban-duration" value="c"> <input style="display: inline-block; max-width: 80px; font-weight: normal;" type="number" max="365" min="1" id="ban-duration-c-input"> <small>Tage</small></label>
+          {% else %}
+          <label for="ban-duration-c" data-ban-recommended-for="@custom">
+            <input id="ban-duration-c" type="radio" name="ban-duration" value="c"> <input style="display: inline-block; max-width: 80px; font-weight: normal;" type="number" max="30" min="0" value="0" id="ban-duration-c-input-y"> <small>Jahre</small>&nbsp;&nbsp;
+            <input style="display: inline-block; max-width: 80px; font-weight: normal;" type="number" max="12" min="0" value="0" id="ban-duration-c-input-m"> <small>Monate</small>&nbsp;&nbsp;
+            <input style="display: inline-block; max-width: 80px; font-weight: normal;" type="number" max="30" min="0" value="0" id="ban-duration-c-input-d"> <small>Tage</small>
+          </label>
+          {% endif %}
+        </div>&nbsp;<br>
+        <button class="danger-btn big-btn" onclick="ban()">Jetzt sperren</button>
+    </div>
+</div>
+<script>
+document.getElementById("ban-reason").addEventListener("change", function () {
+  bandur = document.getElementById("ban-duration");
+  for (var i = 0; i < bandur.children.length; i++) {
+    if(bandur.children[i].getAttribute("data-ban-recommended-for") == "@custom") {
+      continue;
+    }
+    if(this.value == "") {
+      bandur.children[i].style.backgroundColor = "#f5f5f5";
+      bandur.children[i].style.opacity = 0.6;
+    } else if(bandur.children[i].getAttribute("data-ban-recommended-for").indexOf(this.value) != -1) {
+      bandur.children[i].style.backgroundColor = "#dfd";
+      bandur.children[i].style.opacity = 1;
+    } else {
+      bandur.children[i].style.opacity = 0.2;
+      bandur.children[i].style.backgroundColor = "#fdd";
+    }
+  }
+})
+bandur = document.getElementById("ban-duration");
+for (var i = 0; i < bandur.children.length; i++) {
+  if(bandur.children[i].getAttribute("data-ban-recommended-for") == "@custom") {
+    continue;
+  }
+  bandur.children[i].style.backgroundColor = "#f5f5f5";
+  bandur.children[i].style.opacity = 0.6;
+}
+function ban() {
+  reason = document.getElementById("ban-reason").value;
+  if(reason == "") {
+    return;
+  }
+  duration = document.querySelector("#ban-duration input[type='radio']:checked");
+  if(duration == null) {
+    return;
+  }
+  duration = duration.value;
+  if(duration == "c") {
+    {% if user.isTeam() %}
+    duration = 24*(document.getElementById("ban-duration-c-input-d").value + 30*document.getElementById("ban-duration-c-input-m").value + 365*document.getElementById("ban-duration-c-input-y").value);
+    {% else %}
+    duration = document.getElementById("ban-duration-c-input").value;
+    {% endif %}
+  }
+  $post("user/{{ data.id }}/flag", {"type":"ban", "reason": reason, "duration": duration}, function (e) {
+    window.location.reload()
+  })
+}
+</script>
+{% endif %}
+{% if user.isDev() and not data.isDeleted() %}
+<div class="flagging-modal" id="labels-modal">
+    <div class="flagging-dialog">
+        <div class="close-link"><a href="#!" onclick="document.getElementById('labels-modal').classList.remove('open');">&times;</a></div>
+        <h3>Benutzer-Labels verwalten</h3>
+        <p>Benutzern können spezielle Label vergeben werden. Wähle aus, welche Labels für {{ data.getDetail("name") }} angezeigt werden sollen:</p>
+        <div class="flagging-reason-list">
+        {% for lab in data.possibleLabels %}
+          {% if lab in data.getDetail("labels") %}
+          <label class="flagging-reason-item" id="toggle-privilege-{{ lab }}">
+              <input type="checkbox" checked onchange="self=this;$post('user/{{ data.id }}/toggle-label', {'label': '{{ lab }}'})" id="toggle-label-{{ lab }}">
+              <h4>{{ data.labels[lab] }}</h4>
+          </label>
+          {% else %}
+          <label class="flagging-reason-item" id="toggle-privilege-{{ lab }}">
+            <input type="checkbox" onchange="self=this;$post('user/{{ data.id }}/toggle-label', {'label': '{{ lab }}'})" id="toggle-label-{{ lab }}">
+            <h4>{{ data.labels[lab] }}</h4>
+          </label>
+          {% endif %}
+        {% endfor %}
+    </div>
+    <p>
+        <button onclick="window.location.reload();" class="primary-btn">Fertig</button>
+        <button onclick="document.getElementById('labels-modal').classList.remove('open');">Keine Änderung</button>
+    </p>
+</div>
+</div>
+{% endif %}
+{% endblock %}

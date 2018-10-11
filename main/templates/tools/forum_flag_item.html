@@ -1,0 +1,86 @@
+{% from "tools/_macro.html" import tools__nav %}
+{% extends "layout.html" %}
+{% block body %}
+    {{ tools__nav("forum", user) }}
+    <h2>Werkzeuge &ndash; Benutzermeldungen</h2>
+    {% set char = "post" %}{% if item.item_type=="forum.answer" %}{% set char = "answer" %}{% endif %}
+        {% if item.type == "forum.question" %}
+        <h3><a href="/f/{{ item.post.getDetail('forumID')}}/{{ item.post.id }}">{{ item.post.getTitle() }}</a></h3>
+        {% endif %}
+        <div class="text">
+          <p style="margin: 0;"><span class="badge{% if item.post.isDeleted() %} negative{% endif %}" title="Beitragsbewertung{% if item.post.isDeleted() %} -- Beitrag wurde gelöscht{% endif %}">{{ item.post.getScore() }}</span> &ndash; {{ (item.post.getContent().replace("\n", "\0")|striptags).replace("\0", "\n")|safe }} (<em>{{ item.post.getCommentCounts()[2] }} Kom.</em>)</p>
+          <ul>
+            <li><a href="/f/{{ item.post.getDetail('forumID')}}/{{ char }}/{{ item.post.id }}/rev">Versionsverlauf</a></li>
+          </ul>
+        </div>
+        <div class="text">
+          <div class="tool-ops" id="flag_selection">
+          {% for flag in flags %}
+            <div class="tool-ops-selection">
+              {% if flag.state == 0 %}
+              <input type="checkbox" name="flag_selection" value="{{ flag.id }}" id="flag_selection-{{ flag.id }}">
+              {% else %}
+              <input type="checkbox" name="flag_selection" value="{{ flag.id }}" id="flag_selection-{{ flag.id }}" disabled style="display: none; !important;">
+              {% if flag.state == 1 %}
+              <div class="tool-ops-status"><i class="fa fa-check fa-fw" title="Diese Meldung wurde als hilfreich empfunden."></i></div>
+              {% elif flag.state == -2 %}
+              <div class="tool-ops-status"><i class="fa fa-times fa-fw" title="Diese Meldung wurde als nicht hilfreich empfunden."></i></div>
+              {% endif %}
+              {% endif %}
+              <label for="flag_selection-{{ flag.id }}">
+                {{ flag.comment|striptags|markdown }}
+                <p style="font-size: 0.9em;">von <a href="/u/{{ flag.flagger.id }}" target="_blank">{{ flag.flagger.getHTMLName()|safe }}</a></p>
+                {% if flag.state != 0 and flag.response != "" %}
+                <p style="font-size: 0.8em; color: #7aa;"><em>{{ flag.response }}</em></p>
+                {% endif %}
+              </label>
+            </div>
+          {% endfor %}
+          </div>
+          {% if has_open_flags %}
+          <details>
+            <summary>Antwort hinzufügen</summary>
+            <input id="response_comment" placeholder="Erkläre, warum du diese Meldungen so behandelst.">
+          </details>
+          <button class="accept-btn" onclick="make_flag_decision(1)">hilfreich</button> <button class="danger-btn" onclick="make_flag_decision(-2)">nicht hilfreich</button>
+          {% endif %}
+        </div>
+        {% if item.state == 0 %}
+        <h3>Aktionen</h3>
+        <a href="/f/{{ item.post.getDetail('forumID')}}/{{ item.post.id }}"><button class="primary-btn">Zu Beitrag</button></a>
+        {% if item.post.isDeleted() and not item.post.isDestroyed() %}
+            <a href="#!" onclick="$post('f/{{ item.post.getDetail('forumID') }}/{{ char }}/{{ item.post.id }}/undelete', {}, function(){window.location.reload();})"><button class="primary-btn">Beitrag un-löschen</button></a>
+        {% else %}
+            <a href="#!" onclick="$post('f/{{ item.post.getDetail('forumID') }}/{{ char }}/{{ item.post.id }}/delete', {}, function(){window.location.reload();})"><button class="primary-btn">Löschen</button></a>
+        {% endif %}
+        <button class="primary-btn" onclick="$post('tools/forum/flags/{{ item.id }}/finish', {}, function(){window.location.reload()});">Fertig</button>
+        {% else %}
+        <a href="/tools/forum/flags"><button class="primary-btn">&larr; Zurück</button></a>
+        {% endif %}
+      <script>
+        var flags = [];
+        var flag_els = [];
+        function make_flag_decision(decision) {
+          flags = [];
+          flag_els = [];
+          els = document.querySelectorAll("#flag_selection :checked");
+          for (var i = 0; i < els.length; i++) {
+            flags.push(els[i].value);
+            flag_els.push(els[i].parentNode)
+          }
+          data = {
+            "response": document.getElementById("response_comment").value,
+            "flags": flags,
+            "result": decision
+          }
+          document.getElementById("response_comment").value = "";
+          $post("tools/forum/flags/{{ item.id }}/validate", data, function (r) {
+            if(r == "{ok:last}") {
+              window.location.reload();
+            } for (var i = 0; i < flag_els.length; i++) {
+              flag_els[i].parentNode.removeChild(flag_els[i]);
+            }
+          }.bind(this))
+        }
+      </script>
+{% endblock %}

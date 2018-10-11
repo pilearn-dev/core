@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block body %}
+    <link rel="stylesheet" href="/static/css/simplemde.min.css">
+    <script src="/static/js/simplemde.min.js"></script>
+
+    <nav class="coursenav">
+      {% if forum.id == 0 %}
+          <h2>globales Forum</h2>
+          <p>für alle Fragen zu &pi;-Learn selber und für Fehlermeldungen oder Verbesserungsideen</p>
+      {% else %}
+        {% set topic = forum.getTopic() %}
+        <h2>{{ forum.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
+        {{ forum.getByLine()|markdown }}
+        <ul>
+          <li><a href="/c/{{ forum.id }}/info">Informationen</a></li>
+          <li><a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/start">Kursinhalte</a></li>
+          <li class="active"><a href="/f/{{ forum.id }}">Kursforum</a></li>
+        </ul>
+      {% endif %}
+    </nav>
+
+    <h2>Beitrag bearbeiten</h2>
+
+    <p>Hier noch einmal die Kriterien für einen guten Forumsartikel:</p>
+    <ul>
+        <li>Deine eingegebenen Inhalte müssen mit dem <a href="/help/legal/coc">Code of Conduct</a> kompatibel sein.</li>
+        <li>Deine eingegebenen Inhalte sollten keine groben Rechtschreibfehler aufweisen</li>
+        <li>Versuche die eingegebenen Inhalte möglichst verständlich zu formulieren.</li>
+        <li>Werbe in den Inhalten nicht übermäßig für ein bestimmtes Produkt oder eine Marke.</li>
+        <li>Versuche die eingegebenen Inhalte möglichst verständlich zu formulieren.</li>
+        <li><b>Denke daran, den Ausgangspost zu beantworten!</b></li>
+    </ul>
+
+    <form action="" method="post">
+        <label for="qcontent">
+            Inhalt des Forumposts
+        </label>
+        <textarea id="qcontent" name="content">{{ answer.getContent() }}</textarea>
+        <label for="qcomment">Kommentar zu den Änderungen:</label>
+        <input id="qcomment" name="comment"></input>
+        &nbsp;<br>
+        <button type="submit" id="sbmbtn">Speichern</button>&nbsp;<a href="/f/{{ forum.id }}/{{ answer.getDetail("articleID") }}#answer-{{ answer.id }}">Abbrechen</a>
+    </form>
+
+    <script>
+        var simplemde = new SimpleMDE({ element: document.getElementById("qcontent"), forceSync:true, parsingConfig: {strikethrough: false}, promptURLs:true, spellChecker:false });
+    </script>
+
+{% endblock %}

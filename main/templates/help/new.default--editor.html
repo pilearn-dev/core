@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block body %}
+  <link rel="stylesheet" href="/static/ps/polyskript.css">
+    <div class="coursenav"><h3><a href="/help">Hilfethemen</a> &raquo; <a href="/help/category:{{ cat.getUrlPart() }}">{{ cat.getTitle() }}</a> &raquo; <em>Bearbeiten:</em> {{ entry.getTitle() }}</h3></div>&nbsp;
+    <link rel="stylesheet" href="/static/css/simplemde.min.css">
+    <script src="/static/js/simplemde.min.js"></script>
+    {% if done %}
+    <div class="success">
+      Hilfedokument erfolgreich gespeichert. <a href="?editor=no">Zur Seite</a>
+    </div>
+    {% endif %}
+    <form action="" method="post" onsubmit="document.getElementById('content').value=JSON.stringify(ps.data); return true;">
+      {% if user.isTeam() %}
+        <button class="primary-btn" type="submit" name="action" value="save">Speichern</button>&nbsp;
+        <button type="submit" name="action" value="replace">Ersetzen</button>&nbsp;
+        <button type="submit" name="action" value="reset">Zurücksetzen</button>&nbsp;
+      {% else %}
+        <button class="primary-btn" type="submit" name="action" value="save">Speichern</button>&nbsp;
+      {% endif %}
+      <a href="?editor=no">Abbrechen</a><br>&nbsp;
+      <h2><input id="title" name="title" value="{{ entry.getTitle() }}"></h2>
+
+      <input type="hidden" id="content" name="content">
+
+      {% if user.isTeam() %}
+        <label for="url_part">URL-Part <span class="warning inline">Änderungen können Verknüpfungen zerbrechen!</span></label>
+        <input id="url_part" name="url_part" value="{{ entry.getUrlPart() }}">
+        <input type="checkbox" id="active" name="active" value="true" {% if entry.isActive() %}checked{% endif %}>&nbsp;
+        <label for="active">Seite wird angezeigt?</label><br>
+        <input type="checkbox" id="deprecated" name="deprecated" value="true" {% if entry.isDeprecated() %}checked{% endif %}>&nbsp;
+        <label for="deprecated">Seite enthält veraltete Inhalte?</label><br>
+        <input type="checkbox" id="may_edit" name="may_edit" value="true" {% if entry.mayAdminEdit() %}checked{% endif %}>&nbsp;
+        <label for="may_edit">Seite kann von Administratoren bearbeitet werden?</label><br>
+        <input type="checkbox" id="subpage" name="subpage" value="true" {% if entry.mayAdminCreateSubpage() %}checked{% endif %}>&nbsp;
+        <label for="subpage">Administratoren können Unterseiten erstellen?</label><br>
+        <input type="checkbox" id="pinned" name="pinned" value="true" {% if entry.isPinned() %}checked{% endif %}>&nbsp;
+        <label for="pinned">Seite wird auf Hilfe-Startseite angezeigt und hervorgehoben?</label><br><br>
+      {% endif %}
+    </form>
+
+    <div id="polyskript-master" class="polyskript">
+      <div class="preview">
+      </div>
+    </div>
+
+      <script src="/static/ps/model-help.js" charset="utf-8"></script>
+      <script src="/static/ps/polyskript.js" charset="utf-8"></script>
+      <script>
+       ps = new Polyskript({{ entry.getAsJSON()|tojson }});
+       ps.show()
+       </script>
+
+    <a href="#!" onclick="prompt('Der Quelltext dieser Seite ist: ', JSON.stringify(ps.data));">Exportieren</a> &ndash; <a href="#!" onclick="x=JSON.parse(prompt('Bitte Quelltext einfügen: ', '{}'));if(x) {ps.data=x;ps._update()}">Importieren</a>
+    <style>
+      label[for], input[type="checkbox"] {
+        display: inline-block;
+        font-weight: normal;
+      }
+    </style>
+{% endblock %}

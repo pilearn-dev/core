@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block body %}
+<nav class="coursenav">
+  {% if forum.id == 0 %}
+      <h2>globales Forum</h2>
+      <p>für alle Fragen zu &pi;-Learn selber und für Fehlermeldungen oder Verbesserungsideen</p>
+  {% else %}
+    {% set topic = forum.getTopic() %}
+    <h2>{{ forum.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
+    {{ forum.getByLine()|markdown }}
+    <ul>
+      <li><a href="/c/{{ forum.id }}/info">Informationen</a></li>
+      <li><a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/start">Kursinhalte</a></li>
+      <li><a href="/f/{{ forum.id }}">Kursforum</a></li>
+    </ul>
+    <div style="height:10px"></div>
+  {% endif %}
+  {% if user.isDev() or survey.getDetail("survey_owner") == user.id %}
+  <ul class="subnav">
+    <li class="active"><a href="#!">Anzeige</a></li>
+    <li><a href="/sv/{{ survey.id }}/edit">Bearbeiten</a></li>
+    <li><a href="/sv/{{ survey.id }}/results">Ergebnisse</a></li>
+  </ul>
+  {% endif %}
+</nav>
+<div style="max-width: 800px; margin: 0 auto;">
+ {% include "survey/show.html" %}
+</div>
+<style>
+.question {
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  margin: 5px 0;
+  padding: 10px;
+}
+.highlight-missing {
+  background-color: #d66;
+  color: #fff;
+}
+</style>
+{% endblock %}

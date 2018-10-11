@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+{% block body %}
+<script src="{{ config.link_master }}/static/polling.js"></script>
+<h2>Benutzer: <a href="{{ config.link_master }}/user/{{ duser.id }}">{{ duser.getName() }}</a>{% if duser.isMod() %} <small>(&#8855; Moderator)</small>{% endif %}</h2>
+{% if duser.isSuspended() %}
+<div class="suspension-warning">
+    Dieser Benutzer darf {{ duser.getSuspensionReason() }} bis <span title="{{ duser.getSuspensionEnd() }}">{{ duser.formatSuspensionEnd() }}</span> nicht chatten.
+</div>
+{% endif %}
+<p><a href="{{ config.user_link.replace("$", duser.getAssocId()|string) }}">Zum Hauptseitenbenutzer</a></p>
+{% if user.isMod() %}
+<script>
+p = new Poller("{{ config.link_master }}/user-api", 0);
+p.on("reload", function () {
+  window.location.reload();
+})
+function suspend() {
+  p.fetch("suspend",{
+    "user": {{ duser.id }},
+    "time": document.querySelector("input[name=ban_time]:checked").value,
+    "reason": document.querySelector("input[name=ban_reason]:checked").value
+  })
+}
+function unsuspend() {
+  p.fetch("unsuspend",{
+    "user": {{ duser.id }}
+  })
+}
+</script>
+<h3>Moderatorentools</h3>
+<ul>
+  {% if not duser.isSuspended() %}
+    <li>
+      <details>
+        <summary>Benutzer sperren</summary>
+      Diesen Benutzer für
+      <ul class="no-list-items">
+        <li><input type="radio" name="ban_time" value="60" id="ban_time_60"><label for="ban_time_60"> 1 Minute</label></li>
+        <li><input type="radio" name="ban_time" value="300" id="ban_time_300"><label for="ban_time_300"> 5 Minuten</label></li>
+        <li><input type="radio" name="ban_time" value="600" id="ban_time_600"><label for="ban_time_600"> 10 Minuten</label></li>
+        <li><input type="radio" name="ban_time" value="1800" id="ban_time_1800"><label for="ban_time_1800"> 30 Minuten</label></li>
+        <li><input type="radio" name="ban_time" value="3600" id="ban_time_3600"><label for="ban_time_3600"> 1 Stunde</label></li>
+        <li><input type="radio" name="ban_time" value="7200" id="ban_time_7200"><label for="ban_time_7200"> 2 Stunden</label></li>
+        <li><input type="radio" name="ban_time" value="43200" id="ban_time_43200"><label for="ban_time_43200"> 12 Stunden</label></li>
+        <li><input type="radio" name="ban_time" value="86400" id="ban_time_86400"><label for="ban_time_86400"> 1 Tag</label></li>
+        <li><input type="radio" name="ban_time" value="604800" id="ban_time_604800"><label for="ban_time_604800"> 1 Woche</label></li>
+        <li><input type="radio" name="ban_time" value="2419200" id="ban_time_2419200"><label for="ban_time_2419200"> 1 Monat</label></li>
+        <li><input type="radio" name="ban_time" value="4838400" id="ban_time_4838400"><label for="ban_time_4838400"> 2 Monaten</label></li>
+        <li><input type="radio" name="ban_time" value="3110400000" id="ban_time_3110400000"><label for="ban_time_3110400000"> das nächste Jahrhundert</label></li>
+      </ul>
+      wegen
+      <ul class="no-list-items">
+        <li><input type="radio" name="ban_reason" id="ban_reason_ruleviolation" value="wegen Regelverletzung"><label for="ban_reason_ruleviolation">Regelverletzung</label></li>
+        <li><input type="radio" name="ban_reason" id="ban_reason_spam" value="wegen SPAM-Posten"><label for="ban_reason_spam">SPAM</label></li>
+        <li><input type="radio" name="ban_reason" id="ban_reason_calmdown" value="zur Konflikauflösung"><label for="ban_reason_calmdown">zur Konfliktauflösung</label></li>
+      </ul>
+      <button href="#!" onclick="suspend()">sperren!</button>
+    </details>
+    </li>
+  {% else %}
+    <li><a href="#!" onclick="unsuspend()">Entsperren</a></li>
+  {% endif %}
+</ul>
+{% endif %}
+{% endblock %}

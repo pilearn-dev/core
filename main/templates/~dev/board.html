@@ -1,0 +1,159 @@
+{% extends "layout.html" %}
+{% block body %}
+<script src="/static/js/systemerror.js"></script>
+<h2 class="bigheading">Entwickler<wbr>board</h2>
+    <hr>
+    <div class="pentagon">
+      <div class="pent-item no-p">
+        <h2>Verknüpfungen</h2>
+        <ul>
+          <li><a href="/~dev/error/403">403 Zugriff verboten</a></li>
+          <li><a href="/~dev/error/404">404 Nicht gefunden</a></li>
+          <li><a href="/~dev/error/405">405 Ungültiger Zugriff</a></li>
+          <li><a href="/~dev/error/500">500 Server-Fehler</a></li>
+          <li><a href="/~dev/error/503">503 Server offline</a></li>
+        </ul>
+        <h3>Unterseiten</h3>
+        <ul>
+          <li><a href="/helpdesk/ticket/list">Helpdesk</a></li>
+          <li><a href="/election">Wahlen</a></li>
+        </ul>
+      </div>
+      <div class="pent-item">
+        <h2>Forumtools</h2>
+        <ul>
+          <li><a href="/~dev/forum-vote-check">VoteCheck</a></li>
+        </ul>
+        <label for>Für Fragen</label>
+        <ul>
+          <li><a href="/~dev/question-revision-management">Versionsverwaltung</a></li>
+          <li><a href="/~dev/question-porus">PORUS (Post Owner Reputation Update Script)</a></li>
+        </ul>
+        <label for>Für Antworten</label>
+        <ul>
+          <li><a href="/~dev/answer-revision-management">Versionsverwaltung</a></li>
+          <li><a href="/~dev/answer-porus">PORUS (Post Owner Reputation Update Script)</a></li>
+        </ul>
+      </div>
+      <div class="pent-item">
+        <h2>Globale Ankündigung</h2>
+        <textarea id="global_note">{{ global_notification }}</textarea>
+        <button onclick="update_GN()">Speichern</button>
+        <p><strong>Hinweise:</strong> Es kann Markdown verwendet werden. Fünf Unterstriche (<code>_____</code>), mit jeweils einer Leerzeile davor und danach, erzeugen einen neuen Kasten.</p>
+        <p><strong>Vorlagen:</strong> <a href="#!" onclick="insert_note('**Es wird gewählt** &ndash; Zurzeit wählen wir [Benutzergruppe](/hilfe-link). Nimm auch du an der Wahl teil: [Zur Wahl](/wahl-link)')">Wahl</a> &ndash; <a href="#!" onclick="insert_note('Aufgrund von Wartungsarbeiten wird &pi;-Learn **am DATUM von START für ca. DAUER** offline sein.')">Wartung&nbsp;geplant</a></p>
+      </div>
+      <div class="pent-item">
+        <h2>Offline-Schaltung</h2>
+        {% if is_offline %}
+        <button onclick="toggle_off(this)" class="danger-btn">Webseite offline &ndash; Zugriff erlauben</button>
+        {% else %}
+        <button onclick="toggle_off(this)" class="accept-btn">Webseite online &ndash; Zugriff sperren</button>
+        {% endif %}
+        <br>&nbsp;
+        <label for="betatoggle">
+          <input onclick="toggle_beta()" type="checkbox" id="betatoggle"{% if in_beta %} checked{% endif %}> Beta-Registrierung auch ohne speziellen Zugriffslink:
+        </label>
+        <pre><span id="beta_token">{{ beta_access_token }}</span>&nbsp;<a id="beta_token_url" href="/beta?access={{ beta_access_token }}">link</a>&nbsp;<a href="#!" onclick="new_beta_token()">neu</a></pre>
+        <h3>Angezeigte Nachricht</h3>
+        <textarea id="off_note">{{ offline_notification }}</textarea>
+        <button onclick="update_ON()">Speichern</button>
+      </div>
+      <div class="pent-item">
+        <h2>SQL ausführen</h2>
+        <label for="sql_file">SQL-Datei</label>
+        <select id="sql_file" name="sql_file">
+            <option>courses.db</option>
+            <option>user.db</option>
+            <option>forum.db</option>
+            <option>election.db</option>
+            <option>helpdesk.db</option>
+            <option>survey.db</option>
+            <option>helpcenter.db</option>
+        </select>
+        <label for="sql_sql">SQL:</label>
+        <textarea id="sql_sql" name="sql_sql"></textarea>
+        <button type="submit" onclick="exec_SQL()">Ok</button>
+        <hr>
+        <pre class="static-table" style="max-height: 400px" id="sql_table_wrapper"><div style="position: sticky; top: 5px; left: 5px; background-color:inherit;" onclick="toggle_fullscreen()">Ausgabe</div>
+            <table id="sql_table">
+            </table>
+        </pre>
+      </div>
+    </div>
+    <script>
+      function exec_SQL() {
+        sql = document.getElementById("sql_sql").value;
+        file = document.getElementById("sql_file").value;
+        $post("~dev/sql", {"sql":sql, "file":file}, function(r) {
+          r = JSON.parse(r);
+          if(r.length == 1 && r[0].length == 2 && r[0][0] == "Fehler:") {
+            issueSystemError("<p><strong>Bei der Datenbank-Abfrage ist ein Fehler augetreten:</strong><p><pre>"+r[0][1]+"</pre>");
+            return;
+          } else if(r.length == 1 && r[0].length == 2 && r[0][0] == "Warnung:") {
+            issueSystemWarning("<p><strong>Bei der Datenbank-Abfrage ist eine Warnung augetreten:</strong><p><pre>"+r[0][1]+"</pre>");
+            return;
+          } else if(r.length == 1 && r[0].length == 2 && r[0][0] == "Info") {
+            issueSystemInfo("<p>"+r[0][1]+"</p>");
+            return;
+          }
+          table = document.getElementById("sql_table");
+          table.innerHTML = "";
+          for(var i=0; i<r.length; i++) {
+            ch = document.createElement("tr");
+            for(var j=0; j<r[i].length; j++) {
+              v = document.createElement("td");
+              v.innerText = r[i][j];
+              ch.appendChild(v);
+            }
+            table.appendChild(ch)
+          }
+        })
+      }
+      function toggle_fullscreen() {
+        el = document.getElementById("sql_table_wrapper")
+        fsr = el.mozRequestFullScreen || el.webkitRequestFullScreen || el.msRequestFullScreen || el.requestFullScreen;
+        fsr.bind(el)()
+      }
+      function update_GN() {
+        msg = document.getElementById("global_note").value;
+        $post("~dev/global-note", {"md":msg}, function(r) {
+          issueSystemInfo("Globale Ankündigung erfolgreich aktualisiert.");
+        })
+      }
+      function insert_note(text) {
+        document.getElementById("global_note").value = text;
+      }
+      function update_ON() {
+        msg = document.getElementById("off_note").value;
+        $post("~dev/offline-note", {"md":msg}, function(r) {
+          issueSystemInfo("Offline-Meldung erfolgreich aktualisiert.");
+        })
+      }
+      function toggle_off(el) {
+        $post("~dev/offline", {}, function(r) {
+          r = JSON.parse(r);
+          if(r) {
+            el.innerHTML = "Webseite offline &ndash; Zugriff erlauben";
+            el.classList.remove("accept-btn");
+            el.classList.add("danger-btn");
+          } else {
+            el.innerHTML = "Webseite online &ndash; Zugriff sperren";
+            el.classList.add("accept-btn");
+            el.classList.remove("danger-btn");
+          }
+        })
+      }
+      function toggle_beta() {
+        $post("~dev/beta", {}, function(r) {
+          this.checked = JSON.parse(r)
+        })
+      }
+      function new_beta_token() {
+        $post("~dev/new-beta-token", {}, function(r) {
+          document.getElementById("beta_token").innerHTML = r;
+          document.getElementById("beta_token_url").setAttribute("href", "/beta?access="+r);
+          issueSystemWarning("Vergessen Sie nicht, allen zum Zugriff Berechtigten, den neuen Link zuzusenden.");
+        })
+      }
+    </script>
+{% endblock %}

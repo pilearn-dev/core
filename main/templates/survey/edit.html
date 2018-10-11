@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block body %}
+  <link rel="stylesheet" href="/static/ps/polyskript.css">
+<nav class="coursenav">
+  {% if forum.id == 0 %}
+      <h2>globales Forum</h2>
+      <p>für alle Fragen zu &pi;-Learn selber und für Fehlermeldungen oder Verbesserungsideen</p>
+  {% else %}
+    {% set topic = forum.getTopic() %}
+    <h2>{{ forum.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
+    {{ forum.getByLine()|markdown }}
+    <ul>
+      <li><a href="/c/{{ forum.id }}/info">Informationen</a></li>
+      <li><a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/start">Kursinhalte</a></li>
+      <li><a href="/f/{{ forum.id }}">Kursforum</a></li>
+    </ul>
+    <div style="height:10px"></div>
+  {% endif %}
+  {% if user.isDev() or survey.getDetail("survey_owner") == user.id %}
+  <ul class="subnav">
+    <li><a href="/sv/{{ survey.id }}/show">Anzeige</a></li>
+    <li class="active"><a href="#!">Bearbeiten</a></li>
+    <li><a href="/sv/{{ survey.id }}/results">Ergebnisse</a></li>
+  </ul>
+  {% endif %}
+</nav>&nbsp;<br>
+<button class="primary-btn" onclick="save()">Speichern</button> <a href="/sv/{{ survey.id }}/show">Abbrechen</a>
+<hr>
+<h1><input class="inline" id="title" value="{{ survey.getTitle() }}"></h1>
+<p>Zustand der Umfrage
+<select id="state">
+  <option value="0"{% if survey.getDetail("state") == 0 %} selected{% endif %}>noch nicht freigeschaltet</option>
+  <option value="1"{% if survey.getDetail("state") == 1 %} selected{% endif %}>kann beantwortet werden</option>
+  <option value="2"{% if survey.getDetail("state") == 2 %} selected{% endif %}>abgeschlossen (nicht mehr beantwortbar)</option>
+</select></p>
+<div id="polyskript-master" class="polyskript">
+  <div class="preview">
+  </div>
+</div>
+<a href="#!" onclick="prompt('Der Quelltext dieser Umfrage ist: ', JSON.stringify(ps.data));">Exportieren</a> &ndash; <a href="#!" onclick="x=JSON.parse(prompt('Bitte Quelltext einfügen: ', '{}'));if(x) {ps.data=x;ps._update()}">Importieren</a>
+<script src="/static/ps/model-survey.js" charset="utf-8"></script>
+<script src="/static/ps/polyskript.js" charset="utf-8"></script>
+<script>
+ ps = new Polyskript({{ survey.getContent()|tojson }});
+ ps.show()
+ function save() {
+     $post("sv/{{ survey.id }}/edit", {
+         "title": document.getElementById("title").value,
+         "content": JSON.stringify(ps.data),
+         "state": document.getElementById("state").value
+     }, function() {
+         alert("Umfrage wurde erfolgreich aktualisiert.");
+     })
+ }
+ </script>
+{% endblock %}

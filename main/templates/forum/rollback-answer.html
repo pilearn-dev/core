@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block body %}
+    <link rel="stylesheet" href="/static/css/simplemde.min.css">
+    <script src="/static/js/simplemde.min.js"></script>
+    <script src="/static/js/_tags.js"></script>
+
+    <nav class="coursenav">
+      {% if forum.id == 0 %}
+          <h2>globales Forum</h2>
+          <p>für alle Fragen zu &pi;-Learn selber und für Fehlermeldungen oder Verbesserungsideen</p>
+      {% else %}
+        {% set topic = forum.getTopic() %}
+        <h2>{{ forum.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
+        {{ forum.getByLine()|markdown }}
+        <ul>
+          <li><a href="/c/{{ forum.id }}/info">Informationen</a></li>
+          <li><a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/start">Kursinhalte</a></li>
+          <li class="active"><a href="/f/{{ forum.id }}">Kursforum</a></li>
+        </ul>
+      {% endif %}
+    </nav>
+
+    <h2>Beitragsversion wiederherstellen</h2>
+
+    <p>Du bist gerade dabei, diesen Beitrag auf eine vorherige Version zurückzusetzen.</p>
+
+    <form action="" method="post">
+        <label for>
+            Inhalt des Forumposts
+        </label>
+        <blockquote>
+          {{ rev.content|markdown }}
+        </blockquote>
+        <label for="qcomment">Kommentar zur Wiederherstellung:</label>
+        <input id="qcomment" name="comment"></input>
+        <button type="submit" id="sbmbtn" class="warn-btn">Wiederherstellen</button>&nbsp;<a href="/f/{{ forum.id }}/{{ article.id }}">Abbrechen</a>
+    </form>
+
+
+{% endblock %}

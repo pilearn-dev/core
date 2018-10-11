@@ -1,0 +1,137 @@
+{% from "makros.html" import user_card, forum_close_dialog %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="vSvlVOqzIXqIPAJHn1n2sHTbfLF-7TipRxK_T4jokls" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>&pi;-Learn &ndash; {{ title|safe }}</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="stylesheet" href="/static/fa/css/font-awesome.min.css">
+</head>
+<body class="loading">
+  <header>
+      <div class="centered">
+          <nav class="only-on-mobile">
+            <ul>
+              <li class="keep-on-mobile no-fix-or-fill border-right"><a href="#!" onclick="document.getElementById('side-nav').classList.toggle('hidden');"><i class="fa fa-bars fa-large fa-small" aria-hidden="true"></i></a></li>
+            </ul>
+          </nav>
+          <h1>&pi;-Learn</h1>
+          <nav>
+              <ul {% if user.may("forum_reviewEdits") or user.may("course_reviewEdits") %} class="is5" {% endif %}>
+                  <li{% if thispage == "index" %} class="active" {% endif %}><a href="/">Startseite</a></li>
+                  <li{% if thispage == "forum" %} class="active" {% endif %}><a href="/f/0">Forum</a></li>
+                  <li{% if thispage == "course" %} class="active" {% endif %}><a href="/courses">Kurse</a></li>
+                  {% if user.may("forum_reviewEdits") or user.may("course_reviewEdits") %}
+                      <li{% if thispage == "review" %} class="active" {% endif %}><a href="/review">Moderation</a></li>
+                  {% endif %}
+                  <li{% if thispage == "help" %} class="active" {% endif %}><a href="/help">Hilfe</a></li>
+                  {% if user.isLoggedIn() %}
+                    {% if user.isMod() %}
+                      <li class="no-fill keep-on-mobile"><a href="/tools"><i class="fa fa-bolt fa-large fa-small" aria-hidden="true"></i></a></li>
+                    {% endif %}
+                    {% set notificationCount = g.countNotifications(user_messages) %}
+                    {% if notificationCount > 0 %}
+                      <li class="no-fix-or-fill keep-on-mobile"><a id="notification-trigger" class="has-subitem nav-cta" href="#!"><i class="fa fa-exclamation-circle fa-small" aria-hidden="true"></i><span class="some-messages">{{ notificationCount }}</span></a></li>
+                    {% else %}
+                      <li class="no-fix-or-fill keep-on-mobile"><a id="notification-trigger" href="#!" class="nav-cta"><i class="fa fa-exclamation-circle fa-small" aria-hidden="true"></i></a></li>
+                    {% endif %}
+                    {% set delta = user.getRepDelta() %}
+                    {% if delta > 0 %}
+                      <li class="no-fix-or-fill keep-on-mobile"><a id="repscreen-trigger" class="has-subitem nav-cta" href="#!"><i class="fa fa-trophy fa-small" aria-hidden="true"></i><span class="positive-change">+{{ num2suff(delta) }}</span></a></li>
+                    {% elif delta < 0 %}
+                      <li class="no-fix-or-fill keep-on-mobile"><a id="repscreen-trigger" class="has-subitem nav-cta" href="#!"><i class="fa fa-trophy fa-small" aria-hidden="true"></i><span class="negative-change">{{ num2suff(delta) }}</span></a></li>
+                    {% else %}
+                      <li class="no-fix-or-fill keep-on-mobile"><a id="repscreen-trigger" href="#!" class="nav-cta"><i class="fa fa-trophy fa-small" aria-hidden="true"></i></a></li>
+                    {% endif %}
+                  {% endif %}
+              </ul>
+          </nav>
+          {% if user.isLoggedIn() %}
+          <div class="user">
+              <i class="fa fa-user" aria-hidden="true"></i>
+              <a href="/u/{{ user.id }}">{{ user.getHTMLName()|safe }}</a>
+              <a href="/logout">Abmelden</a>
+          </div>
+          {% else %}
+          <div class="user">
+              <i class="fa fa-user" aria-hidden="true"></i>
+              <a href="/login" class="login-button"><button>Anmelden</button></a>
+          </div>
+          <div class="user only-on-mobile"><a href="/login" class="login-button">Anmelden</a></div>
+          {% endif %}
+      </div>
+  </header>
+  <nav class="side-nav hidden" id="side-nav">
+    <ul {% if user.may("forum_reviewEdits") or user.may("course_reviewEdits") %} class="is5" {% endif %}>
+        <li{% if thispage == "index" %} class="active" {% endif %}><a href="/">Startseite</a></li>
+        <li{% if thispage == "forum" %} class="active" {% endif %}><a href="/f/0">Forum</a></li>
+        <li{% if thispage == "course" %} class="active" {% endif %}><a href="/courses">Kurse</a></li>
+        {% if user.may("forum_reviewEdits") or user.may("course_reviewEdits") %}
+            <li{% if thispage == "review" %} class="active" {% endif %}><a href="/review">Moderation</a></li>
+        {% endif %}
+        <li{% if thispage == "help" %} class="active" {% endif %}><a href="/help">Hilfe</a></li>
+    </ul>
+    {% if user.isLoggedIn() %}
+    <div class="user">
+        <i class="fa fa-user" aria-hidden="true"></i>
+        <a href="/u/{{ user.id }}">{{ user.getHTMLName()|safe }}</a>
+        <a href="/logout">Abmelden</a>
+    </div>
+    {% endif %}
+  </nav>
+    {% if user.isDisabled() %}
+        <div class="ban-message">
+            <div class="ban-center">
+                Du wurdest <strong>{{ user.getBanReason() }}</strong> gesperrt.
+                <a href="/help/users/banned">Mehr Informationen</a>
+            </div>
+        </div>
+    {% endif %}
+    {% if site_label %}
+    <div class="label-bar">
+      <div class="centered">
+        <h1>{{ site_label|safe }}</h1>
+      </div>
+    </div>
+    {% endif %}
+    {% if not user.isLoggedIn() and not request.cookies.get("hide-hero-login-request", False) %}
+        <div class="hero">
+            <div class="hero-center">
+              <a class="hero-close" href="#!" onclick="K=this;$post('hide-hero', {'hero':'login-request'}, function(){K.parentNode.style.display='none';})">&times;</a>
+                Du willst auch mitmachen und dein Wissen teilen? <a href="/login">Melde dich an!</a>
+            </div>
+        </div>
+    {% endif %}
+<div id="notification-area" class="nav-overlay"></div>
+<div id="repscreen-area" class="nav-overlay"></div>
+ {% if global_notification != "" %}
+    {% for subnote in global_notification.split("\n_____\n") %}
+        <div class="global-note">
+            <div class="note-center no-p">
+                {{ subnote|markdown }}
+            </div>
+        </div>
+    {% endfor %}
+    {% endif %}
+    <main>
+        {% block body %}{% endblock %}
+    </main>
+    <footer>
+        <div class="centered">
+            <p>&copy; 2018 Paul. Twitter: <a href="//twitter.com/pi_learn/">@pi_learn</a><!-- &pi; Learning and Knowledge Sharing Foundation --></p>
+            <p>&pi;-Learn Software Version <code>{{ __version__ }}</code></p>
+            <p>Alle Inhalte sind unter der Creative-Commons-Lizenz <b><a href="/help/cc-license">CC-BY-SA-NC</a></b> verfügbar.</p>
+        </div>
+    </footer>
+    <script src="/static/js/stdlib.js"></script>
+    <script>
+        NOTIFICATIONS = {{ user_messages|tojson }};
+    </script>
+    <script src="/static/js/notifications.js"></script>
+    <script src="/static/js/repscreen.js"></script>
+</body>
+</html>

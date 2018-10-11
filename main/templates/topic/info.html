@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if not data.isGiveable() %}
+<div class="error">
+    <h3>Dieses Thema wird <strong>nicht mehr unterstützt.</strong></h3>
+    <p>Dieses Thema war nicht aktiv genug und wird daher nicht mehr unterstützt.</p>
+    <p>Es können keine weiteren Kurse zu diesem Thema eingereicht werden, bereits erstellte Kurse bleiben jedoch erhalten.</p>
+</div>
+{% endif %}
+ <nav class="coursenav">
+   <h2><i>Thema:</i> {{data.getTitle()}}</h2>
+   <p>{{data.getExcerpt()}}</p>
+   <ul class="subnav">
+     <li class="active"><a href="#!">Informationen</a></li>
+     <li class=""><a href="./courses">Kurse</a></li>
+     {% if user.isAdmin() %}
+       <li class=""><a href="./edit">Bearbeiten</a></li>
+     {% endif %}
+     <form action="/course/search" method="get"><li class="input"><input class="inline" placeholder="Kurse durchsuchen" name="title"><input name="topic" type="hidden" value="{{ data.id }}"><button><span class="fa fa-search"></span></button></li></form>
+   </ul>
+</nav>
+{{data.getDescription()|markdown}}
+{% endblock %}

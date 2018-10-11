@@ -1,0 +1,109 @@
+{% extends "layout.html" %}
+{% block body %}
+    <nav class="coursenav">
+      {% if forum.id == 0 %}
+          <h2>globales Forum</h2>
+          <p>für alle Fragen zu &pi;-Learn selber und für Fehlermeldungen oder Verbesserungsideen</p>
+      {% else %}
+        {% set topic = forum.getTopic() %}
+        <h2>{{ forum.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
+        {{ forum.getByLine()|markdown }}
+        <ul>
+          <li><a href="/c/{{ forum.id }}/info">Informationen</a></li>
+          <li><a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/start">Kursinhalte</a></li>
+          <li class="active"><a href="/f/{{ forum.id }}">Kursforum</a></li>
+        </ul>
+      {% endif %}
+    </nav>
+    <div class="filterbar">
+      <input type="checkbox" class="filterbar-toggle" id="filterbar-toggle">
+      <div class="small-toggle"><span class="filter-small-heading">Suchen</span><label for="filterbar-toggle"><i class="fa fa-caret-down"></i></label></div>
+      <form action="" method="get" class="filter-area">
+        <div class="filter-criterium with-input">
+          <label for="query">Titel:</label>
+          <input type="search" name="query" id="query" value="{{ request.values.get("query", "") }}">
+        </div>
+        {#<div class="filter-criterium">
+          <label for="state">Zustand</label>
+          <select name="state" id="state">
+            <option{% if request.values.get("state", "all") == "all" %} selected{% endif %} value="all">alle</option>
+            <option{% if request.values.get("state", "all") == "open" %} selected{% endif %} value="open">offen</option>
+            <option{% if request.values.get("state", "all") == "closed" %} selected{% endif %} value="closed">geschlossen</option>
+            <option{% if request.values.get("state", "all") == "deleted" %} selected{% endif %} value="deleted">gelöscht</option>
+          </select>
+        </div>
+        <div class="filter-criterium">
+          <label for="answered">Beantwortet</label>
+          <select name="answered" id="answered">
+            <option{% if request.values.get("answered", "all") == "all" %} selected{% endif %} value="all">alle</option>
+            <option{% if request.values.get("answered", "all") == "yes" %} selected{% endif %} value="yes">ja</option>
+            <option{% if request.values.get("answered", "all") == "no" %} selected{% endif %} value="no">nein</option>
+          </select>
+        </div>#}
+        <div class="filter-criterium">
+          <label for="sort">Sortierung</label>
+          <select name="sort" id="sort">
+            <option{% if request.values.get("sort", "active") == "latest" %} selected{% endif %} value="latest">Neuste</option>
+            <option{% if request.values.get("sort", "active") == "active" %} selected{% endif %} value="active">Aktivität</option>
+            <option{% if request.values.get("sort", "active") == "score" %} selected{% endif %} value="score">Bewertung</option>
+          </select>
+        </div>
+        <div class="filter-button">
+          <button type="submit" class="primary-btn"><i class="fa fa-search"></i></button>
+        </div>
+      </form>
+    </div>
+    {% if user.isLoggedIn() and user.isEnabled() %}
+    <div style="float: right; padding: .5em;"><a href="/f/{{ forum.id }}/new"><button class="block-btn big-btn primary-btn">Eine Frage stellen</button></a></div>
+    <div style="clear: both;"></div>
+    {% endif %}
+    <div class="forum-article-list">
+        {% for article in forum.getArticles(search, request.values.get("sort", "active")) %}
+            {% if article.mayBeSeen(user) %}
+                <div class="forum-article-item {% if article.isPinned() %}pinned{% endif %} {% if article.isDeleted() %}deleted-section{% endif %} bordered">
+                    {% if not article.isDestroyed() %}
+                    <div class="left-area">
+                        <div class="answer-block{% if article.accepted_answer %} is-answer-accepted {% endif %}">
+                            {% if article.hasAccepted() %}
+                                <span><i class="fa fa-check-circle is-answered" aria-hidden="true"></i></span>
+                            {% else %}
+                                <span class="is-not-answered">&nbsp;</span>
+                            {% endif %}
+                            <span class="answer-num">{{ article.getScore() }}</span>
+                        </div>
+                        {% if article.getAward() != 0 %}
+                            <div class="award" title="Dieser Beitrag hat eine offene Belohnung in Höhe von {{ article.getAward() }} Reputationspunkten.">+{{ article.getAward() }}</div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    <div class="right-area">
+                        <h3 class="no-highlight"><a href="/forum/{{ forum.id }}/{{ forum.getDetail("label") }}/article/{{ article.id }}/{{ article.getLabel() }}">{{ article.getHTMLTitle()|safe }}</a></h3>
+                        {% if not article.isDestroyed() %}
+                            <p>{{ article.getTeaser()|markdown|striptags }}</p>
+                            <div class="alignment-right">
+                                {% if article.getDetail("author") != -1 %}
+                                {{ user_card(article.getAuthor()) }}
+                                {% else %}
+                                <strong class="tiny" style="border: 1px solid #aaa; width: 230px; padding: 5px; align-self: center;">Wiki</strong>
+                                {% endif %}
+                                <div style="flex-grow: 1; margin-top: 10px;">
+                                    Tags:
+                                    {% for tag in article.getTags() %}
+                                        {% if tag in moderator_tags %}
+                                            <span class='tag moderator-tag'>{{ tag }}</span>
+                                        {% else %}
+                                            <span class='tag'>{{ tag }}</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            <h2>Hier gibt es (noch) nichts zu sehen</h2>
+            <p>Es wurden bisher noch keine Beiträge in diesem Forum geschrieben.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

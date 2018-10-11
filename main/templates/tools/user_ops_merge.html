@@ -1,0 +1,52 @@
+{% from "tools/_macro.html" import tools__nav %}
+{% extends "layout.html" %}
+{% block body %}
+    {{ tools__nav("user", user) }}
+    <h2>Werkzeuge &ndash; neuste Kurse</h2>
+    <div class="split-screen">
+      <aside>
+        <ol>
+          <li><a href="/tools/user/flags">Meldungen</a></li>
+          <li><a href="/tools/user/search">Suche</a></li>
+        </ol>
+      </aside>
+      <main>
+        <h3><a href="?">AdminOps für {{ data.getDetail("realname") }}</a> &ndash; Benutzer weiterleiten</h3>
+        <div class="error">
+          <h3>Achtung!</h3>
+          <p>Du bist dabei, dieses Konto auf ein anderes weiterleiten zu lassen. (merge-request)</p>
+          <ul>
+            <li>Diese Änderung muss vorsichtig bedacht werden. Bitte nur eine Weiterleitung einrichten, wenn die Zugehörigkeit <strong>absolut sicher</strong> ist.</li>
+            <li>Dieses Konto ist das Weiterleitungs-Konto, das andere das Master-Konto.</li>
+            <li>Die Anfrage wird fehlschlagen, wenn das Master-Konto selber eine Weiterleitung hat.</li>
+          </ul>
+          {% if error %}
+          <strong>EIN FEHLER IST AUFGETRETEN. DIE ANFRAGE IST FEHLGESCHLAGEN. BITTE NICHT WIEDERHOLEN!</strong>
+          {% endif %}
+        </div>
+        <p>Warum willst du diese Weiterleitung einrichten? Bsp.: <em>Benutzer hat dies beantragt und Zugriff auf beide Konten nachgewiesen.</em></p>
+        <input id="reason">
+        <p>Auf welches Benutzerkonto soll dieser Benutzer weiterleiten? (Benutzer-ID)</p>
+        <input type="number" id="other_id" min="1">
+        &nbsp;<br>
+        <button id="ban_reason_do" class="danger-btn">Weiterleitung einrichten &raquo;</button>
+        <script>
+          document.getElementById("ban_reason_do").addEventListener("click", function() {
+            id = parseInt(document.querySelector("#other_id").value);
+            reason = document.querySelector("#reason").value
+            $post("tools/user/ops/{{ data.id }}?action=merge", {"otherid": id, "reason": reason}, function (e) {
+              window.location.href = "?";
+            })
+          })
+        </script>
+      </main>
+    </div>
+    <style media="screen">
+      .duration {
+        font-size: 0.85em;
+        margin: 0 3px;
+        display: inline-block;
+        color: #aa6;
+      }
+    </style>
+{% endblock %}

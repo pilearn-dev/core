@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+{% block body %}
+  <script src="/static/js/systemerror.js"></script>
+    <div class="review-screen">
+        <div class="review-info-panel">
+            <h3>Moderation</h3>
+        </div>
+        {% if not is_completed %}
+        <div class="review-action-panel">
+            <a href="#!" onclick="$post('flags/{{ queue }}/{{ item.id }}/complete', {}, function(resp){window.location.replace(resp);});"><button class="primary-btn"><i class="fa fa-check"></i><span class="review-text"> Ich bin fertig</span></button></a>
+        </div>
+        {% endif %}
+        <div class="review-content-panel">
+            <div class="review-content">
+              <h3>Alle Meldungen bei diesem Element</h3>
+              {% set elem = creation_funcs[item.item_type](item.item_id) %}
+              <div class="flag-overview">
+              {% for f in flags %}
+                <div class="single-flag">
+                    <div class="first-line">
+                      <div style="width: 25px; min-width: 25px; max-width: 25px; align-self: flex-start;">{% if f.state == 0 %}
+                        <div class="flag-outcome pending"></div>
+                      {% elif f.state == -2 %}
+                        <div class="flag-outcome declined"></div>
+                      {% elif f.state == 1 %}
+                        <div class="flag-outcome helpful"></div>
+                      {% elif f.state == -1 %}
+                        <div class="flag-outcome disputed"></div>
+                      {% endif %}</div>
+                      <div style="flex-grow:1; padding: 1px 3px;" class="alpha">{{ f.comment|markdown }}</div>
+                      <a href="/u/{{ f.flagger_id }}">{{ user.from_id(f.flagger_id).getHTMLName()|safe }}</a>
+                      {% if f.state == 0 %}
+                      &nbsp;
+                      <div style="align-self: flex-start; display: flex;">
+                        <a href="#!" onclick="$post('flags/{{ queue }}/{{ item.id }}/act', {'id':{{ f.id }}, 'state': 1}, function(resp){if(resp == '{ok}'){window.location.reload();}else{issueSystemError(resp)}});" class="flag-successful">hilfreich</a>&nbsp;<a href="#!" onclick="$post('flags/{{ queue }}/{{ item.id }}/act', {'id':{{ f.id }}, 'state': -2}, function(resp){if(resp == '{ok}'){window.location.reload();}else{issueSystemError(resp)}});" class="flag-denied">unhilfreich</a>
+                      </div>
+                      {% endif %}
+                    </div>
+                </div>
+              {% endfor %}
+              </div>
+              <h3>Element</h3>
+              {% if item.item_type == "forum.question" %}
+              {% set forum = creation_funcs["forum"](elem.getDetail("forumID")) %}
+              <h2 style="font-weight: normal;"><a href="/forum/{{ elem.getDetail("forumID") }}/from-review/article/{{ elem.id }}/{{ elem.getLabel() }}">{{ elem.getHTMLTitle()|safe }}</a></h2>
+                {% if elem.isDeleted() %}
+                    <div class="post-warning">
+                        {{ elem.getDeleteMessage()|markdown }}
+                    </div>
+                {% endif %}
+                {% if elem.isClosed() %}
+                    <div class="post-warning">
+                      {{ elem.getClosureWarning()|markdown }}
+                    </div>
+                {% endif %}
+                {% from "forum/item.html" import forum_item with context %}
+                {{ forum_item(elem, "post") }}
+                {% elif item.item_type == "user" %}
+                {% if elem.isDeleted() %}
+                <div class="deleted-section">
+                    <div class="user-warning">
+                      <p>Dieser Benutzeraccount wurde gelöscht.</p>
+                    </div>
+                {% elif elem.isDisabled() %}
+                  <div class="user-warning">{% set end=elem.getBanEnd(True) %}
+                      <p>Dieser Benutzer wurde <strong>{{ elem.getBanReason() }}</strong> bis <span title="{{ end[1] }}">{{ end[2] }}</span> <a href="/help/users/banned">gesperrt.</a></p>
+                    </div>
+                {% endif %}
+                <h2 style="font-weight: normal;"><a href="/u/{{ elem.id }}">{{ elem.getHTMLName()|safe }}</a></h2>
+                <div class="flexible-table">
+                  <table border="1">
+                      <tr>
+                          <th>Benutzername</th>
+                          <td style="width: 100%;" id="name">{{ elem.getDetail("name") }}</td>
+                      </tr>
+                      <tr>
+                          <th>Anzeigename</th>
+                          <td style="width: 100%;" id="name">{{ elem.getDetail("realname") }}</td>
+                      </tr>
+                      <tr>
+                          <th>Reputation</th>
+                          <td style="width: 100%;" id="name">{{ elem.getDetail("reputation") }}</td>
+                      </tr>
+                  </table>
+                  <ul>
+                    <li><a href="/u/{{ elem.id }}">Profil</a></li>
+                    <li><a href="/u/{{ elem.id }}/flags">Meldungen</a></li>
+                    <li><a href="/u/{{ elem.id }}/rep">Reputation</a></li>
+                    <li><a href="/u/{{ elem.id }}/annot">Anmerkungen</a></li>
+                    <li><a href="/u/{{ elem.id }}/del">Löschen</a></li>
+                  </ul>
+                  {% if elem.isDeleted() %}
+                </div>
+                  {% endif %}
+              {% endif %}
+            </div>
+        </div>
+    </div>
+    <style>.alpha p {
+      margin: 1px 0;
+    }</style>
+{% endblock %}

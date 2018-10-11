@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h2 class="bigheading">Hilfethemen</h2>
+    <div class="pentagon">
+      {% for cat in help_cat.getAll() if cat.isActive() or user.isAdmin() %}
+      <div class="pent-item no-p {% if not cat.isActive() %} deleted-section {% endif %}">
+        <h2><i class="fa fa-fw {{ cat.getIcon() }}"></i> <a href="/help/category:{{ cat.getUrlPart() }}">{{ cat.getTitle() }}</a></h2>
+        <p>{{ cat.getExcerpt() }}</p>
+        <ul class="help-list">
+          {% for hdoc in cat.getHomepage() %}
+            {% if hdoc.isPinned() %}
+              <li class="pinned"><a href="/help/{{ hdoc.getUrl() }}">{{ hdoc.getTitle() }}</a></li>
+            {% else %}
+              <li><a href="/help/{{ hdoc.getUrl() }}">{{ hdoc.getTitle() }}</a></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+    <p>Wenn deine Frage bisher im Hilfezentrum noch nicht beantwortet wurde, kannst du sie entweder im <a href="/f/0">globalen Forum</a> stellen, auf <a href="/u/{{ user.id }}">deiner Benutzerprofilseite</a> einen Administratoren kontaktieren oder das <a href="/helpdesk">Helpdesk</a> nutzen, um mit uns in Kontakt zu treten.</p>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if user.isMod() %}
+<div class="tabination">
+  <ul>
+    <li><a href="/review">Listen</a></li>
+    <li class="active"><a href="#!">Meldungen{% if hasLargeModTraffic %} (*){% endif %}</a></li>
+    {% if user.isDev() %}
+    <li><a href="/data">Daten</a></li>
+    {% endif %}
+  </ul>
+</div>
+{% endif %}
+<h2 class="bigheading">Moderation</h2>
+<p>Im Folgenden werden alle Meldungen wegen <em>Anderes</em> angezeigt.</p>
+<div class="split-screen">
+  <aside>
+    <div style="position: sticky; top: 10px;">
+      <h3>Überblick</h3>
+      {% if user.isAdmin() %}
+      <ol>
+        <li class="visited"><a href="?mod=all&admin=all">Alle anzeigen</a></li>
+        <li class="visited"><a href="?mod=pending&admin=pending">Nur offene</a></li>
+      </ol>
+      <h4>Moderatoren-Meldungen</h4>
+      {% endif %}
+      <ol>
+        <li class="visited"><a href="?mod=all&admin=none#mod-flags">Alle anzeigen</a></li>
+        <li class="visited"><a href="?mod=done&admin=none#mod-flags">Nur erledigte</a></li>
+        <li class="visited"><a href="?mod=pending&admin=none#mod-flags">Nur offene</a></li>
+      </ol>
+      {% if user.isAdmin() %}
+      <h4>Administrator-Meldungen</h4>
+      <ol>
+        <li class="visited"><a href="?mod=none&admin=all#admin-flags">Alle anzeigen</a></li>
+        <li class="visited"><a href="?mod=none&admin=done#admin-flags">Nur erledigte</a></li>
+        <li class="visited"><a href="?mod=none&admin=pending#admin-flags">Nur offene</a></li>
+      </ol>
+      {% endif %}
+    </div>
+  </aside>
+  <main>
+    {% if user.isAdmin() %}
+    <h3 class="highlighted-h3" id="mod-flags">Meldungen für Moderatoren</h3>
+    {% endif %}
+    <div class="flag-overview">
+    {% for f in mod_flags if request.values.get("mod", "all") == "all" or (request.values.get("mod", "all")=="done" and f.state != 0) or (request.values.get("mod", "all")=="pending" and f.state == 0) %}
+      <div class="single-flag">
+          <div class="first-line">
+            {% if f.state == 0 %}
+              <div class="flag-outcome declined"></div>
+            {% elif f.state == 1 %}
+              <div class="flag-outcome pending"></div>
+            {% endif %}
+            {% set item = creation_funcs[f.item_type](f.item_id) %}
+            {% if f.item_type == "forum.question" %}
+            <span class="label">Frage</span>
+            {% set target = item.getHTMLTitle()|safe %}
+              {% if item.isDeleted() %}
+                <div class="target deleted-line {% if target|length > 60 %}very-long{% elif target|length > 35 %}long{% endif %}"><a href="/f/{{ item.getDetail("forumID") }}/{{ item.id }}">{{ target }}</a></div>
+              {% else %}
+                <div class="target {% if target|length > 75 %}very-long{% elif target|length > 40 %}long{% endif %}"><a href="/f/{{ item.getDetail("forumID") }}/{{ item.id }}">{{ target }}</a></div>
+              {% endif %}
+            {% endif %}
+            {% if f.state == 0 %}
+              <a href="/flags/mod/{{ f.id }}"><button class="danger-btn" style="font-size: 0.8em; padding: 2px;">Bearbeiten &raquo;</button></a>
+            {% else %}
+              <a href="/flags/mod/{{ f.id }}"><button style="font-size: 0.8em; padding: 2px;">Ansehen &raquo;</button></a>
+            {% endif %}
+          </div>
+      </div>
+    {% endfor %}
+    </div>
+    {% if user.isAdmin() %}
+    <h3 class="highlighted-h3" id="admin-flags">Meldungen für Administratoren</h3>
+    <div class="flag-overview">
+    {% for f in admin_flags if request.values.get("admin", "all") == "all" or (request.values.get("admin", "all")=="done" and f.state != 0) or (request.values.get("admin", "all")=="pending" and f.state == 0) %}
+      <div class="single-flag">
+          <div class="first-line">
+            {% if f.state == 0 %}
+              <div class="flag-outcome declined"></div>
+            {% elif f.state == 1 %}
+              <div class="flag-outcome pending"></div>
+            {% endif %}
+            {% set item = creation_funcs[f.item_type](f.item_id) %}
+            {% if f.item_type == "user" %}
+            <span class="label">Benutzer</span>
+            {% set target = item.getHTMLName()|safe %}
+              {% if item.isDeleted() %}
+                <div class="target deleted-line"><a href="/u/{{ item.id }}">{{ target }}</a></div>
+              {% else %}
+                <div class="target"><a href="/u/{{ item.id }}">{{ target }}</a></div>
+              {% endif %}
+            {% endif %}
+            {% if f.state == 0 %}
+              <a href="/flags/admin/{{ f.id }}"><button class="danger-btn" style="font-size: 0.8em; padding: 2px;">Bearbeiten &raquo;</button></a>
+            {% else %}
+              <a href="/flags/admin/{{ f.id }}"><button style="font-size: 0.8em; padding: 2px;">Ansehen &raquo;</button></a>
+            {% endif %}
+          </div>
+      </div>
+    {% endfor %}
+    </div>
+    {% endif %}
+  </main>
+</div>
+{% endblock %}

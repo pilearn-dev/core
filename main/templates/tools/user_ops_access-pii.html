@@ -1,0 +1,55 @@
+{% from "tools/_macro.html" import tools__nav %}
+{% extends "layout.html" %}
+{% block body %}
+    {{ tools__nav("user", user) }}
+    <h2>Werkzeuge &ndash; neuste Kurse</h2>
+    <div class="split-screen">
+      <aside>
+        <ol>
+          <li><a href="/tools/user/flags">Meldungen</a></li>
+          <li><a href="/tools/user/search">Suche</a></li>
+        </ol>
+      </aside>
+      <main>
+        <h3><a href="?">AdminOps für {{ data.getDetail("realname") }}</a> &ndash; Private Daten</h3>
+        <p class="warning"><strong>Achtung:</strong> Die folgenden Daten sind privat und dürfen <em>unter keinen Umständen</em> gespeichert, heruntergeladen, veröffentlicht oder verarbeitet werden!</p>
+        {% if show_data %}
+        <p>Über die Wert-Spalte mit dem Mauszeiger gehen, um Wert anzuzeigen.</p>
+        <table class="annotation-table">
+          <tr>
+            <th>Feld</th>
+            <th>Wert</th>
+          </tr>
+          <tr>
+            <th>Anmeldeservice</th>
+            <td class="spoiler"><code>{{ data.getDetail("login_provider") }}</code></td>
+          </tr>
+          <tr>
+            <th>E-Mail-Adresse</th>
+            <td class="spoiler">{{ data.getDetail("email") }}</td>
+          </tr>
+        </table>
+      </main>
+    </div>
+    {% else %}
+    <p>Gib einen Grund für diesen Zugriff ein.</p>
+    <form action="" method="post">
+      <input type="text" name="reason" placeholder="Grund eingeben (min. 15 Zeichen)">
+      <button type="submit">Daten anzeigen</button>
+    </form>
+    {% endif %}
+    <style>
+      .spoiler {
+        opacity: 1;
+        cursor: default;
+        -moz-user-select: none;
+        filter: blur(5px);
+        user-select: none;
+        transition: all 0.5s ease;
+      }
+      .spoiler:hover {
+        opacity: 1;
+        filter: blur(0px);
+      }
+    </style>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if user.isLoggedIn() %}
+    <h2 class="bigheading">Willkommen zurück!</h2>
+    <p>
+        Hallo {{ user.getHTMLName()|safe }}! Willkommen zurück bei &pi;-Learn. Wir haben dich bereits vermisst.
+    </p>
+{% else %}
+    <h2 class="bigheading">Willkommen bei &pi;-Learn!</h2>
+    <p>
+        Bei &pi;-Learn kannst du bei verschiedenen Kursen (Workshops) teilnehmen. Dafür verdienst du dir Reputationspunkte. Je mehr Punkte du hast, desto mehr Berechtigungen hast du. Zum Beispiel kannst du im Forum Posts als hilfreich markieren oder Kurse bewerten oder dann am Ende auch selber Kurse erstellen oder bearbeiten.<br>
+        Auch anonym kannst du Kurse besuchen und in den Foren mitlesen, aber richtig Spaß macht es nur, wenn du dich anmeldest:
+        <a href="/login"><button class="primary-btn block-btn">Ich will Mitmachen</button></a>
+    </p>
+{% endif %}
+    <div class="pentagon">
+      <div class="pent-item">
+        <h2>Wichtig für die Community</h2>
+        {% set pinnedArticles = globalForum.getPinnedArticles() %}
+        {% if pinnedArticles|length > 0 %}
+          {% for article in pinnedArticles %}{% set gac=article.getAnswerCount() %}
+            <div class="forum-inline-article">
+              <div class="fia-score{% if article.hasAccepted() %} has-accepted{% elif gac > 0 %} is-answered{% endif %}" title="Dieser Beitrag hat {{ gac }} Antworten{% if article.hasAccepted() %}, von denen eine akzeptiert wurde{% else %}; es wurde keine akzeptiert{% endif %}. Die Bewertung des Beitrags ist {{ article.getScore() }}.">{{ article.getScore() }}</div>
+              <div class="fia-title"><a href="/f/0/{{ article.id }}">{{ article.getTitle() }}</a></div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p>Im Moment gibt es keine Nachrichten von Relevanz für die ganze Community</p>
+        {% endif %}
+      </div>
+      <div class="pent-item">
+        <h2>Wichtig für dich</h2>
+        {% set pinnedCArticles = globalForum.getCoursePinnedArticles(user) %}
+        {% if pinnedCArticles|length > 0 %}
+          {% for article in pinnedCArticles %}{% set gac=article.getAnswerCount() %}
+            <div class="forum-inline-article">
+              <div class="fia-score{% if article.hasAccepted() %} has-accepted{% elif gac > 0 %} is-answered{% endif %}" title="Dieser Beitrag hat {{ gac }} Antworten{% if article.hasAccepted() %}, von denen eine akzeptiert wurde{% else %}; es wurde keine akzeptiert{% endif %}. Die Bewertung des Beitrags ist {{ article.getScore() }}.">{{ article.getScore() }}</div>
+              <div class="fia-title"><a href="/f/{{article.getDetail("forumID")}}/{{ article.id }}">{{ article.getTitle() }}</a></div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <p>Im Moment gibt es keine Nachrichten von Relevanz für dich</p>
+        {% endif %}
+      </div>
+      <div class="pent-item">
+        <h2>Kursvorschläge</h2>
+        {% set courseProposals = _proposal.getFeatured() %}
+        {% if courseProposals|length > 0 %}
+          {% for proposal in courseProposals %}
+              <div class="forum-inline-article">
+                <div class="fia-score{% if proposal.getPercScore() >= 50 %} is-answered{% endif %}">{{ proposal.getPercScore() }}%</div>
+                <div class="fia-title"><a href="/course/proposal/{{proposal.id}}">{{ proposal.getTitle() }}</a></div>
+              </div>
+          {% endfor %}
+        {% else %}
+          <p>Im Moment gibt es keine aktiven Kursvorschläge</p>
+        {% endif %}
+      </div>
+    </div>
+{% endblock %}

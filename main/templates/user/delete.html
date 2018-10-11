@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+{% block body %}
+<script src="/static/js/systemerror.js"></script>
+{% if data.isDeleted() %}
+<div class="deleted-section">
+    <div class="user-warning">
+      <p>Dieser Benutzeraccount wurde gelöscht.</p>
+    </div>
+{% elif data.isDisabled() %}
+  <div class="user-warning">{% set end=data.getBanEnd(True) %}
+      <p>Dieser Benutzer wurde <strong>{{ data.getBanReason() }}</strong> <span title="{{ end[1] }}">{{ end[2] }}</span> <a href="/help/users/banned">gesperrt.</a></p>
+    </div>
+{% endif %}
+<div class="tabination">
+  <ul>
+    <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}">Profil</a></li>
+    <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/flags">Meldungen</a></li>
+    <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/reputation">Reputation</a></li>
+    {% if user.isAdmin() %}
+    <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/annotations">Anmerkungen</a></li>
+    {% endif %}
+    <li class="active"><a href="#!">Löschen</a></li>
+  </ul>
+</div>
+{% set GRANT_TIME = 10 %}
+<h2>Benutzerkonto löschen</h2>
+{% if user.isAdmin() and user.id != data.id %}
+<div class="text">
+  <p>Konto: {{ data.getHTMLName()|safe }}</p>
+<big>Bitte wähle aus den verschiedenenen Löschoptionen aus:</big>
+<p><button class="danger-btn" onclick="$post('user/{{ data.id }}/deletion', {'type':'admin.delete'}, function(l){if(l!='{ok}'){issueSystemError(l);}else{window.location.reload();}})">Benutzerkonto <strong>löschen</strong></button><br>
+Konto deaktivieren, Anzeigename anonymisieren, Reputation & Profilbild zurücksetzen &ndash; kann wiederhergestellt werden.</p>
+<p><button class="danger-btn" onclick="$post('user/{{ data.id }}/deletion', {'type':'admin.destroy'}, function(l){if(l!='{ok}'){issueSystemError(l);}else{window.location.reload();}})">Benutzerkonto <strong>zerstören</strong></button><br>
+Konto deaktivieren, Anzeigename anonymisieren, Reputation, Ehrenlabels & Profilbild zurücksetzen, Anmeldung sperren &ndash; kann nicht wiederhergestellt werden.</p>
+</div>
+{% else %}
+  {% if session.get("login_time", 0) + GRANT_TIME * 60 > current_time %}
+    {% if data.isDisabled() %}
+      <div class="error"><strong>Achtung:</strong> Du bist zur Zeit gesperrt. Wir empfehlen die Kontolöschung zu diesem Zeitpunkt nicht, du könntest dies später bereuen. Willst du dein Konto wirklich löschen, kontaktiere uns über das <a href="/helpdesk">Helpdesk</a></div>
+    {% else %}
+    <p style="font-weight: bold;">Bevor du dein Konto löschst, bitten wir dich, die genauen Konsequenzen durchzulesen.</p>
+    <p>Es gibt zwei Möglichkeiten, dein Konto zu löschen: <em>Schnelle Löschung</em> und <em>Vollständige Löschung</em></p>
+    <h3>Schnelle Löschung</h3>
+    <ul>
+      <li>Dein Benutzerkonto wird <strong>sofort</strong> deaktiviert. Du kannst dich danach nicht mehr anmelden.</li>
+      <li>Den Anzeigename wird zu <code>b#{{ user.id }}</code> geändert.</li>
+      <li>Deine Beiträge, Meldungen etc. bleiben mit diesem Profil verknüpft.</li>
+      <li>Du kannst dieses Konto später wiederherstellen, indem du ein neues Konto mit genau den gleichen Kontodaten (Benutzername & Passwort) wie dieses anlegst (registrierst).</li>
+    </ul>
+    <h3>Vollständige Löschung</h3>
+    <ul>
+      <li>Dein Benutzerkonto wird <strong>sofort</strong> deaktiviert. Du kannst dich danach nicht mehr anmelden.</li>
+      <li>Den Anzeigename wird dauerhaft zu <code>b#{{ user.id }}</code> geändert.</li>
+      <li>Du kannst dieses Konto später <strong>nicht wiederherstellen</strong></li>
+      <li>Dein <em>Über-mich-Text</em> und deine E-Mail-Adresse werden gelöscht.</li>
+    </ul>
+    <p>Bitte wähle einen Löschtyp und gebe <code>~sicher~</code>(<code>TILDE-S-I-C-H-E-R-TILDE</code>) in das Eingabefeld ein.</p>
+    <div id="deltype">
+      <label for="deltype-fast"><input id="deltype-fast" name="deltype" type="radio" value="fast"> schnelle Löschung</label>
+      <label for="deltype-full"><input id="deltype-full" name="deltype" type="radio" value="full"> vollständge Löschung</label>
+    </div>
+    <input id="safecode" placeholder="sicher">
+    <button class="danger-btn" id="submitbtn">Löschen!</button>
+    <script>
+      document.getElementById("submitbtn").onclick = function () {
+        if(document.getElementById("safecode").value != "~sicher~") {
+          issueSystemError("Sicherheitscode nicht korrekt eingegeben.")
+          return;
+        }
+        type = document.querySelector("#deltype [name='deltype']:checked");
+        if(!type){
+          issueSystemError("Keinen Löschtyp ausgewählt");
+          return;
+        }
+        $post("user/{{ user.id }}/deletion", {"type": type.value}, function(l){if(l!='{ok}'){issueSystemError(l);}else{window.location.reload();}})
+      }
+    </script>
+    {% endif %}
+  {% else %}
+    <div class="error"><strong>Warnung:</strong> Das Benutzerkonto kann zur Zeit nicht gelöscht werden. Bitte melden Sie sich ab und wieder an und versuchen Sie es dann erneut.
+  {% endif %}
+{% endif %}
+{% if data.isDeleted() %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Ta:ngo - {{ title|safe }}</title>
+    <link rel="stylesheet" href="/static/base.css">
+    <script src="/static/casablanca.js" charset="utf-8"></script>
+  </head>
+  <body>
+      <h1 class="header-brand"><a href="/">Ta:ngo</a></h1>
+      <div class="header-user-data">
+        {% if logged_in %}
+          <a href="/member/me">{{ user.getHTMLName()|safe }}</a><div class="header-bar"></div><a href="/logoff">abmelden</a>
+        {% endif %}
+      </div>
+      <h2 class="platform-brand"><a href="/">{{ platform_title|default("") }}</a></h2>
+      <div class="platform-nav">
+        <a href="/member/list">Mitglieder</a>
+        <a href="/mask/list">Masken</a>
+        {% if features.events %}<a href="/events/list">Ereignisse</a>{% endif %}
+        {% if features.wiki %}<a href="/wiki/start">Wiki</a>{% endif %}
+        <a href="/config">Einstellungen</a>
+      </div>
+      <!--<div class="system-banner alert alert-warning">Diese Programmversion ist <strong>nicht mehr aktuell</strong>. Bitte installieren Sie in näherer Zeit eine neuere Version.</div>
+      <div class="system-banner alert alert-error">Diese Programmversion ist <strong>nicht mehr aktuell</strong>. Bitte installieren Sie <strong>aus Sicherheitsgründen</strong>, <strong>schnellstmöglich</strong> eine neuere Version.</div>-->
+      <h3 class="left-nav-heading">{% block left_nav_heading %}{% endblock %}</h3>
+      <h3 class="right-body-heading">{% block body_heading %}{% endblock %}</h3>
+      <aside class="left-nav">
+        {% block left_nav %}{% endblock %}
+      </aside>
+      <main class="right-body">
+        {% block body %}{% endblock %}
+      </main>
+      {% block site_script %}{% endblock %}
+  </body>
+</html>

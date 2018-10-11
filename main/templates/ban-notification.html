@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="httperror">{% set end=data.getBanEnd(True) %}
+  <div>
+    <h1 style="margin: 0;">Du wurdest gesperrt!</h1>
+    <p>Hallo {{ data.getHTMLName()|safe }},</p>
+    <p>dein Benutzerkonto {{ data.getBanReason() }} <strong>gesperrt</strong>:</p>
+    <div style="padding: 20px; box-shadow: 0 0 3px #aaa; background-color: white; border: 1px solid #ddd">{{ templ.getTemplate("ban."+data.getDetail("ban_reason"))|markdown }}</div>
+    <p>Möchtest du gegen diese Sperrung Einspruch einlegen, schreibe eine E-Mail an <a href="mailto:3.1415learn@gmail.com">uns</a>.</p>
+    <p><span title="{{ end[1] }}">{{ end[2][0].upper() }}{{ end[2][1:] }}</span> darfst du dich daher nicht anmelden.</p>
+    <a href="/"><button class="danger-btn">Zur Startseite</button></a>
+  </div>
+</div>
+{% endblock %}

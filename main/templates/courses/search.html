@@ -1,0 +1,97 @@
+{% extends "layout.html" %}
+{% block body %}
+<link rel="stylesheet" href="/static/css/simplemde.min.css">
+<script src="/static/js/simplemde.min.js"></script>
+<div class="tabination">
+  <ul>
+    <li><a href="/courses">Übersicht</a></li>
+    <li class="active"><a href="/course/search">Suchen</a></li>
+    <li><a href="/topics">Themen</a></li>
+    <li><a href="/course/propose">Vorschlagen</a></li>
+  </ul>
+</div>
+    <h2>Kurse durchsuchen</h2>
+    <form action="" method="get">
+      <label for="title_search">Kurstitel:</label>
+      <input name="title" id="title_search"{% if request.values.get("title", False) %} value="{{ request.values.get("title", False) }}"{% endif %}>
+      <details>
+        <summary>Erweiterte Optionen</summary>
+        <label for="shortdesc_search">Kurzbeschreibung:</label>
+        <input name="shortdesc" id="shortdesc_search"{% if request.values.get("shortdesc", False) %} value="{{ request.values.get("shortdesc", False) }}"{% endif %}>
+        <b>Thema des Kurses</b>
+        <label class="sublabel" for="topic-___all"><input type="radio" value="all" name="topic" id="topic-___all"{% if request.values.get("topic", "all")=="all" %} checked{% endif %}> alle Themen</label>
+        {% for t in topic.getAll() %}
+        <label class="sublabel" for="topic-{{ t.getName() }}"><input type="radio" value="{{ t.id }}" name="topic" id="topic-{{ t.getName() }}" {% if request.values.get("topic", "all")==""~t.id %} checked{% endif %}> <a class="topic" href="/t/{{ t.getName() }}">{{ t.getTitle() }}</a> &ndash; {{ t.getExcerpt() }}</label>
+        {% endfor %}
+        <b>Status des Kurses</b>
+        <label class="sublabel" for="status-___all"><input type="radio" value="all" name="status" id="status-___all"{% if request.values.get("status", "all")=="all" %} checked{% endif %}> alle Kurse</label>
+        <label class="sublabel" for="status-0"><input type="radio" value="0" name="status" id="status-0"{% if request.values.get("status", "all")=="0" %} checked{% endif %}> nicht verfügbare Kurse</label>
+        <label class="sublabel" for="status-1"><input type="radio" value="1" name="status" id="status-1"{% if request.values.get("status", "all")=="1" %} checked{% endif %}> verfügbare Kurse</label>
+        <hr>
+      </details>
+      <details>
+        <summary>Suchhilfe</summary>
+        <p>Bei allen Textfeldern gilt: Normalerweise wird danach gesucht, was alle Teilworte enthält. Wenn der Suchtext mit <code>=</code> anfängt, wird danach gesucht, was genau diesen Text beinhaltet. Wenn der Suchtext mit <code>*</code> anfängt, wird danach gesucht, was mindestens ein Teilwort enthält. Wenn ein Wort mit <code>!</code> beginnt, wird geprüft ob es nicht im Text ist. Ein <code>+</code> wird als Leerzeichen gesucht.</p>
+        <table>
+          <tr>
+            <th><code>grüner Maulwurf</code></th>
+            <td>Alles was <code>grüner</code> und <code>Maulwurf</code> enthält.</td>
+          </tr>
+          <tr>
+            <th><code>=grüner Maulwurf</code></th>
+            <td>Nur <code>grüner Maulwurf</code></td>
+          </tr>
+          <tr>
+            <th><code>*grüner Maulwurf</code></th>
+            <td>Alles was <code>grüner</code> oder <code>Maulwurf</code> enthält.</td>
+          </tr>
+          <tr>
+            <th><code>!grüner Maulwurf</code></th>
+            <td>Alles was <code>Maulwurf</code>, aber nicht <code>grüner</code> enthält.</td>
+          </tr>
+          <tr>
+            <th><code>der grüne Maulwurf</code></th>
+            <td>Alles was <code>der</code>, <code>grüne</code> und <code>Maulwurf</code> enthält.</td>
+          </tr>
+          <tr>
+            <th><code>der+grüne Maulwurf</code></th>
+            <td>Alles was <code>der grüne</code> und <code>Maulwurf</code> enthält.</td>
+          </tr>
+        </table>
+      </details>
+      <button type="submit" class="primary-btn"><i class="fa fa-search"></i> Suchen</button> <a href="?">Zurücksetzen</a>
+    </form>
+
+    {% if cnum != None %}
+
+    <p>Gefunden wurden <strong>{{ cnum }}</strong> Kurs{% if cnum != 1 %}e{% endif %}.{% if cnum > 30 %} Es werden nur die ersten 30 Kurse angezeigt. Schränke bitte die Suche ein.{% endif %}</p>
+
+      <div class="course-list">
+        {% for course in courses %}
+        {% set topic = course.getTopic() %}
+         <div class="course-list-item">
+            <div class="headline"><a href="/c/{{ course.id }}/info">{{ course.getTitle() }}</a> <a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></div>
+            <div class="shortdesc">
+               <p>{{ course.getShortdesc() }}</p>
+            </div>
+            <div class="action">
+              {% if course.getDetail("state") != 0 or course.getCourseRole(user) >= 2 or user.isMod() %}
+                {% if user.isLoggedIn() and not course.isEnrolled(user) %}
+                  <a href="/c/{{ course.id }}/enroll">Einschreiben</a>
+                {% else %}
+                  <a href="/c/{{ course.id }}/start">Zum Kurs</a>
+                {% endif %}
+              {% endif %}
+            </div>
+         </div>
+        {% endfor %}
+      </div>
+
+    {% endif %}
+
+    <style>
+      label.sublabel {
+        font-weight: 400 !important;
+      }
+    </style>
+{% endblock %}

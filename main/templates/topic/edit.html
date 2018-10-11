@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% block body %}
+<link rel="stylesheet" href="/static/css/simplemde.min.css">
+<script src="/static/js/simplemde.min.js"></script>
+<nav class="coursenav">
+   <h2><i>Thema:</i> <input class="inline" style="font-size: inherit; display: inline-block; width: auto;" id="title" value="{{ data.getTitle() }}"></h2>
+   <input class="inline" id="excerpt" value="{{ data.getExcerpt() }}">
+    &nbsp;<br>
+    <button class="primary-btn big-btn" id="save">Speichern</button>&nbsp;<a href="/t/{{ data.getName() }}">Abbrechen</a>
+</nav>
+&nbsp;
+<textarea id="description">{{ data.getDescription() }}</textarea>
+<script>
+    var simplemde = new SimpleMDE({ element: document.getElementById("description"), forceSync:true, parsingConfig: {strikethrough: false}, promptURLs:true, spellChecker:false });
+</script>
+
+<hr>
+<label for="name">URL-Part <span class="warning inline">Änderungen können Verknüpfungen zerbrechen!</span></label>
+<input id="name" value="{{ data.getName() }}">
+<label for="giveable">Kann vergeben werden?</label>
+<input type="checkbox" id="giveable" {% if data.isGiveable() %}checked{% endif %}>
+
+<script>
+document.getElementById("save").addEventListener("click", function() {
+    $post("topic/{{ data.id }}/{{ data.getName() }}/edit", {
+        "title": document.getElementById("title").value,
+        "excerpt": document.getElementById("excerpt").value,
+        "description": document.getElementById("description").value,
+        "name": document.getElementById("name").value,
+        "giveable": document.getElementById("giveable").checked
+    }, function() {
+        alert("Thema wurde erfolgreich aktualisiert.");
+    })
+})
+</script>
+{% endblock %}

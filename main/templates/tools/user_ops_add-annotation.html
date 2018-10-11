@@ -1,0 +1,30 @@
+{% from "tools/_macro.html" import tools__nav %}
+{% extends "layout.html" %}
+{% block body %}
+    {{ tools__nav("user", user) }}
+    <h2>Werkzeuge &ndash; neuste Kurse</h2>
+    <div class="split-screen">
+      <aside>
+        <ol>
+          <li><a href="/tools/user/flags">Meldungen</a></li>
+          <li><a href="/tools/user/search">Suche</a></li>
+        </ol>
+      </aside>
+      <main>
+        <h3><a href="?">AdminOps für {{ data.getDetail("realname") }}</a> &ndash; Anmerkung hinzufügen</h3>
+        <p>Anmerkungen sollen (anderen) Administratoren helfen, die Entscheidungen zu einem späteren Zeitpunkt nachzuvollziehen.</p>
+        <p>Bitte nutzt Anmerkungen nur für <strong>wirklich wichtige Informationen</strong> wie das Erklären von Sperrungen, Verwarnungen o.ä.</p>
+        <textarea placeholder="Sei spezifisch und gebe Beispiele" id="new_annotation"></textarea>
+        <button onclick="add_annotation()">Hinzufügen</button>
+        <script>
+          function add_annotation() {
+            new_value = document.getElementById("new_annotation").value;
+            $post("user/{{ data.id }}/{{ data.getDetail("name") }}/annotations", {"action":'create', "content": new_value}, function (r) {
+              document.getElementById("new_annotation").value = "";
+              window.location.href = "?";
+            })
+          }
+        </script>
+      </main>
+    </div>
+{% endblock %}

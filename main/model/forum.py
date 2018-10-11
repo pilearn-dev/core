@@ -1,0 +1,1480 @@
+# coding: utf-8
+import os, json, re, time, math
+import secrets
+import sqlite3 as lite
+from flask import request, session, url_for
+from sha1 import sha1
+from model import privileges as mprivileges, tags as mtags, user as muser, courses as mcourses
+from controller import times as ctimes
+
+class Answer:
+
+    FREEZONS = [
+        u"Diese Antwort wurde eingefroren, **bis alle Streitigkeiten über den Inhalt beendet sind**.",
+        u"Diese Antwort wurde eingefroren, da sie eine **hohe Anzahl an Kommentaren** angezogen hat, die entfernt werden mussten.",
+        u"Diese Antwort ist **kein gutes Beispiel für eine Antwort in diesem Forum**, kann aber aufgrund ihrer Verbreitung nicht entfernt werden. Daher wurde die Antwort *in der Zeit stehen gelassen* und kann nicht verändert werden.",
+        u""
+    ]
+
+    def __init__(self, id):
+        self.id = id
+        self.__data = self.getInfo()
+
+    def getDetail(self, d):
+        return self.__data[d]
+
+    def addRevision(self, content, user, comment, review=-1):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("INSERT INTO answer_revisions (forumID, answerID, articleID, editor, new_content, review_id, comment, type) VALUES (?, ?, ?, ?, ?, ?, ?, 'edit')", (self.getDetail("forumID"), self.id, self.getDetail("articleID"), user.id, content, review, comment))
+            con.commit()
+            return True
+        except lite.Error as e:
+            print(e)
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def addRevComm(self, tp, user, comment):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("INSERT INTO answer_revisions (forumID, answerID, articleID, editor, new_content, review_id, comment, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (self.getDetail("forumID"), self.id, self.getDetail("articleID"), user.id, self.getContent(), -1, comment, tp))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def hasRevision(self):
+        return self.getRevisionCount() > 1
+
+    def getRevisionCount(self, x=False):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            if x:
+                cur.execute("SELECT * FROM answer_revisions WHERE forumID=? AND articleID=? AND answerID=?", (self.getDetail("forumID"), self.getDetail("articleID"), self.id))
+            else:
+                cur.execute("SELECT * FROM answer_revisions WHERE forumID=? AND articleID=? AND answerID=? AND type='edit' OR type='static'", (self.getDetail("forumID"), self.getDetail("articleID"), self.id))
+            return len(cur.fetchall())
+        except lite.Error as e:
+            return 0
+        finally:
+            if con:
+                con.close()
+
+    def getRevision(self, id):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            if id == "latest":
+                cur.execute("SELECT * FROM answer_revisions WHERE forumID=? AND articleID=? AND answerID=? AND type='edit' OR type='static' ORDER BY id DESC", (self.getDetail("forumID"), self.getDetail("articleID"), self.id))
+                data = cur.fetchone()
+            else:
+                cur.execute("SELECT * FROM answer_revisions WHERE forumID=? AND articleID=? AND answerID=? ORDER BY id ASC", (self.getDetail("forumID"), self.getDetail("articleID"), self.id))
+                data = cur.fetchall()[id-1]
+            data = {
+                "revid": (self.getRevisionCount() if id == "latest" else id),
+                "id": data["id"],
+                "type": data["type"],
+                "editor": muser.User.from_id(data["editor"]),
+                "content": data["new_content"],
+                "comment": data["comment"]
+            }
+            return data
+        except lite.Error as e:
+            print(e)
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def getRevisionById(self, id):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM answer_revisions WHERE forumID=? AND answerID=? AND id=?", (self.getDetail("forumID"), self.id, id))
+            data = cur.fetchone()
+            data = {
+                "id": data["id"],
+                "type": data["type"],
+                "editor": muser.User.from_id(data["editor"]),
+                "title": data["new_title"],
+                "content": data["new_content"],
+                "tags": data["new_tags"],
+                "comment": data["comment"],
+            #    "timestamp": data["timestamp"],
+            #    "relative_time": ctimes.stamp2relative(data["timestamp"]),
+            #    "absolute_time": ctimes.stamp2german(data["timestamp"])
+            }
+            return data
+        except lite.Error as e:
+            print(e)
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def getAllRevisions(self):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM answer_revisions WHERE forumID=? AND articleID=? AND answerID=? ORDER BY id ASC", (self.getDetail("forumID"), self.getDetail("articleID"), self.id))
+            i = 0
+            rev = 1
+            data_ = cur.fetchall()
+            data = []
+            for row in data_:
+                i += 1
+                r =self.getRevision(i)
+                if row["type"] == "edit" or row["type"] == "static":
+                    r["revid"] = rev
+                    rev += 1
+                data.append(r)
+            return data[::-1]
+        except lite.Error as e:
+            print(e)
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def getComments(self, is_mod=False):
+        return ForumComment.byPost("answer", self.id, is_mod)
+
+    def getCommentCounts(self, is_mod=False):
+        return ForumComment.getCommentCounts("answer", self.id)
+
+    def getUserVote(self, u):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT direction FROM score_votes WHERE target_type='answer' AND target_id=? AND user_id=?", (self.id, u.id))
+            d = cur.fetchone()
+            if d is None:
+                return None
+            return d[0]
+        except lite.Error as e:
+            return 0
+        finally:
+            if con:
+                con.close()
+
+    def addVote(self, u, delta):
+        v = self.getUserVote(u)
+        if v is None:
+            try:
+                con = lite.connect('databases/forum.db')
+                con.row_factory = lite.Row
+                cur = con.cursor()
+                cur.execute("INSERT INTO score_votes (user_id, direction, reputation, target_type, target_id, nullified) VALUES (?, ?, ?, 'answer', ?, 0)", (u.id, delta, 3*delta, self.id))
+                d = con.commit()
+                self.setDetail("score", self.getInfo()["score"]+delta)
+                au = self.getAuthor()
+                if au.id != -1 and au.id != -3:
+                    au.setReputationChange("forum_vote", "["+Article(self.getDetail("articleID")).getHTMLTitle()+"](/f/"+str(self.getDetail("forumID"))+"/" + str(self.getDetail("articleID")) +"#answer-"+str(self.id)+")", 3*delta)
+                    au.setDetail("reputation", au.getDetail("reputation")+3*delta)
+                return delta, self.getInfo()["score"]
+            except lite.Error as e:
+                return False
+            finally:
+                if con:
+                    con.close()
+        else:
+            if v == delta:
+                try:
+                    con = lite.connect('databases/forum.db')
+                    con.row_factory = lite.Row
+                    cur = con.cursor()
+                    cur.execute("DELETE FROM score_votes WHERE user_id=? AND target_id=? AND target_type='answer'", (u.id, self.id))
+                    d = con.commit()
+                    self.setDetail("score", self.getInfo()["score"]-delta)
+                    au = self.getAuthor()
+                    if au.id != -1 and au.id != -3:
+                        au.setReputationChange("forum_vote", "["+Article(self.getDetail("articleID")).getHTMLTitle()+"](/f/"+str(self.getDetail("forumID"))+"/" + str(self.getDetail("articleID")) +"#answer-"+str(self.id)+")", -3*delta)
+                        au.setDetail("reputation", au.getDetail("reputation")-3*delta)
+                    return 0, self.getInfo()["score"]
+                except lite.Error as e:
+                    return False
+                finally:
+                    if con:
+                        con.close()
+            else:
+                try:
+                    con = lite.connect('databases/forum.db')
+                    con.row_factory = lite.Row
+                    cur = con.cursor()
+                    cur.execute("UPDATE score_votes SET direction=?, reputation=? WHERE user_id=? AND target_id=? AND target_type='answer'", (delta, 3*delta, u.id, self.id))
+                    d = con.commit()
+                    self.setDetail("score", self.getInfo()["score"]+2*delta)
+                    au = self.getAuthor()
+                    if au.id != -1 and au.id != -3:
+                        au.setReputationChange("forum_vote", "["+Article(self.getDetail("articleID")).getHTMLTitle()+"](/f/"+str(self.getDetail("forumID"))+"/" + str(self.getDetail("articleID")) +"#answer-"+str(self.id)+")", 6*delta)
+                        au.setDetail("reputation", au.getDetail("reputation")+6*delta)
+                    return delta, self.getInfo()["score"]
+                except lite.Error as e:
+                    return False
+                finally:
+                    if con:
+                        con.close()
+
+    def setDetail(self, d, v):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("UPDATE answers SET "+d+"=? WHERE id=?", (v, self.id))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def mayBeSeen(self, user):
+        if self.isDeleted() and (user.may("general_autoMod") or user.isMod() or self.getAuthor().id == user.id):
+            return True
+        elif not self.isDeleted():
+            return True
+        else:
+            return False
+
+    def isAccepted(self):
+        return self.getDetail("isAcceptedAnswer")
+
+    def getScore(self):
+        return self.getDetail("score")
+
+    def getAward(self):
+        return self.getDetail("awardRep")
+
+    def isFrozen(self):
+        return self.getDetail("frozen")
+
+    def getFrozenBy(self):
+        fb = self.getDetail("frozenBy")
+        if fb == 0:
+            fb = -3
+        return muser.User.from_id(fb)
+
+    def getFrozenMessage(self):
+        return self.getDetail("frozenMessage")
+
+    def getContent(self):
+        return self.getDetail("content")
+
+    def getModNotice(self):
+        return self.getDetail("moderatorNotice")
+
+    def getAuthor(self):
+        return muser.User.from_id(self.getDetail("author"))
+
+    def isDeleted(self):
+        return self.getDetail("deleted") == 1 or self.isDestroyed()
+
+    def getDeleteMessage(self):
+        return u"Der Beitrag wurde **" + (u"zerstört" if self.isDestroyed() else u"gelöscht") + u"**"
+
+    def isDestroyed(self):
+        return self.getDetail("deleted") == 2
+
+    def getInfo(self):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM answers WHERE id=?", (self.id, ))
+            data = cur.fetchone()
+            if data is None:
+                raise ValueError("Answer not found with id " + str(self.id))
+            return {
+                "id": data['id'],
+                "forumID": data['forumID'],
+                "articleID": data['articleID'],
+                "author": data['author'],
+                "score": data['score'],
+                "content": data['content'],
+                "awardRep": data['awardRep'],
+                "awardBy": data['awardBy'],
+                "awardMessage": data['awardMessage'],
+                "isAcceptedAnswer": data['isAcceptedAnswer'],
+
+                "frozen": data['frozen'],
+                "frozenBy": data['frozenBy'],
+                "frozenMessage": data['frozenMessage'],
+                "deleted": data['deleted'],
+
+                "moderatorNotice": data['moderatorNotice']
+            }
+        except lite.Error as e:
+            #raise lite.Error from e
+            raise e
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def exists(cls, forum_id, id):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM answers WHERE id=? AND forumID=?", (id,forum_id))
+            data = cur.fetchone()
+            return data is not None
+        except lite.Error as e:
+            print(e)
+            return False
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def createNew(cls, forumID, articleID, content, user):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("INSERT INTO answers (forumID, articleID, author, score, content, awardRep, awardBy, awardMessage, isAcceptedAnswer, frozen, frozenBy, frozenMessage, deleted, moderatorNotice) VALUES (?, ?, ?, 0, ?, 0, 0, '', 0, 0, 0, '', 0, '')", (forumID, articleID, user.id, content))
+            con.commit()
+            return cls(cur.lastrowid)
+        except lite.Error as e:
+            print(e)
+            return False
+        finally:
+            if con:
+                con.close()
+
+class Article:
+
+    FREEZONS = [
+        u"Dieser Beitrag wurde eingefroren, **bis alle Streitigkeiten über den Inhalt beendet sind**.",
+        u"Dieser Beitrag wurde eingefroren, da er eine **hohe Anzahl an Kommentaren** angezogen hat, die entfernt werden mussten.",
+        u"Dieser Beitrag ist **kein gutes Beispiel für einen Beitrag in diesem Forum**, kann aber aufgrund seiner Verbreitung nicht entfernt werden. Daher wurden der Beitrag und seine Antworten *in der Zeit stehen gelassen* und kann nicht verändert werden.",
+        u""
+    ]
+
+    CLOSURE_LABELS = {
+        "off-topic": u"nicht in dieses Forum passend",
+        "off-topic_glob": u"nicht in dieses Forum passend",
+        "off-topic_course": u"nicht in dieses Forum passend",
+        "unclear": u"unklar",
+        "too-specific": u"zu spezifisch",
+        "too-broad": u"zu allgemein"
+    }
+
+    OFF_TOPIC_REASONS = [
+         ### --- global ---
+        {
+            "for_global": True,
+            "for_course": False,
+            "text": u"Dieser Beitrag enthält keine Frage zu &pi;-Learn im Rahmen der [*Informationen über das globale Forum*](/help/forum/global) und passt daher nicht in dieses globale Forum."
+        },
+        {
+            "for_global": True,
+            "for_course": False,
+            "text": u"Dieser Beitrag enthält Fragen zu kursspezifischen Inhalten und gehört daher in das jeweilige [Kursforum](/help/forum/local)."
+        }, ### --- course ---
+        {
+            "for_global": False,
+            "for_course": True,
+            "text": u"Dieser Beitrag enthält **keine Frage zum Kurs _<$>_** im Rahmen der [*Informationen über Kursforen*](/help/forum/local) und passt daher nicht in dieses Forum."
+        },
+        {
+            "for_global": False,
+            "for_course": True,
+            "text": u"Dieser Beitrag enthält Fragen zu &pi;-Learn selber und gehört daher in das [globale Forum](/f/0)."
+        }
+    ]
+
+    CLOSURE_TEXTS = {
+        "duplicate": u"Andere Benutzer hatten dieses Problem auch und **fanden bereits eine Antwort**.\n\nWenn die folgenden Beiträge nicht helfen, dieses Problem zu lösen, *bearbeite* diesen Beitrag und beschreibe, WIESO diese Lösungsvorschläge dir nicht geholfen haben:",
+        "off-topic": u"Dieser Beitrag passt nicht in dieses Forum.",
+        "unclear": u"Wir verstehen die Frage-/Problemstellung des Autors nicht. Bitte bearbeite diesen Beitrag, um **alle wichtigen Informationen verständlich darzubieten**.\n\nHäufig hilft es, *konkrete Informationen*, wie das Problem *nachzuvollziehen* ist, hinzuzufügen.",
+        "too-broad": u"Beiträge, **deren Lösung ein Buch füllen könnte** oder die **keine eindeutige Antwort** haben, sind für unser Format nicht geeignet.\n\nHäufig hilft es, die Fragestellung an ein **konkretes, praktisches Problem** anzuwenden.",
+        "too-specific": u"Beiträge, die **nur die Lösung aber keinen Lösungsweg** für ein Problem anfordern, sind für unser Format nicht geeignet, da diese nur einer **sehr eingeschränkten Zielgruppe** helfen.\n\nHäufig hilft es, **das Problem zu abstrahieren** und nach dem *Wie* oder *Warum* anstatt nach dem *Wer*, *Was*, *Wann* oder *Wo* zu fragen."
+    }
+
+    PROTECTION_MESSAGE = {
+        "wiki": u"**Dieser Beitrag und seine exzellenten Antworten sind gemeinschaftlich entstanden.**\n\nEs können keine weiteren Antworten hinzugefügt werden; siehst du etwas, das *verändert, aktualisiert oder ergänzt* werden muss, **bearbeite es**!",
+        "answer": u"Antworten auf &pi;-Learn **müssen bestmöglich versuchen, das Problem zu lösen**. Um Rückfragen zu stellen, darf man nur Kommentare verwenden.\n\nUm diese Regel durchzusetzen, also *SPAM, &quot;Ich auch&quot; oder &quot;Danke&quot;-Antworten zu vermeiden*, benötigt man **mindestens 10 Reputationspunkte um diesen Beitrag zu beantworten**."
+    }
+
+    def __init__(self, id):
+        self.id = id
+        self.__data = self.getInfo()
+
+    def getDetail(self, d):
+        return self.__data[d]
+
+    def addRevision(self, title, content, tags, user, comment, review=-1):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("INSERT INTO article_revisions (forumID, articleID, new_title, editor, new_content, new_tags, review_id, comment, type, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'edit', ?)", (self.getDetail("forumID"), self.id, title, user.id, content, tags, review, comment, time.time()))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def addRevComm(self, tp, user, comment):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("INSERT INTO article_revisions (forumID, articleID, new_title, editor, new_content, new_tags, review_id, comment, type, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (self.getDetail("forumID"), self.id, self.getTitle(), user.id, self.getContent(), ("|".join(["["+i+"]" for i in self.getTags()])), -1, comment, tp, time.time()))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def hasRevision(self):
+        return self.getRevisionCount() > 1
+
+    def getRevisionCount(self, x=False):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            if x:
+                cur.execute("SELECT * FROM article_revisions WHERE forumID=? AND articleID=?", (self.getDetail("forumID"), self.id))
+            else:
+                cur.execute("SELECT * FROM article_revisions WHERE forumID=? AND articleID=? AND type='edit'", (self.getDetail("forumID"), self.id))
+            return len(cur.fetchall())
+        except lite.Error as e:
+            return 0
+        finally:
+            if con:
+                con.close()
+
+    def getRevision(self, id):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            if id == "latest":
+                cur.execute("SELECT * FROM article_revisions WHERE forumID=? AND articleID=? AND type='edit' ORDER BY id DESC", (self.getDetail("forumID"), self.id))
+                data = cur.fetchone()
+            else:
+                cur.execute("SELECT * FROM article_revisions WHERE forumID=? AND articleID=? AND type='edit' ORDER BY id ASC", (self.getDetail("forumID"), self.id))
+                data = cur.fetchall()[id-1]
+                print(data["editor"])
+            data = {
+                "revid": (self.getRevisionCount() if id == "latest" else id),
+                "id": data["id"],
+                "type": data["type"],
+                "editor": muser.User.from_id(data["editor"]),
+                "title": data["new_title"],
+                "content": data["new_content"],
+                "tags": data["new_tags"],
+                "comment": data["comment"],
+                "timestamp": data["timestamp"],
+                "relative_time": ctimes.stamp2relative(data["timestamp"]),
+                "absolute_time": ctimes.stamp2german(data["timestamp"])
+            }
+            return data
+        except lite.Error as e:
+            print(e)
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def getRevisionById(self, id):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM article_revisions WHERE forumID=? AND articleID=? AND id=?", (self.getDetail("forumID"), self.id, id))
+            data = cur.fetchone()
+            data = {
+                "id": data["id"],
+                "type": data["type"],
+                "editor": muser.User.from_id(data["editor"]),
+                "title": data["new_title"],
+                "content": data["new_content"],
+                "tags": data["new_tags"],
+                "comment": data["comment"],
+                "timestamp": data["timestamp"],
+                "relative_time": ctimes.stamp2relative(data["timestamp"]),
+                "absolute_time": ctimes.stamp2german(data["timestamp"])
+            }
+            return data
+        except lite.Error as e:
+            print(e)
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def getAllRevisions(self):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM article_revisions WHERE forumID=? AND articleID=? ORDER BY id ASC", (self.getDetail("forumID"), self.id))
+            i = 0
+            rev = 1
+            data_ = cur.fetchall()
+            data = []
+            for row in data_:
+                r =self.getRevisionById(row["id"])
+                if row["type"] == "edit":
+                    r["revid"] = rev
+                    rev += 1
+                data.append(r)
+            return data[::-1]
+        except lite.Error as e:
+            print(e)
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def getComments(self, is_mod=False):
+        return ForumComment.byPost("post", self.id, is_mod)
+
+    def getCommentCounts(self, is_mod=False):
+        return ForumComment.getCommentCounts("post", self.id)
+
+    def getUserVote(self, u):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT direction FROM score_votes WHERE target_type='article' AND target_id=? AND user_id=?", (self.id, u.id))
+            d = cur.fetchone()
+            if d is None:
+                return None
+            return d[0]
+        except lite.Error as e:
+            return 0
+        finally:
+            if con:
+                con.close()
+
+    def addVote(self, u, delta):
+        v = self.getUserVote(u)
+        if v is None:
+            try:
+                con = lite.connect('databases/forum.db')
+                con.row_factory = lite.Row
+                cur = con.cursor()
+                cur.execute("INSERT INTO score_votes (user_id, direction, reputation, target_type, target_id, nullified) VALUES (?, ?, ?, 'article', ?, 0)", (u.id, delta, 3*delta, self.id))
+                d = con.commit()
+                self.setDetail("score", self.getInfo()["score"]+delta)
+                au = self.getAuthor()
+                if au.id != -1 and au.id != -3:
+                    au.setReputationChange("forum_vote", "["+self.getHTMLTitle()+"](/f/"+str(self.getDetail("forumID"))+"/" + str(self.id) +")", 3*delta)
+                    au.setDetail("reputation", au.getDetail("reputation")+3*delta)
+                return delta, self.getInfo()["score"]
+            except lite.Error as e:
+                return False
+            finally:
+                if con:
+                    con.close()
+        else:
+            if v == delta:
+                try:
+                    con = lite.connect('databases/forum.db')
+                    con.row_factory = lite.Row
+                    cur = con.cursor()
+                    cur.execute("DELETE FROM score_votes WHERE user_id=? AND target_id=? AND target_type='article'", (u.id, self.id))
+                    d = con.commit()
+                    self.setDetail("score", self.getInfo()["score"]-delta)
+                    au = self.getAuthor()
+                    if au.id != -1 and au.id != -3:
+                        au.setReputationChange("forum_vote", "["+self.getHTMLTitle()+"](/f/"+str(self.getDetail("forumID"))+"/" + str(self.id) +")", -3*delta)
+                        au.setDetail("reputation", au.getDetail("reputation")+-3*delta)
+                    return 0, self.getInfo()["score"]
+                except lite.Error as e:
+                    return False
+                finally:
+                    if con:
+                        con.close()
+            else:
+                try:
+                    con = lite.connect('databases/forum.db')
+                    con.row_factory = lite.Row
+                    cur = con.cursor()
+                    cur.execute("UPDATE score_votes SET direction=?, reputation=? WHERE user_id=? AND target_id=? AND target_type='article'", (delta, 3*delta, u.id, self.id))
+                    d = con.commit()
+                    self.setDetail("score", self.getInfo()["score"]+2*delta)
+                    au = self.getAuthor()
+                    if au.id != -1 and au.id != -3:
+                        au.setReputationChange("forum_vote", "["+self.getHTMLTitle()+"](/f/"+str(self.getDetail("forumID"))+"/" + str(self.id) +")", 6*delta)
+                        au.setDetail("reputation", au.getDetail("reputation")+6*delta)
+                    return delta, self.getInfo()["score"]
+                except lite.Error as e:
+                    return False
+                finally:
+                    if con:
+                        con.close()
+
+
+
+    def setDetail(self, d, v):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("UPDATE articles SET "+d+"=? WHERE id=?", (v, self.id))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def mayBeSeen(self, user):
+        if self.isDeleted() and (user.may("general_autoMod") or user.isMod() or self.getAuthor().id == user.id):
+            return True
+        elif not self.isDeleted():
+            return True
+        else:
+            return False
+
+    def getHTMLTitle(self):
+        title = ""
+        if self.isDestroyed():
+            title += u"<del>"
+        title += self.getDetail("title")
+        if self.isClosed():
+            title += u" (geschlossen)"
+        if self.isDestroyed():
+            title += u"</del> (zerstört)"
+        return title
+
+    def hasAccepted(self):
+        return self.getDetail("hasAcceptedAnswer")
+
+    def getAccepted(self):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT id FROM answers WHERE forumID=? AND articleID=? AND isAcceptedAnswer=1", (self.getDetail("forumID"), self.id))
+            data = cur.fetchone()
+            if data is not None:
+                return Answer(data[0])
+            return None
+        except lite.Error as e:
+            return None
+        finally:
+            if con:
+                con.close()
+
+    def getScore(self):
+        return self.getDetail("score")
+
+    def getAward(self):
+        return self.getDetail("awardRep")
+
+    def isPinned(self):
+        return self.getDetail("pinned")
+
+    def isClosed(self):
+        return self.getDetail("closed")
+
+    def getClosureWarning(self):
+        con = lite.connect('databases/forum.db')
+        con.row_factory = lite.Row
+        cur = con.cursor()
+        cur.execute("SELECT * FROM closure_flags WHERE state=1 AND type='vote' AND item_id=?", (self.id,))
+        flags = cur.fetchall()
+        majority_reason = self.getDetail("closureReason")
+        voters = ""
+        reasons = []
+        links = []
+        for flag in flags:
+            if flag[6] == "duplicate" and majority_reason == "duplicate":
+                links.append(flag[7])
+            elif flag[6] == "off-topic" and majority_reason == "off-topic":
+                for r in reasons:
+                    if r["text"] == flag[7]:
+                        r["voters"].append(flag[4])
+                        break
+                else:
+                    reasons.append({"text":flag[7], "voters":[flag[4]]})
+            flagger = muser.User.from_id(flag[4])
+            voters += ", ["+flagger.getHTMLName()+"](/u/"+str(flagger.id)+")"
+        voters = voters[2:]
+        text = "### "
+        if majority_reason == "duplicate":
+            links_ = []
+            for link in links:
+                links_.append(u"["+Article(link).getTitle()+u"](/f/"+str(self.getDetail("forumID"))+u"/"+link+u")")
+            links = u"- " + (u"\n- ".join(links_))
+            text += u"Dieser Beitrag **hat bereits eine Antwort**:\n\n"+self.CLOSURE_TEXTS[majority_reason]+"\n\n"+links+"\n\n"
+        elif majority_reason == "off-topic":
+            rs_ = []
+            for r in reasons:
+                rs_.append("&quot;" + r["text"] + "&quot; <span class='name-list'>&ndash; " + (", ".join(list(map(lambda x:muser.User.from_id(x).getHTMLName(), r["voters"])))) + "</span>")
+            text += "Dieser Beitrag wurde als **"+self.CLOSURE_LABELS[majority_reason] +"** geschlossen\n\n- " + ("\n- ".join(rs_)) + "\n\n"
+        else:
+            text += "Dieser Beitrag wurde als **"+self.CLOSURE_LABELS[majority_reason] +"** geschlossen\n\n"+self.CLOSURE_TEXTS[majority_reason]+"\n\n"
+        text += "<span class='name-list'>&mdash; " + voters + "</span>"
+        text = text.replace("<$>", Forum(self.getDetail("forumID")).getTitle())
+        #print(text)
+        return text
+
+    def isFrozen(self):
+        return self.getDetail("frozen")
+
+    def isLocked(self):
+        return self.isFrozen() and self.getDetail("frozenAsLock")
+
+    def getFrozenBy(self):
+        fb = self.getDetail("frozenBy")
+        if fb == 0:
+            fb = -3
+        return muser.User.from_id(fb)
+
+    def getFrozenMessage(self):
+        return self.getDetail("frozenMessage")
+
+    def getLabel(self):
+        label = self.getTitle()
+        label = label.replace(u"π", "pi")
+        label = re.sub("[^a-zA-Z0-9- ]+", "", label)
+        label = re.sub("[ ]+", "-", label)
+        label = label.lower()[:50].strip("-")
+        return label
+
+    def getScore(self):
+        return self.getDetail("score")
+
+    def getTitle(self):
+        return self.getDetail("title")
+
+    def getTeaser(self):
+        return self.getDetail("content")[:100] + ("" if len(self.getDetail("content")) < 100 else "...")
+
+    def getContent(self):
+        return self.getDetail("content")
+
+    def getModNotice(self):
+        return self.getDetail("moderatorNotice")
+
+    def getAuthor(self):
+        return muser.User.from_id(self.getDetail("author"))
+
+    def getTags(self):
+        tags = self.getDetail("tags")
+        if tags == "":
+            return []
+        tags = tags.split("|")
+        return [t[1:-1] for t in tags]
+
+    def isDeleted(self):
+        return self.getDetail("deleted") == 1 or self.isDestroyed()
+
+    def isProtected(self):
+        return self.getDetail("protected") != 0
+
+    def isNewbieProtection(self):
+        return self.getDetail("protected") == 1
+
+    def isWikiProtection(self):
+        return self.getDetail("protected") == 2
+
+    def getProtectedBy(self):
+        return muser.User.from_id(self.getDetail("protectionBy"))
+
+    def getAnswers(self):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT id FROM answers WHERE forumID=? AND articleID=? ORDER BY isAcceptedAnswer DESC, deleted ASC, score DESC, RANDOM()", (self.getDetail("forumID"), self.id))
+            data = cur.fetchall()
+            return list(map(lambda x:Answer(x[0]), data))
+        except lite.Error as e:
+            return []
+        finally:
+            if con:
+                con.close()
+
+    def getAnswerCount(self):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT COUNT(id) FROM answers WHERE forumID=? AND articleID=? AND deleted=0", (self.getDetail("forumID"), self.id))
+            data = cur.fetchone()
+            return data[0] if data is not None else 0
+        except lite.Error as e:
+            return 0
+        finally:
+            if con:
+                con.close()
+
+    def getForum(self):
+        return Forum(self.getDetail("forumID"))
+
+    def getDeleteMessage(self):
+        del_reason = self.getDetail("deletionReason")
+        if del_reason == "owner":
+            return u"### Dieser Beitrag wurde **gelöscht**\n\nDer Beitrag wurde **von seinem Autor** gelöscht."
+        elif del_reason == "spam":
+            return u"### Dieser Beitrag wurde **gelöscht**\n\nDer Beitrag wurde **als SPAM (*gefährlich*)** gelöscht."
+        elif del_reason == "offensive":
+            return u"### Dieser Beitrag wurde **gelöscht**\n\nDer Beitrag wurde **als beleidigend (*gefährlich*)** gelöscht."
+        elif del_reason == "dangerous":
+            return u"### Dieser Beitrag wurde **gelöscht**\n\nDer Beitrag wurde **als SPAM oder beleidigend (*gefährlich*)** gelöscht."
+        elif del_reason == "queue":
+            return u"### Dieser Beitrag wurde **gelöscht**\n\nDer Beitrag wurde **aus einer Moderationsliste** gelöscht."
+        elif del_reason == "auto:closed":
+            return u"### Dieser Beitrag wurde **gelöscht**\n\nDieser Beitrag wurde automatisch gelöscht, da er geschlossen wurde. (Prozess: <code>delete\\auto:closed</code>)"
+        elif del_reason == "vote":
+            try:
+                con = lite.connect('databases/forum.db')
+                con.row_factory = lite.Row
+                cur = con.cursor()
+                cur.execute("SELECT * FROM post_deletion_flags WHERE item_id=? AND type='vote' AND state=1", (self.id, ))
+                con.commit()
+                flags = cur.fetchall()
+                voters = ""
+                for flag in flags:
+                    flagger = muser.User.from_id(flag[4])
+                    voters += u", ["+flagger.getHTMLName()+u"](/u/"+str(flagger.id)+u")"
+                voters = voters[2:]
+                return u"### Dieser Beitrag wurde **gelöscht**\n\nDer Beitrag wurde von " + voters + u" gelöscht."
+            except lite.Error as e:
+              print(e)
+              return u"### Dieser Beitrag wurde **gelöscht**\n\nDer Beitrag wurde gelöscht."
+            finally:
+              if con:
+                  con.close()
+        else:
+            return u"### Dieser Beitrag wurde **gelöscht**\n\nDer Beitrag wurde gelöscht."
+
+    def isDestroyed(self):
+        return self.getDetail("deleted") == 2
+
+    def getInfo(self):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM articles WHERE id=?", (self.id, ))
+            data = cur.fetchone()
+            if data is None:
+                raise ValueError("Article not found with id " + str(self.id))
+            cur.execute("SELECT id FROM article_revisions WHERE (type='edit' OR type='undeleted' OR type='restored') AND articleID=? GROUP BY articleID ORDER BY id DESC", (self.id, ))
+            order = cur.fetchone()
+            if order is None:
+                order = {"id":0}
+            order = order["id"]
+            return {
+                "id": data['id'],
+                "forumID": data['forumID'],
+                "title": data['title'],
+                "title": data['title'],
+                "author": data['author'],
+                "score": data['score'],
+                "content": data['content'],
+                "tags": data['tags'],
+                "awardRep": data['awardRep'],
+                "awardBy": data['awardBy'],
+                "awardMessage": data['awardMessage'],
+                "hasAcceptedAnswer": data['hasAcceptedAnswer'],
+                "pinned": bool(data['pinned']),
+
+                "frozen": bool(data['frozen']),
+                "frozenBy": data['frozenBy'],
+                "frozenMessage": data['frozenMessage'],
+                "frozenAsLock": bool(data['frozenAsLock']),
+
+                "closed": bool(data['closed']),
+                "closureReason": data['closureReason'],
+                "deleted": data['deleted'],
+                "deletionReason": data['deletionReason'],
+
+                "protected": data["protected"],
+                "protectionBy": data["protectionBy"],
+
+                "moderatorNotice": data['moderatorNotice'],
+
+                "order":order
+            }
+        except lite.Error as e:
+            #raise lite.Error from e
+            raise e
+        finally:
+            if con:
+                con.close()
+
+
+    def close(self, msg, who, in_review_final=False):
+        try:
+          con = lite.connect('databases/forum.db')
+          con.row_factory = lite.Row
+          cur = con.cursor()
+          qid = None
+          cur.execute("SELECT * FROM closure_queue WHERE item_id=? AND state=0", (self.id,))
+          qid = cur.fetchone()
+          if qid is None:
+              cur.execute("INSERT INTO closure_queue (item_id, state, result) VALUES (?, 0, 0)", (self.id,))
+              qid = cur.lastrowid
+          else:
+              qid = qid["id"]
+          cur.execute("INSERT INTO closure_flags (item_id, queue_id, state, flagger_id, type, reason, comment) VALUES (?, ?, 0, ?, ?, ?, ?)", (self.id, qid, who.id, "vote", msg["reason"], msg["message"]))
+          con.commit()
+          tps = {
+                  "off-topic": u"nicht in dieses Forum passend",
+                  "unclear": u"unklar",
+                  "too-specific": u"zu spezifisch",
+                  "too-broad": u"zu allgemein"
+              }
+          cur.execute("SELECT * FROM closure_flags WHERE item_id=? AND type='vote' AND state=0", (self.id, ))
+          con.commit()
+          flags = cur.fetchall()
+          num = len(flags)
+          if num == 3 or who.isMod() or in_review_final:
+              cur.execute("UPDATE closure_flags SET state=1 WHERE (reason!='custom' OR type='vote') AND item_id=? AND state=0", (self.id,))
+              cur.execute("UPDATE closure_queue SET state=2, result=6 WHERE item_id=? AND state=0", (self.id, ))
+              con.commit()
+              reasons = []
+              majority_reason = ""
+              comtext = ""
+              for flag in flags:
+                  flagger = muser.User.from_id(flag[4])
+                  reasons.append(flag[6])
+                  if flagger.isMod():
+                      majority_reason = flag[6]
+              if majority_reason == "":
+                  for reason in reasons:
+                      if reasons.count(reason) == 2:
+                          majority_reason = reason
+                          break
+                  if majority_reason == "":
+                      majority_reason = reasons[0]
+              self.setDetail("closed", 1)
+              self.setDetail("closureReason", majority_reason)
+              self.__data = self.getInfo()
+              self.addRevComm("closure", muser.User.from_id(-1), self.getClosureWarning())
+              revcount = self.getRevisionCount()
+              maxClosureThreshold = 2+int(revcount/2)
+              cur.execute("SELECT * FROM article_revisions WHERE articleID=? AND type='closure'", (self.id,))
+              closureEventCount = len(cur.fetchall())
+              print(closureEventCount)
+              if closureEventCount >= maxClosureThreshold:
+                  self.customflag(u"**[automatisch]**: *Umstrittene Schließung* - Dieser Beitrag wurde mehrfach geschlossen und wieder geöffnet.", muser.User.from_id(-2))
+          return True
+        except SyntaxError as e:#lite.Error as e:
+          print(e)
+          return False
+        finally:
+          if con:
+              con.close()
+
+    def closeflag(self, msg, who):
+        try:
+          con = lite.connect('databases/forum.db')
+          con.row_factory = lite.Row
+          cur = con.cursor()
+          qid = None
+          cur.execute("SELECT * FROM closure_queue WHERE item_id=? AND state=0", (self.id,))
+          qid = cur.fetchone()
+          if qid is None:
+              cur.execute("INSERT INTO closure_queue (item_id, state, result) VALUES (?, 0, 0)", (self.id,))
+              qid = cur.lastrowid
+          else:
+              qid = qid["id"]
+          cur.execute("INSERT INTO closure_flags (item_id, queue_id, state, flagger_id, type, reason, comment) VALUES (?, ?, 0, ?, ?, ?, ?)", (self.id, qid, who.id, "flag", msg["reason"], msg["message"]))
+          con.commit()
+          return True
+        except lite.Error as e:
+          print(e)
+          return False
+        finally:
+          if con:
+              con.close()
+
+    def delvote(self, who, in_review_final=False):
+        try:
+          con = lite.connect('databases/forum.db')
+          con.row_factory = lite.Row
+          cur = con.cursor()
+          qid = None
+          cur.execute("SELECT * FROM post_deletion_queue WHERE item_id=? AND state=0", (self.id,))
+          qid = cur.fetchone()
+          if qid is None:
+              cur.execute("INSERT INTO post_deletion_queue (item_id, state, result) VALUES (?, 0, 0)", (self.id,))
+              qid = cur.lastrowid
+          else:
+              qid = qid["id"]
+          cur.execute("INSERT INTO post_deletion_flags (item_id, queue_id, state, flagger_id, type, reason, comment) VALUES (?, ?, 0, ?, ?, ?, ?)", (self.id, qid, who.id, "vote", "delvote", ""))
+          con.commit()
+          cur.execute("SELECT * FROM post_deletion_flags WHERE item_id=? AND type='vote' AND state=0", (self.id, ))
+          con.commit()
+          flags = cur.fetchall()
+          num = len(flags)
+          if num == 3 or who.isMod() or in_review_final:
+              cur.execute("UPDATE post_deletion_flags SET state=1 WHERE (reason!='custom' OR type='vote') AND item_id=? AND state=0", (self.id,))
+              cur.execute("UPDATE post_deletion_queue SET state=2, result=5 WHERE item_id=? AND state=0", (self.id, ))
+              con.commit()
+              self.setDetail("deleted", 1)
+              self.setDetail("deletionReason", "vote")
+              self.__data = self.getInfo()
+              self.addRevComm("deleted", muser.User.from_id(-1), self.getDeleteMessage())
+              revcount = self.getRevisionCount()
+              maxDeletionThreshold = 2+int(revcount/2)
+              cur.execute("SELECT * FROM article_revisions WHERE articleID=? AND type='deletion'", (self.id,))
+              deletionEventCount = len(cur.fetchall())
+              if deletionEventCount >= maxDeletionThreshold:
+                  self.customflag(u"**[automatisch]**: *Umstrittene Löschung* - Dieser Beitrag wurde mehrfach gelöscht und un-gelöscht.", muser.User.from_id(-2))
+          return True
+        except SyntaxError as e:#lite.Error as e:
+          print(e)
+          return False
+        finally:
+          if con:
+              con.close()
+
+    def undelvote(self, who, in_review_final=False):
+          try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            qid = None
+            cur.execute("SELECT * FROM post_undeletion_queue WHERE item_id=? AND state=0", (self.id,))
+            qid = cur.fetchone()
+            if qid is None:
+                cur.execute("INSERT INTO post_undeletion_queue (item_id, state, result) VALUES (?, 0, 0)", (self.id,))
+                qid = cur.lastrowid
+            else:
+                qid = qid["id"]
+            cur.execute("INSERT INTO post_undeletion_flags (item_id, queue_id, state, flagger_id, type, reason, comment) VALUES (?, ?, 0, ?, ?, ?, ?)", (self.id, qid, who.id, "vote", "voted", ""))
+            con.commit()
+            cur.execute("SELECT * FROM post_undeletion_flags WHERE item_id=? AND type='vote' AND state=0", (self.id, ))
+            con.commit()
+            all = cur.fetchall()
+            num = len(all)
+            if num == 3 or who.isMod() or in_review_final:
+                cur.execute("UPDATE post_undeletion_flags SET state=1 WHERE item_id=? AND state=0", (self.id,))
+                cur.execute("UPDATE post_deletion_flags SET state=2 WHERE item_id=? AND state=1", (self.id,))
+                cur.execute("UPDATE post_undeletion_queue SET state=2, result=6 WHERE item_id=? AND state=0", (self.id, ))
+                con.commit()
+                self.setDetail("deleted", 0)
+                voters = ""
+                for flag in all:
+                    if flag["type"] != "vote":
+                        continue
+                    flagger = muser.User.from_id(flag["flagger_id"])
+                    voters += ", ["+flagger.getHTMLName()+"](/u/"+str(flagger.id)+")"
+                self.addRevComm("undeleted", muser.User.from_id(-1), voters[2:])
+            return True
+          except lite.Error as e:
+            print(e)
+            return False
+          finally:
+            if con:
+                con.close()
+
+    def customflag(self, msg, who):
+        try:
+          con = lite.connect('databases/user.db')
+          con.row_factory = lite.Row
+          cur = con.cursor()
+          qid = None
+          cur.execute("SELECT * FROM custom_flaglist WHERE item_id=? AND item_type='forum.question' AND state=0", (self.id,))
+          qid = cur.fetchone()
+          if qid is None:
+              cur.execute("INSERT INTO custom_flaglist (item_id, item_type, state) VALUES (?, 'forum.question', 0)", (self.id,))
+              qid = cur.lastrowid
+          else:
+              qid = qid["id"]
+          cur.execute("INSERT INTO custom_flag (item_id, item_type, queue_id, state, flagger_id, comment) VALUES (?, 'forum.question', ?, 0, ?, ?)", (self.id, qid, who.id, msg))
+          con.commit()
+          return True
+        except SyntaxError as e:#lite.Error as e:
+          print(e)
+          return False
+        finally:
+          if con:
+              con.close()
+
+    def reopen(self, who, in_review_final=False):
+          try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            qid = None
+            cur.execute("SELECT * FROM reopen_queue WHERE item_id=? AND state=0", (self.id,))
+            qid = cur.fetchone()
+            if qid is None:
+                cur.execute("INSERT INTO reopen_queue (item_id, state, result) VALUES (?, 0, 0)", (self.id,))
+                qid = cur.lastrowid
+            else:
+                qid = qid["id"]
+            cur.execute("INSERT INTO reopen_flags (item_id, queue_id, state, flagger_id, type, reason, comment) VALUES (?, ?, 0, ?, ?, ?, ?)", (self.id, qid, who.id, "vote", "voted", ""))
+            con.commit()
+            cur.execute("SELECT * FROM reopen_flags WHERE item_id=? AND type='vote' AND state=0", (self.id, ))
+            con.commit()
+            all = cur.fetchall()
+            num = len(all)
+            if num == 3 or who.isMod() or in_review_final:
+                cur.execute("UPDATE reopen_flags SET state=1 WHERE item_id=? AND state=0", (self.id,))
+                cur.execute("UPDATE closure_flags SET state=2 WHERE item_id=? AND state=1", (self.id,))
+                cur.execute("UPDATE reopen_queue SET state=2, result=6 WHERE item_id=? AND state=0", (self.id, ))
+                con.commit()
+                self.setDetail("closed", 0)
+                voters = ""
+                for flag in all:
+                    if flag["type"] != "vote":
+                        continue
+                    flagger = muser.User.from_id(flag["flagger_id"])
+                    voters += ", ["+flagger.getHTMLName()+"](/u/"+str(flagger.id)+")"
+                self.addRevComm("reopened", muser.User.from_id(-1), voters[2:])
+            return True
+          except lite.Error as e:
+            print(e)
+            return False
+          finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def exists(cls, forum_id, id=None):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            if id is not None:
+                cur.execute("SELECT * FROM articles WHERE id=? AND forumID=?", (id,forum_id))
+            else:
+                cur.execute("SELECT * FROM articles WHERE id=?", (forum_id,))
+            data = cur.fetchone()
+            return data is not None
+        except lite.Error as e:
+            print(e)
+            return False
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def createNew(cls, forumID, title, content, tags, user):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("INSERT INTO articles (forumID, title, author, score, content, tags, awardRep, awardBy, awardMessage, awardStarted, awardEnded, hasAcceptedAnswer, pinned, frozen, frozenBy, frozenMessage, frozenAsLock, closed, closureReason, deleted, deletionReason, protected, protectionBy, moderatorNotice) VALUES (?, ?, ?, 0, ?, ?, 0, 0, '', 0, 0, 0, 0, 0, 0, '', 0, 0, '', 0, '', 0, 0, '')", (forumID, title, user.id, content, tags))
+            con.commit()
+            return cls(cur.lastrowid)
+        except lite.Error as e:
+            print(e)
+            return False
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def getAll(cls, deleted=True):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            if not deleted:
+                cur.execute("SELECT id FROM articles WHERE deleted=0")
+            else:
+                cur.execute("SELECT id FROM articles")
+            data = list(map(lambda x: cls(x["id"]), cur.fetchall()))
+            return data
+        except lite.Error as e:
+            print(e)
+            return []
+        finally:
+            if con:
+                con.close()
+
+class Forum:
+
+    def __init__(self, id):
+        self.id = id
+        self.__data = self.getInfo()
+
+    def getDetail(self, d):
+        return self.__data[d]
+
+    def getTitle(self):
+        return self.getDetail("name")
+
+    def getLabel(self):
+        return self.getDetail("label")
+
+    def getByLine(self):
+        return self.getDetail("byline")
+
+    def getTopic(self):
+        if self.id == 0:
+            return None
+
+        return mcourses.Courses(self.id).getTopic()
+
+    def getArticles(self, q=False, sort=False):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            # TODO: apply activity search
+            if q:
+                q = "%"+q+"%"
+                cur.execute("SELECT id FROM articles WHERE forumID=? AND (content LIKE ? OR title LIKE ?) ORDER BY pinned DESC, score DESC, id DESC", (self.id, q, q))
+            else:
+                cur.execute("SELECT id FROM articles WHERE forumID=? ORDER BY pinned DESC, score DESC, id DESC", (self.id, ))
+            data = cur.fetchall()
+            l = list(map(lambda x:Article(x[0]), data))
+            if sort != False:
+                if sort == "active":
+                    l = sorted(l, key=lambda x: x.getDetail("order"), reverse=True)
+                elif sort == "latest":
+                    l = sorted(l, key=lambda x: x.id, reverse=True)
+                elif sort == "score":
+                    l = sorted(l, key=lambda x: x.getDetail("score"), reverse=True)
+                l = sorted(l, key=lambda x: x.getDetail("deleted"))
+            return l
+        except lite.Error as e:
+            return []
+        finally:
+            if con:
+                con.close()
+
+    def getPinnedArticles(self):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT id FROM articles WHERE pinned=1 AND forumID=? ORDER BY score DESC, id DESC", (self.id, ))
+            data = cur.fetchall()
+            return list(map(lambda x:Article(x[0]), data))
+        except lite.Error as e:
+            return []
+        finally:
+            if con:
+                con.close()
+
+    def getCoursePinnedArticles(self, user):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT courseid FROM enrollments WHERE userid=?", (user.id, ))
+            dl = cur.fetchall()
+        except lite.Error as e:
+            print(e)
+            return []
+        finally:
+            if con:
+                con.close()
+
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            data = []
+            for dll in dl:
+                cur.execute("SELECT id FROM articles WHERE pinned=1 AND forumID=?  ORDER BY score DESC, id DESC", (dll[0], ))
+                dldata = cur.fetchall()
+                data.extend(dldata)
+            return list(map(lambda x:Article(x[0]), data))
+        except lite.Error as e:#
+            print(e)
+            return []
+        finally:
+            if con:
+                con.close()
+
+    def getInfo(self):
+        if self.id != 0:
+            c = mcourses.Courses(self.id)
+            return {
+                "id": self.id,
+                "name": c.getTitle(),
+                "label": c.getLabel(),
+                "byline": c.getByLine()
+            }
+        else:
+            return {
+                "id": self.id,
+                "label":"global",
+                "name": "globales Forum",
+                "byline": u"für alle Fragen zu π-Learn selber und für Fehlermeldungen oder Verbesserungsideen"
+            }
+
+    @classmethod
+    def global_(cls):
+        return cls(0)
+
+    @classmethod
+    def from_id(cls, id):
+        return cls(id)
+
+    @classmethod
+    def exists(cls, id):
+        if id == 0:
+            return True
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM courses WHERE id=?", (id,))
+            data = cur.fetchone()
+            return data is not None
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
+
+
+
+
+
+
+
+
+class ForumComment:
+
+    def __init__(self, id):
+        self.id = id
+        self.__data = self.getInfo()
+
+    def getDetail(self, d):
+        return self.__data[d]
+
+    def setDetail(self, d, v):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("UPDATE forum_comments SET "+d+"=? WHERE id=?", (v, self.id))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def getScore(self):
+        return self.getDetail("comment_score")
+
+    def getContent(self):
+        return self.getDetail("content")
+
+    def getCreationTime(self):
+        t = self.getDetail("creation_time")
+        return [t, ctimes.stamp2german(t), ctimes.stamp2relative(t)]
+
+    def getAuthor(self):
+        return muser.User.from_id(self.getDetail("comment_author"))
+
+    def isDeleted(self):
+        return self.getDetail("deleted") == 1
+
+    def getDeletedBy(self):
+        return muser.User.from_id(self.getDetail("deletedby"))
+
+    def getInfo(self):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM forum_comments WHERE id=?", (self.id, ))
+            data = cur.fetchone()
+            if data is None:
+                raise ValueError("ForumComment not found with id " + str(self.id))
+            return {
+                "id": data['id'],
+                "post_type": data['post_type'],
+                "post_id": data['post_id'],
+                "post_forum": data['post_forum'],
+                "comment_score": data['comment_score'],
+                "comment_author": data['comment_author'],
+                "deleted": data['deleted'],
+                "deletedby": data['deletedby'],
+                "annoyingness": data['annoyingness'],
+                "creation_time": data['creation_time'],
+                "content": data['content']
+            }
+        except lite.Error as e:
+            #raise lite.Error from e
+            raise e
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def byPost(cls, post_type, post_id, is_mod):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            if is_mod:
+                cur.execute("SELECT * FROM forum_comments WHERE post_type=? AND post_id=?", (post_type, post_id))
+            else:
+                cur.execute("SELECT * FROM forum_comments WHERE post_type=? AND post_id=? AND deleted=0", (post_type, post_id))
+            data = cur.fetchall()
+            return [cls(_["id"]) for _ in data]
+        except lite.Error as e:
+            print(e)
+            return []
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def createNew(cls, post_type, post_id, post_forum, author, content):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("INSERT INTO forum_comments (post_type, post_id, post_forum, comment_score, comment_author, deleted, deletedby, annoyingness, creation_time, content) VALUES (?, ?, ?, 0, ?, 0, 0, 0, ?, ?)", (post_type, post_id, post_forum, author, time.time(), content))
+            con.commit()
+            return cls(cur.lastrowid)
+        except lite.Error as e:
+            print(e)
+            return False
+        finally:
+            if con:
+                con.close()
+
+    @staticmethod
+    def getCommentCounts(post_type, post_id):
+        try:
+            con = lite.connect('databases/forum.db')
+            cur = con.cursor()
+            cur.execute("SELECT COUNT(*), SUM(deleted), COUNT(*)-SUM(deleted) FROM forum_comments WHERE post_type=? AND post_id=?", (post_type, post_id))
+            data = cur.fetchone()
+            return int(data[0] if data[0] else "0"),int(data[1] if data[1] else "0"),int(data[2] if data[2] else "0")
+        except lite.Error as e:
+            print(e)
+            return [0,0,0]
+        finally:
+            if con:
+                con.close()

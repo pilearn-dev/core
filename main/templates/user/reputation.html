@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if data.isDeleted() %}
+<div class="deleted-section">
+    <div class="error">
+      <p>Dieser Benutzeraccount wurde gelöscht.</p>
+    </div>
+{% elif data.isDisabled() %}
+  <div class="user-warning">{% set end=data.getBanEnd(True) %}
+      <p>Dieser Benutzer wurde <strong>{{ data.getBanReason() }}</strong> <span title="{{ end[1] }}">{{ end[2] }}</span> <a href="/help/users/banned">gesperrt.</a></p>
+    </div>
+{% endif %}
+<div class="tabination">
+  <ul>
+    <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}">Profil</a></li>
+    <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/flags">Meldungen</a></li>
+    <li class="active"><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/reputation">Reputation</a></li>
+    {% if user.isAdmin() %}
+    <li><a href="/tools/user/ops/{{ data.id }}" target="_blank"><em>AdminOps</em></a></li>
+    {% else %}
+    <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/delete">Löschen</a></li>
+    {% endif %}
+  </ul>
+</div>
+<h2>{{ data.getHTMLName()|safe }}</h2>
+{% set repchgs = data.getReputationChanges() %}
+{% if repchgs|length == 0 %}
+  <p>{{ data.getHTMLName()|safe }} hat bisher noch keine Reputation gesammelt.</p>
+{% else %}
+<p>{{ data.getDetail("realname") }} hat insgesamt <strong>{{ data.getReputation() }}</strong> Reputationspunkte.</p>
+<div class="timeline">
+{% for change in repchgs %}
+  <div class="timeline-item {% if change.amount > 0 %}is-positive{% elif change.amount < 0 %}is-negative{% endif %}">
+    <h3>{{ user.repActions[change.type] }}: <strong>{% if change.amount > 0 %}+{% endif %}{{ change.amount }}</strong></h3>
+    {{ change.message|markdown }}
+  </div>
+{% endfor %}
+{% endif %}
+</div>
+{% if data.isDeleted() %}
+</div>
+{% endif %}
+{% endblock %}

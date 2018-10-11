@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h2 class="bigheading">Moderation</h2>
+    {% if action=="test-failure" %}
+        <div class="error">
+            <h3>Oh nein!</h3>
+            <p>Das war ein Test. Leider haben Sie eine <strong>falsche Entscheidung</strong> getroffen.</p>
+            <p>Wir empfehlen die Lektüre von <a href="/help/review/{{ single_queue.url }}">Moderationshinweisen für {{ single_queue.name }}</a></p>
+            <p class="tiny">Wenn Sie häufiger Tests nicht bestehen, kann ihnen das Recht in dieser Liste zu arbeiten entzogen werden</p>
+        </div>
+    {% elif action=="test-failure-banned" %}
+        <div class="error">
+            <h3>Oh nein!</h3>
+            <p>Das war ein Test. Leider haben Sie eine <strong>falsche Entscheidung</strong> getroffen.</p>
+            <p>Das System hat ihnen kurzzeitig das Recht entzogen, weiter in dieser Moderationsliste zu arbeiten. Diese Sperrung endet heute um Mitternacht. Andere Benutzer können dies nicht sehen (außer Administratoren).</p>
+            <p style="font-weight: bold;">Bevor Sie weiter in dieser Moderationsliste arbeiten, sollten Sie sich die <a href="/help/review/{{ single_queue.url }}">Moderationshinweise für {{ single_queue.name }}</a> durchlesen!</p>
+        </div>
+    {% elif action=="test-passed" %}
+        <div class="success">
+            <h3>Herzlichen Glückwunsch!</h3>
+            <p>Das war ein Test. Sie haben eine <strong>richtige Entscheidung</strong> getroffen.</p>
+            <p class="tiny">Trotzdem empfehlen wir die Lektüre von <a href="/help/review/{{ single_queue.url }}">Moderationshinweisen für {{ single_queue.name }}</a></p>
+        </div>
+    {% endif %}
+    <div class="review-grid">
+      {% for review in queues %}
+          <div class="review-grid-item{% if review.queue.getOpenCount(user) > review.critical_open %} important{% endif %}">
+                <div class="review-grid-item-panel">
+                    <h3>{{ review.name }}</h3>
+                    {{ review.desc|markdown }}
+                    <p class="open"><span class="number">{{ review.queue.getOpenCount(user) }}</span> offene Meldungen</p>
+                    {% if user.may(review.required_privilege) %}
+                      <a href="/review/{{ review.url }}/start"><button class="primary-btn block-btn big-btn">Los &raquo;</button></a>
+                    {% elif user.may(review.required_privilege, True) %}
+                      <p class="error tiny">
+                        Du wurdest vom Bearbeiten von Meldungen dieses Typs gesperrt.
+                      </p>
+                    {% else %}
+                    <p>Du benötigts mindestens {{ privileges[review.required_privilege] }} Reputationspunkte um diese Liste zu bearbeiten.</p>
+                    {% endif %}
+                </div>
+          </div>
+      {% endfor %}
+    </div>
+{% endblock %}

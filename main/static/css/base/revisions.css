@@ -1,0 +1,88 @@
+/* Revision lists */
+
+.revision-list {
+  padding: 2px;
+}
+.revision-list .revision {
+  padding: 5px;
+  margin: 1px 1px;
+  border: 2px solid #446;
+}
+.revision-list .revision.no-edit {
+  border: 2px solid #aac;
+}
+.revision-list .revision.mark {
+  border: 2px solid #a44;
+}
+.revision-list .revision h3.primary {
+  background-color: #446;
+  color: white;
+  margin: -5px;
+  margin-bottom: 5px;
+  padding: 10px;
+}
+.revision-list .revision h3.primary a {
+  background-color: #446;
+  color: #cce;
+}
+.revision-list .revision.no-edit h3.primary {
+  background-color: #aac;
+  color: white;
+}
+.revision-list .revision.no-edit h3.primary a {
+  background-color: #aac;
+  color: #335;
+}
+.revision-list .revision.mark h3.primary {
+  background-color: #a44;
+  color: white;
+}
+.revision-list .revision.mark h3.primary a {
+  background-color: #a44;
+  color: #ecc;
+}
+.revision-list .revision.no-padbot h3.primary {
+  margin-bottom: -5px;
+}
+.revision-list .revision .comment {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+}
+.revision-list .revision .title {
+  margin: 2px 0;
+  font-size: 20px;
+}
+.revision-list .revision .content {
+  font-size: 16px;
+  line-height: 1;
+  margin: 0;
+}
+.revision-list .revision .content div {
+  margin: 0;
+}
+.revision-list .revision .content .diff-added {
+  background-color: #afa;
+  border-left: 4px solid #6f6;
+  margin: 2px 0;
+  padding: 2px;
+}
+.revision-list .revision .content .diff-removed {
+  background-color: #faa;
+  border-left: 4px solid #f66;
+  margin: 2px 0;
+  padding: 2px;
+}
+
+.revision-list .revision .title .diff-added {
+  display: inline-block;
+  background-color: #afa;
+  margin: 4px 2px;
+  padding: 2px;
+}
+.revision-list .revision .title .diff-removed {
+  display: inline-block;
+  background-color: #faa;
+  margin: 4px 2px;
+  padding: 2px;
+}

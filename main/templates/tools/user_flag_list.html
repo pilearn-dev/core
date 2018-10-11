@@ -1,0 +1,32 @@
+{% from "tools/_macro.html" import tools__nav %}
+{% extends "layout.html" %}
+{% block body %}
+    {{ tools__nav("user", user) }}
+    <h2>Werkzeuge &ndash; Benutzermeldungen</h2>
+    <div class="split-screen">
+      <aside>
+        <ol>
+          <li><a href="/tools/user/flags">Meldungen</a></li>
+          <li><a href="/tools/user/search">Suche</a></li>
+        </ol>
+      </aside>
+      <main>
+        <h3>Neue Benutzermeldungen</h3>
+        {% for f in flagged[:100] %}
+        <div class="user-list">
+          {% if f.user.getDetail("profile_image") %}
+              <img src="{{ f.user.getDetail("profile_image") }}" alt="">
+          {% else %}
+              <i class="fa fa-user fa-2x fa-fw" aria-hidden="true"></i>
+          {% endif %}
+          <a href="/u/{{ f.user.id }}">{{ f.user.getDetail("realname") }}</a>
+          {% if f.state == 0 %}
+          <button onclick="location.href='/tools/user/flags/{{ f.id }}';" class="primary-btn"><i class="fa fa-arrow-right fa-fw"></i></button>
+          {% else %}
+          <button onclick="location.href='/tools/user/flags/{{ f.id }}';"><i class="fa fa-eye fa-fw"></i></button>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </main>
+    </div>
+{% endblock %}

@@ -1,0 +1,127 @@
+.iad-wrapper {
+  display: flex;
+  border: 1px solid #74bc71;
+  overflow: hidden;
+  transition: opacity .4s ease, filter .4s ease;
+}
+.iad-wrapper.declined {
+  opacity: 0.3;
+  filter: blur(2px);
+  pointer-events: none;
+  -moz-user-select: none;
+}
+.iad-wrapper .iad-left-board {
+  background-color: #a7efa4;
+  flex-grow: 1;
+  padding: 5px;
+}
+.iad-wrapper .iad-left-board .iad-inner-board {
+  border: 1px solid #85cd82;
+  background-color: white;
+  padding: 3px 5px;
+  max-width: 80%;
+  height: 100%;
+}
+.iad-wrapper .iad-left-board .iad-heading {
+  color: #666;
+  font-size: 22px;
+}
+.iad-wrapper .iad-left-board .iad-heading a {
+  color: inherit;
+}
+.iad-wrapper .iad-left-board .iad-topic {
+  color: #666;
+  font-size: 14px;
+}
+.iad-wrapper .iad-left-board .iad-sponsorship {
+  color: #cb4;
+  padding: 3px 10px;
+  border: 2px solid #ed6;
+  border-radius: 5px;
+  display: inline-block;
+  font-size: 13px;
+}
+.iad-wrapper .iad-left-board .iad-description {
+  color: #666;
+  font-size: 15px;
+}
+.iad-wrapper .iad-split {
+  width: 0px;
+  height: 0;
+  align-self: center;
+  border-style: solid;
+  border-width: 120px 0 0 70px;
+  border-color: transparent transparent transparent #a7efa4;
+}
+.iad-wrapper .iad-action-board {
+  background-color: white;
+  padding: 10px 5px;
+  display: flex;
+  flex-direction: column;
+}
+.iad-wrapper .iad-action-board a.iad-action {
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  background-color: #fc3;
+  display: inline-block;
+  font-size: 16px;
+  box-shadow: 0 4 auto rgba(0, 0, 0, 0.1) inset;
+}
+.iad-wrapper .iad-action-board a.iad-dismissal {
+  color: #666;
+  margin: 2px;
+  text-align: center;
+  padding: 2px;
+  font-size: 13px;
+}
+.iad-wrapper .iad-action-board .iad-spacer {
+  flex-grow: 1;
+}
+.iad-wrapper .iad-action-board .iad-notice {
+  color: #aaa;
+  font-size: 12px;
+  text-align: right;
+}
+
+
+@media all and (max-width: 800px) {
+  .iad-wrapper {
+    flex-direction: column;
+  }
+  .iad-wrapper .iad-left-board {
+    padding: 2px;
+  }
+  .iad-wrapper .iad-left-board .iad-inner-board {
+    max-width: 100%;
+    padding: 3px;
+  }
+  .iad-wrapper .iad-left-board .iad-inner-board .iad-heading {
+    font-size: 16px;
+  }
+  .iad-wrapper .iad-left-board .iad-inner-board .iad-topic {
+    font-size: 12px;
+  }
+  .iad-wrapper .iad-left-board .iad-inner-board .iad-description {
+    font-size: 14px;
+  }
+  .iad-wrapper .iad-left-board .iad-inner-board .iad-sponsorship {
+    padding: 1px 5px;
+    font-size: 12px;
+  }
+  .iad-wrapper .iad-split {
+    display: none;
+  }
+  .iad-wrapper .iad-action-board {
+    flex-direction: row;
+    align-items: center;
+    padding: 5px;
+  }
+  .iad-wrapper .iad-action-board a {
+    flex-grow: 1;
+    text-align: center;
+  }
+  .iad-wrapper .iad-action-board .iad-notice, .iad-wrapper .iad-action-board .iad-spacer {
+    display: none;
+  }
+}

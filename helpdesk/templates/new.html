@@ -1,0 +1,238 @@
+{% extends "layout.html" %}
+{% block body %}
+<script src="/static/js/systemerror.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="/static/css/simplemde.min.css">
+    <script src="/static/js/simplemde.min.js"></script>
+    <h2>Neues Ticket</h2>
+    <div id="step_choose_type">
+      <p>Bitte wähle die Art von Anfrage, die du starten möchtest.</p>
+      <div class="big-selection-button" onclick="hide('step_choose_type');show('step_support_input');">
+        <h4>Support-Anfrage</h4>
+        <p>Ich habe ein technisches Problem/eine Frage. Diese Frage möchte ich nicht öffentlich stellen.</p>
+      </div>
+      <div class="big-selection-button" onclick="hide('step_choose_type');show('step_dsgvo_input');">
+        <h4>DSGVO-Anfrage</h4>
+        <p>Ich habe eine Anfrage gemäß der europäischen Datenschutzgrundverordnung.</p>
+      </div>
+      {% if user.isAdmin() %}
+      <div class="big-selection-button" onclick="hide('step_choose_type');show('step_pm_input');">
+        <h4>PM</h4>
+        <p>Ein Benutzer muss wegen groben Fehlverhaltens kontaktiert werden.</p>
+      </div>
+      {% endif %}
+      {% if user.isDev() %}
+      <div class="big-selection-button" onclick="hide('step_choose_type');show('step_ping_input');">
+        <h4>Benutzer-PING</h4>
+        <p>Ich möchte eine Nachricht an alle Moderatoren oder Administratoren senden.</p>
+      </div>
+      <div class="big-selection-button" onclick="hide('step_choose_type');generate('legal');">
+        <h4>Vertrag</h4>
+        <p>Ich möchte einen Vertrag aufsetzen.</p>
+      </div>
+      {% endif %}
+      <div class="big-selection-button" onclick="hide('step_choose_type');generate('other');">
+        <h4>Anderes</h4>
+        <p>Ich möchte aus einem anderen Grund mit Ihnen in Kontakt treten.</p>
+      </div>
+    </div>
+    <div id="step_support_input" hidden>
+      <h3>Support-Anfrage</h3>
+      <p><strong>Was genau</strong> ist passiert?</p>
+      <textarea id="support_what"></textarea>
+      <p><strong>Wie und wo</strong> lässt sich das reproduzieren (bei technischem Support)?</p>
+      <textarea id="support_how"></textarea>
+      <p>Möchtest du noch etwas hinzufügen?</p>
+      <textarea id="support_other"></textarea>
+      <button onclick="hide('step_support_input');show('step_choose_type');">&laquo; Zurück</button> <button onclick="hide('step_support_input');generate('support');" class="primary-btn">Weiter &raquo;</button>
+    </div>
+    <div id="step_dsgvo_input" hidden>
+      <h3>DSGVO-Anfrage</h3>
+      <p>Bitte wählen Sie die Art der Anfrage:</p>
+      <div id="dsgvo_type">
+        <label for="dsgvo_type_get"><input name="dsgvo_type" id="dsgvo_type_get" value="get" type="radio"> Auskunft</label>
+        <label for="dsgvo_type_delete"><input name="dsgvo_type" id="dsgvo_type_delete" value="delete" type="radio"> Löschung</label>
+        <label for="dsgvo_type_change"><input name="dsgvo_type" id="dsgvo_type_change" value="change" type="radio"> Änderung</label>
+      </div>
+      <p>Auf welche Datenfelder (nach unseren <a href="/help/data/info">Datenschutzrichtlinien</a>) richtet sich diese Anfrage? <em>(ein Feld pro Zeile)</em></p>
+      <textarea id="dsgvo_what"></textarea>
+      <p>Möchten Sie noch etwas hinzufügen</p>
+      <textarea id="dsgvo_other"></textarea>
+      <p><strong>Hinweis:</strong> Bei Änderungs-Anfragen erhalten Sie zuerst eine Datenauskunft, bevor Sie diese korrigieren können, es sei denn, Sie schreiben die neuen Daten ausdrücklich in das obige Eingabefeld.</p>
+      <button onclick="hide('step_dsgvo_input');show('step_choose_type');">&laquo; Zurück</button> <button onclick="hide('step_dsgvo_input');generate('dsgvo');" class="primary-btn">Weiter &raquo;</button>
+    </div>
+    <div id="step_dsgvo_input" hidden>
+    </div>
+    {% if user.isAdmin() %}
+    <div id="step_pm_input" hidden>
+      <h3>Benutzer-PM</h3>
+      <p>Bitte geben Sie die ID des Benutzers ein, den Sie kontaktieren möchten:</p>
+      <input type="number" id="pm_user_id">
+      <p>Bitte geben Sie den Benutzernamen des Benutzers ein, den Sie kontaktieren möchten:</p>
+      <input id="pm_user_name">
+      <p>Bitte wählen Sie einen Kontaktgrund:</p>
+      <div id="pm_reason">
+        <label for="pm_reason_calm"><input name="pm_reason" id="pm_reason_calm" value="calm" type="radio"> Bitte um Konflikauflösung</label>
+        <label for="pm_reason_spamwarn"><input name="pm_reason" id="pm_reason_spamwarn" value="spamwarn" type="radio"> Warnung wegen SPAM</label>
+        <label for="pm_reason_offensivewarn"><input name="pm_reason" id="pm_reason_offensivewarn" value="offensivewarn" type="radio"> Warnung wegen Beleidigungen</label>
+        <label for="pm_reason_fraudwarn"><input name="pm_reason" id="pm_reason_fraudwarn" value="fraudwarn" type="radio"> Warnung wegen Regelverletzung</label>
+        <label for="pm_reason_sockwarn"><input name="pm_reason" id="pm_reason_sockwarn" value="sockwarn" type="radio"> Warnung wegen Doppelbenutzer</label>
+        <label for="pm_reason_spamban"><input name="pm_reason" id="pm_reason_spamban" value="spamban" type="radio"> Sperrung wegen SPAM</label>
+        <label for="pm_reason_offensiveban"><input name="pm_reason" id="pm_reason_offensiveban" value="offensiveban" type="radio"> Sperrung wegen Beleidigungen</label>
+        <label for="pm_reason_fraudban"><input name="pm_reason" id="pm_reason_fraudban" value="fraudban" type="radio"> Sperrung wegen Regelverletzung</label>
+        <label for="pm_reason_sockban"><input name="pm_reason" id="pm_reason_sockban" value="sockban" type="radio"> Sperrung wegen Doppelbenutzer</label>
+      </div>&nbsp;<br>
+      <button onclick="hide('step_pm_input');show('step_choose_type');">&laquo; Zurück</button> <button onclick="hide('step_pm_input');generate('pm');" class="primary-btn">Weiter &raquo;</button>
+    </div>
+    {% endif %}
+    {% if user.isDev() %}
+    <div id="step_ping_input" hidden>
+      <h3>Benutzergruppen-PING</h3>
+      <p>Welche Benutzergruppe soll kontaktiert werden?</p>
+      <div id="ping_group">
+        <label for="ping_group_mod"><input name="ping_group" id="ping_group_mod" value="mod" type="radio"> Moderatoren</label>
+        <label for="ping_group_admin"><input name="ping_group" id="ping_group_admin" value="admin" type="radio"> Administratoren</label>
+        <label for="ping_group_both"><input name="ping_group" id="ping_group_both" value="both" type="radio"> Moderatoren & Administratoren</label>
+      </div>
+      <button onclick="hide('step_ping_input');show('step_choose_type');">&laquo; Zurück</button> <button onclick="hide('step_ping_input');generate('ping');" class="primary-btn">Weiter &raquo;</button>
+    </div>
+    {% endif %}
+    <div id="step_final_review">
+      <p id="final_notes"></p>
+      <textarea id="final_content" style="min-height: 300px;"></textarea>
+      <p>Wähle eine Überschrift für deine Anfrage</p>
+      <input type="text" id="the_title">
+      <input type="hidden" id="the_type">
+      <button onclick="hide('step_final_review');send();" class="primary-btn">Absenden &raquo;</button>
+    </div>
+    <script>
+    function show(el) {
+      document.getElementById(el).removeAttribute("hidden")
+    }
+    function hide(el) {
+      document.getElementById(el).setAttribute("hidden", "hidden")
+    }
+    function generate(action) {
+      if(action == "support") {
+        text = "Hallo,\n\nich habe eine Frage zur Benutzung der &pi;-Learn Webseite.\n\n**Ich habe dies gemacht:**\n\n" + document.getElementById("support_how").value + "\n\n**Dabei ist das passiert:**\n\n" + document.getElementById("support_what").value + "\n\n" + document.getElementById("support_other").value + "\n\nBitte helfen Sie mir. Vielen Dank";
+
+        document.getElementById("final_notes").innerHTML = "Bitte überprüfe deine Anfrage, bevor du sie abschickst:";
+      } else if(action == "other") {
+        document.getElementById("final_notes").innerHTML = "Was willst du uns mitteilen? Bitte sei so spezifisch wie möglich.";
+        text = "";
+      } else if(action == "dsgvo") {
+        type = document.querySelector("#dsgvo_type input:checked");
+        if(type == null) {
+          show('step_dsgvo_input');
+          return;
+        }
+        type = type.value;
+        if(type == "get") {
+          what = document.getElementById("dsgvo_what").value
+          what = "- " + what.split("\n").join("\n- ")
+          text = "Hallo,\n\nich würde gerne Einsicht in einige von Ihnen gespeicherte Daten erhalten:\n\n" + what + "\n\nBitte teilen Sie mir die für mich gespeicherten Werte in diesen Datenfeldern schnellstmöglich mit.\n\n" + document.getElementById("support_other").value + "\n\nVielen Dank";
+        } else if(type == "delete") {
+          what = document.getElementById("dsgvo_what").value
+          what = "- " + what.split("\n").join("\n- ")
+          text = "Hallo,\n\nich würde gerne die Löschung von einigen der von Ihnen gespeicherte Daten erreichen:\n\n" + what + "\n\nBitte teilen Sie mir die für mich gespeicherten Werte in diesen Datenfeldern schnellstmöglich mit und löschen sie diese. Falls dies aus verschiedensten Gründen nicht direkt möglich sein sollte, teilen sie mir bitte mit, was ich tun kann, um diese Daten zu entfernen/anonymisieren.\n\n" + document.getElementById("support_other").value + "\n\nVielen Dank";
+        } else if(type == "change") {
+          what = document.getElementById("dsgvo_what").value
+          what = "- " + what.split("\n").join("\n- ")
+          text = "Hallo,\n\nich würde gerne die Änderung von einigen der von Ihnen gespeicherte Daten erreichen:\n\n" + what + "\n\nBitte teilen Sie mir die für mich gespeicherten Werte in diesen Datenfeldern schnellstmöglich mit, ich werde Ihnen dann mitteilen, wozu ich diese Daten geändert haben möchte.\n\n" + document.getElementById("support_other").value + "\n\nVielen Dank";
+        }
+
+        document.getElementById("final_notes").innerHTML = "Bitte überprüfe deine Anfrage, bevor du sie abschickst:";
+      } else if(action == "pm") {
+        type = document.querySelector("#pm_reason input:checked");
+        if(type == null) {
+          show('step_pm_input');
+          return;
+        }
+        type = type.value;
+        PM_TEXTS = {
+          "calm": "In letzter Zeit kam es vor, dass du etwas überreagiert hast und dadurch Konflikte ausgelöst oder verschlimmert hast. Das ist an sich nichts schlimmes, jeder ist manchmal wütend. Aber dein Verhalten war teilweise grenzwertig und hat unsere [Inhaltsrichtlinien](/help/content-policy) verletzt.\n\nWir gehen davon aus, dass dies nicht absichtlich geschehen ist. Doch um dich daran zu erinnern, nett zu bleiben, schicken wir dir diese Nachricht.\n\nWenn du der Meinung bist, dass andere Nutzer dich provozieren, kannst du dies jederzeit melden. Wir werden uns dann darum kümmern.\n\nViel Spaß,  \nDas &pi;-Learn Administratoren-Team",
+
+          "spamwarn": "Es scheint, dass du deine eigenen Produkte/deine eigene Firma auf &pi;-Learn anwerben möchtest. Das ist [unter bestimmten Bedingungen](/help/content-policy) in Ordnung, wird aber nicht so gerne gesehen.\n\nWusstest du, dass du ganz legitim auf &pi;-Learn werben kannst, wenn du eine [Sponsoren-Partnerschaft](/help/course/sponsored) eingehst? Ansonsten müssen wir dich aber bitten, keine Werbung auf &pi;-Learn zu verbreiten.\n\nDas &pi;-Learn Administratoren-Team",
+          "spamban": "Auf &pi;-Learn dürfen Produkte nur [unter bestimmten Bedingungen](/help/content-policy) beworben werden. Du hast diese Bedingungen mehrfach nicht erfüllt und wurdest deshalb auch bereits von uns verwarnt.\n\nDarum haben wir beschlossen, dieses Benutzerkonto für einige Zeit zu [sperren](/help/users/banned). Danach kannst du gerne wieder bei &pi;-Learn mitmachen, solange du unsere Werbe-Bedingungen erfüllst.\n\nDas &pi;-Learn Administratoren-Team",
+
+          "offensivewarn": "Du hast in letzter Zeit häufiger Inhalte veröffentlicht, die von anderen Benutzern als unfreundlich/beleidigend aufgefasst wurden.\n\nWir müssen dich bitten, dies in Zukunft zu unterlassen, da wir wollen, dass &pi;-Learn für alle Menschen ein freundlicher Ort bleibt.\n\nDas &pi;-Learn Administratoren-Team",
+          "offensiveban": "Auf &pi;-Learn dürfen keine [beleidigenden Inhalte](/help/content-policy) veröffentlicht werden. Du hast dies aber mehrfach getan und wurdest deshalb auch bereits von uns verwarnt.\n\nDarum haben wir beschlossen, dieses Benutzerkonto für einige Zeit zu [sperren](/help/users/banned). Danach kannst du gerne wieder bei &pi;-Learn mitmachen, solange du unsere Bedingungen erfüllst.\n\nDas &pi;-Learn Administratoren-Team",
+
+          "fraudwarn": "Du hast gegen die [Nutzungsbedingungen](/help/legal/terms) verstoßen.\n\nDas ist jetzt beim ersten Mal nicht so schlimm, sollte es aber häufiger vorkommen, müssten wir dein Konto [sperren](/help/users/banned). Lies dir doch einfach nochmal die die [Nutzungsbedingungen](/help/legal/terms) durch; wir haben versucht, diese so einfach wie möglich zu formulieren. Verstehst du etwas nicht, frage im [globalen Forum](/f/0) oder nutze dieses Helpdesk.\n\nDas &pi;-Learn Administratoren-Team",
+          "fraudban": "Um auf &pi;-Learn mitzumachen, musst du die [Nutzungsbedingungen](/help/legal/terms) einhalten. Du hast diese aber mehrfach missachtet und wurdest deshalb auch bereits von uns verwarnt.\n\nDarum haben wir beschlossen, dieses Benutzerkonto für einige Zeit zu [sperren](/help/users/banned). Danach kannst du gerne wieder bei &pi;-Learn mitmachen, solange du unsere Teilnahme-Bedingungen erfüllst.\n\nDas &pi;-Learn Administratoren-Team",
+
+          "sockwarn": "Es ist an sich in Ordnung, wenn du mehrere Benutzerkonten erstellst. Auch einige von uns haben mehrere Benutzerkonten, um das System aus der Sicht eines anderen Benutzers zu testen. Allerdings dürfen solche Zweit-Benutzerkonten nicht mit dem Haupt-Benutzerkonto interagieren, da dies zu einem unfairen Vorteil führen könnte. Es ist ebenfalls nicht erlaubt, zwei Benutzerkonten zu verwenden, um zum Beispiel einen Beitrag zwei mal zu bewerten. Du hast dies aber getan und damit gegen die [Nutzungsbedingungen](/help/legal/terms) verstoßen.\n\nDas ist jetzt beim ersten Mal nicht so schlimm, sollte es aber häufiger vorkommen, müssten wir **beide Konten** [sperren](/help/users/banned). Lies dir doch einfach nochmal die die [Nutzungsbedingungen](/help/legal/terms) durch; wir haben versucht, diese so einfach wie möglich zu formulieren. Verstehst du etwas nicht, frage im [globalen Forum](/f/0) oder nutze dieses Helpdesk.\n\nDas &pi;-Learn Administratoren-Team",
+          "sockban": "Auf &pi;-Learn darfst du nur dann mehrere Konten anlegen, wenn sich diese nicht beeinflussen/bevorteilen. Dies steht auch in unseren [Nutzungsbedingungen](/help/legal/terms). Du hast diese Regeln aber mehrfach missachtet und wurdest deshalb auch bereits von uns verwarnt.\n\nDarum haben wir beschlossen, dieses Benutzerkonto für einige Zeit zu [sperren](/help/users/banned) und alle Zweit-Benutzerkonten von dir zu löschen. Danach kannst du mit diesem Konto gerne wieder bei &pi;-Learn mitmachen, solange du unsere Teilnahme-Bedingungen erfüllst.\n\nDas &pi;-Learn Administratoren-Team",
+        }
+        PM_TITLE = {
+          "calm": "[PM] Bitte um Konflikauflösung",
+          "spamwarn": "[PM] Warnung wegen SPAM",
+          "spamban": "[PM] Sperrung wegen SPAM",
+          "offensivewarn": "[PM] Warnung wegen Beleidigung",
+          "offensiveban": "[PM] Sperrung wegen Beleidigung",
+          "fraudwarn": "[PM] Warnung wegen Regelverletzung",
+          "fraudban": "[PM] Sperrung wegen Regelverletzung",
+          "sockwarn": "[PM] Warnung wegen Doppelbenutzer",
+          "sockban": "[PM] Sperrung wegen Doppelbenutzer",
+        }
+        text = "Hallo " + document.getElementById("pm_user_name").value + "\n\n" + PM_TEXTS[type];
+        document.getElementById("final_notes").innerHTML = "Bitte überprüfe deine PM, bevor du sie abschickst:";
+        document.getElementById("the_title").value = PM_TITLE[type];
+      } else if(action == "ping") {
+        group = document.querySelector("#ping_group input:checked");
+        if(group == null) {
+          show('step_ping_input');
+          return;
+        }
+        group = group.value;
+        groupl = {
+          "mod": "Moderatoren",
+          "admin": "Administratoren",
+          "both": "Moderatoren & Administratoren"
+        }
+        text = "**An alle " + groupl[group] + "**:\n\n--------\n\n...\n\n&ndash; *Das &pi;-Learn Team*";
+        document.getElementById("final_notes").innerHTML = "Fülle diese Vorlage aus:";
+      } else if(action == "legal") {
+        document.getElementById("final_notes").innerHTML = "Erkläre, warum der Vertrag notwendig ist und kopiere den Vertragstext in den Zitatblock";
+        text = "**[Hier Titel einfügen]**\n\n----\n\n[Hier Anrede einfügen],\n\n[Hier Erklärung einfügen]\n\n> [Hier Vertrag einfügen]\n\nUm diese Vereinbarung zu akzeptieren, drücken Sie auf den Knopf **Ich akzeptiere die Vereinbarung**. [Konsequenz Akzeptieren]. Sollten Sie diese Vereinbarung zu einem späteren Zeitpunkt nicht mehr akzeptieren wollen, treten Sie über dieses Helpdesk mit uns in Kontakt; [Konsequenz Rücktritt].\n\nLehnen Sie diese ab, drücken Sie auf den Knopf **Ich lehne die Vereinbarung ab**. Wenn Sie die Vereinbarung ablehnen, [Konsequenz Ablehnung]. Sie können eine Ablehnung nicht zurücknehmen.";
+      }
+      show('step_final_review');
+      document.getElementById("final_content").value = text;
+      document.getElementById("the_type").value = action;
+      var simplemde = new SimpleMDE({ element: document.getElementById("final_content"), forceSync:true, parsingConfig: {strikethrough: false}, promptURLs:true, spellChecker:false });
+    }
+    hide("step_final_review");
+
+    function send() {
+      obj = {
+        "action": document.getElementById("the_type").value,
+        "title": document.getElementById("the_title").value,
+        "message": document.getElementById("final_content").value
+      };
+      if(obj.action == "pm") {
+        obj.user_id = document.getElementById("pm_user_id").value;
+      } else if(obj.action == "ping") {
+        group = document.querySelector("#ping_group input:checked");
+        if(group == null) {
+          show('step_ping_input');
+          return;
+        }
+        obj.group = group.value;
+      }
+      $post("helpdesk/ticket/new", obj, function (r) {
+        if(isNaN(r)) {
+          issueSystemError(r);
+          show("step_final_review")
+        } else {
+          window.location.replace("/helpdesk/ticket/"+String(r));
+        }
+      })
+    }
+    </script>
+    <style>
+    textarea {
+      min-height: 50px;
+      height: 50px;
+      box-shadow: 1px 1px 4px #bbb;
+    }
+    </style>
+{% endblock %}

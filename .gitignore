@@ -1,0 +1,13 @@
+databases/*
+databases_empty/*
+databases_original/*
+flaskext/*
+markdown/*
+pi-proxy/*
+*.bat
+build_css.py
+*.db
+*.json
+!pidata.json
+!privileges.json
+!privilege_data.json

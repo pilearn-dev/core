@@ -1,0 +1,178 @@
+.polyskript {
+  all: initial;
+  box-sizing: border-box;
+  width: 100%;
+  display: block;
+  margin: 5px 0;
+  padding: 5px;
+  font: inherit;
+  display: flex;
+  background-color: #efefef;
+}
+.polyskript * {
+  box-sizing: border-box;
+}
+.polyskript .preview {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  align-items: center;
+}
+.polyskript .preview.view-mode {
+  background-color: white;
+  display: block;
+}
+.polyskript .box {
+  width: 100%;
+  margin: 5px;
+  max-width: 700px;
+  background-color: #fff;
+  padding: 10px;
+  box-shadow: 1px 1px 4px #ccc;
+}
+.polyskript .box .box-type {
+  font-size: 0.8em;
+  margin: 0;
+  font-weight: bold;
+  color: #aaa;
+  font-variant: small-caps;
+}
+.polyskript .box .box-preview h1, .polyskript .box .box-preview h2, .polyskript .box .box-preview h3, .polyskript .box .box-preview h4, .polyskript .box .box-preview h5, .polyskript .box .box-preview h6, .polyskript .box .box-preview p, .polyskript .preview.view-mode h1, .polyskript .preview.view-mode h2, .polyskript .preview.view-mode h3, .polyskript .preview.view-mode h4, .polyskript .preview.view-mode h5, .polyskript .preview.view-mode h6, .polyskript .preview.view-mode p {
+  margin: 2px 0;
+}
+.polyskript .box .box-actions button {
+  font: inherit;
+  font-size: 0.8em;
+  border: none;
+  padding: 2px 5px;
+  background-color: #eee;
+  box-shadow: 1px 1px 3px #bbb;
+  cursor: pointer;
+  border-radius: 2px;
+  margin: 0 2px;
+  transition: all .2s ease;
+  text-align: center;
+}
+.polyskript .box .box-actions button:hover {
+  background-color: #ddd;
+}
+
+.polyskript .box .box-actions button.primary {
+  background-color: #00e;
+  color: white;
+  box-shadow: 1px 1px 3px #888;
+}
+.polyskript .box .box-actions button.primary:hover {
+  background-color: #00d;
+}
+
+.polyskript .box .box-actions button.dangerous {
+  background-color: #e00;
+  color: white;
+  box-shadow: 1px 1px 3px #888;
+}
+.polyskript .box .box-actions button.dangerous:hover {
+  background-color: #d00;
+}
+
+
+
+.polyskript .box .box-actions button:active {
+  box-shadow: 0px 0px 2px #bbb;
+}
+.polyskript .box .box-actions button.primary:active, .polyskript .box .box-actions button.dangerous:active {
+ box-shadow: 0px 0px 2px #888;
+}
+
+@media all and (max-width: 600px) {
+    .polyskript .box .box-actions {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .polyskript .box .box-actions button {
+        padding: 6px 5px;
+        margin: 5px;
+        display: block;
+        flex-grow: 1;
+        width: 100%;
+        max-width: 20%;
+        max-width: calc(25% - 10px);
+        font-size: 0.7em;
+    }
+}
+
+
+.polyskript .append-button button {
+  margin: 5px;
+  width: 40px;
+  height: 40px;
+  background-color: #fff;
+  color: pointer;
+  font-size: 1.1em;
+  text-align: center;
+  cursor: pointer;
+  line-height: 0;
+  border: none;
+  border-radius: 50%;
+  box-shadow: 0px 0px 3px #bbb;
+  transition: all .2s ease;
+  padding: 0;
+}
+.polyskript .append-button button:hover {
+  box-shadow: 0px 0px 5px #bbb;
+}
+.polyskript .append-button button:active {
+  box-shadow: 0px 0px 1px #bbb;
+}
+
+.polyskript input, .polyskript textarea {
+  font: inherit;
+  padding: 2px;
+  border: 1px dotted #aaa;
+  margin: 2px 0;
+  width: 100%;
+  box-shadow: none;
+}
+.polyskript textarea {
+  min-height: 100px;
+  resize: none;
+}
+
+.polyskript label[for] {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+
+.polyskript .append-element-list {
+  width: 100%;
+  max-width: 400px;
+  background-color: white;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  position: absolute;
+  box-shadow: 1px 1px 3px #ddd;
+  max-height: 150px;
+  overflow: auto;
+}
+.polyskript .append-element-list li {
+  padding: 5px;
+  margin: 1px;
+  cursor: pointer;
+}
+.polyskript .append-element-list li:hover {
+  background-color: #eee;
+}
+[disabled] {
+  opacity: 0.3;
+  pointer-events: none;
+}
+@media all and (max-width: 600px) {
+    .polyskript .append-element-list {
+        left: 0 !important;
+        position: static;
+        max-height: initial;
+    }
+}

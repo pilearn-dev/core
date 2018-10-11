@@ -1,0 +1,67 @@
+{% extends "layout.html" %}
+{% block body %}
+<link rel="stylesheet" href="/static/css/simplemde.min.css">
+<script src="/static/js/simplemde.min.js"></script>
+<div class="tabination">
+  <ul>
+    <li><a href="/courses">Übersicht</a></li>
+    <li class="active"><a href="/course/propose">Vorschlagen</a></li>
+  </ul>
+</div>
+    <h2>Kurs vorschlagen</h2>
+    {% if user.may("course_propose") %}
+    <div id="propose_infos">
+    <h3 class="highlighted-h3">Bitte durchlesen!</h3>
+    <p>Bitte folge diesem Verfahren, um Kurse vorzuschlagen:</p>
+    <ol>
+        <li>Prüfe, ob es noch keinen Kurs für dieses Thema gibt.</li>
+        <li>Prüfe auf der <a href="/">Startseite</a>, ob es bereits einen Kursvorschlag für dieses Thema gibt. Wenn ja erkläre deine Bereitschaft bei diesem Kurs mitzumachen.</li>
+        <li>Wenn nein: Reiche über dieses Formular den Antrag ein.</li>
+    </ol>
+    <p>Bitte beachte diese Kriterien, die entscheiden, ob ein Vorschlag abgelehnt wird oder angenommen wird.</p>
+    <ul>
+        <li>Der Kurs darf noch nicht existieren.</li>
+        <li>Deine eingegebenen Inhalte müssen mit dem <a href="/help/legal/coc">Code of Conduct</a> kompatibel sein.</li>
+        <li>Bitte beachte auch unsere <a href="/help/faq/course-hints">Hinweise zum Umfang und Inhalt eines π-Learn-Kurs</a>.</li>
+        <li>Deine eingegebenen Inhalte dürfen keine groben Rechtschreibfehler aufweisen</li>
+        <li>Versuche die eingegebenen Inhalte möglichst verständlich zu formulieren.</li>
+        <li>Werbe in den Inhalten nicht für ein bestimmtes Produkt oder eine Marke. Ein Kurs zur Bedienung eines Produktes ist aber ok.</li>
+        <li>Es müssen genug andere Benutzer sagen, dass sie an diesem Kurs teilnehmen würden. <em>(Dies finden wir nach Einreichen des Vorschlags heraus.)</em></li>
+    </ul>
+    <button class="big-btn primary-btn" onclick="document.getElementById('propose_infos').setAttribute('hidden', 'hidden'); document.getElementById('propose_topic').removeAttribute('hidden')">Weiter &raquo;</button>
+    </div>
+    <div id="propose_topic" hidden>
+    <h3 class="highlighted-h3">Thema wählen</h3>
+    <b>Kurstitel: </b>
+    <input id="proposal_title" class="inline">
+    <b>Kurzbeschreibung: </b>
+    <input id="shortdesc" class="inline">
+    <b>Thema des Kurses</b>
+    {% for t in topic.getAll() %}
+    <label for="topic-{{ t.getName() }}"><input type="radio" value="{{ t.id }}" name="topic" id="topic-{{ t.getName() }}"> <a class="topic" href="/t/{{ t.getName() }}">{{ t.getTitle() }}</a> &ndash; {{ t.getExcerpt() }}</label>
+    {% endfor %}
+    &nbsp;<br>
+    <button class="big-btn primary-btn" onclick="document.getElementById('propose_topic').setAttribute('hidden', 'hidden'); document.getElementById('propose_content').removeAttribute('hidden')">Weiter &raquo;</button>
+    </div>
+    <div id="propose_content" hidden>
+    <h3 class="highlighted-h3">Weitere Informationen</h3>
+    <b>Langbeschreibung: </b>
+    <textarea id="longdesc" class="inline"></textarea>
+    <script>
+        var simplemde = new SimpleMDE({ element: document.getElementById("longdesc"), forceSync:true, parsingConfig: {strikethrough: false}, promptURLs:true, spellChecker:false });
+    </script>
+    <b>Voraussetzungen: </b>
+    <textarea id="requirements" class="inline"></textarea>
+    <script>
+        var simplemde = new SimpleMDE({ element: document.getElementById("requirements"), forceSync:true, parsingConfig: {strikethrough: false}, promptURLs:true, spellChecker:false });
+    </script>
+    <br>
+      <p><button>Absenden</button></p>
+    </div>
+    {% else %}
+      <div class="error">
+          <h4>Privileg noch nicht erreicht</h4>
+          <p>Du darfst noch keine Kurse vorschlagen</p>
+      </div>
+    {% endif %}
+{% endblock %}

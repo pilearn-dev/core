@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+{% from "forum/item.html" import forum_item with context %}
+{% block body %}
+    <nav class="coursenav">
+      {% if forum.id == 0 %}
+          <h2>globales Forum</h2>
+          <p>für alle Fragen zu &pi;-Learn selber und für Fehlermeldungen oder Verbesserungsideen</p>
+      {% else %}
+        {% set topic = forum.getTopic() %}
+        <h2>{{ forum.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
+        {{ forum.getByLine()|markdown }}
+        <ul>
+          <li><a href="/c/{{ forum.id }}/info">Informationen</a></li>
+          <li><a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/start">Kursinhalte</a></li>
+          <li class="active"><a href="/f/{{ forum.id }}">Kursforum</a></li>
+        </ul>
+      {% endif %}
+    </nav>
+    <h2>{{ post.getHTMLTitle()|safe }}</h2>
+    {% if post.isDeleted() %}
+        <div class="post-warning">
+            {{ post.getDeleteMessage()|markdown }}
+        </div>
+    {% endif %}
+    {% if post.isClosed() %}
+        <div class="post-warning">
+          {{ post.getClosureWarning()|markdown }}
+        </div>
+    {% endif %}
+    {% if post.isLocked() %}
+        <div class="post-warning">
+          <h3>Dieser Beitrag wurde von <a href="/u/{{ post.getFrozenBy().id }}">{{ post.getFrozenBy().getHTMLName()|safe }}</a> <strong>eingefroren</strong>.</h3>
+          {% if post.getFrozenMessage() != "" %}
+            {{ post.getFrozenMessage()|markdown }}
+          {% endif %}
+        </div>
+    {% elif post.isProtected() %}
+        <div class="post-warning">
+          <h3>Dieser Beitrag wurde von <a href="/u/{{ post.getProtectedBy().id }}">{{ post.getProtectedBy().getHTMLName()|safe }}</a> <strong>geschützt</strong>.</h3>
+          {% if post.isNewbieProtection() %}
+          {{ post.PROTECTION_MESSAGE["answer"]|markdown }}
+          {% elif post.isWikiProtection() %}
+          {{ post.PROTECTION_MESSAGE["wiki"]|markdown }}
+          {% endif %}
+        </div>
+    {% endif %}
+    {% if post.getAward() != 0 %}
+        <div class="success">
+            <h3>Hier gibt es eine Belohnung</h3>
+            <p>Dieser Post hat eine offene Belohnung in Höhe von <span class="award">{{ post.award }}</span> Reputationspunkten. Beantworte den Post und streiche die Belohnung ein.</p>
+        </div>
+    {% endif %}
+    {% if post.isDeleted() %}
+    <div class="deleted-section">
+    {% endif %}
+    <div class="forum-article-list">
+        {{ forum_item(post, "post") }}
+        {% for answer in post.getAnswers() if answer.mayBeSeen(user) %}
+          {{ forum_item(answer, "answer", post) }}
+        {% endfor %}
+        {% if not post.isDeleted() and user.isLoggedIn() and not post.isClosed() and not post.isWikiProtection() and not post.isLocked() and not (post.isNewbieProtection() and not user.may("forum_workAtProtected")) %}
+            <div>
+                <link rel="stylesheet" href="/static/css/simplemde.min.css">
+                <script src="/static/js/simplemde.min.js"></script>
+                <h3>Antworten</h3>
+                <form action="/forum/{{ forum.id }}/{{ forum.getDetail("label") }}/post/{{ post.id }}/answer" method="post">
+                    <textarea id="qanswer" name="answer"></textarea>
+                    <button type="submit">Absenden</button>
+                </form>
+                <script>
+                    var simplemde = new SimpleMDE({ element: document.getElementById("qanswer"), forceSync:true, parsingConfig: {strikethrough: false}, promptURLs:true, spellChecker:false });
+                </script>
+            </div>
+        {% endif %}
+    </div>
+    {% if post.isDeleted() %}
+    </div>
+    {% endif %}
+    {{ forum_close_dialog(user, post, forum) }}
+    <script src="/static/js/post-flagging.js"></script>
+    <script>
+      function flag_comment(commentid) {
+        {% if user.isMod() %}
+        issueSystemQuestion('<p><strong>Wieso möchtest du diesen Kommentar löschen?</strong></p>', [
+          ["SPAM/Beleidigend", "#!' onclick='$post(\"forum/{{ forum.id }}/comment/"+commentid+"/vote\", {\"type\":\"kill\", \"reason\":\"SPAM/Beleidigend\"}, function(){window.location.reload();})"],
+          ["Unnötig/Veraltet", "#!' onclick='$post(\"forum/{{ forum.id }}/comment/"+commentid+"/vote\", {\"type\":\"kill\", \"reason\":\"Unnötig/Veraltet\"}, function(){window.location.reload();})"],
+          ["Anderes", "#!' onclick='$post(\"forum/{{ forum.id }}/comment/"+commentid+"/vote\", {\"type\":\"kill\", \"reason\":\"Anderes\"}, function(){window.location.reload();})"]
+        ]);
+        {% else %}
+        issueSystemQuestion('<p><strong>Wieso möchtest du diesen Kommentar melden?</strong></p><small>Ist dein Grund nicht aufgeführt, melde den übergeordneten Beitrag mit dem Grund Anderes und beschreibe den Moderatoren dein Problem.</small>', [
+          ["SPAM", "#!' onclick='$post(\"forum/{{ forum.id }}/comment/"+commentid+"/vote\", {\"type\":\"flag\", \"reason\":\"SPAM\"}, function(){window.location.reload();})"],
+          ["Beleidigend", "#!' onclick='$post(\"forum/{{ forum.id }}/comment/"+commentid+"/vote\", {\"type\":\"flag\", \"reason\":\"Beleidigend\"}, function(){window.location.reload();})"],
+          ["Unnötig/Veraltet", "#!' onclick='$post(\"forum/{{ forum.id }}/comment/"+commentid+"/vote\", {\"type\":\"flag\", \"reason\":\"Unnötig/Veraltet\"}, function(){window.location.reload();})"]
+        ]);
+        {% endif %}
+      }
+    </script>
+{% endblock %}

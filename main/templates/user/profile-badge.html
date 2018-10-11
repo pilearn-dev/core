@@ -1,0 +1,22 @@
+<div class="user-profile-badge{% if user_data.role == "d" %} is-dev{% endif %}">
+    <div class="image-area">
+        {% if user_data.profile_image != "" %}
+            <img src="/user-profile-image/{{ user_data.profile_image }}" alt="Benutzerprofilbild von {{ user_data.name }}">
+        {% else %}
+            <i class="fa fa-user fa-2x" aria-hidden="true"></i>
+        {% endif %}
+    </div>
+    <div class="text-area">
+        <h4><a href="/user/view/id={{ user_data.id }}">{{ user_data.realname }}</a></h4>
+        {% if user_data.id == -2 %}
+        <span class="author-role">SYSTEMPROZESS</span>
+        {% elif user_data.role == "d" %}
+            <span class="author-role">&pi;-Learn Entwickler</span>
+        {% elif user_data.role == "a" %}
+            <span class="author-role">ADMINISTRATOR</span>
+        {% elif user_data.role == "m" %}
+            <span class="author-role">MODERATOR</span>
+        {% endif %}
+        Reputation: <div class="badge">{{ user_data.reputation }}</div>
+    </div>
+</div>

@@ -1,0 +1,91 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if the_proposal.state == -1 %}
+<div class="deleted-section">
+{% endif %}
+    <h2>Kursvorschlag: {{ the_proposal.title }}</h2>
+        {% if the_proposal.state == 1 %}
+            <div class="success">
+                <h3>Dieser Vorschlag wurde angenommen.</h3>
+                <p>Dieser Vorschlag wurde von der Community angenommen und wird als Kurs umgesetzt.</p>
+            </div>
+        {% elif the_proposal.state == -1 %}
+            <div class="error">
+                <h3>Dieser Vorschlag wurde abgelehnt.</h3>
+                <p>Dieser Kurs wurde von der Community abgelehnt.</p>
+            </div>
+        {% elif the_proposal.score > 0 %}
+            <div class="warning">
+                <h3>Entscheiden Sie mit!</h3>
+                <p><b>Dieser Kurs hat noch nicht genug Bewertungen erhalten</b></p>
+                {% if 5 - the_proposal.score == 1 %}
+                <p>Noch {{ 5 - the_proposal.score }} Nutzer muss diesen Vorschlag akzeptieren, damit er angenommen wird.</p>
+                {% else %}
+                <p>Noch {{ 5 - the_proposal.score }} Nutzer müssen diesen Vorschlag akzeptieren, damit er angenommen wird.</p>
+                {% endif %}
+            </div>
+        {% elif the_proposal.score < 0 %}
+            <div class="warning">
+                <h3>Entscheiden Sie mit!</h3>
+                <p><b>Dieser Kurs hat noch nicht genug Bewertungen erhalten</b></p>
+                {% if 3 + the_proposal.score == 1 %}
+                <p>Noch {{ 3 + the_proposal.score }} Nutzer muss diesen Vorschlag ablehnen, damit er abgelehnt wird.</p>
+                {% else %}
+                <p>Noch {{ 3 + the_proposal.score }} Nutzer müssen diesen Vorschlag ablehnen, damit er abgelehnt wird.</p>
+                {% endif %}
+            </div>
+        {% else %}
+            <div class="warning">
+                <h3>Entscheiden Sie mit!</h3>
+                <p><b>Dieser Kurs hat noch nicht genug Bewertungen erhalten</b></p>
+            </div>
+        {% endif %}
+    <div class="info">Dies ist ein Kursvorschlag, der von einem Benutzer eingereicht wurde, der weniger als {{ stop.priv.course_create }} Reputationpunkte hat.</div>
+    <div class="courseslide no-dedent">
+        <h4>Kurzbeschreibung</h4>
+        <p>{{ the_proposal.shortdesc }}</p>
+    </div>
+    <div class="courseslide no-dedent">
+        <h4>Langbeschreibung</h4>
+        <p>{{ the_proposal.longdesc|markdown }}</p>
+    </div>
+    <div class="courseslide no-dedent">
+        <h4>Voraussetzungen</h4>
+        <p>{{ the_proposal.materials|markdown }}</p>
+    </div>
+    {% if (stop.userrole=="a" or stop.userrole=="m" or stop.userrep >= stop.priv.course_create) and ((the_proposal.score < 5 and the_proposal.score > -3) or (stop.userrole=="a" and the_proposal.score == -3)) %}
+        <div class="info">
+            <h3>Verfahren</h3>
+            <ul>
+                <li>Wähle <samp>Vorschlag akzeptieren</samp> um den Vorschlag für einen Kurs anzunehmen. Der Nutzer, der den Kursvorschlag eingereicht hat erhält 3 Reputationspunkte. Der Score des Kurses erhöht sich um eins. Wenn der Kurs einen Score von 5 hat, wird er automatisch erstellt.</li>
+                <li>Wähle <samp>Vorschlag ablehnen</samp>, wenn es einen solchen Kurs bereits gibt, der Inhalt des Kurses gegen den <a href="/help/legal/coc">Code of Conduct</a> verstößt oder wenn der Kurs nicht mit den <a href="/help/course-guidelines">Richtlinien für einen &pi;-Learn-Kurs</a> kompatibel ist. Der Score des Vorschlags verringert sich um eins und wenn er -3 erreicht, wird der Kursvorschlag abgelehnt.</li>
+                <li><b>Lehne bitte alle Kursvorschläge ab, die grobe Rechtschreibfehler enthalten, bei denen Platzhalter in der Inhaltsbeschreibung aufzufinden sind oder die als SPAM zu erkennen sind.</b></li>
+            </ul>
+        </div>
+        {% if stop.userrole=="a" and the_proposal.score == -3 %}
+        <h3>(Nur für Administratoren)</h3>
+        {% endif %}
+        <div class="align-center">
+            {% if user.acceptance == 0 or stop.userrole=="a" %}
+            <a href="/course/accept-proposal/{{ the_proposal.id }}"><button>Vorschlag akzeptieren</button></a>
+            {% elif user.acceptance == -1 %}
+            <button class="less-annoying" disabled>Vorschlag akzeptieren</button>
+            {% elif user.acceptance == 1 %}
+            <button disabled>Vorschlag akzeptieren</button>
+            {% endif %}
+            <div class="align-center">
+                <div class="score-label">Score:</div><div class="badge">{{ the_proposal.score }}</div>
+            </div>
+            {% if user.acceptance == 0 or stop.userrole=="a" %}
+            <a href="/course/decline-proposal/{{ the_proposal.id }}"><button class="red-btn">Vorschlag ablehnen</button></a>
+            {% elif user.acceptance == 1 %}
+            <button class="less-annoying" disabled>Vorschlag ablehnen</button>
+            {% elif user.acceptance == -1 %}
+            <button class="red-btn" disabled>Vorschlag ablehnen</button>
+            {% endif %}
+        </div>
+    {% endif %}
+{% if the_proposal.state == -1 %}
+</div>
+{% endif %}
+{% endblock %}

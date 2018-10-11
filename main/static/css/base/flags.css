@@ -1,0 +1,133 @@
+.flag-successful {
+    display: inline-block;
+    color: white;
+    background-color: #0d0;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+.flag-denied {
+    display: inline-block;
+    color: white;
+    background-color: #d00;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+.flag-deprecated {
+    display: inline-block;
+    color: white;
+    background-color: #7b7;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+.flag-disputed {
+    display: inline-block;
+    color: white;
+    background-color: #333;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+
+/* - flag list */
+.flag-overview {
+  padding: 2px;
+}
+.flag-overview .single-flag {
+  border: 1px solid #ddd;
+  box-shadow: 0 0 3px -2px #aaa;
+  margin: 10px 0;
+  padding: 5px;
+  border-radius: 5px;
+}
+.flag-overview .single-flag:nth-of-type(2n) {
+  background-color: #f6f6f6;
+}
+.flag-overview .single-flag .first-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.flag-overview .single-flag .first-line .label {
+  font-weight: bold;
+  font-size: 14px;
+  align-self: center;
+  margin-left: 3px;
+}
+.flag-overview .flag-pending {
+  padding: 0 5px;
+  font-weight: bold;
+  color: #666;
+  border: 2px solid #aaa;
+  border-radius: 2px;
+}
+.flag-outcome.helpful {
+  height: 15px;
+  width: 15px;
+  border-radius: 10px;
+  background-color: #0a0;
+  margin: 3px;
+  display: block;
+}
+.flag-outcome.declined {
+  height: 15px;
+  width: 15px;
+  border-radius: 10px;
+  background-color: #a00;
+  margin: 3px;
+  display: block;
+}
+.flag-outcome.deprecated {
+  height: 15px;
+  width: 15px;
+  border-radius: 10px;
+  background-color: #0a0;
+  margin: 3px;
+  display: block;
+}
+.flag-outcome.pending {
+  height: 15px;
+  width: 15px;
+  border: 3px solid #666;
+  border-radius: 10px;
+  margin: 3px;
+  display: block;
+}
+.flag-outcome.disputed {
+  height: 15px;
+  width: 15px;
+  border: 3px solid #aaa;
+  border-radius: 10px;
+  margin: 3px;
+  display: block;
+}
+.flag-overview .single-flag .target {
+  flex-grow: 1;
+  margin: 3px 10px;
+  font-size: 1.1em;
+}
+.flag-overview .single-flag .target.long {
+  font-size: 1em;
+}
+.flag-overview .single-flag .target.very-long {
+  font-size: 0.9em;
+}
+.flag-overview .flag-successful:hover, .flag-overview .flag-deprecated:hover, .flag-overview .flag-disputed:hover, .flag-overview .flag-denied:hover {
+    color: white !important;
+}
+
+.flag-overview .single-flag p.heading {
+    border-top: 1px solid #ccc;
+}
+.flag-overview .single-flag > :not(:first-child) {
+  margin: 3px 0;
+  margin-left: 31px;
+  font-size: 12px;
+}
+.flag-overview .single-flag .r {
+  color: #aaa;
+  font-size: 13px;
+}

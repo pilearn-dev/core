@@ -1,0 +1,31 @@
+## removed for reasons for development ##
+----
+
+{% extends "layout.html" %}
+{% block body %}
+    <h2>SQL Ausführen</h2>
+    <h3>Letzte Abfrage</h3>
+    <pre>
+        <table>
+            {% for row in last_response %}
+                <tr>
+                    {% for column in row %}
+                        <td>{{ column }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    </pre>
+    <h3>Neue Abfrage</h3>
+    <form action="/~dev/sql" method="post">
+        <label for="sql_file">SQL-Datei</label>
+        <select id="sql_file" name="sql_file">
+            <option{% if last_file == "courses.db" %} selected{% endif %}>courses.db</option>
+            <option{% if last_file == "user.db" %} selected{% endif %}>user.db</option>
+            <option{% if last_file == "forum.db" %} selected{% endif %}>forum.db</option>
+        </select>
+        <label for="sql_sql">SQL:</label>
+        <pre><textarea id="sql_sql" name="sql_sql">{{ last_sql }}</textarea></pre>
+        <button type="submit">Ok</button>
+    </form>
+{% endblock %}

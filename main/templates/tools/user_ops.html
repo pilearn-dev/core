@@ -1,0 +1,81 @@
+{% from "tools/_macro.html" import tools__nav %}
+{% extends "layout.html" %}
+{% block body %}
+    {{ tools__nav("user", user) }}
+    <h2>Werkzeuge &ndash; Benutzer-Tools</h2>
+    <div class="split-screen">
+      <aside>
+        <ol>
+          <li><a href="/tools/user/flags">Meldungen</a></li>
+          <li><a href="/tools/user/search">Suche</a></li>
+        </ol>
+      </aside>
+      <main>
+        <h3>AdminOps für {{ data.getDetail("realname") }}</h3>
+        <div class="tool-ops" id="userops_action">
+          <div class="tool-ops-selection">
+            <input type="radio" name="userops_action" value="access-pii" id="userops_action_access-pii">
+            <label for="userops_action_access-pii">
+              <h4>Private Daten anzeigen</h4>
+              <p>Einmaligen Zugriff auf die privaten Daten von {{ data.getDetail("realname") }} erhalten. <em>Dies wird protokolliert.</em></p>
+            </label>
+          </div>
+          <div class="tool-ops-selection">
+            <input type="radio" name="userops_action" value="lookup-annotations" id="userops_action_lookup-annotations">
+            <label for="userops_action_lookup-annotations">
+              <h4>Anmerkungsverlauf anzeigen</h4>
+              <p>Anzeigen von Anmerkungen durch Administratoren und wichtigen administrativen Handlungen gegen {{ data.getDetail("realname") }}.</p>
+            </label>
+          </div>
+          <div class="tool-ops-selection">
+            <input type="radio" name="userops_action" value="add-annotation" id="userops_action_add-annotation">
+            <label for="userops_action_add-annotation">
+              <h4>Anmerkung hinzufügen</h4>
+              <p>Hinzufügen einer Anmerkungen im Benutzerverlauf (z.B. Details für Warnung, Sperrung, Löschung).<p>
+            </label>
+          </div>
+          <div class="tool-ops-selection">
+            <input type="radio" name="userops_action" value="merge" id="userops_action_merge">
+            <label for="userops_action_merge">
+              <h4>Benutzer weiterleiten</h4>
+              <p>Dieses Benutzerkonto auf ein anderes weiterleiten lassen. <em>Dies wird protokolliert.</em><p>
+            </label>
+          </div>
+          <div class="tool-ops-selection">
+            <input type="radio" name="userops_action" value="contact" id="userops_action_contact">
+            <label for="userops_action_contact">
+              <h4>Benutzer kontaktieren</h4>
+              <p>Benutzer kontaktieren oder wegen Regelverletzungen verwarnen. <em>Dies wird protokolliert.</em><p>
+            </label>
+          </div>
+          {% if not data.isDisabled() %}
+          <div class="tool-ops-selection">
+            <input type="radio" name="userops_action" value="ban" id="userops_action_ban">
+            <label for="userops_action_ban">
+              <h4>Benutzer sperren</h4>
+              <p>Benutzer wegen Regelverletzungen zeitweilig von der Benutzung der Webseite ausschließen. <em>Dies wird protokolliert.</em><p>
+            </label>
+          </div>
+          {% else %}
+          <div class="tool-ops-selection">
+            <input type="radio" name="userops_action" value="ban" id="userops_action_ban">
+            <label for="userops_action_ban">
+              <h4>Benutzer entsperren</h4>
+              <p>Benutzer ist aktuell gesperrt. Die Sperrung vorzeitig aufheben <em>Dies wird protokolliert.</em><p>
+            </label>
+          </div>
+          {% endif %}
+        </div>
+        <button id="userops_do" class="primary-btn">Weiter &raquo;</button>
+        <script>
+          document.getElementById("userops_do").addEventListener("click", function() {
+            selection = document.querySelector("#userops_action :checked");
+            if(!selection) {
+              return;
+            }
+            window.location.href = "?action="+selection.value;
+          })
+        </script>
+      </main>
+    </div>
+{% endblock %}

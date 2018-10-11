@@ -1,0 +1,366 @@
+/*
+ * PI-LEARN BASE CSS
+ * =================
+ */
+
+/* General typography */
+* {
+    box-sizing: border-box;
+}
+html {
+    font-family: 'Open Sans', sans-serif;
+    min-height: 100%;
+    background-color: #fff;
+}
+html.no-scroll {
+  max-height: 100%;
+  overflow: hidden;
+}
+html.no-touch {
+  pointer-events: none;
+}
+body {
+  margin: 0;
+}
+html > body > main {
+  border: 1px solid #ddd;
+  box-shadow: 0 0 5px -3px #aaa;
+  margin: 0 auto;
+  padding: 10px;
+  max-width: 1000px;
+}
+@media all and (max-width: 800px) {
+  html > body > main {
+    border: none;
+    border-top: 1px solid #ddd;
+    box-shadow: none;
+  }
+}
+.centered {
+  margin: 0em auto;
+  max-width: 1000px;
+}
+h2, h3, h4, h5 {
+    margin: 5px 0;
+}
+hr {
+    border: none;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 5px;
+    padding-top: 5px;
+}
+a {
+    color: #2A64BF;
+    text-decoration: none;
+    transition: all .4s ease;
+}
+a:hover {
+    color: #0844A4;
+}
+main {
+    padding: 5px;
+}
+
+h2.bigheading {
+    font-size: 48px;
+    text-align: center;
+}
+.bigheading + p {
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 18px;
+    line-height: 1.5;
+}
+
+@media all and (max-width: 800px) {
+    h2.bigheading {
+        font-size: 38px;
+    }
+}
+
+[disabled] {
+    pointer-events: none;
+    opacity: 0.6;
+    -moz-user-select: none;
+}
+
+
+p.longdesc {
+    white-space: pre-wrap;
+}
+
+pre {
+    white-space: pre-wrap;
+}
+
+li p {
+  margin: 0 2px;
+}
+
+p {
+  margin: 10px 0;
+  line-height: 1.5;
+}
+
+/* - tables */
+.static-table {
+  overflow: auto;
+  max-width: 100%;
+}
+
+table {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-collapse: collapse;
+}
+table td, table th {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+}
+@media all and (max-width: 800px) {
+    .flexible-table table td, .flexible-table table th {
+        display: block;
+    }
+    .flexible-table table .edit-column:empty {
+        display: none;
+    }
+    .flexible-table table .edit-column a {
+        display: block;
+        width: 100%;
+        padding: 5px;
+        text-align: center;
+    }
+    .flexible-table table .edit-column a::after {
+        content: "  bearbeiten";
+    }
+}
+
+/* - deleted content */
+.deleted-section {
+    display: block;
+    /*background-color: rgba(230, 111, 111, 0.5);*/
+    background-color: #fbb;
+    padding: 2px;
+}
+
+.deleted-line {
+    font-size: 0.9em;
+    /*background-color: rgba(230, 111, 111, 0.5);*/
+    background-color: #fbb;
+    padding: 2px 5px;
+}
+
+/* - alignment */
+.align-center {
+    display: flex;
+    justify-content: space-around;
+    margin: 10px;
+    flex-wrap: wrap;
+}
+.align-center .score-label {
+    font-size: 1em;
+    padding: .25em 1em;
+    align-self: center;
+}
+.align-center .badge {
+    font-size: 2em;
+}
+.align-center .align-center {
+    margin: 0;
+}
+.align-center a {
+    display: block;
+}
+.align-center a button {
+    height: 100%;
+}
+
+.alignment-right {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.no-break {
+    white-space: pre;
+}
+
+/* - block elements */
+
+blockquote {
+    margin: 5px;
+    padding: 10px;
+    border-left: 5px solid #aaa;
+    background-color: #eee;
+}
+blockquote p, blockquote h1, blockquote h2, blockquote h3, blockquote h4, blockquote h5, blockquote h6 {
+  margin: 2px 0;
+  font-weight: normal;
+}
+blockquote hr {
+  border-color: #aaa;
+}
+blockquote code, blockquote pre {
+  background-color: #ccc;
+}
+
+code {
+    display: inline-block;
+    border-radius: 2px;
+    font-size: 0.9em;
+    font-family: "Courier New", Courier, monospace;
+    background-color: #F2F2F2;
+    padding: 0 5px;
+    white-space: pre-wrap;
+}
+pre {
+    display: block;
+    border-radius: 2px;
+    font-size: 0.9em;
+    font-family: "Courier New", Courier, monospace;
+    background-color: #F2F2F2;
+    padding: 5px;
+    white-space: pre-wrap !important;
+    line-height: 1.75;
+}
+
+/* - action forbidden warning */
+.action-forbidden {
+    color: #555;
+    background-color: white;
+    padding: 10px;
+    margin: 5px;
+    display: block;
+    outline: 1px solid #555;
+    border-left: 4px solid #555;
+    font-size: 14px;
+}
+.action-forbidden.red-style {
+    outline: 1px solid #a00;
+    color: #a00;
+    border-left: 4px solid #a00;
+}
+.action-forbidden.red-style h4 {
+    margin: 2px 0;
+    font-size: 16px;
+}
+.action-forbidden p {
+  margin: 0;
+}
+.action-forbidden a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.padded-text {
+  padding: 15px;
+}
+
+.no-p p {
+    margin: 0;
+}
+
+/* - text container */
+.text {
+  padding: 10px;
+  margin: 5px;
+  border: 2px solid #ddd;
+}
+.paper {
+  padding: 10px;
+  margin: 5px;
+  box-shadow: 2px 2px 10px #ddd;
+  border: 0.5px solid #ddd;
+  max-height: 800px;
+  overflow: auto;
+}
+.paper h3 {
+  background-color: white;
+  margin: 0;
+  padding: 4px;
+  padding-top: 10px;
+  margin-bottom: 2px;
+  border-bottom: 1px solid #ddd;
+  position: sticky;
+  top: -12px;
+  font-weight: normal;
+}
+
+img {
+  max-width: 100%;
+  max-height: auto;
+  width: auto;
+  height: auto;
+}
+.pull-to-right {
+  float: right;
+  border: 1px solid #aaa;
+  background-color: #ddd;
+  padding: 5px;
+  border-radius: 2px;
+  max-width: 300px;
+  margin: 5px;
+  margin-right: 0;
+}
+
+
+/* - link warnings */
+.warn-at-link {
+  padding: 2px;
+}
+.warn-at-link a {
+  display: inline-block;
+  padding: 2px 5px;
+  position: relative !important;
+  border: 3px solid #d80 !important;
+  background-color: #fa2 !important;
+  color: white !important;
+}
+.warn-at-link a:hover::after {
+  content: attr(href);
+  display: block;
+  border: 1px solid #000;
+  background-color: #ffa;
+  color: black;
+  position: absolute;
+  padding: 1px;
+  top: -15px;
+  left: 0;
+  word-break: keep-all;
+}
+
+
+
+/* - big sidebar num */
+.big-sidebar-meter {
+  height: 5px;
+  width: 100%;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  margin-top: 5px;
+}
+.big-sidebar-num {
+  font-size: 4em;
+  font-weight: bold;
+  color: #666;
+  text-align: center;
+  margin: 0;
+  margin-top: 5px;
+  border: 1px solid #ddd;
+  border-bottom: 0;
+  background-color: #eee;
+}
+.big-sidebar-meter + .big-sidebar-num  {
+  margin-top: -5px;
+}
+.big-sidebar-num .big-sidebar-num-max {
+  font-size: 0.7em;
+}
+.big-sidebar-num-label {
+  font-size: 1.1em;
+  text-align: center;
+  margin: 0;
+  border: 1px solid #ddd;
+  border-top: 0;
+  padding-bottom: 10px;
+  background-color: #eee;
+}

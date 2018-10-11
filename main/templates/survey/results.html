@@ -1,0 +1,48 @@
+<script src="/static/js/chart.bundle.min.js"></script>
+<h1>{{ survey.getTitle() }}</h1>
+{% if survey.hasResults() %}
+  {% for z, i in survey.getResults() %}
+   {% if i.type == "multiple-choice" %}
+     <div class="no-p question">
+       {{ i.question|markdown }}
+     <canvas id="survey-{{ loop.index }}-results" height="400" width="600" style="max-width: 600px; max-height: 400px;"></canvas>
+     <script>
+     var ctx = document.getElementById("survey-{{ loop.index }}-results").getContext("2d")
+     var surveyField{{ loop.index }}Chart = new Chart(ctx, {
+       type: "bar",
+       data: {
+         labels: ["Auswahl"],
+         datasets: [{% for c in i.choices %}{% if not loop.index == 1 %},{% endif %}{
+             label: "{{ c }}",
+             data: [{{ i.data[loop.index-1] }}],
+             backgroundColor: "rgb({{ (300 * loop.index) % 256 }}, {{ (300 * int(i.data[loop.index-1])) % 256 }}, {{ (300*len(i.data)) % 256 }})",
+             fill: true
+         }{% endfor %}]
+       },
+       options: {
+         scales: {
+           yAxes: [{
+             ticks: {
+               beginAtZero: true
+             }
+           }]
+         }
+       }
+     })
+     </script>
+     </div>
+   {% elif i.type == "text-answer" %}
+     <div class="no-p question">
+       {{ i.question|markdown }}
+       <ul>
+      {% for d in i.data %}
+        <li>{{ d }}</li>
+      {% endfor %}
+      </ul>
+     </div>
+   {% endif %}
+  {% endfor %}
+{% else %}
+<p>Die Ergebnisse dieser Umfrage wurden noch nicht berechnet.</p>
+<button onclick="$post('sv/{{ survey.id }}/results', {'calc':true}, function () {window.location.reload();})">Berechnen</button>
+{% endif %}

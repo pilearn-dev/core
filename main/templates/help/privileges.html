@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h2><a href="/help">Hilfethemen</a> / Reputation / <a style="color: black; text-decoration: none;" href="#overview">Privilegien</a></h2>
+    <section class="is-markable" id="overview">
+        <p>Für gelungene Beiträge zu &pi;-Learn erhältst du Reputationspunkte. Ab gewissen Reputationsmengen erhältst du extra Berechtigungen (Privilegien):</p>
+        {% if user.isLoggedIn() %}
+          <p>Du hast zur Zeit <span class="badge">{{ user.getReputation() }}</span> Reputationspunkte</p>
+        {% else %}
+          <p>Wenn du angemeldet bist kannst du Reputation sammeln. <a href="/login">Anmelden</a></p>
+        {% endif %}
+        <p>Das bedeuten die Symbole neben den Privilegien:</p>
+        <table>
+            <tr>
+                <th><i class="fa fa-gift fa-lg" aria-hidden="true"></i></th>
+                <td>Dieses Privileg ist ein Geschenk von uns für dein Engagement für &pi;-Learn.</td>
+            </tr>
+            <tr>
+                <th><i class="fa fa-shield fa-lg" aria-hidden="true"></i></th>
+                <td>Dieses Privileg erhältst du um uns zu helfen &pi;-Learn zu schützen und zu verwalten</td>
+            </tr>
+            <tr>
+                <th><i class="fa fa-commenting fa-lg" aria-hidden="true"></i></th>
+                <td>Dieses Privileg erhältst du um dich noch mehr für &pi;-Learn engagieren zu können.</td>
+            </tr>
+        </table>
+        <p>Bei &pi;-Learn kannst du diese Privilegien erhalten:</p>
+        <section class="is-markable" id="priv-table">
+            <table style="table-layout: fixed">
+                <tr>
+                    <td style="width: 40px;"></td>
+                    <th colspan="2">Privileg</th>
+                    <th>nötige Reputation</th>
+                    <th>Hast du es erreicht?</th>
+                </tr>
+                {% for priv in data if priv.showInHelp %}
+                <tr id="priv-table-{{ priv.id }}" class="is-markable">
+                    <td>
+                        <a style="color: black;" href="#priv-table-{{ priv.id }}">
+                        {% if priv.type == "honor" %}
+                        <i class="fa fa-gift fa-lg" title="Dieses Privileg ist ein Geschenk von uns für dein Engagement für &pi;-Learn." aria-hidden="true"></i>
+                        {% elif priv.type == "moderation" %}
+                        <i class="fa fa-shield fa-lg" title="Dieses Privileg erhältst du um uns zu helfen &pi;-Learn zu schützen und zu verwalten" aria-hidden="true"></i>
+                        {% elif priv.type == "participiation" %}
+                        <i class="fa fa-commenting fa-lg" title="Dieses Privileg erhältst du um dich noch mehr für &pi;-Learn engagieren zu können." aria-hidden="true"></i>
+                        {% endif %}
+                        </a>
+                    </td>
+                    <td colspan="2">
+                        <h4>{{ priv.name }}</h4>
+                        <p>{{ priv.desc|markdown }}</p>
+                    </td>
+                    <td>{{ privileges.getOne(priv.id) }}</td>
+                    <td>
+                        {% if not user.isLoggedIn() %}
+                        <p><i class="fa fa-lock fa-lg" aria-hidden="true"></i> Du musst dich anmelden um dieses Privileg zu erhalten.</p>
+                        {% elif user.may(priv.id) %}
+                        <p><i class="fa fa-check" aria-hidden="true"></i> Du hast dieses Privileg bereits erreicht</p>
+                        {% elif user.may(priv.id, True) %}
+                        <p style="color: #d00"><i class="fa fa-lock fa-lg" aria-hidden="true"></i> Dieses Privileg wurde dir entzogen.</p>
+                        {% else %}
+                        <p><i class="fa fa-times" aria-hidden="true"></i> Dir fehlen noch {{ privileges.getOne(priv.id) - user.getReputation() }} Reputationspunkte um dieses Privileg zu erreichen.</p>
+                        <meter min="0" max="{{ privileges.getOne(priv.id) }}" value="{{ user.getReputation() }}"></meter>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </section>
+        <p>Siehe auch: <a href="/help/reputation/general">Reputation allgemein</a></p>
+    </section>
+{% endblock %}

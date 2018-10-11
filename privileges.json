@@ -1,0 +1,26 @@
+{
+  "forum_voteUp": 0,
+  "forum_voteDown": 5,
+  "forum_comment": 0,
+  "forum_flag": 5,
+  "forum_setAward": 50,
+  "forum_closeQuestion": 10,
+  "forum_proposeEdit": 0,
+  "forum_edit": 100,
+  "forum_reviewEdits": 100,
+  "forum_directChat": 10,
+  "forum_workAtProtected": 5,
+  "forum_setProtection": 100,
+
+  "course_vote": 5,
+  "course_comment": 10,
+  "course_commentVote": 5,
+  "course_propose": 0,
+  "course_proposeEdit": 5,
+  "course_reviewEdits": 100,
+
+  "general_showAllNotifications": 5,
+  "general_reportUser": 5,
+  "general_banUser": 100,
+  "general_autoMod": 100
+}

@@ -1,0 +1,82 @@
+{% from "tools/_macro.html" import tools__nav %}
+{% extends "layout.html" %}
+{% block body %}
+    {{ tools__nav("courses", user) }}
+    <h2>Werkzeuge &ndash; neuste Kurse</h2>
+    <div class="split-screen">
+      <aside>
+        <ol>
+          <li><a href="/tools/courses/latest">neuste Kurse</a></li>
+          <li><a href="/tools/courses/proposal-search" class="current">Vorschlagsuche</a></li>
+          <li><a href="/tools/courses/proposal-rank">Vorschlagsranking</a></li>
+        </ol>
+      </aside>
+      <main>
+        <p>Durchsuche alle Kursvorschläge:</p>
+        <div class="filterbar">
+          <input type="checkbox" class="filterbar-toggle" id="filterbar-toggle">
+          <div class="small-toggle"><span class="filter-small-heading">Suchen</span><label for="filterbar-toggle"><i class="fa fa-caret-down"></i></label></div>
+          <form action="" method="get" class="filter-area">
+            <div class="filter-criterium with-input">
+              <label for="title">Titel:</label>
+              <input type="search" name="title" id="title">
+            </div>
+            <div class="filter-criterium">
+              <label for="state">Zustand</label>
+              <select name="state" id="state">
+                <option value="all">alle</option>
+                <option value="accepted">angenommen</option>
+                <option value="pending">unentschieden</option>
+                <option value="declined">abgelehnt</option>
+                <option value="deleted">gelöscht</option>
+              </select>
+            </div>
+            <div class="filter-criterium">
+              <label for="topic">Thema</label>
+              <select name="topic" id="topic">
+                <option value="all">alle</option>
+                {% for t in topic.getAll() %}
+                <option value="{{ t.id }}">{{ t.getTitle() }}</label>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="filter-button">
+              <button type="submit" class="primary-btn"><i class="fa fa-search"></i></button>
+            </div>
+          </form>
+        </div>
+        <br>&nbsp;<br>
+        <div class="pagination">
+          <div class="pagination-label">Seite:</div>
+          <ul>
+            {% if pages < 6 %}
+              {% for i in range(pages) %}
+              <li{% if page == i+1 %} class="active"{% endif %}><a href="?page={{ i+1 }}&num={{ num }}">{{ i+1 }}</a></li>
+              {% endfor %}
+            {% else %}
+              {% for i in range(1) if i >= 0 %}
+              <li{% if page == i+1 %} class="active"{% endif %}><a href="?page={{ i+1 }}&num={{ num }}">{{ i+1 }}</a></li>
+              {% endfor %}
+              {% if page - 3 > 1 %}
+              <li>...</li>
+              {% endif %}
+              {% for i in range(page-3, page+2) if i >= 1 and i < pages-1 %}
+              <li{% if page == i+1 %} class="active"{% endif %}><a href="?page={{ i+1 }}&num={{ num }}">{{ i+1 }}</a></li>
+              {% endfor %}
+              {% if page + 2 < pages - 1 %}
+              <li>...</li>
+              {% endif %}
+              {% for i in range(pages - 1, pages) if i < pages %}
+              <li{% if page == i+1 %} class="active"{% endif %}><a href="?page={{ i+1 }}&num={{ num }}">{{ i+1 }}</a></li>
+              {% endfor %}
+            {% endif %}
+          </ul>
+          <div class="pagination-label">Anzahl pro Seite:</div>
+          <ul>
+            <li{% if num == 5 %} class="active"{% endif %}><a href="?num=5">5</a></li>
+            <li{% if num == 10 %} class="active"{% endif %}><a href="?num=10">10</a></li>
+            <li{% if num == 20 %} class="active"{% endif %}><a href="?num=20">20</a></li>
+          </ul>
+      </main>
+    </div>
+{% endblock %}

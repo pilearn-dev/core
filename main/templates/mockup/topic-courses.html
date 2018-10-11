@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+{% block body %}
+ <nav class="coursenav">
+   <h2><i>Thema:</i> Programmieren</h2>
+   <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+   <ul class="subnav">
+     <li class=""><a href="#!">Informationen</a></li>
+     <li class="active"><a href="#!">Kurse</a></li>
+     <li class=""><a href="#!">Bearbeiten</a></li>
+     <form action="" method="get"><li class="input"><input class="inline" placeholder="Kurse durchsuchen" name="query"><button><span class="fa fa-search"></span></button></li></form>
+   </ul>
+ </nav>
+ <h3>Kurse mit dem Thema <a href="#!" class="topic">Programmieren</a></h3>
+ <div class="forum-article-list">
+   <div class="forum-article-item">
+       <div class="left-area">
+           <div class="answer-block">
+               <span class="answer-num">3k</span>
+               <span style="text-align: center; font-size: 10px;">Eingeschrieben</span>
+           </div>
+       </div>
+       <div class="right-area">
+         <div class="alignment-right">
+             {{ user_card(user) }}
+             <div style="flex-grow: 1;">
+               <h3><a href="#!">Beispiel-Kurs</a></h3>
+               <p>In diesem Beispiel-Kurs geht es um Beispiele.</p>
+               <a href="#!"><button>Zum Kurs</button></a>
+             </div>
+         </div>
+       </div>
+   </div>
+   <div class="forum-article-item">
+       <div class="left-area">
+           <div class="answer-block">
+               <span class="answer-num">2k</span>
+               <span style="text-align: center; font-size: 10px;">Eingeschrieben</span>
+           </div>
+       </div>
+       <div class="right-area">
+         <div class="alignment-right">
+             {{ user_card(user) }}
+             <div style="flex-grow: 1;">
+               <h3><a href="#!">Beispiel-Kurs</a></h3>
+               <p>In diesem Beispiel-Kurs geht es um Beispiele.</p>
+               <a href="#!"><button>Einschreiben</button></a>
+             </div>
+         </div>
+       </div>
+   </div>
+   <div class="forum-article-item">
+       <div class="left-area">
+           <div class="answer-block">
+               <span class="answer-num">100</span>
+               <span style="text-align: center; font-size: 10px;">Interessenten</span>
+           </div>
+       </div>
+       <div class="right-area">
+         <div class="alignment-right">
+             {{ user_card(user) }}
+             <div style="flex-grow: 1;">
+               <h3><a href="#!">Beispiel-Kurs</a></h3>
+               <p>In diesem Beispiel-Kurs geht es um Beispiele.</p>
+               <p><i>kommt bald</i></p>
+             </div>
+         </div>
+       </div>
+   </div>
+ </div>
+{% endblock %}

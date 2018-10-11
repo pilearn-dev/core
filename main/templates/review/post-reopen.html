@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+{% block body %}
+    <link rel="stylesheet" href="/static/css/simplemde.min.css">
+    <script src="/static/js/simplemde.min.js"></script>
+      <div class="review-screen">
+          <div class="review-info-panel">
+              <h3>Moderation &ndash; Beiträge wieder öffnen</h3>
+              <p>In dieser Moderationsliste werden geschlossene Beiträge gezeigt, entscheide ob sie geöffnet werden sollen.</p>
+          </div>
+          <div class="review-action-panel">
+              <span class="review-text">Wähle eine Aktion:</span>
+              <a href="#!" onclick="$post('review/add-review/post-reopen/{{ data.id }}', { 'result': 1 }, function(resp){window.location.replace(resp);});"><button class=""><i class="fa fa-arrow-circle-right"></i><span class="review-text"> Überspringen</span></button></a>
+              <a href="#!" onclick="$post('review/add-review/post-reopen/{{ data.id }}', { 'result': 2 }, function(resp){window.location.replace(resp);});"><button class="accept-btn"><i class="fa fa-unlock"></i><span class="review-text"> Öffnen</span></button></a>
+              <a href="#!" onclick="$post('review/add-review/post-reopen/{{ data.id }}', { 'result': 3 }, function(resp){window.location.replace(resp);});"><button class="danger-btn"><i class="fa fa-lock"></i><span class="review-text"> Geschlossen lassen</span></button></a>
+          </div>
+          <div class="review-content-panel">
+              <div class="review-content">
+                  <h3>Soll dieser Beitrag wieder geöffnet werden?</h3>
+                  <div class="warning">
+                      <p>Warum sollte dieser Beitrag wieder geöffnet werden?:</p>
+                      <ul>
+                        {% for r in flag_reasons %}
+                          <li><i>{{ r[0] }}</i> ({{ r[1] }}&times;)</li>
+                        {% endfor %}
+                      </ul>
+                  </div>
+                  <h2 style="font-weight: normal;"><a href="/forum/{{ data.item.getDetail("forumID") }}/from-review/article/{{ data.item.id }}/{{ data.item.getLabel() }}">{{ data.item.getHTMLTitle()|safe }}</a></h2>
+                  <div class="post-warning">
+                    {{ (data.item.getClosureWarning()|markdown) }}
+                  </div>
+                  <div class="forum-article-item">
+                      {% if not data.item.isDestroyed() %}
+                      <div class="left-area">
+                          <div class="answer-block{% if data.item.accepted_answer %} is-answer-accepted {% endif %}">
+                              {% if data.item.hasAccepted() %}
+                                  <span><i class="fa fa-check-circle is-answered" aria-hidden="true"></i></span>
+                              {% else %}
+                                  <span class="is-not-answered">&nbsp;</span>
+                              {% endif %}
+                              <span class="answer-num">{{ data.item.getScore() }}</span>
+                          </div>
+                          {% if data.item.getAward() != 0 %}
+                              <div class="award" title="Dieser Beitrag hat eine offene Belohnung in Höhe von {{ data.item.getAward() }} Reputationspunkten.">+{{ data.item.getAward() }}</div>
+                          {% endif %}
+                      </div>
+                      {% endif %}
+                      <div class="right-area">
+                          {% if not data.item.isDestroyed() %}
+                              {{ data.item.getContent()|markdown }}
+                              <div class="alignment-right">
+                                  {{ user_card(data.item.getAuthor()) }}
+                                  <div style="flex-grow: 1; margin-top: 10px;">
+                                      Tags:
+                                      {% for tag in data.item.getTags() %}
+                                          {% if tag in moderator_tags %}
+                                              <span class='tag moderator-tag'>{{ tag }}</span>
+                                          {% else %}
+                                              <span class='tag'>{{ tag }}</span>
+                                          {% endif %}
+                                      {% endfor %}
+                                  </div>
+                              </div>
+                          {% endif %}
+                      </div>
+                  </div>
+{% endblock %}

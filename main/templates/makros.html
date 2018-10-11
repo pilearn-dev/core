@@ -1,0 +1,193 @@
+{% macro user_card(user, is_expanded=False) %}
+  {% set card_id=g.random_number(1, 99999) %}
+  <div class="user-profile-meta">
+  <div class="user-profile-badge{% if user.isTeam() %} is-dev{% endif %}{% if is_expanded %} expanded{% endif %}" id="user-card-{{ user.id }}-{{ card_id }}">
+      <div class="image-area">
+          {% if user.id == -1 %}{% elif user.getDetail("profile_image") %}
+              <img src="{{ user.getDetail("profile_image") }}" alt="">
+          {% else %}
+              <i class="fa fa-user fa-2x" aria-hidden="true"></i>
+          {% endif %}
+      </div>
+      <div class="text-area">
+          {% if user.id == -3 %}
+            <h4>Anonymer Benutzer</h4>
+            <span class="author-role"> &nbsp; </span>
+            &nbsp;
+          {% elif user.id == -1 %}
+            <h4>Community-Beitrag</h4>
+            <span class="author-role"> &nbsp; </span>
+            &nbsp;
+          {% else %}
+            <h4><a href="/u/{{ user.id }}">{{ user.getHTMLName()|safe }}</a></h4>
+            {% if user.isTeam() %}
+                <span class="author-role">&pi;-Learn Team</span>
+            {% elif user.isAdmin() %}
+                <span class="author-role">ADMINISTRATOR</span>
+            {% elif user.isMod() %}
+                <span class="author-role">MODERATOR</span>
+            {% else %}
+            <span class="author-role"> &nbsp; </span>
+            {% endif %}
+            <span class="author-rep"> Reputation: {{ g.num2suff(user.getReputation()) }}</span>
+          {% endif %}
+      </div>
+    {% if user.getDetail("labels")|length != 0 and user.id != -1 and user.id != -3 %}
+    <div class="below-area">
+        <p class="expandable">
+            {{ user.getDetail("realname") }} ist
+            {% for label in user.getDetail("labels") %}
+                {% if loop.first %}{% elif loop.last %} und {% else %}, {% endif %}<strong>{{ user.labels[label] }}</strong>{% if loop.last %}.{% endif %}
+            {% endfor %}
+        </p>
+        <p class="expandable">
+          {{ user.getShortProfileText()|striptags|safe }}
+        </p>
+        {% if not is_expanded %}
+            <a href="#!" onclick="document.getElementById('user-card-{{ user.id }}-{{ card_id }}').classList.toggle('expanded');if(this.innerText=='(mehr)'){this.innerText='(weniger)'}else{this.innerText='(mehr)'}">(mehr)</a>
+        {% else %}
+            <a href="#!" onclick="document.getElementById('user-card-{{ user.id }}-{{ card_id }}').classList.toggle('expanded');if(this.innerText=='(mehr)'){this.innerText='(weniger)'}else{this.innerText='(mehr)'}">(weniger)</a>
+        {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endmacro %}
+
+
+
+{% macro forum_close_dialog(user, article, forum) %}
+<script src="/static/js/systemerror.js"></script>
+  <div class="flagging-modal" id="article_flag_dialog">
+      <div class="flagging-dialog">
+          <div class="close-link"><a href="#!" onclick="document.getElementById('article_flag_dialog').classList.remove('open');">&times;</a></div>
+          <h3>Diesen Artikel melden.</h3>
+          {% if user.may("forum_flag") %}
+          <div id="article_flag_dialog-content-master">
+              <p>Bitte wähle einen Grund aus, aus dem du diesen Artikel melden möchtest:</p>
+              <div class="flagging-reason-list">
+                  {% if not user.may("forum_closeQuestion") and not article.isClosed() %}
+                  <label class="flagging-reason-item">
+                      <input type="radio" id="article_flag_dialog-duplicate_reason" name="reason" value="duplicate">
+                      <h4><span class="flag">exaktes Duplikat</span></h4>
+                      <p>Dieser Post ist ein exaktes Duplikat eines anderen Posts. Bitte dessen URL im Textfeld unten eintragen:</p>
+                      <input name="article_dupe_url" id="article_flag_dialog-dupe_target">
+                  </label>
+                  <label class="flagging-reason-item">
+                      <input type="radio" id="article_flag_dialog-close_reason" name="reason" value="close">
+                      <h4><span class="flag">Post soll geschlossen werden</span></h4>
+                      <p>Bitte wähle einen Grund</p>
+                      <select name="close_reason" id="close_reason-list">
+                          <option value="off-topic" id="close_reason_off_topic">nicht in dieses Forum passend</option>
+                          <option value="unclear" id="close_reason_unclear">unklar</option>
+                          <option value="too-broad" id="close_reason_too_broad">zu allgemein</option>
+                          <option value="too-spec" id="close_reason_too_specific">zu spezifisch</option>
+                      </select>
+                      <hr>
+                      <div id="close-reason-text">
+                          {% if article.getDetail("forumID") == 0 %}
+                          {{ article.CLOSURE_TEXTS["off-topic"]|markdown }}
+                          {% else %}
+                          {{ article.CLOSURE_TEXTS["off-topic"].replace("<$>", forum.getTitle())|markdown }}
+                          {% endif %}
+                      </div>
+                  </label>
+                  {% endif %}
+                  <label class="flagging-reason-item">
+                      <input type="radio" id="article_flag_dialog-other_reason" name="reason" value="other">
+                      <h4>Anderes</h4>
+                      <p>Ein anderes Problem als die hier aufgeführten. Nutze das Eingabefeld um das Problem zu beschreiben</p>
+                      <textarea style="max-height: 200px; min-height: 50px; height: 75px;" id="article_flag_dialog-message" name="other-reason" placeholder="Belege bitte deine Meldung durch Angabe von Links zu entsprechenden Posts."></textarea>
+                  </label>
+              </div>
+              <button id="article_flag_dialog-flag_btn" data-post-id="{{ article.getDetail("forumID")
+            }}/post/{{ article.id }}">Melden</button>
+          </div>
+          {% else %}
+              <div class="error">
+                  <h4>Privileg noch nicht erreicht</h4>
+              </div>
+          {% endif %}
+      </div>
+  </div>
+  {% if not user.may("forum_closeQuestion") and not article.isClosed() %}
+  <script>
+      function update_article_flag_reason_view() {
+          text = document.getElementById("close-reason-text");
+          val = document.getElementById("close_reason-list").value;
+          if(val == "off-topic") {
+              text.innerHTML = '{% if article.getDetail("forumID") == 0 %}{{ article.CLOSURE_TEXTS["off-topic"]|markdown }}{% else %}{{ article.CLOSURE_TEXTS["off-topic"].replace("<$>", forum.getTitle())|markdown }}{% endif %}';
+          } else if(val == "unclear") {
+              text.innerHTML = '{{ article.CLOSURE_TEXTS["unclear"]|markdown }}';
+          } else if(val == "too-broad") {
+              text.innerHTML = '{{ article.CLOSURE_TEXTS["too-broad"]|markdown }}';
+          } else if(val == "too-spec") {
+              text.innerHTML = '{{ article.CLOSURE_TEXTS["too-specific"]|markdown }}';
+          }
+      }
+      document.getElementById("close_reason-list").addEventListener("change", update_article_flag_reason_view)
+      update_article_flag_reason_view();
+  </script>
+
+  {% elif not article.isClosed() %}
+
+  <div class="flagging-modal" id="article_close_dialog">
+      <div class="flagging-dialog">
+          <div class="close-link"><a href="#!" onclick="document.getElementById('article_close_dialog').classList.remove('open');">&times;</a></div>
+          <h3>Diesen Artikel schließen.</h3>
+          {% if user.may("forum_flag") %}
+          <div id="article_close_dialog-content-master">
+              <p>Dieser Artikel ist </p>
+              <div class="flagging-reason-list lot-reasons">
+                  <label class="flagging-reason-item">
+                      <input type="radio" id="article_close_dialog-duplicate_reason" name="reason" value="duplicate">
+                      <h4>ein exaktes Duplikat</h4>
+                      {{ article.CLOSURE_TEXTS["duplicate"]|markdown }}
+                      <input name="article_dupe_url" id="article_close_dialog-dupe_target" placeholder="URL des anderen Beitrags">
+                  </label>
+                  <label class="flagging-reason-item">
+                      <input type="radio" id="article_close_dialog-off-topic_reason" name="reason" value="off-topic">
+                      <h4>in diesem Forum unpassend</h4>
+                      {{ article.CLOSURE_TEXTS["off-topic"]|markdown }}
+                      <div class="flagging-reason-list" id="off-topic-reason-list">
+                      {% for otr in article.OFF_TOPIC_REASONS if not(otr.for_global and forum.id != 0) and not(otr.for_course and forum.id == 0) %}
+                        <label class="flagging-reason-item">
+                            <input type="radio" id="article_close_dialog-off-topic_sub-{{ loop.index }}" name="otreason" value="{{ otr.text }}">
+                            {{ otr.text.replace("<$>", forum.getTitle())|markdown }}
+                        </label>
+                      {% endfor %}
+                      <label class="flagging-reason-item">
+                          <input type="radio" id="article_close_dialog-off-topic_sub-other" name="otreason" value="Dieser Beitrag ist in diesem Forum unpassend, da ...">Anderes
+                          <textarea onkeydown="document.getElementById('article_close_dialog-off-topic_sub-other').value=this.value" style="max-height: 50px; min-height: 50px; resize: none;">Dieser Beitrag ist in diesem Forum unpassend, da ...</textarea>
+                      </label>
+                      </div>
+                  </label>
+                  <label class="flagging-reason-item">
+                      <input type="radio" id="article_close_dialog-unclear_reason" name="reason" value="unclear">
+                      <h4>unklar</h4>
+                      {{ article.CLOSURE_TEXTS["unclear"]|markdown }}
+                  </label>
+                  <label class="flagging-reason-item">
+                      <input type="radio" id="article_close_dialog-too-broad_reason" name="reason" value="too-broad">
+                      <h4>zu allgemein</h4>
+                      {{ article.CLOSURE_TEXTS["too-broad"]|markdown }}
+                  </label>
+                  <label class="flagging-reason-item">
+                      <input type="radio" id="article_close_dialog-too-specific_reason" name="reason" value="too-specific">
+                      <h4>zu spezifisch</h4>
+                      {{ article.CLOSURE_TEXTS["too-specific"]|markdown }}
+                  </label>
+              </div>
+              <button class="warn-btn" id="article_close_dialog-close_btn" data-post-id="{{ article.getDetail("forumID")
+            }}/post/{{ article.id }}">Schließen</button>
+          </div>
+          {% else %}
+              <div class="error">
+                  <h4>Privileg noch nicht erreicht</h4>
+              </div>
+          {% endif %}
+      </div>
+  </div>
+
+  {% endif %}
+{% endmacro %}

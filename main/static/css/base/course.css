@@ -1,0 +1,149 @@
+/* Courses */
+/* - Course list */
+.coursegrouptitle {
+    margin-top: 1em;
+    background-color: #fff;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    color: #666;
+    font-size: 30px;
+}
+.coursegrouptitle i {
+    font-size: 20px;
+    display: inline-block;
+    position: relative;
+    top: -2.5px;
+    color: #ffffff;
+}
+
+.courses {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.course-panel {
+    margin: 10px;
+    color: black;
+    flex-grow: 1;
+    padding: 10px;
+    background-color: white;
+    border: 1px solid #bbb;
+    box-shadow: 0 0 3px #ddd;
+    border-radius: 2px;
+}
+.course-panel {
+    max-width: 300px;
+}
+.course-panel a {
+    text-decoration: none;
+}
+.course-panel h4 {
+    font-size: 20px;
+    color: white;
+    background-color: #a66;
+    padding: 10px 5px;
+    margin: -8px;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+/* - split screen */
+.splitscreen {
+    display: flex;
+    padding: 5px;
+}
+@media all and (max-width: 800px) {
+    .splitscreen {
+        flex-direction: column;
+    }
+}
+.splitscreen aside {
+    padding: 5px;
+    max-width: 250px;
+    width: 100%;
+    flex-grow: 1;
+    border: 1px solid #5999F8;
+
+}
+.splitscreen main {
+    flex-grow: 1;
+    padding: 5px 15px;
+}
+
+
+/* - topics */
+.topic {
+  display: inline-block;
+  font-size: 14px;
+  padding: 2px 8px;
+  background-color: #fff;
+  border: 1.5px solid #844;
+  color: #844;
+  font-weight: bold;
+  border-radius: 1.5px;
+  overflow: hidden;
+}
+.topic i.fa {
+  border-right: 2px solid #448;
+  margin: -3px -8px;
+  margin-right: -8px;
+  padding: 6px 20px;
+  padding-left: 20px;
+  margin-right: 5px;
+  padding-left: 10px;
+  background-color: #77b;
+  color: #fff;
+}
+
+a.topic {
+  color: #844 !important;
+}
+
+a.topic:focus {
+  box-shadow: 0 0 0 3px rgba(152, 100, 100, 0.5);
+  outline: none;
+}
+
+a.topic:hover {
+  background-color: #b77;
+  color: #fff !important;
+}
+
+
+/* - course list */
+.course-list {
+  padding: 3px;
+  display: flex;
+  flex-direction: column;
+}
+.course-list .course-list-item {
+  background-color: white;
+  border: 1px solid #bbb;
+  box-shadow: 0 0 3px #ddd;
+  padding: 9px;
+  margin: 1px;
+  border-radius: 2px;
+}
+.course-list .course-list-item .headline {
+  margin: 3px 0;
+  padding-bottom: 2px;
+  border-bottom: 1px solid #ccc;
+}
+.course-list .course-list-item .headline a:not(.topic) {
+  font-size: 1.2em;
+  color: #333;
+}
+.course-list .course-list-item .headline a:not(.topic):hover {
+  color: #666;
+}
+.course-list .course-list-item .shortdesc p {
+  margin: 3px 0;
+}
+.course-list .course-list-item .actions {
+  display: flex;
+  margin: 2px;
+}
+.course-list .course-list-item .action a {
+  margin: 2px;
+  font-weight: bold;
+}

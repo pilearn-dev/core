@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h2 class="bigheading">Moderation</h2>
+    <p>Hilf mit unangebrachte Inhalte zu entfernen und Nutzer zu sperren, die sich nicht an die Regeln halten.</p>
+    <div class="review-grid">
+        {% for review in queues %}
+            <div class="review-grid-item{% if review.queue.getOpenCount(user) > review.critical_open %} important{% endif %}">
+                  <div class="review-grid-item-panel">
+                      <h3>{{ review.name }}</h3>
+                      {{ review.desc|markdown }}
+                      {% if user.isReviewBanned(review.url) %}
+                      <div class="review-error-block">
+                        {{ user.getReviewBanMessage(review.url)|markdown }}
+                        <hr>
+                        <p>Daher wurdest du kurzzeitig vom Bearbeiten dieser Moderationsliste ausgeschlossen. Die Sperrung endet {% set rbe=user.getReviewBanEnd(review.url, True) %} <span title="{{ rbe[1] }}">{{ rbe[2] }}</span>. Möchtest du diese Entscheidung anfechten, nutze das <a href="/f/0">globale Forum</a></p>
+                      </div>
+                      {% elif user.may(review.required_privilege) %}
+                        <p class="open"><span class="number">{{ review.queue.getOpenCount(user) }}</span> offene Meldungen</p>
+                        <a href="/review/{{ review.url }}/start"><button class="primary-btn block-btn big-btn">Los &raquo;</button></a>
+                      {% else %}
+                      <p>Du benötigts mindestens {{ privileges[review.required_privilege] }} Reputationspunkte um diese Liste zu bearbeiten.</p>
+                      {% endif %}
+                  </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

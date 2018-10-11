@@ -1,0 +1,337 @@
+/* Layout */
+
+
+.label-bar {
+  margin-top: 0;
+  background-color: #fafafa;
+  margin-bottom: 3px;
+  border-bottom: 1px solid #e7e7e7;
+}
+.label-bar .centered {
+  display: flex;
+  align-items: center;
+  padding: 10px 5px;
+}
+.label-bar h1 {
+  margin: 0;
+  font-size: 25px;
+  padding: 0;
+  font-weight: normal;
+  color: #9ac;
+  text-align: left;
+  flex-grow: 1;
+}
+.label-bar h1 strong {
+  color: #679;
+}
+
+.label-bar h1 em {
+  font-size: 15px;
+  font-style: normal;
+  font-weight: bold;
+}
+
+.label-bar nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+.label-bar nav ul li {
+  margin: 0 5px;
+}
+.label-bar nav ul li a {
+  color: #88b;
+  padding: 3px 10px;
+  border-bottom: 2px solid transparent;
+  font-size: 14px;
+}
+.label-bar nav ul li a:hover {
+  color: #447;
+}
+.label-bar nav ul li.active a {
+  color: #a44;
+  border-bottom: 2px solid #a44;
+  font-weight: bold;
+}
+@media all and (max-width: 900px) {
+  .label-bar nav {
+    display: none;
+  }
+  .label-bar .centered {
+      padding: 7.5px 10px;
+  }
+  .label-bar h1 {
+      font-size: 20px;
+  }
+}
+
+/* - split screen */
+.split-screen {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 5px 0;
+}
+.split-screen aside {
+  max-width: 200px;
+  width: 100%;
+  flex-grow: 1;
+  padding: 10px 0;
+}
+.split-screen.big aside {
+  max-width: 300px;
+}
+.split-screen aside ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.split-screen aside ol li {
+  display: block;
+  padding: 2px 0;
+}
+.split-screen aside ol li a {
+  color: black;
+  display: block;
+  padding: 4.5px 6px;
+  background-color: #efe;
+  border-left: 5px solid #aba;
+}
+.split-screen aside ol li a.visited {
+  border-left-color: #efe;
+}
+.split-screen aside ol li a.current, .split-screen aside ol li a:hover {
+  background-color: #cdc;
+}
+.split-screen aside ol li a.current.visited {
+  border-left: 5px solid #cdc;
+}
+.split-screen aside ol li a.current.visited:hover, .split-screen aside ol li a.visited:hover {
+  border-left: 5px solid #cdc;
+}
+.split-screen aside ol ol {
+  margin-left: 15px;
+}
+
+.split-screen main {
+  width: calc(100% - 200px);
+  flex-grow: 1;
+  padding: 3px;
+  padding-left: 10px;
+}
+.split-screen.big main {
+  width: calc(100% - 300px);
+}
+@media all and (max-width: 800px) {
+  .split-screen {
+    flex-direction: column;
+  }
+  .split-screen aside {
+    max-width: 100% !important;
+  }
+  .split-screen main {
+    width: 100% !important;
+  }
+  .split-screen aside ol li a {
+    padding: 6px 8px;
+    margin: 1.5px;
+  }
+}
+
+
+/* - pentagon (boxes) component */
+.pentagon {
+  display: flex;
+  flex-wrap: wrap;
+}
+.pentagon .pent-item {
+  flex-grow: 1;
+  width: 100%;
+  padding: 5px;
+  margin: 5px;
+  max-width: calc(50% - 10px);
+  border: 1px solid #ddd;
+}
+.pentagon .pent-item h2 {
+  font-size: 1.2em;
+  font-weight: normal;
+  border-bottom: 1px solid #ddd;
+  padding: 1px 4px;
+}
+@media all and (max-width: 600px) {
+  .pentagon {
+    flex-direction: column;
+  }
+  .pentagon .pent-item {
+    max-width: calc(100% - 10px);
+  }
+}
+
+
+/* - login dialog */
+.modal-overlay {
+    padding: 10px;
+}
+.modal {
+    padding: 5px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+.modal h2 {
+    text-align: center;
+    font-size: 1.8em;
+    margin: 5px 0;
+}
+
+/* - login option dialog */
+.login-option-dialog {
+  padding: 1px;
+}
+.login-option-dialog .login-option {
+  border: 1px solid #8d8;
+  margin: 2px;
+  border-radius: 3px;
+  padding: 1px;
+}
+.login-option-dialog .login-option input[type="radio"][name="login_via"] {
+  display: none;
+}
+.login-option-dialog .login-option .login-option-selection {
+  background-color: #8d8;
+  padding: 8px;
+  color: #fff;
+  transition: all .3s ease;
+  font-weight: normal;
+  border-radius: 3px;
+}
+.login-option-dialog .login-option .login-option-content {
+  padding: 15px;
+  display: none;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+
+.login-option-dialog .login-option input[type="radio"][name="login_via"]:checked ~ .login-option-content {
+  display: block;
+  opacity: 1;
+}
+
+.login-option-dialog .login-option .login-option-selection:hover {
+  background-color: #6b6;
+}
+.login-option-dialog .login-option input[type="radio"][name="login_via"]:checked ~ .login-option-selection {
+  background-color: #494;
+}
+
+
+
+/* - rally */
+.rally {
+  padding: 2em;
+  overflow: hidden;
+  max-height: 500px;
+}
+.rally.rally-big {
+  max-height: 600px;
+}
+.rally.one-page {
+  max-height: none;
+}
+.rally .rally-item {
+  display: grid;
+  grid-template-columns: calc(40% - 250px) 500px calc(60% - 250px);
+  height: 100vh;
+}
+.rally.one-page .rally-item {
+  height: auto;
+}
+.rally .rally-centerbox {
+  margin: 5px;
+  padding: 10px;
+  background-color: #eee;
+  align-self: flex-start;
+}
+.rally.one-page .rally-centerbox {
+  margin: 0 5px;
+  padding: 10px 15px;
+}
+.rally .rally-centerbox.rally-cb-big {
+  grid-column-start: 1;
+  grid-column-end: 3;
+}
+.rally .rally-heading {
+  font-size: 1.3em;
+}
+.rally .rally-infobox {
+  padding: 10px;
+  margin: 5px;
+  background-color: #ffc;
+  align-self: flex-start;
+  box-shadow: 0 0 4px #aa8;
+}
+.rally .rally-infobox p {
+  margin: 2px 0;
+}
+.rally .rally-infobox hr {
+  border-color: #cca;
+}
+.rally .rally-infobox .rally-info {
+  height: 0;
+  position: relative;
+  opacity: 0;
+  transition: none;
+}
+.rally .rally-infobox .rally-info.shown {
+  height: 100%;
+  opacity: 1;
+  transition: all .5s ease;
+}
+.rally .rally-infobox .rally-info .example {
+  font-size: 0.9em;
+  padding-left: 1.4em;
+}
+.rally .rally-infobox .rally-info .example .fa {
+  margin-left: -1.5em;
+}
+.rally .rally-infobox .rally-info .example.good-example .fa-check {
+  color: #0d0;
+}
+.rally .rally-infobox .rally-info .example.bad-example .fa-times {
+  color: #d00;
+}
+
+@media all and (max-width: 800px) {
+  .rally {
+    padding: 0;
+    max-height: none !important;
+    display: flex;
+    flex-direction: column;
+  }
+  .rally .rally-blank {
+    display: none;
+  }
+  .rally .rally-item {
+    display: flex;
+    flex-direction: column;
+    height: auto !important;
+  }
+  .rally .rally-centerbox {
+    width: calc(100% - 10px);
+    order: 2;
+  }
+  .rally .rally-infobox {
+    width: calc(100% - 10px);
+    order: 1;
+    background-color: #ffc;
+    box-shadow: none;
+    border: 0.5px solid #dda;
+  }
+  .rally .rally-infobox .rally-info:not(.shown) {
+    pointer-events: none;
+  }
+}
+@media all and (max-width: 800px) {
+  .rally .dispose-on-small {
+    display: none !important;
+  }
+}

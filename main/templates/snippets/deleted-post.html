@@ -1,0 +1,11 @@
+
+<div class="fakepic deleted-section">
+    <div class="error">
+        <h3>Gelöschter Post</h3>
+        {% if fromwho == "by-mod" %}
+            Der Moderator <a href="/user/view/id={{ extra.id }}">{{ extra.name }}</a> hat diesen Post gelöscht
+        {% else %}
+            Der Autor dieses Posts hat ihn gelöscht
+        {% endif %}
+    </div>
+</div>

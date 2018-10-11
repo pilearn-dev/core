@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block body %}
+    <div class="">
+      <div>
+        {{ message|markdown }}
+        {% if (in_beta or request.values.get("access", "") == beta_token) and not user.isLoggedIn() %}
+          <div id="access-area"><button class="danger-btn" onclick="document.getElementById('access-form').classList.add('visible'); document.getElementById('access-area').setAttribute('hidden', true);">Anmelden</button>&nbsp;<a href="/beta">Registrieren</a></div>
+          <form class="access-form" action="/~dev/login" method="post" id="access-form">
+            <label for="username">Benutzername:</label>
+            <input id="username" name="username">
+            <label for="password">Passwort:</label>
+            <input id="password" name="password" type="password">
+            <input type="hidden" name="login_provider" value="local_account">
+            <button id="reglog" class="danger-btn">Anmelden</button>
+          </form>
+        {% elif (in_beta or request.values.get("access", "") == beta_token) %}
+        <hr>
+          <p style="font-weight: bold; padding: 3px;">Du hast keinen &beta;-Zugriff. Komme später wieder, wenn die öffentliche &beta; beginnt.</p>
+        {% endif %}
+      </div>
+  </div>
+  <style>
+  .hero, .global-note {
+    display: none;
+  }
+  button[hidden] {
+    display: none;
+  }
+  .access-form {
+    background-color: white;
+    color: black;
+    display: none;
+    margin: 5px 0;
+    border: 1px solid #aaa;
+  }
+  .access-form.visible {
+    padding: 20px !important;
+    display: block;
+  }
+  </style>
+{% endblock %}

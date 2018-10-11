@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+{% block body %}
+    <link rel="stylesheet" href="/static/css/simplemde.min.css">
+    <script src="/static/js/simplemde.min.js"></script>
+    <h2 class="bigheading"><input value="{{ vote_name }}" id="vote-name" style="box-shadow: none; border: 1px solid #ddd; text-align: center;"></h2>
+    <p style="text-align: center;">Entscheide, wer <select id="position-selection"><option{% if vote_position=="Moderator" %} selected{% endif %}>Moderator</option><option{% if vote_position=="Administrator" %} selected{% endif %}>Administrator</option></select> auf &pi;-Learn werden soll!</p>
+    <div class="split-screen">
+      <aside>
+        <div style="position: sticky; top: 10px;">
+          <h3>Überblick</h3>
+          <ol>
+            <li class="visited"><a href="#primary-note">Hinweise</a></li>
+            <li class="visited"><a href="#results-note">Einstellungen</a></li>
+            <li class="visited"><a href="#candidate-list">Kandidaten</a></li>
+          </ol>
+          <h4>Zu besetzende Plätze</h4>
+          <input type="number" min="1" max="5" value="{{ vote_places }}" id="places" class="inline">
+          <h4>Anzahl Kandidaten</h4>
+          {{ vote_candidate|length }}
+          <button class="primary-btn block-btn big-btn" onclick="save_all()">Speichern</button>
+        </div>
+      </aside>
+      <main>
+        <h2 id="primary-note">Hinweise</h2>
+        <textarea id="election-message">{{ vote_message }}</textarea>
+        <script>
+        var simplemde = new SimpleMDE({ element: document.getElementById("election-message"), forceSync:true, parsingConfig: {strikethrough: false}, promptURLs:true, spellChecker:false });
+        </script>
+        <h2 id="results-note">Einstellungen</h2>
+        <p>Aktuelle Phase:</p>
+        <select id="state-selection">
+          <option{% if vote_state==1 %} selected{% endif %} value="1">Ankündigungsphase</option>
+          <option{% if vote_state==2 %} selected{% endif %} value="2">Nominationsphase</option>
+          <option{% if vote_state==3 %} selected{% endif %} value="3">Interviewphase</option>
+          <option{% if vote_state==4 %} selected{% endif %} value="4">Zwischenphase (2 Tage) zum Beantworten der Fragen</option>
+          <option{% if vote_state==5 %} selected{% endif %} value="5">Wahlphase</option>
+          <option{% if vote_state==6 %} selected{% endif %} value="6">Ergebnisphase</option>
+        </select>
+        {% if vote_state == 6 %}
+        <p><button onclick="$post('election/api/{{ vote_id }}', {'action':'tally'}, function(){window.location.reload();})" class="primary-btn">Sieger ermitteln</button>
+        <button onclick="$post('election/api/{{ vote_id }}', {'action':'untally'}, function(){window.location.reload();})">Sieger zurücksetzen</button></p>
+        {% endif %}
+        <h2 id="candidate-list">Kandidaten</h2>
+        <p>Folgende Benutzer stehen in dieser Wahl als Kandidaten zur Verfügung:</p>
+        {% for c in vote_candidate %}
+          <div class="vote-candidate {% if c.isRetracted() or c.isFailed() %}deleted-section{% endif %}">
+            <h3 class="candidate_title">Kandidat: <strong><a href="/u/{{ c.getCandidate().id }}">{{ c.getCandidate().getDetail("realname") }}</a></strong> <span class="badge">{{ c.getCandidate().getReputation() }}</span></h3>
+            {% if c.isRetracted() %}
+              <div class="error inline">
+                <p>Die Kandidatur wurde zurückgezogen.</p>
+              </div>
+            {% elif c.isFailed() %}
+              <div class="error inline">
+                <p>{{ c.getCandidate().getDetail("realname") }} kam nicht in die nächste Runde.</p>
+              </div>
+            {% elif c.isElected() %}
+              <div class="success inline">
+                <p>{{ c.getCandidate().getDetail("realname") }} wurde gewählt. HERZLICHEN GLÜCKWUNSCH!</p>
+              </div>
+            {% endif %}
+            <div>
+              {% set annot = c.getCandidate().getAnnotations() %}
+              <ul>
+              {% for a in annot %}
+                  <li class="{% if a.deleted %}deleted-line{% endif %}">{{ a.content|markdown }}</li>
+              {% endfor %}
+            </ul>
+            </div>
+          </div>
+        {% endfor %}
+      </main>
+    </div>
+<script>
+function save_all() {
+  $post('election/api/{{ vote_id }}', {'action':'update', 'name': document.getElementById("vote-name").value, 'position': document.getElementById("position-selection").value, 'message': document.getElementById("election-message").value, 'places': document.getElementById("places").value, 'state': document.getElementById("state-selection").value}, function(){window.location.reload();})
+}
+</script>
+{% endblock %}

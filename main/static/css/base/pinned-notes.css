@@ -1,0 +1,136 @@
+/* Pinned notes */
+
+.hero {
+    color: black;
+    background-color: #ded;
+    margin: 1px 0;
+}
+.hero .hero-center {
+    padding: 10px;
+    margin: 0em auto;
+    font-size: 18px;
+    max-width: 1000px;
+}
+@media all and (max-width: 800px) {
+  .hero .hero-center {
+    padding: 6px;
+    font-size: 16px;
+  }
+}
+.hero a {
+    color: inherit;
+    font-weight: bold;
+    text-decoration: underline;
+}
+.hero .hero-close {
+  float: right;
+  text-decoration: none;
+  color: #fff;
+  color: rgba(0,0,0,0.1);
+  font-size: 2em;
+  font-weight: normal;
+  line-height: 0;
+  margin-top: 12px;
+}
+.hero .hero-close:hover {
+  color: rgba(0,0,0,0.3);
+}
+
+
+
+.ban-message {
+    color: white;
+    background-color: #da0;
+    margin: 1px 0;
+    font-size: 13px;
+}
+.ban-message .ban-center {
+    padding: 5px 10px;
+    margin: 0em auto;
+    max-width: 1000px;
+}
+@media all and (min-width: 900px) {
+  .ban-message {
+      position: absolute;
+      font-size: 13px;
+      top: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      margin: 0;
+      border-bottom-left-radius: 5px;
+      border-bottom-right-radius: 5px;
+      box-shadow: 0 0 2px 1px #aaa;
+      transition: top .3s ease;
+      animation: ban-message-fadeout 3s;
+  }
+  .ban-message:hover {
+    top: 0;
+  }
+  .ban-message .ban-center {
+      padding: 4px 6px;
+  }
+  @keyframes ban-message-fadeout {
+    0% {
+      top: 0;
+    }
+    60% {
+      top: 0;
+    }
+    92% {
+      top: -30px;
+    }
+    100% {
+      top: -22px;
+    }
+  }
+}
+
+.ban-message a {
+    color: #fff;
+    font-weight: bold;
+    text-decoration: underline;
+    margin-left: margin: 0;
+    display: inline;
+}
+.global-note {
+    color: #660;
+    background-color: #ededaa;
+    margin-top: 3px;
+    margin: .3em 0;
+}
+.global-note .note-center {
+    padding: 10px 10px;
+    margin: 0 auto;
+    max-width: 1000px;
+    width: 99%;
+}
+.global-note .note-center p, .global-note .note-center h1, .global-note .note-center h2, .global-note .note-center h3, .global-note .note-center h4 {
+  margin: 0;
+  font-weight: normal;
+}
+.global-note a {
+    color: inherit;
+    font-weight: bold;
+    text-decoration: underline;
+}
+.global-note h4, .global-note h5 {
+    font-weight: bold !important;
+}
+
+
+
+@media all and (max-width: 800px) {
+    .hero a {
+        margin: 10px 5px;
+    }
+    .ban-message a {
+        display: block;
+        margin: 10px 5px;
+    }
+    .global-note {
+      font-size: 13px;
+    }
+    .global-note a {
+        margin: 2px;
+    }
+}

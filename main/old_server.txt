@@ -1,0 +1,106 @@
+@app.route("/~dev/sql", methods=['GET', 'POST'])
+def __dev_sql():
+    if session.get('login') is None:
+        return redirect(url_for('login'))
+
+    stop = get_standard_options()
+
+    if not stop["user_is_dev"]:
+        abort(404)
+
+    if request.form["sql_file"] in ["courses.db", "user.db", "forum.db"]:
+        file = request.form["sql_file"]
+        sql = request.form["sql_sql"]
+
+        try:
+            con = lite.connect('databases/'+file)
+            cur = con.cursor()
+            cur.execute(sql)
+            lr = cur.fetchall()
+            con.commit()
+        except lite.Error as e:
+            lr = [["Fehler:", str(e)]]
+        except lite.Warning as e:
+            lr = [["Achtung:", str(e)]]
+    else:
+        lr = [["Info", "Keine Abfrage gestartet"]]
+        file = sql = ""
+
+    return render_template('~dev/sql.html', stop=stop, title="Entwicklermodus", thispage="sql", last_response=lr, last_sql=sql, last_file=file)
+
+@app.route('/course/<string:action>', methods=['GET', 'POST'])
+@app.route('/course/<string:action>/<string:value>', methods=['GET', 'POST'])
+def course_(action, value=None):
+    if session.get('login') is None:
+        return redirect(url_for('login'))
+
+    stop = get_standard_options()
+
+
+    if action in courses.views:
+        return courses.views[action](stop, value)
+    abort(405)
+
+@app.route('/forum/f<int:forumid>/<string:page>', methods=['GET', 'POST'])
+@app.route('/forum/f<int:forumid>/<string:page>/<string:action>', methods=['GET', 'POST'])
+def forum_(forumid, page, action=None):
+    if session.get('login') is None:
+        return redirect(url_for('login'))
+
+    stop = get_standard_options()
+    return forum.the_forum(stop, forumid, page, action)
+
+@app.route('/user/<string:action>', methods=['GET', 'POST'])
+@app.route('/user/<string:action>/<string:value>', methods=['GET', 'POST'])
+@app.route('/user/<string:action>/<string:value>', methods=['GET', 'POST'])
+def user_(action, value=None):
+    if session.get('login') is None:
+        return redirect(url_for('login'))
+
+    stop = get_standard_options()
+
+
+    if action in user.views:
+        return user.views[action](stop, value)
+    abort(405)
+
+@app.route('/help')
+@app.route('/help/<string:action>')
+def help_(action="index", value=None):
+    if session.get('login') is None:
+        return redirect(url_for('login'))
+
+    stop = get_standard_options()
+
+
+    if action in help.views:
+        return help.views[action](stop, value)
+    abort(405)
+
+@app.route('/review')
+@app.route('/review/<string:action>')
+@app.route('/review/<string:action>/<string:value>', methods=['GET', 'POST'])
+def review_(action="index", value=None):
+    if session.get('login') is None:
+        return redirect(url_for('login'))
+
+    stop = get_standard_options()
+
+
+    if action in review.views:
+        return review.views[action](stop, value)
+    abort(405)
+
+@app.route("/notification/<int:id>")
+def notification(id):
+    not_data = user.model__get_notification(id)
+    if not_data is None:
+        abort(400)
+    else:
+        user.model__set_notification_hidden(id)
+        link = not_data["link"]
+        return redirect(link)
+
+@app.route("/flag/<method>/<type>", methods=['GET', 'POST'])
+def flag(method, type):
+    return "{ok}"

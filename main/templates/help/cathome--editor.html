@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h4><a href="/help">Hilfethemen</a> &raquo; <em>Kategorie bearbeiten:</em> {{ cat.getTitle() }}</h4>
+    {% if done %}
+    <div class="success">
+      Kategorie erfolgreich gespeichert. <a href="?editor=no">Zur Seite</a>
+    </div>
+    {% endif %}
+    <form action="" method="post">
+      {% if user.isTeam() %}
+        <button class="primary-btn" type="submit" name="action" value="save">Speichern</button>&nbsp;
+        <button type="submit" name="action" value="replace">Ersetzen</button>&nbsp;
+        <button type="submit" name="action" value="reset">Zurücksetzen</button>&nbsp;
+      {% else %}
+        <button class="primary-btn" type="submit" name="action" value="save">Speichern</button>&nbsp;
+      {% endif %}
+      <a href="?editor=no">Abbrechen</a><br>&nbsp;
+      <h2><input id="title" name="title" value="{{ cat.getTitle() }}"></h2>
+      <input id="excerpt" name="excerpt" value="{{ cat.getExcerpt() }}">
+      <label for="cat_symbol">Angezeigtes Symbol:</label> <i class="fa fa-fw fa-lg {{ cat.getIcon() }}" id="symshow"></i>
+      <select id="cat_symbol" name="cat_symbol" onchange="document.getElementById('symshow').className='fa fa-fw fa-lg ' + this.value;">
+        {% for sym in ["fa-user-circle", "fa-trophy", "fa-quote-left", "fa-book", "fa-glass", "fa-music", "fa-search", "fa-envelope", "fa-heart", "fa-star", "fa-star-o", "fa-check", "fa-close", "fa-power-off", "fa-cog", "fa-home", "fa-file-o", "fa-trash-o", "fa-clock-o", "fa-download", "fa-refresh", "fa-lock", "fa-flag", "fa-tag", "fa-camera", "fa-photo", "fa-pencil", "fa-expand", "fa-exclamation-circle", "fa-calendar", "fa-comment", "fa-folder", "fa-key", "fa-thumbs-up", "fa-thumbs-down", "fa-sign-out", "fa-upload", "fa-unlock", "fa-credit-card", "fa-bell", "fa-certificate", "fa-tasks", "fa-filter", "fa-cloud", "fa-bars", "fa-money", "fa-dashboard", "fa-exchange", "fa-terminal", "fa-shield", "fa-ticket"] %}
+        <option value="{{ sym }}" {% if cat.getIcon() == sym %}selected{% endif %}>{{ sym }}</option>
+        {% endfor %}
+      </select><br>
+      {% if user.isTeam() %}
+        <label for="url_part">URL-Part <span class="warning inline">Änderungen können Verknüpfungen zerbrechen!</span></label>
+        <input id="url_part" name="url_part" value="{{ cat.getUrlPart() }}">
+        <input type="checkbox" id="active" name="active" value="true" {% if cat.isActive() %}checked{% endif %}>&nbsp;
+        <label for="active">Kategorie wird angezeigt?</label><br>
+        <input type="checkbox" id="may_edit" name="may_edit" value="true" {% if cat.mayAdminEdit() %}checked{% endif %}>&nbsp;
+        <label for="may_edit">Kategorie kann von Administratoren bearbeitet werden?</label><br>
+        <input type="checkbox" id="subpage" name="subpage" value="true" {% if cat.mayAdminCreateNewpage() %}checked{% endif %}>&nbsp;
+        <label for="subpage">Administratoren können Seiten erstellen?</label><br>
+      {% endif %}
+    </form>
+    <style>
+      label[for], input[type="checkbox"] {
+        display: inline-block;
+        font-weight: normal;
+      }
+    </style>
+{% endblock %}

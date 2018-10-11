@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% block body %}
+ <nav class="coursenav">
+   <h2>Kurstitel <i><a href="/courses/topic/42/info" class="topic">Kursthema</a></i></h2>
+   <p><b>angeboten von <a href="/u/1">paulπdev</a> und <a href="/u/2">Test-Benutzer</a></b></p>
+   <ul>
+     <li><a href="#!">Informationen</a></li>
+     <li class="active"><a href="#!">Kursinhalte</a></li>
+     <li><a href="#!">Kursforum</a></li>
+   </ul>
+ </nav>
+ <div class="split-screen">
+   <aside>
+     <h3>Alle Inhalte</h3>
+     <ol>
+       <li><a href="#!">Einleitung</a></li>
+       <li class="visited"><a href="#!">Verwendung</a></li>
+       <li><a href="#!">Beispiel 1</a></li>
+       <li><a href="#!">Beispiel 2</a></li>
+       <li class="current visited"><a href="#!">Test</a></li>
+     </ol>
+   </aside>
+   <main>
+     <h1>Test</h1>
+     <div class="quiz">
+       <div class="question type-textinput">
+         <label for="myQuestion" class="content">Wie heißt diese Webseite?</label>
+         <input id="myQuestion" placeholder="Ihre Antwort">
+         <div class="points">
+           <span class="reached blank"></span>
+           <span class="line"></span>
+           <span class="max">1</span>
+         </div>
+       </div>
+       <div class="question type-textinput solved">
+         <label for="myQuestion" class="content">Wie heißt diese Webseite?</label>
+         <input id="myQuestion" disabled value="Pi-Learn">
+         <div class="points">
+           <span class="reached">1</span>
+           <span class="line"></span>
+           <span class="max">1</span>
+         </div>
+       </div>
+     </div>
+   </main>
+ </div>
+ <div class="very-big-counter sticky">
+   <div class="event">
+     Zeit für diesen Test
+   </div>
+   <div class="number">
+     55
+   </div>
+   <div class="unit">
+    Minuten
+   </div>
+ </div>
+{% endblock %}

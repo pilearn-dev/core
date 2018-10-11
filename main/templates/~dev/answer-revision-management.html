@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% block body %}
+<script src="/static/js/systemerror.js"></script>
+<h2>Versionsverwaltung / Antworten</h2>
+    <hr>
+    <label for="vers_select">Versionsindizes auswählen</label>
+    <input id="vers_select">
+    <button onclick="load_Vers()">Laden</button>
+    <hr>
+    <div class="warning">
+      Diese Funktion soll nur sparsam eingesetzt werden.
+    </div>
+    <label for="vers_type">Versionstyp</label>
+    <input id="vers_type">
+    <p class="tiny">Werte sind: edit | static | deleted | undeleted | frozen | notice | unfrozen | destroyed | anonymized | transferred | restored | comment</p>
+    <label for="vers_content">Versionsinhalt</label>
+    <textarea id="vers_content"></textarea>
+    <label for="vers_comment">Versionskommentar</label>
+    <textarea id="vers_comment"></textarea>
+    <label for="vers_editor">Versionsautor</label>
+    <input id="vers_editor">
+    <button onclick="update_Vers()" class="danger-btn">Speichern</button>
+    <script>
+      function update_Vers() {
+        id = document.getElementById("vers_select").value;
+        r = {};
+        r.type = document.getElementById("vers_type").value;
+        r.content = document.getElementById("vers_content").value;
+        r.comment = document.getElementById("vers_comment").value;
+        r.editor = document.getElementById("vers_editor").value;
+          $post("~dev/answer-revision-management", {"action":"update", "id":id, "data":r}, function(r) {
+            issueSystemInfo("Version erfolgreich aktualisiert")
+          })
+      }
+      function load_Vers() {
+      id = document.getElementById("vers_select").value;
+        $post("~dev/answer-revision-management", {"action":"get", "id":id}, function(r) {
+          r = JSON.parse(r);
+          document.getElementById("vers_type").value = r.type;
+          document.getElementById("vers_content").value = r.content;
+          document.getElementById("vers_comment").value = r.comment;
+          document.getElementById("vers_editor").value = r.editor;
+        })
+      }
+    </script>
+{% endblock %}

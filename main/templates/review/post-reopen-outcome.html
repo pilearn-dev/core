@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+{% block body %}
+    <link rel="stylesheet" href="/static/css/simplemde.min.css">
+    <script src="/static/js/simplemde.min.js"></script>
+      <div class="review-screen">
+          <div class="review-info-panel">
+              <h3>Moderation &ndash; Beiträge wieder öffnen</h3>
+          </div>
+          <div class="review-result-panel">
+            {% if data.state == 0 %}
+              {% if user.isReviewBanned("user-flags") %}
+              <div class="review-error-block">
+                {{ user.getReviewBanMessage("user-flags")|markdown }}
+                <hr>
+                <p>Daher wurdest du kurzzeitig vom Bearbeiten dieser Moderationsliste ausgeschlossen. Die Sperrung endet {% set rbe=user.getReviewBanEnd("user-flags", True) %} <span title="{{ rbe[1] }}">{{ rbe[2] }}</span>. Möchtest du diese Entscheidung anfechten, nutze das <a href="/f/0">globale Forum</a></p>
+              </div>
+              {% elif user.may("forum_closeQuestion") %}
+              <h4>Meldung bereits bearbeitet</h4>
+              {% else %}
+              <p>Du benötigst mindestens {{ privileges.get_one("forum_closeQuestion") }} an Reputation um diese Meldung zu bearbeiten.</p>
+              {% endif %}
+            {% elif data.state == 1 %}
+              <h4>Meldung vollständig bearbeitet</h4>
+            {% elif data.state == 2 %}
+              <h4>Meldung kann nicht mehr bearbeitet werden</h4>
+            {% endif %}
+            {% if data.state != 0 %}
+              <p>Ergebnis dieser Meldung: <strong>{{ tos[data.result] }}</strong></p>
+            {% endif %}
+              <ul>
+              {% for review in reviews %}
+                {% set u = user.from_id(review[3]) %}
+                <li><p><a href="/u/{{ review[3] }}">{{ u.getHTMLName()|safe }}</a> meinte: {{ tos[review[4]] }} {% if user.isMod() %}<span class="review-error"><a href="/user/{{ u.id }}/{{ u.getDetail("name") }}/review-history/post-reopen">(Verlauf)</a> {% if not u.isReviewBanned("post-reopen") %}<a href="#!" onclick="$post('review/post-reopen/ban', {'user':{{ u.id }}, 'action': 'ban', 'msg': 'Du hast [diesen Beitrag](/review/post-reopen/{{ data.id }}) falsch moderiert, indem du *{{ tos[review[4]] }}* gewählt hast.'}, function(r){if(r=='{ok}'){window.location.reload()}else{issueSystemError(r)}})">(sperren)</a>{% else %}<a href="#!" onclick="$post('review/post-reopen/ban', {'user':{{ u.id }}, 'action': 'unban'}, function(r){if(r=='{ok}'){window.location.reload()}else{issueSystemError(r)}})">(ent-sperren)</a> &ndash; gesperrt bis{% set rbe=u.getReviewBanEnd("post-reopen", True) %} <span title="{{ rbe[1] }}">{{ rbe[2] }}</span>{% endif %}</span>{% endif %}</p></li>
+              {% endfor %}
+              </ul>
+          </div>
+          <div class="review-content-panel">
+              <div class="review-content">
+                  <h3>Soll dieser Beitrag wieder geöffnet werden?</h3>
+                  <div class="warning">
+                      <p>Dieser Beitrag wurde wegen dieser Sachen gemeldet:</p>
+                      <ul>
+                        {% for r in flag_reasons %}
+                          <li><i>{{ r[0] }}</i> ({{ r[1] }}&times;)</li>
+                        {% endfor %}
+                      </ul>
+                      {% if flag_comments %}
+                      <p><strong>Beitrag soll ein Duplikat von diesen Beiträgen sein:</strong></p>
+                      <ul>
+                        {% for c in flag_comments %}
+                          <li><a href="/f/{{ reviewqueue.item_function(c).getDetail("forumID") }}/{{ c }}">{{ reviewqueue.item_function(c).getHTMLTitle() }}</a></li>
+                        {% endfor %}
+                      </ul>
+                      {% endif %}
+                  </div>
+                  <h2 style="font-weight: normal;"><a href="/forum/{{ data.item.getDetail("forumID") }}/from-review/article/{{ data.item.id }}/{{ data.item.getLabel() }}">{{ data.item.getHTMLTitle()|safe }}</a></h2>
+                  {% if data.item.isDeleted() %}
+                  <div class="error inline">Dieser Beitrag wurde gelöscht und wird daher nicht angezeigt.</div>
+                  {% else %}
+                  <div class="forum-article-item {% if data.item.isDeleted() %}deleted-section{% endif %}">
+                      {% if not data.item.isDestroyed() %}
+                      <div class="left-area">
+                          <div class="answer-block{% if data.item.accepted_answer %} is-answer-accepted {% endif %}">
+                              {% if data.item.hasAccepted() %}
+                                  <span><i class="fa fa-check-circle is-answered" aria-hidden="true"></i></span>
+                              {% else %}
+                                  <span class="is-not-answered">&nbsp;</span>
+                              {% endif %}
+                              <span class="answer-num">{{ data.item.getScore() }}</span>
+                          </div>
+                          {% if data.item.getAward() != 0 %}
+                              <div class="award" title="Dieser Beitrag hat eine offene Belohnung in Höhe von {{ data.item.getAward() }} Reputationspunkten.">+{{ data.item.getAward() }}</div>
+                          {% endif %}
+                      </div>
+                      {% endif %}
+                      <div class="right-area">
+                          {% if not data.item.isDestroyed() %}
+                              {{ data.item.getContent()|markdown }}
+                              <div class="alignment-right">
+                                  {{ user_card(data.item.getAuthor()) }}
+                                  <div style="flex-grow: 1; margin-top: 10px;">
+                                      Tags:
+                                      {% for tag in data.item.getTags() %}
+                                          {% if tag in moderator_tags %}
+                                              <span class='tag moderator-tag'>{{ tag }}</span>
+                                          {% else %}
+                                              <span class='tag'>{{ tag }}</span>
+                                          {% endif %}
+                                      {% endfor %}
+                                  </div>
+                              </div>
+                          {% endif %}
+                      </div>
+                  </div>
+                  {% endif %}
+{% endblock %}

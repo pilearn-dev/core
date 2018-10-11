@@ -1,0 +1,209 @@
+
+/* html {
+    border-top: 5px solid #2559a9;
+}
+
+header {
+    background-color: #75A9F9;
+    color: white;
+}
+
+header  h1 {
+    flex-grow: 2;
+    margin: 0;
+    font-size: 20px;
+    padding: 10px;
+    text-align: center;
+}
+
+header h1.split {
+  font-size: 20px;
+}
+header h1.split small {
+  text-decoration: overline;
+  font-size: 14px;
+}
+
+
+header nav ul li a {
+    padding: 12.5px;
+    color: white;
+}
+
+header .has-icon {
+  font-weight: bold;
+  font-size: 1.1em;
+  padding: 11px 12.5px;
+}
+
+header nav ul li.active a, header nav ul li a:hover {
+    background-color: #0844A4;
+    color: white;
+}
+
+header .user {
+    padding: 12.5px;
+}
+
+@media all and (max-width: 800px) {
+  header .user a:hover {
+      background-color: #0844A4;
+      color: white;
+  }
+  header .user i {
+      padding: 10px;
+  }
+  header .user a {
+      padding: 12.5px;
+  }
+}
+header .user a {
+    color: white;
+}
+
+
+
+
+.coursenav {
+    background-color: #75A9F9;
+    color: white;
+    border-bottom: 3px solid #3165b5;
+    border-right: 2px solid #3165b5;
+}
+
+.coursenav.sponsored .sponsor-content {
+  border: 2px solid #0844A4;
+}
+
+
+.coursenav h2 i {
+  color: #ddd;
+}
+
+
+.coursenav ul li a {
+  color: white;
+  border-bottom: 5px solid #75a9f9;
+}
+.coursenav ul li a:hover {
+  border-bottom: 5px solid #6498e8;
+}
+.coursenav ul li.active a {
+  border-bottom: 5px solid #ffffff;
+}
+.coursenav ul li.active a:hover {
+  background-color: #6498e8;
+}
+
+
+.coursenav ul.subnav li a {
+  color: white;
+  border-bottom: 2px solid #6498e8;
+}
+.coursenav ul.subnav li.active a {
+  border-bottom: 2px solid #ffffff;
+}
+.coursenav ul.subnav li a:hover {
+  background-color: #6498e8;
+  border-bottom: 2px solid #5387d7;
+}
+.coursenav ul.subnav li.active a:hover {
+  background-color: #6498e8;
+  border-bottom: 2px solid #ffffff;
+}
+
+
+.coursegrouptitle {
+    background-color: #75A9F9;
+    color: white;
+    border-bottom: 3px solid #3165b5;
+    border-right: 2px solid #3165b5;
+}
+.coursegrouptitle i {
+    color: #ddd;
+}
+
+
+
+.topic {
+  background-color: #6498e8;
+  border: 1.5px solid #2559a9;
+  color: white;
+}
+
+a.topic {
+  color: white;
+}
+
+a.topic:hover {
+  background-color: #4276c6;
+}
+
+
+
+#notification-trigger.open {
+    background-color: #0844A4;
+}
+
+@media all and (max-width: 800px) {
+    #notification-area {
+        border-top: 3px solid black;
+    }
+}
+
+
+
+.review-grid .review-grid-item-panel {
+    border: 1px solid #c6f0ff;
+    background-color: #effbff;
+}
+
+.review-grid .review-grid-item.active .review-grid-item-panel {
+    background-color: #c6f0ff;
+    border-color: #93e4ff;
+}
+.review-grid .review-grid-item h3 {
+    color: #578595;
+    border-bottom: 1px solid #578595;
+}
+.review-grid .review-grid-item p.open {
+    background-color: #6eabbf;
+    color: white;
+}
+.review-grid .review-grid-item p.open .number {
+    background-color: #578595;
+    color: white;
+}
+.review-grid .review-grid-item.important .review-grid-item-panel {
+    box-shadow: 0 0 10px 0px #e57b12;
+}
+
+.review-screen {
+    border: 1px solid #c6f0ff;
+    background-color: #effbff;
+}
+.review-screen h3:not(.keep) {
+    color: #578595;
+}
+
+.review-screen .review-content-panel {
+    border-top: 1px solid #578595;
+}
+
+
+.login-request {
+    color: white;
+    background-color: #2559a9;
+    box-shadow: 0px 1px 2px #336;
+}
+
+.tag {
+    background-color: #75A9F9;
+    color: white;
+}
+.tag.moderator-tag {
+    background-color: #d9d955;
+    font-weight: bold;
+}
+
+/**/

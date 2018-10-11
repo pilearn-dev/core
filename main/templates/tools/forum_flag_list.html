@@ -1,0 +1,27 @@
+{% from "tools/_macro.html" import tools__nav %}
+{% extends "layout.html" %}
+{% block body %}
+    {{ tools__nav("forum", user) }}
+    <h2>Werkzeuge &ndash; Beitragsmeldungen</h2>
+    {% for f in flagged[:100] %}
+    <div class="user-list">
+      {% if f.item_type == "forum.question" %}
+          <i class="fa fa-question-circle-o fa-2x fa-fw" aria-hidden="true"></i>
+          <a href="/f/{{ f.post.getDetail('forumID')}}/{{ f.post.id }}">{{ f.post.getTitle() }}</a>
+          {% if f.state == 0 %}
+          <button onclick="location.href='/tools/forum/flags/{{ f.id }}';" class="primary-btn"><i class="fa fa-arrow-right fa-fw"></i></button>
+          {% else %}
+          <button onclick="location.href='/tools/forum/flags/{{ f.id }}';"><i class="fa fa-eye fa-fw"></i></button>
+          {% endif %}
+      {% else %}
+          <i class="fa fa-comment fa-2x fa-fw" aria-hidden="true"></i>
+          <a href="/f/{{ f.post.getDetail('parentID') }}">Antwort</a>
+          {% if f.state == 0 %}
+          <button onclick="location.href='/tools/forum/flags/{{ f.id }}';" class="primary-btn"><i class="fa fa-arrow-right fa-fw"></i></button>
+          {% else %}
+          <button onclick="location.href='/tools/forum/flags/{{ f.id }}';"><i class="fa fa-eye fa-fw"></i></button>
+          {% endif %}
+      {% endif %}
+    </div>
+    {% endfor %}
+{% endblock %}

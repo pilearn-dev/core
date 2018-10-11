@@ -1,0 +1,71 @@
+<div class="flagging-modal" id="{{ flagging_id }}">
+    <div class="flagging-dialog">
+        <div class="close-link"><a href="#!" onclick="document.getElementById('{{ flagging_id }}').classList.remove('open');">&times;</a></div>
+        <h3>Diesen Benutzer melden.</h3>
+        {% if flagging_user == -2 %}
+        <p>Du kannst den 𝕊𝕐𝕊𝕋𝔼𝕄-Benutzer nicht melden / sperren.</p>
+        <p>Dieser Benutzer führt alle automatisierten Aufgaben durch, die von unserem System erkannt werden.</p>
+        <button class="less-annoying" onclick="document.getElementById('{{ flagging_id }}').classList.remove('open');">Ok</button>
+        {% elif flagging_user == -1 %}
+        <p>Du kannst den 𝔸𝔻𝕄𝕀ℕ-Benutzer nicht melden / sperren.</p>
+        <p>Dieser Benutzer führt alle Aufgaben durch, die durch einen Community-Entscheid herbeigeführt wurden, für die also keine einzelnen Benutzer zuständig sind. Weiterhin ist dieser Benutzer Herausgeber aller Wahl-Posts im globalen Forum.</p>
+        <button class="less-annoying" onclick="document.getElementById('{{ flagging_id }}').classList.remove('open');">Ok</button>
+        {% elif user.id == data.id or user.may("general_reportUser") %}
+        <div id="{{ flagging_id }}-content-master">
+            <p>Bitte wähle einen Grund aus, aus dem du diesen Nutzer melden möchtest:</p>
+            <div class="flagging-reason-list lot-reasons">
+                {% if flagging_user != user.id %}
+                <label class="flagging-reason-item current">
+                    <input type="radio" id="{{ flagging_id }}-spam_reason" name="reason" value="spam">
+                    <h4><span class="flag">SPAM</span></h4>
+                    <p>Dieser Benutzer postet über dieses Profil SPAM auf &pi;-Learn. Auch Aufforderungen von seiten der Community aufzuhören wurden nicht befolgt.</p>
+                </label>
+                <label class="flagging-reason-item">
+                    <input type="radio" id="{{ flagging_id }}-offensive_reason" name="reason" value="offensive">
+                    <h4><span class="flag">Beleidigung</span></h4>
+                    <p>Dieser Benutzer postet über dieses Profil beleidigende Inhalte auf &pi;-Learn. Auch Aufforderungen von seiten der Community aufzuhören wurden nicht befolgt.</p>
+                </label>
+                <label class="flagging-reason-item">
+                    <input type="radio" id="{{ flagging_id }}-fraud_reason" name="reason" value="disturb">
+                    <h4><span class="flag">störendes Verhalten</span></h4>
+                    <p>Dieser Benutzer stört durch sein Verhalten (z.B. Bearbeitungskonflikte, ...) andere Benutzer oder die Funktionsweise dieser Webseite und hört auch auf Aufforderung der Community nicht auf.</p>
+                </label>
+                {% endif %}
+                <label class="flagging-reason-item">
+                    {% if flagging_user == user.id %}
+                        <input type="radio" id="{{ flagging_id }}-other_reason" disabled checked name="reason" value="other">
+                    {% else %}
+                        <input type="radio" id="{{ flagging_id }}-other_reason" name="reason" value="rulebreak">
+                    {% endif %}
+                    {% if flagging_user != user.id %}
+                        <h4><span class="flag">Regelverletzung</span></h4>
+                        <p>Ein anderes Problem als die hier aufgeführten. Nutze das Eingabefeld um das Problem zu beschreiben</p>
+                    {% else %}
+                        <h4>Einen Administrator kontaktieren</h4>
+                        <p>Ich habe ein Problem mit meinem Account. Kann mir bitte ein Administrator helfen?</p>
+                        <p class="tiny">Bitte diesen Punkt für Löschanfragen verwenden.</p>
+                    {% endif %}
+                </label>
+            </div>
+            {% if flagging_user == user.id %}
+                <textarea style="max-height: 200px; min-height: 50px; height: 75px;" id="{{ flagging_id }}-message" name="other-reason" placeholder="Beschreibe bitte dein Problem und gib eventuell benötigte Daten an."></textarea>
+            {% else %}
+                <textarea style="max-height: 200px; min-height: 50px; height: 75px;" id="{{ flagging_id }}-message" name="other-reason" placeholder="Belege bitte deine Meldung durch Angabe von Links zu entsprechenden Posts."></textarea>
+            {% endif %}
+            <button id="{{ flagging_id }}-report_btn">Melden</button>
+          </div>
+        {% else %}
+            <div class="error">
+                <h4>Privileg noch nicht erreicht</h4>
+                <p>Du benötigst mindestens <code>{{ privileges.getOne("general_reportUser") }}</code> Reputationspunkte um auf diese Moderationsliste zugreifen zu dürfen.</p>
+                <p>Dir fehlen also noch <code>{{ privileges.getOne("general_reportUser") - user.getReputation() }}</code> Reputationpunkt(e).</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+<script>
+    var flagging_id = "{{ flagging_id }}";
+    var flagging_user = "{{ flagging_user }}";
+</script>
+<script src="/static/js/user-flagging.js">
+</script>

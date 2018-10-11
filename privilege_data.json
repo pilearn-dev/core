@@ -1,0 +1,156 @@
+[
+    {
+        "name": "Alle Benachrichtigungen zeigen",
+        "desc": "Für alle Nutzer, die dieses Privileg noch nicht erreicht haben, werden Benachrichtigungen ausgeblendet, sobald sie erledigt sind.",
+        "id": "general_showAllNotifications",
+        "type": "honor",
+        "showInHelp": true
+    },
+    {
+        "name": "Benutzer melden",
+        "desc": "Du kannst verdächtiges Verhalten eines Nutzers über einen Knopf auf der Benutzerseite melden.",
+        "id": "general_reportUser",
+        "type": "moderation",
+        "showInHelp": true
+    },
+    {
+        "name": "Benutzer sperren",
+        "desc": "Du kannst einen Benutzer über einen Knopf auf der Benutzerseite sperren. Der Benutzer kann daraufhin nicht mehr an einem Kurs oder im Forum teilnehmen. Seine Reputation wird während der Sperrzeit auf 1 gesetzt, so dass er auch anderweitig nicht an π-Learn teilnehmen kann.",
+        "id": "general_banUser",
+        "type": "moderation",
+        "showInHelp": true
+    },
+    {
+        "name": "Moderatorentools",
+        "desc": "Du erhältst jetzt Zugang zu einigen Moderatorentools und kannst gelöschte Forenbeiträge sehen.",
+        "id": "general_autoMod",
+        "type": "moderation",
+        "showInHelp": true
+    },
+    {
+        "name": "Kommentare zu Kursen hinzufügen",
+        "desc": "Du kannst Kommentare zu Kursen hinzufügen. (Verbesserungsvorschläge, Danksagungen, ...)",
+        "id": "course_comment",
+        "type": "participiation",
+        "showInHelp": true
+    },
+    {
+        "name": "Kommentare von Kursen bewerten",
+        "desc": "Du kannst Kommentare von Kursen bewerten, wenn du sie hilfreich findest, oder mit der Meinung übereinstimmst.",
+        "id": "course_commentVote",
+        "type": "participiation",
+        "showInHelp": true
+    },
+    {
+        "name": "Kurse bewerten",
+        "desc": "Du kannst Kurse bewerten.",
+        "id": "course_vote",
+        "type": "participiation",
+        "showInHelp": true
+    },
+    {
+        "name": "Kurse vorschlagen",
+        "desc": "Du kannst neue Kurse vorschlagen.",
+        "id": "course_propose",
+        "type": "participiation",
+        "showInHelp": true
+    },
+    {
+        "name": "Bearbeitungen von Kursseiten vorschlagen",
+        "desc": "Du kannst die Bearbeitung von Kursseiten vorschlagen.",
+        "id": "course_proposeEdit",
+        "type": "participiation",
+        "showInHelp": true
+    },
+    {
+        "name": "Kurse bearbeiten",
+        "desc": "Du kannst die Kursseiten bearbeiten und Bearbeitungsvorschläge moderieren. Dazu erhältst du Zugriff auf die entsprechende Moderationsliste.",
+        "id": "course_reviewEdits",
+        "type": "participiation",
+        "showInHelp": true
+    },
+    {
+        "name": "An geschützten Beiträgen mitarbeiten",
+        "desc": "Du kannst jetzt an geschützten Beiträgen mitarbeiten.",
+        "id": "forum_workAtProtected",
+        "type": "honor",
+        "showInHelp": true
+    },
+    {
+        "name": "Kommentare schreiben",
+        "desc": "Du kannst jetzt überall kommentieren. (Davor nur bei eigenen Beiträgen)",
+        "id": "forum_comment",
+        "type": "participiation",
+        "showInHelp": true
+    },
+    {
+        "name": "Beiträge melden",
+        "desc": "Du kannst jetzt verdächtige Beiträge melden.",
+        "id": "forum_flag",
+        "type": "moderation",
+        "showInHelp": true
+    },
+    {
+        "name": "Beiträge positiv bewerten",
+        "desc": "Du kannst jetzt Beiträge positiv bewerten (+1)",
+        "id": "forum_voteUp",
+        "type": "moderation",
+        "showInHelp": true
+    },
+    {
+        "name": "Beiträge negativ bewerten",
+        "desc": "Du kannst jetzt Beiträge negativ bewerten (-1)",
+        "id": "forum_voteDown",
+        "type": "moderation",
+        "showInHelp": true
+    },
+    {
+        "name": "Beitragsbearbeitung vorschlagen",
+        "desc": "Du kannst jetzt Bearbeitungen von Beiträgen vorschlagen.",
+        "id": "forum_proposeEdit",
+        "type": "participiation",
+        "showInHelp": true
+    },
+    {
+        "name": "Direkt mit anderen Nutzern chatten",
+        "desc": "Du kannst jetzt mit anderen Nutzern chatten.",
+        "id": "forum_directChat",
+        "type": "participiation",
+        "showInHelp": true
+    },
+    {
+        "name": "Beiträge bearbeiten",
+        "desc": "Du kannst jetzt Beiträge bearbeiten und Bearbeitungsvorschläge moderieren. Dazu erhältst du Zugriff auf die entsprechende Moderationsliste.",
+        "id": "forum_edit",
+        "type": "participiation",
+        "showInHelp": true
+    },
+    {
+        "name": "Beitragsbearbeitungsvorschläge moderieren",
+        "desc": "",
+        "id": "forum_reviewEdits",
+        "type": "participiation",
+        "showInHelp": false
+    },
+    {
+        "name": "Fragen schützen",
+        "desc": "Du kannst jetzt Fragen schützen, sodass ein Nutzer mindestens 5 Reputationspunkte haben muss, um zu antworten.",
+        "id": "forum_setProtection",
+        "type": "moderation",
+        "showInHelp": true
+    },
+    {
+        "name": "Belohnung aussetzen",
+        "desc": "Du kannst jetzt einen Teil deiner Reputation als Belohnung aussetzen. Mehr Informationen findest du [hier](/help/award)",
+        "id": "forum_setAward",
+        "type": "honor",
+        "showInHelp": true
+    },
+    {
+        "name": "Fragen schließen",
+        "desc": "Du kannst jetzt Fragen schließen, die bereits beantwortet wurden oder nicht für unser Format geeignet sind. Dazu sind Stimmen von drei Benutzern mit diesem Privileg notwendig. Du kannst außerdem Meldungen von anderen Nutzern für Fragen moderieren. Dafür erhältst du Zugriff auf die Moderationsliste *[Beiträge schließen](/review/post-closure)*.\n\nWeiterhin kannst du geschlossene Fragen auch wieder öffnen. Dazu sind ebenfalls drei Stimmen notwendig. Du erhältst auch Zugriff auf die Moderationsliste *[Beiträge wieder öffnen](/review/post-reopen)*.",
+        "id": "forum_closeQuestion",
+        "type": "moderation",
+        "showInHelp": true
+    }
+]

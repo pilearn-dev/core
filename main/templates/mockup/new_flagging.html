@@ -1,0 +1,205 @@
+{% extends "layout.html" %}
+{% block body %}
+<script src="/static/js/systemerror.js" charset="utf-8"></script>
+<P>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<P>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<P>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<P>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<P>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<P>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<P>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+<a href="#!" onclick="fo_dialog(this, 'post/1', 'flagging');">melden</a>&nbsp;|&nbsp;<a href="#!" onclick="fo_dialog(this, 'post/1', 'closure');">schließen</a>&nbsp;|&nbsp;<a href="#!" onclick="fo_dialog(this, 'post/1', 'mod');">mod!</a>
+
+<div id="fo_dialog" class="flagging-modal">
+  <div class="flagging-dialog">
+      <div class="close-link"><a href="#!" onclick="document.getElementById('fo_dialog').classList.remove('open');">&times;</a></div>
+      <h3 id="fo_dialog-heading"></h3>
+      <div id="fo_dialog-content"></div>
+      <button onclick="fo_back(this);" id="fo_dialog-back" hidden>&laquo; Zurück</button>
+      <button class="primary-btn" onclick="fo_continue(this);" id="fo_dialog-continue">Weiter &raquo;</button>
+  </div>
+</div>
+
+
+<script>
+  function fo_dialog(el, item, path, data) {
+    data = data || {};
+    el.setAttribute("disabled", "");
+    T = el.innerText;
+    el.innerText = el.innerText + "...";
+    document.getElementById('fo_dialog').style.top=el.offsetTop+"px";
+    document.getElementById('fo_dialog').classList.remove('open');
+    $post("dialog/" + item + "/" + path, data, function (response) {
+      response = JSON.parse(response);
+      if(response.response == "error") {
+        el.removeAttribute("disabled");
+        el.innerText = T;
+        issueSystemError(response.message);
+        return;
+      }
+
+      heading = response.title;
+
+      document.getElementById('fo_dialog-heading').innerText = heading;
+      document.getElementById('fo_dialog-continue').setAttribute("data-item", item);
+      if(response.previous) {
+        document.getElementById('fo_dialog-back').removeAttribute("hidden");
+        document.getElementById('fo_dialog-back').setAttribute("data-item", item);
+        document.getElementById('fo_dialog-back').setAttribute("data-path", response.previous);
+      } else {
+        document.getElementById('fo_dialog-back').setAttribute("hidden", "");
+      }
+      c =document.getElementById("fo_dialog-content");
+      while(c.firstChild) {
+        c.removeChild(c.firstChild);
+      }
+      c.setAttribute("data-dialog-style", response.dialog_style);
+
+      if(response.dialog_style == "select") {
+        master = document.createElement("div");
+        master.classList.add("tool-ops");
+
+        for (var i = 0; i < response.ops.length; i++) {
+          selection = response.ops[i];
+          selectel = document.createElement("div");
+          selectel.classList.add("tool-ops-selection");
+
+          selectradio = document.createElement("input");
+          selectradio.setAttribute("type", "radio");
+          selectradio.setAttribute("name", "fo_dialog-ops");
+          selectradio.setAttribute("id", "fo_dialog-ops"+i);
+          selectradio.setAttribute("value", selection.option_id);
+          selectradio.setAttribute("data-followup", selection.option_followup);
+          selectel.appendChild(selectradio);
+
+          selectlabel = document.createElement("label");
+          selectlabel.setAttribute("for", "fo_dialog-ops"+i);
+
+          selectheading = document.createElement("h4");
+          selectheading.innerText = selection.option_label;
+          selectlabel.appendChild(selectheading);
+
+          selectmsg = document.createElement("p");
+          selectmsg.innerHTML = selection.option_message;
+          selectlabel.appendChild(selectmsg);
+
+          selectel.appendChild(selectlabel);
+          master.appendChild(selectel);
+        }
+        document.getElementById("fo_dialog-content").appendChild(master);
+      } else if (response.dialog_style == "textarea") {
+        opslabel = document.createElement("p");
+        opslabel.innerText = response.ops.label;
+
+        opselement = document.createElement("textarea");
+        opselement.setAttribute("id", "fo_dialog-ops");
+        opselement.setAttribute("placeholder", response.ops.placeholder);
+        document.getElementById("fo_dialog-content").appendChild(opslabel);
+        document.getElementById("fo_dialog-content").appendChild(opselement);
+      } else if (response.dialog_style == "choice") {
+        opslabel = document.createElement("p");
+        opslabel.innerText = response.ops.label;
+
+        opssearch = document.createElement("input");
+        opssearch.setAttribute("id", "fo_dialog-ops-search");
+        opssearch.setAttribute("placeholder", response.ops.placeholder);
+
+        opsscreen = document.createElement("div");
+        opsscreen.classList.add("split-screen");
+
+        opsselect = document.createElement("select");
+        opsselect.setAttribute("id", "fo_dialog-ops-select");
+        opsselect.setAttribute("size", 8);
+        opsselect.style.flexGrow = 1;
+        opsscreen.appendChild(opsselect);
+
+        opspreview = document.createElement("iframe");
+        opspreview.setAttribute("id", "fo_dialog-ops-preview");
+        opspreview.style.flexGrow = 1;
+        opspreview.style.minHeight = "250px";
+        opspreview.style.border = "0.5px dotted #ddd";
+        opsscreen.appendChild(opspreview);
+
+        opsresult = document.createElement("p");
+        opsresult.innerHTML = "<strong>Kein Element ausgesucht</strong>";
+
+        document.getElementById("fo_dialog-content").appendChild(opslabel);
+        document.getElementById("fo_dialog-content").appendChild(opssearch);
+        document.getElementById("fo_dialog-content").appendChild(opsscreen);
+        document.getElementById("fo_dialog-content").appendChild(opsresult);
+        fetch_url = "dialog/" + item + "/" + path + "/fetch";
+        isActive = false;
+        val = null;
+        shown = null;
+        function _choice_update() {
+          search = encodeURIComponent(opssearch.value);
+          if(search != val) {
+            if(shown == val || search.match(/#[0-9]+/)) {
+              shown = search;
+            }
+            opspreview.src = "/" + fetch_url + "?live=1&search="+shown+"&refresh="+Date.now();
+            $post(fetch_url + "?search="+search+"&refresh="+Date.now(), {}, function (r) {
+              while(opsselect.options.length) {
+                opsselect.options.remove(0);
+              }
+              d = JSON.parse(r);
+              for (var i = 0; i < d.length; i++) {
+                ch = document.createElement("option")
+                ch.value = d[i].id;
+                ch.innerText = d[i].title;
+                opsselect.add(ch);
+              }
+            })
+          }
+          val = search;
+          if(opspreview.contentDocument.title) {
+            opsresult.innerHTML = "<strong>Ausgewählt:</strong> " + opspreview.contentDocument.title;
+          } else {
+            opsresult.innerHTML = "<strong>Kein Element ausgesucht</strong>";
+          }
+        }
+        opssearch.onkeyup = function () {
+          if(!isActive) {
+            isActive = true;
+            window.setInterval(_choice_update, 500);
+            _choice_update();
+          }
+        }
+        opsselect.onchange = function () {
+          oldSelectedIndex = this.selectedIndex;
+          if(this.value) {
+            shown = encodeURIComponent("#"+this.value);
+            val = null;
+            _choice_update();
+            this.selectedIndex = oldSelectedIndex;
+          }
+        }
+      }
+
+      el.removeAttribute("disabled");
+      el.innerText = T;
+      document.getElementById('fo_dialog').classList.add('open');
+    })
+  }
+
+  function fo_continue(el) {
+    c =document.getElementById("fo_dialog-content");
+    type = c.getAttribute("data-dialog-style");
+
+    if(type == "select") {
+      selection = document.querySelector("#fo_dialog-content :checked");
+      if(!selection) {
+        issueSystemWarning("Bitte wähle eine Option aus.");
+      }
+      val = selection.value;
+      fu = selection.getAttribute("data-followup");
+      if(fu != "null") {
+        fo_dialog(el, el.getAttribute("data-item"), fu);
+      }
+    }
+  }
+  function fo_back(el) {
+    fo_dialog(el, el.getAttribute("data-item"), el.getAttribute("data-path"));
+  }
+</script>
+{% endblock %}

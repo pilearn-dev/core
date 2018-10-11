@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h4><a href="/help">Hilfethemen</a> &raquo; <a href="/help/category:{{ cat.getUrlPart() }}">{{ cat.getTitle() }}</a> &raquo; <em>Bearbeiten:</em> {{ entry.getTitle() }}</h4>
+    <link rel="stylesheet" href="/static/css/simplemde.min.css">
+    <script src="/static/js/simplemde.min.js"></script>
+    {% if done %}
+    <div class="success">
+      Hilfedokument erfolgreich gespeichert. <a href="?editor=no">Zur Seite</a>
+    </div>
+    {% endif %}
+    <p><strong>Hinweis</strong>: Änderungen an der Benutzertabelle führen nicht automatisch zu einer Rollenvergabe.</p>
+    <form action="" method="post">
+      {% if user.isTeam() %}
+        <button class="primary-btn" type="submit" name="action" value="save">Speichern</button>&nbsp;
+        <button type="submit" name="action" value="replace">Ersetzen</button>&nbsp;
+        <button type="submit" name="action" value="reset">Zurücksetzen</button>&nbsp;
+      {% else %}
+        <button class="primary-btn" type="submit" name="action" value="save">Speichern</button>&nbsp;
+      {% endif %}
+      <a href="?editor=no">Abbrechen</a><br>&nbsp;
+      <h2><input id="title" name="title" value="{{ entry.getTitle() }}"></h2>
+      <textarea id="content" name="content">{{ entry.getContent() }}</textarea>
+      {% if user.isTeam() %}
+        <label for="url_part">URL-Part <span class="warning inline">Änderungen können Verknüpfungen zerbrechen!</span></label>
+        <input id="url_part" name="url_part" value="{{ entry.getUrlPart() }}">
+        <input type="checkbox" id="active" name="active" value="true" {% if entry.isActive() %}checked{% endif %}>&nbsp;
+        <label for="active">Seite wird angezeigt?</label><br>
+        <input type="checkbox" id="deprecated" name="deprecated" value="true" {% if entry.isDeprecated() %}checked{% endif %}>&nbsp;
+        <label for="deprecated">Seite enthält veraltete Inhalte?</label><br>
+        <input type="checkbox" id="may_edit" name="may_edit" value="true" {% if entry.mayAdminEdit() %}checked{% endif %}>&nbsp;
+        <label for="may_edit">Seite kann von Administratoren bearbeitet werden?</label><br>
+        <input type="checkbox" id="subpage" name="subpage" value="true" {% if entry.mayAdminCreateSubpage() %}checked{% endif %}>&nbsp;
+        <label for="subpage">Administratoren können Unterseiten erstellen?</label><br>
+        <input type="checkbox" id="pinned" name="pinned" value="true" {% if entry.isPinned() %}checked{% endif %}>&nbsp;
+        <label for="pinned">Seite wird auf Hilfe-Startseite angezeigt und hervorgehoben?</label><br><br>
+      {% endif %}
+    </form>
+    <script>
+      var simplemde = new SimpleMDE({ element: document.getElementById("content"), forceSync:true, parsingConfig: {strikethrough: false}, promptURLs:true, spellChecker:false });
+    </script>
+    <style>
+      label[for], input[type="checkbox"] {
+        display: inline-block;
+        font-weight: normal;
+      }
+    </style>
+{% endblock %}

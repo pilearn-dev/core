@@ -1,0 +1,317 @@
+{% extends "layout.html" %}
+{% block mainclass %} class="not-centered"{% endblock %}
+{% block body %}
+<script src="{{ config.link_master }}/static/polling.js"></script>
+<div class="chat-split">
+  <div class="chat-area">
+<div class="chat-protocol">
+  <div class="chat-master" id="historyProtocol">
+    {% for message in messageList %}
+    {% if user.isMod() or message.isShown() %}
+        <div class="chat-message{% if not message.isShown() %} is-deleted{% endif %}" data-msg-id="{{ message.id }}">
+            <div class="author">
+                <span class="user-mark">
+                    <a href="{{ config.link_master }}/user/{{ message.getAuthor().id }}">{{ message.getAuthor().getName() }}</a>{% if message.getAuthor().isMod() %} <span title="Chat-Moderator">&#8855;</span>{% endif %}
+                </span>
+            </div>
+            <div class="msg-content" style="display: none;">{{ message.get() }}</div>
+            <div class="message" data-md="{{ message.get() }}">
+                {{ mini_mark(message.get())|safe }}
+            </div>
+            <div class="others">
+                <span class="timestamp">{{ message.formatTimestamp() }}</span>
+                {% if not is_anon %}
+                <span class="link"><a href="#!" onclick="flag({{ message.id }});">&#9873; Melden</a></span>
+                {% endif %}
+                {% if user.isMod() %}
+                    {% if message.isShown() %}
+                        <span class="link delundel"><a href="#!" onclick="delete_msg({{ message.id }}, this)">löschen</a></span>
+                    {% else %}
+                        <span class="link delundel"><a href="#!" onclick="undelete_msg({{ message.id }}, this)">un-löschen</a></span>
+                    {% endif %}
+                    <span class="link"><a href="#!" onclick="edit({{ message.id }});">bearbeiten</a></span>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+    <div class="chat-message is-deleted" style="display: none;" data-msg-id="{{ message.id }}">
+        <div class="author">
+            <span class="user-mark">
+                <a href="{{ config.link_master }}/user/{{ message.getAuthor().id }}">{{ message.getAuthor().getName() }}</a>{% if message.getAuthor().isMod() %} <span title="Chat-Moderator">&#8855;</span>{% endif %}
+            </span>
+        </div>
+        <div class="message"></div>
+        <div class="others">
+            <span class="timestamp">{{ message.formatTimestamp() }}</span>
+            <span class="link"><a href="#!" onclick="flag({{ message.id }});">&#9873; Melden</a></span>
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% if user.isMod() %}
+    <div class="flag-notification" style="display: none;" id="flag-count" onclick="flag_dialog();">0</div>
+    {% endif %}
+  </div>
+</div>
+<script>
+    PD = {
+        "last-update-id": {{ latest_id }},
+        "room": {{ room.id }}
+    }
+    var may_talk = {{ user.mayPost()|tojson }};
+    p = new Poller("{{ config.link_master }}/polling", 1, "fetch-events", PD);
+    p.on("@error", function() {
+        document.getElementById("message-area").style.display = "none";
+        document.getElementById("message-error-area").style.display = "block";
+        document.getElementById("message-error-area").style.innerHTML = "Es kann keine Verbindung zum Server hergestellt werden, Chatten ist daher nicht möglich.";
+    })
+    p.on("events", function(ev_data) {
+        if(document.getElementById("message-area")) {
+          if(ev_data.may_post) {
+            document.getElementById("message-area").style.display = "block";
+            may_talk = true;
+          } else {
+            if(may_talk) {
+                ban = document.createElement("div");
+                ban.classList.add("system-notification");
+                ban.innerHTML = "Du darfst in diesem Raum nicht mehr chatten.";
+                ban.onclick = function () {this.outerHTML='';}
+                document.body.appendChild(ban);
+                may_talk = false;
+            }
+            document.getElementById("message-area").style.display = "none";
+          }
+        }
+        if(document.getElementById("message-error-area")) {
+          document.getElementById("message-error-area").style.display = "none";
+        }
+        {% if user.isMod() %}
+        document.getElementById('flag-count').innerText = ev_data.fc;
+        if(ev_data.fc > 0) {
+          document.getElementById('flag-count').style.display = "block";
+        } else {
+          document.getElementById('flag-count').style.display = "none";
+        }
+        {% endif %}
+        if(ev_data.u.length) {
+          K= ev_data.u.pop();
+          ev_data.u.push(K)
+          p.std_data = {"last-update-id": JSON.parse(K).id, "room": {{ room.id }}};
+          prot = document.getElementById("historyProtocol");
+          for (let i = 0; i < ev_data.u.length; i++) {
+              const d = JSON.parse(ev_data.u[i]);
+              if(d.event == "new") {
+                msg = d.message;
+                emsg = document.createElement("div");
+                emsg.setAttribute("data-msg-id", d.message_id);
+                emsg.classList.add("chat-message");
+                author_c = document.createElement("div");
+                author_c.classList.add("author")
+                author_c.innerHTML = "<span class='user-mark'><a href='/user/" + msg.author.id + "'>" + msg.author.name + "</a>" + ((msg.author.is_mod) ? ' <span title="Chat-Moderator">&#8855;</span>' : '') + "</span>";
+                msg_co = document.createElement("div");
+                msg_co.classList.add("msg-content")
+                msg_co.innerHTML = msg.md;
+                msg_co.style.display="none";
+                msg_c = document.createElement("div");
+                msg_c.classList.add("message")
+                msg_c.innerHTML = msg.html;
+
+                other_c = document.createElement("div");
+                other_c.classList.add("others")
+                {% if user.isMod() %}
+                other_c.innerHTML = '<span class="timestamp">'+msg.timestamp+'</span><span class="link"><a href="#!" onclick="flag('+msg.id+')">&#9873; Melden</a></span><span class="link delundel"><a href="#!" onclick="delete_msg('+msg.id+', this)">löschen</a></span><span class="link"><a href="#!" onclick="edit('+msg.id+')">bearbeiten</a></span>';
+                {% elif is_anon %}
+                other_c.innerHTML = '<span class="timestamp">'+msg.timestamp+'</span>';
+                {% else %}
+                other_c.innerHTML = '<span class="timestamp">'+msg.timestamp+'</span><span class="link"><a href="#!" onclick="flag('+msg.id+')">&#9873; Melden</a></span>';
+                {% endif %}
+
+                emsg.appendChild(author_c);
+                emsg.appendChild(msg_co);
+                emsg.appendChild(msg_c);
+                emsg.appendChild(other_c);
+
+                prot.appendChild(emsg);
+                emsg.scrollIntoView();
+              } else if(d.event == "deleted") {
+                M = document.querySelector("[data-msg-id='"+(d.message_id)+"']");
+                M.classList.add("is-deleted");
+                {% if user.isMod() %}
+                dl = M.querySelector(".delundel a");
+                dl.setAttribute("onclick", "undelete_msg("+d.message_id+", this);")
+                dl.innerText = "un-löschen";
+                {% else %}
+                M.querySelector(".message").innerHTML = "(entfernt)";
+                M.querySelector(".message").innerHTML = "";
+                M.querySelector(".others").style.display = "none";
+                {% endif %}
+              } else if(d.event == "undeleted") {
+                M = document.querySelector("[data-msg-id='"+(d.message_id)+"']");
+                M.classList.remove("is-deleted");
+                M.style.display = "flex";
+                {% if user.isMod() %}
+                dl = M.querySelector(".delundel a");
+                dl.setAttribute("onclick", "delete_msg("+d.message_id+", this);")
+                dl.innerText = "löschen";
+                {% endif %}
+                M.querySelector(".message").innerHTML = d.message.html;
+                M.querySelector(".message").innerHTML = d.message.html;
+                M.querySelector(".others").style.display = "flex";
+              } else if(d.event == "updated") {
+                M = document.querySelector("[data-msg-id='"+(d.message_id)+"']");
+                M.querySelector(".message").innerHTML = d.message.html;
+                M.querySelector(".msg-content").innerHTML = d.message.md;
+              } else if(d.event == "system-banner") {
+                ban = document.createElement("div");
+                ban.classList.add("system-notification");
+                ban.innerHTML = d.message.html;
+                ban.onclick = function () {this.outerHTML='';}
+                document.body.appendChild(ban);
+              }
+            }
+        }
+    })
+    p.connect()
+</script>
+{% if user.isMod() %}
+<div class="flag-dialog" id="flag-dialog">
+  <h3>Gemeldete Nachrichten</h3>
+  <div id="flag-dialog-content" class="fd-content">
+  </div>
+  <a href="#!" onclick="document.getElementById('flag-dialog').classList.remove('shown')">schließen</a>
+</div>
+{% endif %}
+{% if room.isFrozen() %}
+<p>Raum ist eingefroren, es kann keine Nachricht versendet werden.</p>
+{% elif not is_anon %}
+<div id="message-area" style="display: none">
+<input id="your_message" placeholder="Nachricht hier eingeben" onkeypress="if(event.keyCode==13){send_message()}">
+<button onclick="send_message();" style="float: right;">Absenden</button>
+</div>
+<div class="fatal-error" id="message-error-area"{% if not user.mayPost() %} style="display:none;"{% endif %}>Es kann keine Verbindung zum Server hergestellt werden, Chatten ist daher nicht möglich.</div>
+<script>
+    var IN_EDIT_MODE = null;
+    function send_message() {
+        message = document.getElementById("your_message").value;
+        if(!message) {
+          return;
+        }
+        document.getElementById("your_message").value = "";
+        if(!IN_EDIT_MODE) {
+          p.send("message", {"message":message, "room": {{ room.id }},"last-update-id": p.std_data["last-update-id"]});
+        } else {
+          p.send("update", {"content":message, "message":IN_EDIT_MODE, "room": {{ room.id }},"last-update-id": p.std_data["last-update-id"]});
+        }
+        IN_EDIT_MODE = null;
+    }
+    {% if user.isMod() %}
+    function edit(id) {
+      if(!IN_EDIT_MODE) {
+        M = document.querySelector("[data-msg-id='"+id+"']");
+        content = M.querySelector(".msg-content").innerHTML;
+        document.getElementById("your_message").value = content;
+        IN_EDIT_MODE = id;
+      } else {
+        ban = document.createElement("div");
+        ban.classList.add("system-notification");
+        ban.innerHTML = "Ein anderer Beitrag wird im Moment bearbeitet. <a href='#!' onclick='IN_EDIT_MODE=null; document.getElementById(\"your_message\").value=\"\"'>Abbrechen</a>";
+        ban.onclick = function () {this.outerHTML='';}
+        document.body.appendChild(ban);
+      }
+    }
+    function flag_dialog() {
+      p.send("flag-list", {"room":{{room.id}}});
+    }
+    p.on("flaglist", function (ev_data) {
+      document.getElementById("flag-dialog-content").innerHTML = "";
+      c = document.getElementById("flag-dialog-content");
+      if(ev_data.length == 0) {
+        document.getElementById('flag-dialog').classList.remove('shown');
+        return;
+      }
+      for (var z = 0; z < ev_data.length; z++) {
+        f = ev_data[z];
+        _el = document.createElement("div");
+        _el.classList.add("flag-list-item");
+        _ = document.createElement("p");
+        _.innerHTML = f[0].md + " &ndash; " + "<a href='/user/" + f[0].author.id + "'>" + f[0].author.name + "</a>" + ((f[0].author.is_mod) ? ' <span title="Chat-Moderator">&#8855;</span>' : '');
+        _el.appendChild(_);
+        _ = document.createElement("small");
+        _.innerHTML = "Diese Nachricht wurde " + f[1].length + " mal gemeldet.";
+        _el.appendChild(_);
+        _ = document.createElement("ul");
+        for (var w = 0; w < f[1].length; w++) {
+          if(f[1][w].message) {
+            __ = document.createElement("li");
+            __.innerText = f[1][w].message;
+            _.appendChild(__);
+          }
+        }
+        _el.appendChild(_);
+
+        _ = document.createElement("button");
+        _.classList.add("green-btn")
+        _.innerText = "in Ordnung";
+        _.msgid=f[0].id;
+        _.onclick = function () {
+          p.send("flag.validation", {"message": this.msgid, "review": "ok"});
+        }
+        _el.appendChild(_);
+
+        x=document.createElement("span");x.innerHTML="&nbsp;";_el.appendChild(x);
+
+        _ = document.createElement("button");
+        _.classList.add("red-btn")
+        _.innerText = "unangebracht";
+        _.msgid=f[0].id;
+        _.onclick = function () {
+          p.send("flag.validation", {"message": this.msgid, "review": "bad"});
+        }
+        _el.appendChild(_);
+
+        c.appendChild(_el)
+      }
+      document.getElementById("flag-dialog").classList.add("shown");
+    })
+    {% endif %}
+    function flag(id) {
+      msg = prompt("Diese Nachricht als unangebracht melden.\nFüge noch eine optionale Nachricht hinzu, die unseren Moderatoren hilft, die Nachricht zu beurteilen.");
+      if(msg != null) {
+        p.send("flag", {"comment":msg, "message":id, "room": {{ room.id }},"last-update-id": p.std_data["last-update-id"]});
+      }
+    }
+</script>
+{% endif %}
+</div>
+<div class="chat-info">
+  <h2>Chatraum: <a href="{{ config.link_master }}/room/{{ room.id }}/view">{{ room.getName() }}</a></h2>
+  <p>{{ room.getDescription() }}</p>
+  <hr>
+  <p class="hint">Du kannst Mini_Markdown verwenden: <strong>**fett**</strong>, <em>*kursiv*</em>, """Zitat""", <a href="#!">https://hyper.link</a> und <code>`Code`</code></p>
+  {% if user.isMod() %}
+  <h3>Mod-Tools</h3>
+  <ul>
+    <li><a href="#!" onclick="promo_msg(false);">Systemwarnung</a></li>
+    <li><a href="#!" onclick="promo_msg(true);">globale Systemwarnung</a></li>
+  </ul>
+  {% endif %}
+</div>
+</div>
+
+{% if user.isMod() %}
+  <script>
+    function delete_msg(msgid, self) {
+      p.send("delete", {"message":msgid, "room": {{ room.id }},"last-update-id": p.std_data["last-update-id"]});
+    }
+    function undelete_msg(msgid, self) {
+      p.send("undelete", {"message":msgid, "room": {{ room.id }},"last-update-id": p.std_data["last-update-id"]});
+    }
+    function promo_msg(sw) {
+      pmsg = prompt("Welche Nachricht soll angezeigt werden?");
+      if(!pmsg) { return; }
+      p.send("promote", {"content":pmsg, "room": {{ room.id }}, "promo_room": (sw ? 0 : {{ room.id }}),"last-update-id": p.std_data["last-update-id"]});
+    }
+  </script>
+{% endif %}
+
+{% endblock %}

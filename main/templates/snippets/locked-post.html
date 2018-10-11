@@ -1,0 +1,21 @@
+
+<div class="fakepic">
+    <div class="warning">
+        {% if level == "1" %}
+            <h3>Geschützter Post</h3>
+            <p>Dieser Post wurde von einem Moderator geschützt.</p>
+            <h5>Grund:</h5>
+            {{ reason|markdown }}
+        {% elif level == "2" %}
+            <h3>Beendeter Post</h3>
+            <p>Dieser Post wurde von einem Moderator beendet.</p>
+            <h5>Grund:</h5>
+            {{ reason|markdown }}
+        {% elif level == "3" %}
+            <h3>Gesperrter Post</h3>
+            <p>Dieser Post wurde von einem Moderator gesperrt.</p>
+            <h5>Grund:</h5>
+            {{ reason|markdown }}
+        {% endif %}
+    </div>
+</div>

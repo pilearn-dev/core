@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h4><a href="/help">Hilfethemen</a> &raquo; <a href="/help/category:{{ cat.getUrlPart() }}">{{ cat.getTitle() }}</a> &raquo; <em>Neuer Eintrag</em></h4>
+    <p>Bitte bestätige die Erstellung eines neuen Eintrags in der Kategorie <strong>{{ cat.getTitle() }}</strong>.{% if parent %} Dieser neue Eintrag wird dem Eintrag <strong><a href="/help/{{ parent.getUrl() }}">{{ parent.getTitle() }}</a></strong> untergeordnet sein.{% endif %}</p>
+    <form action="" method="post">
+      <label for="title">Titel des Eintrags:</label>
+      <input id="title" name="title" required></h2>
+      <button class="primary-btn" type="submit" name="action" value="save">Erstellen</button>&nbsp;
+      <a href="javascript:history.go(-1)">Abbrechen</a><br>&nbsp;
+    </form>
+{% endblock %}

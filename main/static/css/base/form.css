@@ -1,0 +1,175 @@
+/* Form styles */
+input, textarea {
+    display: block;
+    width: 100%;
+    font: inherit;
+    border: 0;
+    padding: 5px;
+    background-color: white;
+    border: 1px solid #aaa;
+    border-radius: 2px;
+    margin: 5px 0;
+    resize: vertical;
+    max-height: 300px;
+    box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.1);
+    transition: box-shadow .3s ease;
+}
+input:focus, textarea:focus {
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+input.inline, textarea.inline {
+    margin: 0;
+}
+input[disabled], textarea[disabled] {
+  color: black;
+}
+output {
+  display: block;
+  width: 100%;
+  font: inherit;
+  border: 0;
+  padding: 5px;
+  background-color: white;
+  box-shadow: 0 0 1px #444;
+  margin: 5px 0;
+  resize: vertical;
+  max-height: 300px;
+}
+input[type="radio"], input[type="checkbox"] {
+    width: auto;
+    display: inline-block;
+    outline: none;
+}
+textarea {
+    min-height: 150px;
+}
+label[for] {
+    display: block;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+
+select {
+  padding: 5px;
+  border-radius:3px;
+  border: 1px solid #ddd;
+  margin: 5px;
+  display: inline-block;
+  box-shadow: 0 0 0 0px rgba(0, 0, 0, 0.1);
+  transition: box-shadow .3s ease;
+}
+
+select:focus {
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+  outline: 0;
+}
+select option {
+  padding: 2px;
+}
+select optgroup {
+  padding: 3px;
+  font-size: 1.2em;
+}
+select /*optgroup */option {
+  font-size: 0.833333333em;
+  padding: 5px;
+  cursor: pointer;
+}
+select option:focus {
+  outline: 0 !important;
+}
+
+
+/* - filter bar */
+.filterbar {
+  background-color: #eee;
+  padding: 5px;
+  margin: 2px 0;
+}
+.filterbar > .filterbar-toggle {
+  display: none;
+}
+.filterbar .filter-area {
+  display: flex;
+}
+.filterbar .filter-criterium {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+.filterbar .filter-criterium.with-input {
+  flex-grow: 3;
+}
+.filterbar .filter-criterium input {
+  padding: 6px 5px;
+  margin: 6px 5px;
+  width: initial;
+}
+.filterbar .filter-criterium select {
+  display: block;
+  width: initial;
+}
+.filterbar .filter-criterium label {
+  font-size: 0.8em;
+  margin: 0;
+  padding-left: 5px;
+  color: #666;
+  font-variant: small-caps;
+}
+.filterbar .filter-button {
+  align-self: flex-end;
+  padding-bottom: 8px;
+  padding-right: 5px;
+}
+.filterbar .filter-button button {
+  padding: 5px 20px;
+}
+@media all and (max-width: 700px) {
+  .filterbar .small-toggle {
+    padding: 3px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  .filterbar .small-toggle .filter-small-heading {
+    color: #888;
+    text-align: center;
+    flex-grow: 1;
+    font-weight: 1.1em;
+  }
+  .filterbar .small-toggle label {
+    padding: 0.26em 0;
+    text-align: center;
+    background-color: #ddd;
+    font-weight: normal;
+    font-size: 1.2em;
+    height: 2em;
+    width: 2em;
+  }
+  .filterbar > .filterbar-toggle:checked ~ .small-toggle label i.fa::before {
+    content: '\f0d8';
+  }
+  .filterbar > .filterbar-toggle:not(:checked) ~ .filter-area {
+    display: none !important;
+  }
+  .filterbar .filter-area {
+    flex-direction: column;
+    border-top: 1px solid #ccc;
+    padding-top: .5em;
+  }
+  .filterbar .filter-button {
+    align-self: stretch;
+    display: flex;
+    padding: 3px;
+  }
+  .filterbar .filter-button button {
+    flex-grow: 1;
+    padding: 10px 20px;
+  }
+}
+@media all and (min-width: 700px) {
+  .filterbar .small-toggle {
+    display: none !important;
+  }
+}

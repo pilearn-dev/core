@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="deleted-section" style="padding: 1.5em;">
+    <h2>Dieses Benutzerkonto wurde gelöscht.</h2>
+    {% if data.getDetail("mergeto") %}
+    <p>Dieses Benutzerkonto leitet jetzt automatisch zu <a href="/u/{{ data.getDetail("mergeto") }}">einem anderen Konto</a> weiter.</p>
+    {% else %}
+    <p>Dieses Benutzerkonto wurde auf Anfrage des Kontoinhabers oder durch einen Administrator gelöscht.</p>
+    {% endif %}
+    <h3>Benutzerkonten-Informationen</h3>
+<pre style="background: transparent;"><strong>Anzeigename:</strong> {{ data.getDetail("realname") }}
+<strong>Benutzername:</strong> {{ data.getDetail("name") }}
+<strong>E-Mail-Adresse:</strong> {{ data.getDetail("email") }}
+<strong>Anmelde-Service:</strong> {{ data.getDetail("login_provider") }}</pre>
+<h3>Benutzerkonto-Anmerkungen</h3>
+{% set order = request.values.get("order", "id") %}
+{% set filter = request.values.get("filter", False) %}
+{% set annot = data.getAnnotations(order) %}
+{% if filter %}
+<a href="?">Filter zurücksetzen</a>{% if user.isDev() and annot|length != 0 %} &ndash; {% endif %}
+{% endif %}
+{% if user.isDev() and request.values.get("show-deleted", 0)==0 and annot|length != 0 %}
+<a href="?show-deleted=1">alle anzeigen</a>
+{% elif user.isDev() and request.values.get("show-deleted", 0)!=0 %}
+<a href="?">aktive anzeigen</a>
+{% endif %}
+<table class="annotation-table">
+  <tr>
+    <th class="annot-icon">Art <a href="?order=type{% if order=='type' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='type' %}-down{% elif order=='type_reverse' %}-up{% endif %}"></i></a></th>
+    <th>Admin <a href="?order=creator_id{% if order=='creator_id' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='creator_id' %}-down{% elif order=='creator_id_reverse' %}-up{% endif %}"></i></a></th>
+    <th colspan="4">Kommentar</th>
+    <th>Zeit <a href="?order=time{% if order=='time' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='time' %}-down{% elif order=='time_reverse' %}-up{% endif %}"></i></a></th>
+  </tr>
+{% for a in annot if (not a.deleted or (user.isDev() and request.values.get("show-deleted", 0)!=0)) and (not filter or a.type==filter) %}
+  <tr class="annotation{% if a.deleted %} deleted-section{% endif %}">
+    <th class="annot-centered annot-icon"><a href="?filter={{ a.type }}">
+    {% if a.type == "custom" %}
+      <i class="fa fa-commenting-o" title="Anmerkung"></i>
+    {% elif a.type == "ban" %}
+      <i class="fa fa-lock" title="Sperrung"></i>
+    {% elif a.type == "unban" %}
+      <i class="fa fa-unlock" title="Entsperrung"></i>
+    {% elif a.type == "delete" %}
+      <i class="fa fa-user-times" title="Löschung"></i>
+    {% elif a.type == "accessdata" %}
+      <i class="fa fa-eye" title="Zugriff auf private Daten"></i>
+    {% elif a.type == "merge" %}
+      <i class="fa fa-exchange" title="Weiterleitung"></i>
+    {% endif %}
+    </a></th>
+    <td class="annot-centered annot-small"><a href="/u/{{ a.creator.id }}">{{ a.creator.getHTMLName()|safe }}</a></td>
+    <td colspan="4">{% if a.content=="auto" %}<span class="annot-small">(automatisch)</span>{% elif a.content=="manual" %}<span class="annot-small">(manuell)</span>{% else %}{{ a.content|markdown }}{% endif %}</td>
+    <td class="annot-small"><span title="{{ a.absolute_date }}">{{ a.relative_date }}</span></td>
+  </tr>
+{% else %}
+{% endfor %}
+</table>
+</div>
+{% endblock %}

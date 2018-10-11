@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if user.isMod() %}
+<div class="tabination">
+  <ul>
+    <li><a href="/review">Listen</a></li>
+    <li><a href="/flags">Meldungen{% if hasLargeModTraffic %} (*){% endif %}</a></li>
+    {% if user.isDev() %}
+    <li class="active"><a href="#!">Daten</a></li>
+    {% endif %}
+  </ul>
+</div>
+{% endif %}
+    <h2 class="bigheading">Moderation</h2>
+    <p>Im Folgenden werden einige Daten/Diagramme angezeigt.</p>
+    <div class="review-grid">
+            <div class="review-grid-item">
+                  <div class="review-grid-item-panel">
+                      <h3>Reputation</h3>
+                      <p>Daten zur Reputation im Verhältnis zur Benutzeranzahl</p>
+                      <a href="/data/reputation"><button class="primary-btn block-btn big-btn">Anzeigen</button></a>
+                  </div>
+            </div>
+    </div>
+{% endblock %}

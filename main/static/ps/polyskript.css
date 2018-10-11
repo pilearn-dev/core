@@ -1,0 +1,237 @@
+.polyskript {
+  all: initial;
+  box-sizing: border-box;
+  width: 100%;
+  display: block;
+  margin: 5px 0;
+  padding: 5px;
+  font: inherit;
+  display: flex;
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
+.polyskript * {
+  box-sizing: border-box;
+}
+.polyskript .preview {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  align-items: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.polyskript .preview.view-mode {
+  background-color: white;
+  display: block;
+}
+.polyskript .box {
+  width: 100%;
+  margin: 10px 5px;
+  max-width: 700px;
+  padding: 10px;
+  position: relative;
+}
+.polyskript .box:hover, .polyskript .box.box-mode-edit {
+  background-color: #f0f0f0;
+}
+.polyskript .box.box-mode-blank:hover {
+  background-color: transparent;
+}
+.polyskript .box .box-type {
+  font-size: 0.8em;
+  margin: 0;
+  font-weight: bold;
+  color: #aaa;
+  font-variant: small-caps;
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 10px;
+  display: none;
+  background-color: white;
+}
+.polyskript .box:hover .box-type, .polyskript .box.box-mode-edit .box-type {
+  display: block;
+}
+.polyskript .box.box-mode-blank:hover .box-type {
+  display: none;
+}
+.polyskript .box .box-preview {
+    display: block;
+}
+.polyskript .box .box-preview h1, .polyskript .box .box-preview h2, .polyskript .box .box-preview h3, .polyskript .box .box-preview h4, .polyskript .box .box-preview h5, .polyskript .box .box-preview h6, .polyskript .box .box-preview p {
+  margin: 2px 0;
+  line-height: 1.5;
+}
+
+.polyskript .preview.view-mode h1, .polyskript .preview.view-mode h2, .polyskript .preview.view-mode h3, .polyskript .preview.view-mode h4, .polyskript .preview.view-mode h5, .polyskript .preview.view-mode h6, .polyskript .preview.view-mode p {
+  margin: 20px 0;
+  line-height: 1.5;
+}
+.polyskript .box .box-actions {
+  justify-content: center;
+  position: absolute;
+  left: 0; right: 0;
+  bottom: -15px;
+  display: none;
+}
+.polyskript .box:hover .box-actions, .polyskript .box.box-mode-edit .box-actions {
+  display: flex;
+}
+.polyskript .box.box-mode-edit .box-actions {
+  bottom: -20px;
+}
+.polyskript .box .box-actions button {
+  font: inherit;
+  font-size: 0.8em;
+  border: none;
+  padding: 5px 10px;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  border-radius: 20px;
+  margin: 0 2px;
+  transition: all .2s ease;
+  text-align: center;
+}
+.polyskript .box .box-actions button:hover {
+  background-color: #ddd;
+}
+
+.polyskript .box .box-actions button.primary {
+  background-color: #00e;
+  color: white;
+  border: 1px solid #00c;
+}
+.polyskript .box .box-actions button.primary:hover {
+  background-color: #00d;
+}
+
+.polyskript .box .box-actions button.dangerous {
+  background-color: #e00;
+  color: white;
+  border: 1px solid #c00;
+}
+.polyskript .box .box-actions button.dangerous:hover {
+  background-color: #d00;
+}
+
+
+
+.polyskript .box .box-actions button {
+  box-shadow: 0px 0px 2px rgba(0,0,0,0.2);
+  transition: box-shadow .3s ease;
+}
+.polyskript .box .box-actions button:active {
+  box-shadow: 0px 0px 3px rgba(0,0,0,0.4) inset;
+}
+
+@media all and (max-width: 900px) {
+    .polyskript .box .box-type, .polyskript .box .box-actions {
+        display: flex !important;
+        position: static !important;
+        bottom: 0;
+        width: initial;
+        flex-wrap: wrap;
+    }
+    .polyskript .box .box-actions button {
+        padding: 7px 5px;
+        margin: 5px 3px;
+        display: block;
+        flex-grow: 1;
+        font-size: 0.7em;
+        width: 40%;
+    }
+    .polyskript .box .box-actions button[disabled] {
+      display: none;
+    }
+    .polyskript .box .box-actions button.primary, .polyskript .box .box-actions button.dangerous {
+    width: 100%;
+    }
+}
+
+
+.polyskript .append-button button {
+  margin: 5px;
+  margin-top: 20px;
+  width: 40px;
+  height: 40px;
+  background-color: #fff;
+  color: pointer;
+  font-size: 20px;
+  text-align: center;
+  cursor: pointer;
+  line-height: 1;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  transition: all .2s ease;
+  padding: 0;
+}
+.polyskript .append-button button:hover {
+  background-color: #fafafa;
+}
+.polyskript .append-button button:active {
+  border-color: #bbb;
+  box-shadow: 0px 0px 3px rgba(0,0,0,0.4) inset;
+}
+
+.polyskript input, .polyskript textarea {
+  font: inherit;
+  padding: 2px;
+  border: 1px dotted #aaa;
+  margin: 2px 0;
+  width: 100%;
+  line-height: 1.5;
+}
+.polyskript textarea {
+  min-height: 150px;
+  resize: none;
+  height: max-content;
+}
+
+.polyskript label[for] {
+  cursor: pointer;
+  font-weight: bold;
+}
+
+
+.polyskript .append-element-list {
+  width: 100%;
+  max-width: 400px;
+  background-color: white;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  position: absolute;
+  box-shadow: 1px 1px 3px #ddd;
+  max-height: 150px;
+  overflow: auto;
+  transform: translateY(-100%);
+}
+.polyskript .append-element-list li {
+  padding: 5px;
+  margin: 1px;
+  cursor: pointer;
+}
+.polyskript .append-element-list li:hover {
+  background-color: #eee;
+}
+[disabled] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+@media all and (max-width: 600px) {
+    .polyskript .append-element-list {
+        left: 0 !important;
+        position: static;
+        max-height: initial;
+    }
+}
+.polyskript img {
+    display: block;
+    height: auto;
+    width: auto;
+    max-width: 100%;
+    margin: 0;
+}

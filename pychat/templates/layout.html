@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ config.name }} &ndash; {{ title }}</title>
+    <link rel="stylesheet" href="{{ config.link_master }}/static/chat.css">
+</head>
+<body>
+    <header>
+        <div class="centered">
+          <a class="header-logo" href="/">
+            <img src="{{ config.link_master }}/static/logo_pi-learn.svg">
+            <h1>{{ config.name }}</h1>
+          </a>
+          <div style="flex-grow: 1"></div>
+        </div>
+    </header>
+    <div class="label-bar">
+        <div class="centered">
+            <h1>Chat</h1>
+            <nav>
+                <ul>
+                    <li><a href="{{ config.link_master }}/">Startseite</a></li>
+                    <li><a href="{{ config.link_master }}/new">Neuer Raum</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+    <main{% block mainclass %}{% endblock %}>
+        {% if is_anon %}
+            <div class="fatal-warning">Sie müssen sich <a href="{{ config.login_link }}">anmelden</a>, damit Sie auf den Chat zugreifen können.</div>
+        {% endif %}
+        {% block body %}
+        {% endblock %}
+    </main>
+</body>
+</html>

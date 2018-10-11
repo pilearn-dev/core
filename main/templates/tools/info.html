@@ -1,0 +1,10 @@
+{% from "tools/_macro.html" import tools__nav %}
+{% extends "layout.html" %}
+{% block body %}
+    {{ tools__nav("info", user) }}
+    <h2>Werkzeuge &ndash; Info</h2>
+    <p>Willkommen bei den &pi;-Learn Werkzeugen für Moderatoren, Administratoren und Entwickler.</p>
+    <div class="warning">
+      <strong>Wichtig:</strong> Bitte keine Bildschirmfotos oder sonstige Kopien der Werkzeugseiten speichern und/oder bereitstellen, die persönliche Informationen enthalten könnten.
+    </div>
+{% endblock %}

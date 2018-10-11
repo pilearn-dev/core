@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block body %}
+    <div class="httperror">
+      <div class="img">
+        <img src="/static/img/error403.png">
+      </div>
+      <div>
+        <h2>Zugriff verboten</h2>
+        <p>Oh nein! <b>Du hast nicht die nötigen Berechtigungen, um auf diese Seite zuzugreifen.</b></p>
+        <p>Du musst dich entweder <a href="/login">anmelden</a> oder mehr Reputation sammeln.</p>
+        <hr>
+        <small>Fehlercode: <b>403</b></small>
+      </div>
+    </div>
+{% endblock %}

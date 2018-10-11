@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if data.isDeleted() %}
+<div class="deleted-section">
+    <div class="error">
+      <p>Dieser Benutzeraccount wurde gelöscht.</p>
+    </div>
+{% elif data.isDisabled() %}
+  <div class="user-warning">{% set end=data.getBanEnd(True) %}
+      <p>Dieser Benutzer wurde <strong>{{ data.getBanReason() }}</strong> <span title="{{ end[1] }}">{{ end[2] }}</span> <a href="/help/users/banned">gesperrt.</a></p>
+    </div>
+{% endif %}
+<div class="tabination">
+  <ul>
+    <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}">Profil</a></li>
+    <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/flags">Meldungen</a></li>
+    <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/reputation">Reputation</a></li>
+    {% if user.isAdmin() %}
+    <li class="active"><a href="#!">Anmerkungen</a></li>
+    {% endif %}
+    <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/delete">Löschen</a></li>
+  </ul>
+</div>
+<h2>{{ data.getHTMLName()|safe }}</h2>
+<h3>Neue Anmerkung</h3>
+<textarea placeholder="Sei spezifisch und gebe Beispiele" id="new_annotation"></textarea>
+<button onclick="add_annotation()">Hinzufügen</button>
+<p>Bitte nutzt Anmerkungen nur für <strong>wirklich wichtige Informationen</strong> wie Sperrungen, Verwarnungen o.ä.</p>
+<h3>Anmerkungen</h3>
+{% set order = request.values.get("order", "id") %}
+{% set annot = data.getAnnotations(order) %}
+<table class="annotation-table">
+  <tr>
+    <th class="annot-icon">Art <a href="?order=type{% if order=='type' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='type' %}-down{% elif order=='type_reverse' %}-up{% endif %}"></i></a></th>
+    <th>Admin <a href="?order=creator_id{% if order=='creator_id' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='creator_id' %}-down{% elif order=='creator_id_reverse' %}-up{% endif %}"></i></a></th>
+    <th colspan="4">Kommentar</th>
+    <th>Zeit <a href="?order=time{% if order=='time' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='time' %}-down{% elif order=='time_reverse' %}-up{% endif %}"></i></a></th>
+    {% if user.isDev() %}
+    <td>&nbsp;</td>
+    {% endif %}
+  </tr>
+{% for a in annot if (not a.deleted or (user.isDev() and request.values.get("show-deleted", 0)!=0)) %}
+  <tr class="annotation{% if a.deleted %} deleted-section{% endif %}">
+    <th class="annot-centered annot-icon">{% if a.type == "custom" %}<i class="fa fa-comment" title="Anmerkung"></i>{% elif a.type == "ban" %}<i class="fa fa-lock" title="Sperrung"></i>{% elif a.type == "unban" %}<i class="fa fa-unlock" title="Entsperrung"></i>{% elif a.type == "delete" %}<i class="fa fa-user-times" title="Löschung"></i>{% endif %}</th>
+    <td class="annot-centered"><a href="/u/{{ a.creator.id }}">{{ a.creator.getHTMLName()|safe }}</a></td>
+    <td colspan="4">{% if a.content=="auto" %}<span class="annot-small">(automatisch)</span>{% elif a.content=="manual" %}<span class="annot-small">(manuell)</span>{% else %}{{ a.content|markdown }}{% endif %}</td>
+    <td class="annot-small"><span title="{{ a.absolute_date }}">{{ a.relative_date }}</span></td>
+    {% if user.isDev() %}
+    <td>{% if a.deleted %}<a href="#!" onclick="undelete_note({{ a.id }})">Un-Löschen</a>{% else %}<a href="#!" onclick="delete_note({{ a.id }})">Löschen</a>{% endif %}</td>
+    {% endif %}
+    </div>
+  </tr>
+{% else %}
+{% endfor %}
+</table>
+{% if user.isDev() and request.values.get("show-deleted", 0)==0 and annot|length != 0 %}
+<a href="?show-deleted=1">alle anzeigen</a>
+{% endif %}
+<script>
+  function delete_note(id) {
+    $post("user/{{ data.id }}/{{ data.getDetail("name") }}/annotations", {"action":'delete', "id": id}, function (r) {
+      window.location.reload()
+    })
+  }
+  function undelete_note(id) {
+    $post("user/{{ data.id }}/{{ data.getDetail("name") }}/annotations", {"action":'undelete', "id": id}, function (r) {
+      window.location.reload()
+    })
+  }
+  function add_annotation() {
+    new_value = document.getElementById("new_annotation").value;
+    $post("user/{{ data.id }}/{{ data.getDetail("name") }}/annotations", {"action":'create', "content": new_value}, function (r) {
+      document.getElementById("new_annotation").value = "";
+      window.location.reload();
+    })
+  }
+</script>
+{% if data.isDeleted() %}
+</div>
+{% endif %}
+<style>
+textarea {
+  min-height: 50px;
+  height: 50px;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,38 @@
+<div class="flagging-modal" id="denial-dialog">
+    <div class="flagging-dialog">
+        <div class="close-link"><a href="#!" onclick="document.getElementById('denial-dialog').classList.remove('open');">&times;</a></div>
+        <h3>Diese Meldung ist <span class="flag-denied">nicht hilfreich</span></h3>
+        <div id="denial-dialog-content-master">
+            <p>Bitte wähle den Grund aus, aus dem diese Meldung nicht hilfreich ist.</p>
+            <div class="flagging-reason-list">
+                {% if flagging_user != user.id %}
+                <label class="flagging-reason-item current">
+                    <input type="radio" id="denial-dialog-noproof_reason" name="reason" value="noproof">
+                    <h4>Keine Belege gefunden</h4>
+                    <p>Du hast keine Belege für das beanstandete Verhalten gefunden.</p>
+                </label>
+                {% if user.isAdmin() %}
+                <label class="flagging-reason-item">
+                    <input type="radio" id="denial-dialog-noadminreq_reason" name="reason" value="noadminreq">
+                    <h4>Benötigt keine Einwirkung eines Moderators</h4>
+                    <p>Administratoranrufe sollen nicht für Fehlermeldungen oder andere Probleme genutzt werden, die auch von der Community gelöst werden könnten.</p>
+                    <p><b>Fehler sollen im globalen Forum mit dem Tag <span class="tag">fehlermeldung</span> gemeldet werden.</b></p>
+                </label>
+                {% endif %}
+                <label class="flagging-reason-item">
+                    <input type="radio" id="denial-dialog-unnec_reason" name="reason" value="unnec">
+                    <h4>Unnötig</h4>
+                    <p>Meldungen, die Administratoren auffordern Beiträge von Benutzern positiv/negativ zu bewerten oder den Benutzern eine Benutzerstufe oder Reputation zu geben oder zu nehmen sind unnötig und werden abgelehnt.</p>
+                </label>
+                {% endif %}
+                <label class="flagging-reason-item">
+                    <input type="radio" id="denial-dialog-other_reason" name="reason" value="other">
+                    <h4>Anderes</h4>
+                    <p>Ein anderer Grund als die hier aufgeführten. Nutze das Eingabefeld um diesen zu beschreiben</p>
+                    <textarea style="max-height: 200px; min-height: 50px; height: 75px;" id="denial-dialog-message" name="other-reason" placeholder="Diese Nachricht wird dem Nutzer als Benachrichtigung gesendet und weiterhin bei einer Sperrung auf der Profilseite angezeigt."></textarea>
+                </label>
+            </div>
+            <button class="red-btn" id="denial-dialog-deny_btn">Meldung ablehnen</button>
+        </div>
+    </div>
+</div>

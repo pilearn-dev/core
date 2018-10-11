@@ -1,0 +1,65 @@
+<h1>{{ survey.getTitle() }}</h1>
+{% if survey.mayBeAnswered() %}
+ {% if not survey.hasSubmission(user) %}
+  {% for i in survey.getContent() %}
+   {% if i.type == "heading" %}
+     <h2>{{ i.data.text }}</h2>
+   {% elif i.type == "info-text" %}
+     {{ i.data.text|markdown }}
+   {% elif i.type == "separator" %}
+     <hr>
+   {% elif i.type == "warnbox" %}
+     <div class="warning">{{ i.data.text|markdown }}</div>
+   {% elif i.type == "quote" %}
+     <blockquote>{{ i.data.text|markdown }}</blockquote>
+   {% elif i.type == "image" %}
+     <a href="{{ i.data.source }}"><img src="{{ i.data.source }}"></a>
+   {% elif i.type == "multiple-choice" %}
+     <div class="no-p question">
+       {{ i.data.question|markdown }}
+     {% set masterloop = loop %}
+     {% for c in i.data.choices %}
+      <label for="survey-question-{{ masterloop.index }}-answer-{{ loop.index }}"><input type="radio" id="survey-question-{{ masterloop.index }}-answer-{{ loop.index }}" value="{{ loop.index-1 }}" name="survey-question-{{ masterloop.index }}"> {{ c }}</label>
+     {% endfor %}
+     </div>
+   {% elif i.type == "text-answer" %}
+     <div class="no-p question">
+       {{ i.data.question|markdown }}
+      <input id="survey-question-{{ loop.index }}-answer" placeholder="Bitte Antwort eingeben">
+     </div>
+   {% endif %}
+  {% endfor %}
+  <button class="primary-btn big-btn block-btn" onclick="send()">Umfrage absenden</button>
+  <script>
+  function send() {
+    var data = {};
+    has_error = false;
+    m = document.querySelectorAll(".highlight-missing");
+    for (var i = 0; i < m.length; i++) {
+      m[i].classList.remove("highlight-missing");
+    }
+    {%- for i in survey.getContent() %}
+      {%- if i.type == "multiple-choice" %}
+      x = document.querySelector("[name='survey-question-{{ loop.index }}']:checked");
+      if(!x) {document.querySelector("[name='survey-question-{{ loop.index }}']:first-of-type").parentNode.parentNode.classList.add("highlight-missing"); has_error=true;} else {data[{{ loop.index }}] = x.value;}
+      {%- elif i.type == "text-answer" %}
+          data[{{ loop.index }}] = document.querySelector("#survey-question-{{ loop.index }}-answer").value;
+      {%- endif %}
+    {%- endfor %}
+    if(!has_error) {
+      $post("sv/{{ survey.id }}/submit", data, function () {
+        window.location.reload();
+      })
+    } else {
+      alert("Einige Felder wurden ungültig ausgefüllt.");
+    }
+  }
+  </script>
+ {% else %}
+ <p>Du hast an dieser Umfrage bereits teilgenommen. Danke.</p>
+ {% endif %}
+{% else %}
+<div class="warning">
+  Diese Umfrage wurde noch nicht zur Beantwortung freigeschaltet.
+</div>
+{% endif %}

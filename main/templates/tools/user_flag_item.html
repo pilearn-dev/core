@@ -1,0 +1,89 @@
+{% from "tools/_macro.html" import tools__nav %}
+{% extends "layout.html" %}
+{% block body %}
+    {{ tools__nav("user", user) }}
+    <h2>Werkzeuge &ndash; Benutzermeldungen</h2>
+    <div class="split-screen">
+      <aside>
+        <ol>
+          <li><a href="/tools/user/flags">Meldungen</a></li>
+          <li><a href="/tools/user/search">Suche</a></li>
+        </ol>
+      </aside>
+      <main>
+        <h3>Benutzer <a href="/u/{{ item.user.id }}">{{ item.user.getDetail("realname") }}</a></h3>
+        <div class="text">
+          <p style="margin: 0;">{{ item.user.getDetail("realname") }} (<em>{{ item.user.getDetail("name") }}</em>) <span class="badge" title="Reputation">{{ item.user.getDetail("reputation") }}</span> &ndash; {{ (item.user.getDetail("aboutme")|markdown|striptags)[:150] }}</p>
+          <ul>
+            <li><a href="/u/{{ item.user.id }}/flags">Meldungen von {{ item.user.getDetail("realname") }}</a></li>
+            <li><a href="/tools/user/ops/{{ item.user.id }}?action=lookup-annotations">Annotationen zu {{ item.user.getDetail("realname") }}</a></li>
+          </ul>
+        </div>
+        <div class="text">
+          <div class="tool-ops" id="flag_selection">
+          {% for flag in flags %}
+            <div class="tool-ops-selection">
+              {% if flag.state == 0 %}
+              <input type="checkbox" name="flag_selection" value="{{ flag.id }}" id="flag_selection-{{ flag.id }}">
+              {% else %}
+              <input type="checkbox" name="flag_selection" value="{{ flag.id }}" id="flag_selection-{{ flag.id }}" disabled style="display: none; !important;">
+              {% if flag.state == 1 %}
+              <div class="tool-ops-status"><i class="fa fa-check fa-fw" title="Diese Meldung wurde als hilfreich empfunden."></i></div>
+              {% elif flag.state == -2 %}
+              <div class="tool-ops-status"><i class="fa fa-times fa-fw" title="Diese Meldung wurde als nicht hilfreich empfunden."></i></div>
+              {% endif %}
+              {% endif %}
+              <label for="flag_selection-{{ flag.id }}">
+                {{ flag.comment|striptags|markdown }}
+                <p style="font-size: 0.9em;">von <a href="/u/{{ flag.flagger.id }}" target="_blank">{{ flag.flagger.getHTMLName()|safe }}</a></p>
+                {% if flag.state != 0 and flag.response != "" %}
+                <p style="font-size: 0.8em; color: #7aa;"><em>{{ flag.response }}</em></p>
+                {% endif %}
+              </label>
+            </div>
+          {% endfor %}
+          </div>
+          {% if has_open_flags %}
+          <details>
+            <summary>Antwort hinzufügen</summary>
+            <input id="response_comment" placeholder="Erkläre, warum du diese Meldungen so behandelst.">
+          </details>
+          <button class="accept-btn" onclick="make_flag_decision(1)">hilfreich</button> <button class="danger-btn" onclick="make_flag_decision(-2)">nicht hilfreich</button>
+          {% endif %}
+        </div>
+        {% if item.state == 0 %}
+        <h3>Aktionen</h3>
+        <a href="/tools/user/ops/{{ item.user.id }}" target="_blank"><button class="primary-btn">Zu AdminOps</button></a> <a href="/tools/user/ops/{{ item.user.id }}?action=ban" target="_blank"><button class="primary-btn">Benutzer sperren</button></a>
+        <a href="/u/{{ item.user.id }}/del" target="_blank"><button class="primary-btn">Benutzer löschen</button></a> <button class="primary-btn" onclick="$post('tools/user/flags/{{ item.id }}/finish', {}, function(){window.location.reload()});">Fertig</button>
+        {% else %}
+        <a href="/tools/user/flags"><button class="primary-btn">&larr; Zurück</button></a>
+        {% endif %}
+      </main>
+      <script>
+        var flags = [];
+        var flag_els = [];
+        function make_flag_decision(decision) {
+          flags = [];
+          flag_els = [];
+          els = document.querySelectorAll("#flag_selection :checked");
+          for (var i = 0; i < els.length; i++) {
+            flags.push(els[i].value);
+            flag_els.push(els[i].parentNode)
+          }
+          data = {
+            "response": document.getElementById("response_comment").value,
+            "flags": flags,
+            "result": decision
+          }
+          document.getElementById("response_comment").value = "";
+          $post("tools/user/flags/{{ item.id }}/validate", data, function (r) {
+            if(r == "{ok:last}") {
+              window.location.reload();
+            } for (var i = 0; i < flag_els.length; i++) {
+              flag_els[i].parentNode.removeChild(flag_els[i]);
+            }
+          }.bind(this))
+        }
+      </script>
+    </div>
+{% endblock %}

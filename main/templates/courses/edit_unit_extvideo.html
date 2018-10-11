@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+{% block body %}
+  <link rel="stylesheet" href="/static/ps/polyskript.css">
+  <nav class="coursenav">
+    {% set topic = course.getTopic() %}
+    <h2>{{ course.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
+    {{ course.getByLine()|markdown }}
+    <ul>
+      <li><a href="/course/{{ course.id }}/{{ course.getLabel() }}/details">Informationen</a></li>
+      <li class="active"><a href="#!">Kursinhalte</a></li>
+      <li><a href="/forum/{{ course.id }}/{{ course.getLabel() }}/list">Kursforum</a></li>
+    </ul>
+  </nav>
+ <div class="split-screen">
+   <aside>
+     <h3>Alle Inhalte</h3>
+     <ol>
+       {% for element in course.getMenu() %}
+        {% if element.availible %}
+        {% if element.id == data.id %}
+        <li><a href="/c/{{ course.id }}/u/{{ element.id }}/edit" class="current">{{ element.title }}</a>
+        {% else %}
+        <li><a href="/c/{{ course.id }}/u/{{ element.id }}/edit">{{ element.title }}</a>
+        {% endif %}
+        {% else %}
+        {% if element.id == data.id %}
+        <li><a style="opacity: 0.7" href="/c/{{ course.id }}/u/{{ element.id }}/edit" class="current">{{ element.title }}</a>
+        {% else %}
+        <li><a style="opacity: 0.7" href="/c/{{ course.id }}/u/{{ element.id }}/edit">{{ element.title }}</a>
+        {% endif %}
+        {% endif %}
+          {% if element.children %}
+          <ol>
+            {% for child in element.children %}
+             {% if child.availible %}
+             {% if child.id == data.id %}
+             <li><a href="/c/{{ course.id }}/u/{{ child.id }}/edit" class="current">{{ child.title }}</a>
+             {% else %}
+             <li><a href="/c/{{ course.id }}/u/{{ child.id }}/edit">{{ child.title }}</a>
+             {% endif %}
+             {% else %}
+             {% if child.id == data.id %}
+             <li><a style="opacity: 0.7" href="/c/{{ course.id }}/u/{{ child.id }}/edit" class="current">{{ child.title }}</a>
+             {% else %}
+             <li><a style="opacity: 0.7" href="/c/{{ course.id }}/u/{{ child.id }}/edit">{{ child.title }}</a>
+             {% endif %}
+             {% endif %}
+            {% endfor %}
+          </ol>
+          {% endif %}
+        </li>
+       {% endfor %}
+     </ol>
+   </aside>
+   <main>
+       <button class="primary-btn" onclick="save()">Speichern</button> <a href="/c/{{ course.id }}/u/{{ data.id }}">Abbrechen</a>
+       <hr>
+      <h1><input data-before="Info: " class="inline" id="title" value="{{ data.getTitle() }}"></h1>
+      {% if data.isDisabled() %}
+      <label for="availible"><input type="checkbox" id="availible"> Diese Seite darf besucht werden.</label>
+      {% else %}
+      <label for="availible"><input type="checkbox" id="availible" checked> Diese Seite darf besucht werden.</label>
+      {% endif %}
+      <p>Videos von externen Plattformen (Youtube, Vimeo, ...) sind mit einer Datenschutzfunktion ausgestattet und werden erst nach Knopfdruck geladen.</p>
+      <p>Bitte beachten &ndash; Nur Videos verwenden, wenn die Weitergabe für kommerzielle Zwecke erlaubt ist.</p>
+      <label for="c_platform">Plattform:</label>
+      <select id="c_platform">
+        <option{% if data.getJSON().platform == "youtube" %} selected{% endif %} value="youtube">Youtube</option>
+        <option{% if data.getJSON().platform == "vimeo" %} selected{% endif %} value="vimeo">Vimeo</option>
+        <option{% if data.getJSON().platform == "_link" %} selected{% endif %} value="_link">Direktlink</option>
+      </select>
+      <label for="c_embed">Einbettcode</label>
+      <input type="text" id="c_embed" value="{{ data.getJSON().embedcode }}">
+      <details>
+        <summary>Informationen zum Einbettcode</summary>
+        <p>Bei <strong>Youtube</strong> ist der Einbettcode derjenige Teil hinter dem <code>?v=</code>:</p>
+        <pre>https://www.youtube.com/watch?v=<strong>abc123</strong></pre>
+        <p>Bei <strong>Vimeo</strong> ist der Einbettcode derjenige Teil hinter dem Domainnamen:</p>
+        <pre>https://vimeo.com/<strong>123</strong></pre>
+        <p>Bei <strong>Direktlinks</strong> ist der Einbettcode der Direktlink</p>
+      </details>
+      <script>
+       ps = new Polyskript({{ data.getJSON()|tojson }});
+       ps.show()
+
+       function save() {
+         $post("c/{{ course.id }}/u/{{ data.id }}/edit", {
+           "title": document.getElementById("title").value,
+           "availible": document.getElementById("availible").checked,
+           "content": {
+             "platform": document.getElementById("c_platform").value,
+             "embedcode": document.getElementById("c_embed").value
+            }
+         }, function () {
+           window.location.reload();
+         })
+       }
+     </script>
+   </main>
+ </div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+{% block body %}
+  <nav class="coursenav">
+    <h2><i>Vorschlag:</i> Kurstitel <i><a href="/courses/topic/42/info" class="topic">Kursthema</a></i></h2>
+    <p><b>Kursidee vorgeschlagen von <a href="/u/1">paulπdev</a></b></p>
+  </nav>
+  <div class="warning">
+    <h3>Kursvorschlag abgelehnt von <a href="/u/1">𝕊𝕐𝕊𝕋𝔼𝕄</a></h3>
+    <p>Dieser Kursvorschlag wurde abgelehnt, da er innerhalb von des von uns vorgesehenen Zeitraums nicht genug Unterstützung erhalten hat.</p>
+  </div>
+  <div class="split-screen big">
+  <main>
+   <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+   <hr>
+   <h3>Wovon handelt der Kurs?</h3>
+   <div class="text">
+     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+   </div>
+   <h3>Was benötigt man zur Teilnahme?</h3>
+   <div class="text">
+     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+   </div>
+  </main>
+  <aside style="padding: 4px;">
+    <progress max="100" min="0" value="90" class="big-sidebar-meter"></progress>
+    <div class="big-sidebar-num">9<span class="big-sidebar-num-max">/10</span></div>
+    <div class="big-sidebar-num-label">Benutzer werden teilnehmen</div>
+    <h3>Würdest du an diesem Kurs teilnehmen?</h3>
+    <p style="font-size: 0.8em;">Drücke auf "Ich werde teilnehmen", um zu versprechen, dass du später an diesem Kurs teilnehmen wirst. Um zu verhindern, dass Kurse vergeblich erstellt werden, muss eine bestimmte Anzahl von Benutzern versprechen, dass sie an diesem Kurs teilnehmen werden.</p>
+    <button class="warn-btn">Ich werde teilnehmen</button>
+    {% if user.isAdmin() %}
+    <hr>
+    <div class="user-warning">
+      <ul class="margin: 0; padding-left: 10px;">
+        <li>Diesen Vorschlag ablehnen
+          <ul>
+            <li><a href="#!">zu wenig Unterstützung</a></li>
+            <li><a href="#!">zu allgemein</a></li>
+            <li><a href="#!">zu spezifisch</a></li>
+            <li><a href="#!">Duplikat</a></li>
+            <li><a href="#!">im falschen Thema</a></li>
+            <li><a href="#!">regelwidrig</a></li>
+          </ul>
+        </li>
+        {% if user.isDev() %}{# or data.getPerc() == 1 #}
+        <li>Diesen Vorschlag annehmen und den Kurs <a href="#!">erstellen</a></li>
+        {% endif %}
+      </ul>
+    </div>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

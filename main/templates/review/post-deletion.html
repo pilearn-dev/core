@@ -1,0 +1,209 @@
+{% extends "layout.html" %}
+{% block body %}
+    <link rel="stylesheet" href="/static/css/simplemde.min.css">
+    <script src="/static/js/simplemde.min.js"></script>
+      <div class="review-screen">
+          <div class="review-info-panel">
+              <h3>Moderation &ndash; Beiträge löschen</h3>
+              <p>In dieser Moderationsliste werden Beiträge gezeigt, entscheide ob sie gelöscht werden sollen oder gefährlich sind.</p>
+          </div>
+
+          <div class="review-action-panel">
+              <span class="review-text">Wähle eine Aktion:</span>
+              <a href="#!" onclick="$post('review/add-review/post-deletion/{{ data.id }}', { 'result': 1 }, function(resp){window.location.replace(resp);});"><button class=""><i class="fa fa-arrow-circle-right"></i><span class="review-text"> Überspringen</span></button></a>
+              <a href="#!" onclick="$post('review/add-review/post-deletion/{{ data.id }}', { 'result': 2 }, function(resp){window.location.replace(resp);});"><button class="danger-btn"><i class="fa fa-times-circle"></i><span class="review-text"> Löschen</span></button></a>
+              <a href="#!" onclick="document.getElementById('post_flagging_dialog').classList.add('open')"><button class="danger-btn"><i class="fa fa-exclamation-circle"></i><span class="review-text"> Ist Gefährlich</span></button></a>
+              {% if user.may("forum_reviewEdits") %}
+              <a href="#!" onclick="document.getElementById('edit-dialog').classList.add('open')"><button><i class="fa fa-pencil"></i><span class="review-text"> Bearbeiten</span></button></a>
+              {% endif %}
+              <a href="#!" onclick="$post('review/add-review/post-deletion/{{ data.id }}', { 'result': 5 }, function(resp){window.location.replace(resp);});"><button class="accept-btn"><i class="fa fa-check-circle"></i><span class="review-text"> In Ordnung</span></button></a>
+          </div>
+          <div class="review-action-panel">
+              <a href="#!" onclick="$post('review/add-review/post-deletion/{{ data.id }}', { 'result': 1 }, function(resp){window.location.replace(resp);});"><button class="">Überspringen</button></a>
+              <a href="#!" onclick="$post('review/add-review/post-deletion/{{ data.id }}', { 'result': 2 }, function(resp){window.location.replace(resp);});"><button class="danger-btn">löschen</button></a>
+              <a href="#!" onclick="document.getElementById('post_flagging_dialog').classList.add('open')"><button class="danger-btn">ist gefährlich</button></a>
+              {% if user.may("forum_reviewEdits") %}
+              <a href="#!" onclick="document.getElementById('edit-dialog').classList.add('open')"><button>bearbeiten</button></a>
+              {% endif %}
+              <a href="#!" onclick="$post('review/add-review/post-deletion/{{ data.id }}', { 'result': 5 }, function(resp){window.location.replace(resp);});"><button class="accept-btn">in Ordnung</button></a>
+          </div>
+          <div class="review-content-panel">
+              <div class="review-content">
+                  <h3>Soll dieser Beitrag geschlossen werden?</h3>
+                  <div class="warning">
+                      <p>Dieser Beitrag wurde wegen dieser Sachen gemeldet:</p>
+                      <ul>
+                        {% for r in flag_reasons %}
+                          <li>{{ (r[0]|markdown)[3:-4] }} ({{ r[1] }}&times;)</li>
+                        {% endfor %}
+                      </ul>
+                  </div>
+                  <h2 style="font-weight: normal;"><a href="/forum/{{ data.item.getDetail("forumID") }}/from-review/article/{{ data.item.id }}/{{ data.item.getLabel() }}">{{ data.item.getHTMLTitle()|safe }}</a></h2>
+                  <div class="forum-article-item">
+                      {% if not data.item.isDestroyed() %}
+                      <div class="left-area">
+                          <div class="answer-block{% if data.item.accepted_answer %} is-answer-accepted {% endif %}">
+                              {% if data.item.hasAccepted() %}
+                                  <span><i class="fa fa-check-circle is-answered" aria-hidden="true"></i></span>
+                              {% else %}
+                                  <span class="is-not-answered">&nbsp;</span>
+                              {% endif %}
+                              <span class="answer-num">{{ data.item.getScore() }}</span>
+                          </div>
+                          {% if data.item.getAward() != 0 %}
+                              <div class="award" title="Dieser Beitrag hat eine offene Belohnung in Höhe von {{ data.item.getAward() }} Reputationspunkten.">+{{ data.item.getAward() }}</div>
+                          {% endif %}
+                      </div>
+                      {% endif %}
+                      <div class="right-area">
+                          {% if not data.item.isDestroyed() %}
+                              <div class="">
+                              {{ data.item.getContent()|markdown }}
+                              </div>
+                              <div class="alignment-right">
+                                  {{ user_card(data.item.getAuthor()) }}
+                                  <div style="flex-grow: 1; margin-top: 10px;">
+                                      Tags:
+                                      {% for tag in data.item.getTags() %}
+                                          {% if tag in moderator_tags %}
+                                              <span class='tag moderator-tag'>{{ tag }}</span>
+                                          {% else %}
+                                              <span class='tag'>{{ tag }}</span>
+                                          {% endif %}
+                                      {% endfor %}
+                                  </div>
+                              </div>
+                          {% endif %}
+                      </div>
+                  </div>
+<div class="flagging-modal" id="post_flagging_dialog">
+    <div class="flagging-dialog">
+        <div class="close-link"><a href="#!" onclick="document.getElementById('post_flagging_dialog').classList.remove('open');">&times;</a></div>
+        <h3>Diesen Beitrag schließen.</h3>
+        <div id="article_close_dialog-content-master">
+          <p>Dieser Artikel ist </p>
+          <div class="flagging-reason-list lot-reasons">
+            <label class="flagging-reason-item">
+                <input type="radio" id="article_close_dialog-duplicate_reason" name="reason" value="duplicate">
+                <h4>ein exaktes Duplikat</h4>
+                {{ data.item.CLOSURE_TEXTS["duplicate"]|markdown }}
+                <input name="article_dupe_url" id="article_close_dialog-dupe_target" placeholder="URL des anderen Beitrags">
+            </label>
+            <label class="flagging-reason-item">
+                <input type="radio" id="article_close_dialog-off-topic_reason" name="reason" value="off-topic">
+                <h4>in diesem Forum unpassend</h4>
+                {{ data.item.CLOSURE_TEXTS["off-topic"]|markdown }}
+                <div class="flagging-reason-list" id="off-topic-reason-list">
+                {% for otr in data.item.OFF_TOPIC_REASONS if not(otr.for_global and data.item.getDetail("forumID") != 0) and not(otr.for_course and data.item.getDetail("forumID") == 0) %}
+                  <label class="flagging-reason-item">
+                      <input type="radio" id="article_close_dialog-off-topic_sub-{{ loop.index }}" name="otreason" value="{{ otr.text }}">
+                      {{ otr.text.replace("<$>", data.item.getForum().getTitle())|markdown }}
+                  </label>
+                {% endfor %}
+                <label class="flagging-reason-item">
+                    <input type="radio" id="article_close_dialog-off-topic_sub-other" name="otreason" value="Dieser Beitrag ist in diesem Forum unpassend, da ...">Anderes
+                    <textarea onkeydown="document.getElementById('article_close_dialog-off-topic_sub-other').value=this.value" style="max-height: 50px; min-height: 50px; resize: none;">Dieser Beitrag ist in diesem Forum unpassend, da ...</textarea>
+                </label>
+                </div>
+            </label>
+            <label class="flagging-reason-item">
+                <input type="radio" id="article_close_dialog-unclear_reason" name="reason" value="unclear">
+                <h4>unklar</h4>
+                {{ data.item.CLOSURE_TEXTS["unclear"]|markdown }}
+            </label>
+            <label class="flagging-reason-item">
+                <input type="radio" id="article_close_dialog-too-broad_reason" name="reason" value="too-broad">
+                <h4>zu allgemein</h4>
+                {{ data.item.CLOSURE_TEXTS["too-broad"]|markdown }}
+            </label>
+            <label class="flagging-reason-item">
+                <input type="radio" id="article_close_dialog-too-specific_reason" name="reason" value="too-specific">
+                <h4>zu spezifisch</h4>
+                {{ data.item.CLOSURE_TEXTS["too-specific"]|markdown }}
+            </label>
+            </div>
+            <button class="warn-btn" id="post_flagging_dialog-close_btn">Schließen</button>
+        </div>
+    </div>
+</div>
+<script>
+var flagging_id = "post_flagging_dialog"
+close_btn = document.getElementById(flagging_id + "-close_btn");
+if (close_btn != null) {
+    close_btn.addEventListener("click", function () {
+        elements = [document.getElementById("article_close_dialog-duplicate_reason"), document.getElementById("article_close_dialog-off-topic_reason"), document.getElementById("article_close_dialog-unclear_reason"), document.getElementById("article_close_dialog-too-broad_reason"), document.getElementById("article_close_dialog-too-specific_reason"), document.getElementById("article_close_dialog-other_reason")]
+        reason = "";
+        for (var i = 0; i < elements.length; i++) {
+            if (elements[i] == null) {
+                continue;
+            }
+            if (elements[i].checked) {
+                reason = elements[i].value;
+                break;
+            }
+        }
+        if(reason == "") {
+          return;
+        }
+        subreason = null;
+        if(reason == "duplicate") {
+          subreason = document.getElementById("article_close_dialog-dupe_target").value;
+          x = subreason.match(/^https?:\/\/[a-z0-9A-Z.]+?\/forum\/([0-9]+?)\/[a-z0-9-]+?\/article\/([0-9]+?)\/[a-z0-9-]+?$/);
+          if(!x) {
+            if (master.lastChild.classList && master.lastChild.classList.contains("error")) {
+                master.removeChild(master.lastChild);
+            }
+            _.classList.add("error");
+            _.innerText = "Dieser Duplikat-Link ist ungültig.";
+            master.appendChild(_);
+            return
+          }
+          subreason = {"forum":x[1], "post":x[2]};
+        } else if(reason == "off-topic") {
+          subreason = document.querySelector("#off-topic-reason-list :checked");
+          if(subreason == null) {
+            if (master.lastChild.classList && master.lastChild.classList.contains("error")) {
+                master.removeChild(master.lastChild);
+            }
+            _.classList.add("error");
+            _.innerText = "Es wurde kein gültiger Grund ausgewählt.";
+            master.appendChild(_);
+            return
+          } else {
+            subreason = subreason.value;
+          }
+        }
+        $post('review/add-review/post-deletion/{{ data.id }}', { 'result': 2, 'reason':reason, 'subreason':subreason }, function(resp){window.location.replace(resp);});
+    })
+}
+</script>
+
+
+{% if user.may("forum_reviewEdits") %}
+<div class="flagging-modal open" id="edit-dialog">
+    <div class="flagging-dialog" style="max-width: 1000px !important;">
+        <div class="close-link"><a href="#!" onclick="document.getElementById('edit-dialog').classList.remove('open');">&times;</a></div>
+        <h3>Bearbeiten</h3>
+        <p>Wenn du diesen Beitrag bearbeitest, wird er nicht geschlossen.</p>
+        <label for="edit_title_field">Titel</label>
+        <input id="edit_title_field" value="{{ data.item.getDetail('title') }}">
+
+        <label for="edit_content_field">Inhalt</label>
+        <textarea id="edit_content_field">{{ data.item.getDetail('content') }}</textarea>
+
+        <p>
+            <button onclick="update_Post()" class="primary-btn">Fertig</button>
+            <button onclick="document.getElementById('edit-dialog').classList.remove('open');">Abbrechen</button>
+        </p>
+        <script>
+        var simplemde = new SimpleMDE({ element: document.getElementById("edit_content_field"), forceSync:true, parsingConfig: {strikethrough: false}, promptURLs:true, spellChecker:false });
+        document.getElementById('edit-dialog').classList.remove('open');
+        function update_Post() {
+          $post('review/add-review/post-deletion/{{ data.id }}', { 'result': 4, 'new_title':document.getElementById("edit_title_field").value, 'new_content':document.getElementById("edit_content_field").value }, function(resp){window.location.replace(resp);});
+        }
+        </script>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}

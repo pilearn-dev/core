@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+{% block body %}
+    <link rel="stylesheet" href="/static/css/simplemde.min.css">
+    <script src="/static/js/simplemde.min.js"></script>
+    <script src="/static/js/_tags.js"></script>
+
+    <nav class="coursenav">
+      {% if forum.id == 0 %}
+          <h2>globales Forum</h2>
+          <p>für alle Fragen zu &pi;-Learn selber und für Fehlermeldungen oder Verbesserungsideen</p>
+      {% else %}
+        {% set topic = forum.getTopic() %}
+        <h2>{{ forum.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
+        {{ forum.getByLine()|markdown }}
+        <ul>
+          <li><a href="/c/{{ forum.id }}/info">Informationen</a></li>
+          <li><a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/start">Kursinhalte</a></li>
+          <li class="active"><a href="/f/{{ forum.id }}">Kursforum</a></li>
+        </ul>
+      {% endif %}
+    </nav>
+
+    <h2>Beitrag bearbeiten</h2>
+
+    <p>Hier noch einmal die Kriterien für einen guten Forumsartikel:</p>
+    <ul>
+        <li>Prüfe, ob es noch keinen Artikel gibt, der mit diesem übereinstimmt (Duplikat)</li>
+        <li>Prüfe, ob dies das richtige Forum ist.</li>
+        <li>Deine eingegebenen Inhalte müssen mit dem <a href="/help/legal/coc">Code of Conduct</a> kompatibel sein.</li>
+        <li>Deine eingegebenen Inhalte sollten keine groben Rechtschreibfehler aufweisen</li>
+        <li>Versuche die eingegebenen Inhalte möglichst verständlich zu formulieren.</li>
+        <li>Werbe in den Inhalten nicht übermäßig für ein bestimmtes Produkt oder eine Marke.</li>
+        <li>Versuche die eingegebenen Inhalte möglichst verständlich zu formulieren. Wenn niemand deinen Post versteht, wird dir auch niemand antworten.</li>
+    </ul>
+
+    {% if not user.may("forum_reviewEdits") and not article.getAuthor().id == user.id %}
+      <div class="warning">
+        <h3>Volle Bearbeitungsrechte noch nicht erreicht</h3>
+        <p>Du hast noch nicht die vollen Bearbeitungsrechte für diesen Beitrag erhalten. Darum muss dein Bearbeitungsvorschlag erst von anderen Benutzern geprüft werden, bis er durchgesetzt wird.</p>
+        <p><b>Vermeide unwichtige, zu geringe Veränderungen. Korrigiere möglichst <i>alle Probleme</i> eines Beitrags.</b></p>
+      </div>
+    {% endif %}
+
+    <form action="" method="post">
+        <label for="qtitle">
+            Überschrift des Forumposts
+        </label>
+        <input id="qtitle" name="title" value="{{ article.getTitle() }}">
+        <label for="qcontent">
+            Inhalt des Forumposts
+        </label>
+        <textarea id="qcontent" name="content">{{ article.getContent() }}</textarea>
+        <label for="qtags">
+            Tags des Forumposts
+        </label>
+        <div id="qtags" style="border: 1px solid #ddd; padding: 10px; display: flex; flex-direction: column; flex-wrap: wrap;">
+            <div class="tag-holder" style="display: inline-flex; align-items: center;" data-id="tag-holder"></div>
+            <input style="flex-grow:1" data-id="tag-input" placeholder="Neues Tag hinzufügen (min. 1, max. 5)">
+        </div>
+        <label for="qcomment">Kommentar zu den Änderungen:</label>
+        <input id="qcomment" name="comment"></input>
+        &nbsp;<br>
+        <input type="hidden" name="tags" id="qtags_syncwith">
+        <button type="submit" id="sbmbtn">Speichern</button>&nbsp;<a href="/f/{{ forum.id }}/{{ article.id }}">Abbrechen</a>
+    </form>
+
+    <script>
+        var simplemde = new SimpleMDE({ element: document.getElementById("qcontent"), forceSync:true, parsingConfig: {strikethrough: false}, promptURLs:true, spellChecker:false });
+        tagmgr = addTagInput("#qtags");
+        tagmgr.tagInput.addEventListener("keydown", function() {
+            document.getElementById("sbmbtn").setAttribute("disabled", true);
+        })
+        tagmgr.tagInput.addEventListener("keyup", function() {
+            document.getElementById("sbmbtn").removeAttribute("disabled");
+        })
+        tagmgr.sync = function(tags) {
+            document.getElementById("qtags_syncwith").value = tags.join(",");
+        }
+        tagmgr.requirementMet = function(tag) {
+            return tag.match(/^[a-zA-Z:0-9äöüß-]{2,20}$/);
+        }
+        tagmgr.getExtraClass = function(tag) {
+            if({{ moderator_tags|tojson }}.indexOf(tag) != -1) {
+                return "moderator-tag";
+            }
+            return null;
+        }
+        tagmgr.mayBeSet = function(tag) {
+            {% if not user.isMod() %}
+                return {{ moderator_tags|tojson }}.indexOf(tag) == -1;
+            {% else %}
+                return true;
+            {% endif %}
+        }
+        tagmgr.tags = JSON.parse('{{ article.getTags()|tojson }}');
+        tagmgr._update();
+    </script>
+
+{% endblock %}

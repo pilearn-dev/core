@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block body %}
+    <div class="httperror">
+      <div>
+        <h2>Ungültiger Zugriff</h2>
+        <p>Oh nein! Diese Zugriffsmethode ist für die gewählte Adresse ungültig. Versuche die Navigation zu verwenden, um auf &pi;-Learn zu navigieren.</p>
+        <p>Dies liegt wahrscheinlich daran, dass du auf eine API-Schnittstelle direkt zugegriffen hast oder du Daten an eine statische Seite gesendet hast.</p>
+        <hr>
+        <small>Fehlercode: <b>405</b></small>
+      </div>
+    </div>
+{% endblock %}

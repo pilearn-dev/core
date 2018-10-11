@@ -1,0 +1,172 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if data.isDeleted() %}
+<div class="deleted-section">
+    <div class="error">
+      <p>Dieser Benutzeraccount wurde gelöscht.</p>
+    </div>
+{% elif data.isDisabled() %}
+  <div class="user-warning">{% set end=data.getBanEnd(True) %}
+      <p>Dieser Benutzer wurde <strong>{{ data.getBanReason() }}</strong> <span title="{{ end[1] }}">{{ end[2] }}</span> <a href="/help/users/banned">gesperrt.</a></p>
+    </div>
+{% endif %}
+<div class="tabination">
+  <ul>
+    <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}">Profil</a></li>
+    <li class="active"><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/flags">Meldungen</a></li>
+    <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/reputation">Reputation</a></li>
+    {% if user.isAdmin() %}
+    <li><a href="/tools/user/ops/{{ data.id }}" target="_blank"><em>AdminOps</em></a></li>
+    {% else %}
+    <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/delete">Löschen</a></li>
+    {% endif %}
+  </ul>
+</div>
+<h2>{{ data.getHTMLName()|safe }}</h2>
+<div class="split-screen">
+  <aside>
+    <div style="position: sticky; top: 10px;">
+      <h3>Überblick</h3>
+      <ol>
+        <li class="visited"><a href="#post-closure">Beiträge schließen</a></li>
+        <li class="visited"><a href="#post-deletion">Beiträge löschen</a></li>
+        <li class="visited"><a href="#custom-flags">Andere Meldungen</a></li>
+      </ol>
+    </div>
+  </aside>
+  <main>
+        <h3 class="highlighted-h3" id="post-closure">Beiträge schließen</h3>
+        <p>Insgesamt <a href="?closure=all#post-closure">{{ closure_total }} Meldungen</a>, davon <a href="?closure=helpful#post-closure">{{ closure_helpful }} hilfreich</a>, <a href="?closure=declined#post-closure">{{ closure_declined }} nicht hilfreich</a> und <a href="?closure=pending#post-closure">{{ closure_pending }} in Arbeit</a></p>
+        <div class="flag-overview">
+        {% for f in closure_flags[::-1] %}
+          <div class="single-flag">
+              <div class="first-line">
+                {% if f.state == 0 %}
+                  <div class="flag-outcome pending"></div>
+                {% elif f.state == -2 %}
+                  <div class="flag-outcome declined"></div>
+                {% elif f.state == 1 %}
+                  <div class="flag-outcome helpful"></div>
+                {% elif f.state == 2 %}
+                    <div class="flag-outcome deprecated"></div>
+                {% elif f.state == -1 %}
+                  <div class="flag-outcome disputed"></div>
+                {% endif %}
+                {% set target = f.item.getHTMLTitle()|safe %}
+                  {% if f.item.isDeleted() %}
+                  <div class="target deleted-line {% if target|length > 75 %}very-long{% elif target|length > 40 %}long{% endif %}"><a href="/f/{{ f.item.getDetail("forumID") }}/{{ f.item.id }}">{{ target }}</a></div>
+                {% else %}
+                  <div class="target {% if target|length > 75 %}very-long{% elif target|length > 40 %}long{% endif %}"><a href="/f/{{ f.item.getDetail("forumID") }}/{{ f.item.id }}">{{ target }}</a></div>
+                {% endif %}
+                {% if f.state == 0 %}
+                  <div class="flag-pending">in Arbeit</div>
+                {% elif f.state == -2 %}
+                  <a href="/review/post-closure/{{ f.queue_id }}" class="flag-denied">nicht hilfreich</a>
+                {% elif f.state == 1 %}
+                  <a href="/review/post-closure/{{ f.queue_id }}" class="flag-successful">hilfreich</a>
+                {% elif f.state == 2 %}
+                  <a href="/review/post-closure/{{ f.queue_id }}" class="flag-deprecated">veraltet</a>
+                {% elif f.state == -1 %}
+                  <a href="/review/post-closure/{{ f.queue_id }}" class="flag-disputed">zurückgewiesen</a>
+                {% endif %}
+              </div>
+              {#<p class="heading"><b>Grund:</b> <i>({{ f.item.BAN_TITLE[f.reason] }})</i></p>
+              {% if f.comment != "" %}{{ f.comment|markdown }}{% else %}{{ user.BAN_TEXT[f.reason]|markdown }}{% endif %}#}
+          </div>
+        {% endfor %}
+
+        <h3 class="highlighted-h3" id="post-deletion">Beiträge löschen</h3>
+        <p>Insgesamt <a href="?deletion=all#post-deletion">{{ post_deletion_total }} Meldungen</a>, davon <a href="?deletion=helpful#post-deletion">{{ post_deletion_helpful }} hilfreich</a>, <a href="?deletion=declined#post-deletion">{{ post_deletion_declined }} nicht hilfreich</a> und <a href="?deletion=pending#post-deletion">{{ deletion_pending }} in Arbeit</a></p>
+        <div class="flag-overview">
+        {% for f in post_deletion_flags[::-1] %}
+          <div class="single-flag">
+              <div class="first-line">
+                {% if f.state == 0 %}
+                  <div class="flag-outcome pending"></div>
+                {% elif f.state == -2 %}
+                  <div class="flag-outcome declined"></div>
+                {% elif f.state == 1 %}
+                  <div class="flag-outcome helpful"></div>
+                {% elif f.state == 2 %}
+                    <div class="flag-outcome deprecated"></div>
+                {% elif f.state == -1 %}
+                  <div class="flag-outcome disputed"></div>
+                {% endif %}
+                {% if f.reason == "spam" %}
+                <div class="label">SPAM</div>
+                {% elif f.reason == "offensive " %}
+                <div class="label">beleidigend</div>
+                {% elif f.reason == "delvote" %}
+                <div class="label">Löschen</div>
+                {% else %}
+                <div class="label"><em title="{{ f.reason }}">Filter</em></div>
+                {% endif %}
+                {% set target = f.item.getHTMLTitle()|safe %}
+                  {% if f.item.isDeleted() %}
+                  <div class="target deleted-line {% if target|length > 75 %}very-long{% elif target|length > 40 %}long{% endif %}"><a href="/f/{{ f.item.getDetail("forumID") }}/{{ f.item.id }}">{{ target }}</a></div>
+                {% else %}
+                  <div class="target {% if target|length > 75 %}very-long{% elif target|length > 40 %}long{% endif %}"><a href="/f/{{ f.item.getDetail("forumID") }}/{{ f.item.id }}">{{ target }}</a></div>
+                {% endif %}
+                {% if f.state == 0 %}
+                  <div class="flag-pending">in Arbeit</div>
+                {% elif f.state == -2 %}
+                  <a href="/review/post-deletion/{{ f.queue_id }}" class="flag-denied">nicht hilfreich</a>
+                {% elif f.state == 1 %}
+                  <a href="/review/post-deletion/{{ f.queue_id }}" class="flag-successful">hilfreich</a>
+                {% elif f.state == 2 %}
+                  <a href="/review/post-deletion/{{ f.queue_id }}" class="flag-deprecated">veraltet</a>
+                {% elif f.state == -1 %}
+                  <a href="/review/post-deletion/{{ f.queue_id }}" class="flag-disputed">zurückgewiesen</a>
+                {% endif %}
+              </div>
+          </div>
+        {% endfor %}
+
+        <h3 class="highlighted-h3" id="mod-flags">Andere Meldungen</h3>
+        <p>Insgesamt <a href="?mod=all#mod-flags">{{ custom_total }} Meldungen</a>, davon <a href="?mod=helpful#mod-flags">{{ custom_helpful }} hilfreich</a>, <a href="?mod=declined#mod-flags">{{ custom_declined }} nicht hilfreich</a> und <a href="?mod=pending#mod-flags">{{ custom_pending }} in Arbeit</a></p>
+        <div class="flag-overview">
+        {% for f in custom_flags[::-1] %}
+          <div class="single-flag">
+              <div class="first-line">
+                {% if f.state == 0 %}
+                  <div class="flag-outcome pending"></div>
+                {% elif f.state == -2 %}
+                  <div class="flag-outcome declined"></div>
+                {% elif f.state == 1 %}
+                  <div class="flag-outcome helpful"></div>
+                {% elif f.state == 2 %}
+                    <div class="flag-outcome deprecated"></div>
+                {% elif f.state == -1 %}
+                  <div class="flag-outcome disputed"></div>
+                {% endif %}
+                {% if f.item_type == "forum.question" %}
+                <span class="label">Frage</span>
+                {% set target = f.item.getHTMLTitle()|safe %}
+                  {% if f.item.isDeleted() %}
+                    <div class="target deleted-line {% if target|length > 75 %}very-long{% elif target|length > 40 %}long{% endif %}"><a href="/f/{{ f.item.getDetail("forumID") }}/{{ f.item.id }}">{{ target }}</a></div>
+                  {% else %}
+                    <div class="target {% if target|length > 75 %}very-long{% elif target|length > 40 %}long{% endif %}"><a href="/f/{{ f.item.getDetail("forumID") }}/{{ f.item.id }}">{{ target }}</a></div>
+                  {% endif %}
+                {% elif f.item_type == "user" %}
+                <span class="label">Benutzer</span>
+                {% set target = f.item.getHTMLName()|safe %}
+                  {% if f.item.isDeleted() %}
+                    <div class="target deleted-line {% if target|length > 75 %}very-long{% elif target|length > 40 %}long{% endif %}">{{ target }}</div>
+                  {% else %}
+                    <div class="target {% if target|length > 75 %}very-long{% elif target|length > 40 %}long{% endif %}"><a href="/u/{{ f.item.id }}">{{ target }}</a></div>
+                  {% endif %}
+                {% endif %}
+              </div>
+              <p class="heading"><b class="r">Grund:</b> {{ (f.comment|markdown)[3:-4] }}</i></p>
+              {% if f.response %}
+              <p><b class="r">Antwort:</b> {{ f.response }}</i></p>
+              {% endif %}
+          </div>
+        {% endfor %}
+        </div>
+      </main>
+    </div>
+{% if data.isDeleted() %}
+</div>
+{% endif %}
+{% endblock %}

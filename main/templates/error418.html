@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block body %}
+    <div class="httperror">
+      <div>
+        <h2>Extrem fataler Fehler!</h2>
+        <p><strong>404 - Fehler nicht gefunden</strong></p>
+        <p>Solltest du diese Meldung sehen, ist <strong>irgendetwas ganz fatal schiefgelaufen</strong>.</p>
+        <p style="font-size: 0.6em">Du könntest jetzt zum Beispiel in der Zwischenzeit ein Buch lesen oder draußen spazierengehen oder ...</p>
+        <p style="font-size: 0.3em">... <em>einfach nur dem Computer ausmachen</em></p>
+        <hr>
+        <small>Fehlercode: <b>418</b></small>
+      </div>
+    </div>
+    <style>
+    html {
+      font-family: 'Comic Sans MS', 'Comic Sans', 'Jokerman', italic;
+    }
+    .httperror {
+      animation: blink 2s ease infinite;
+    }
+    @keyframes blink {
+      0% {
+        opacity: 0;
+      }
+      25% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 0.1;
+      }
+      75% {
+        opacity: 1;
+      }
+    }
+    footer, .login-request, .ban-message, .global-note {
+      display: none;
+    }
+    </style>
+{% endblock %}
