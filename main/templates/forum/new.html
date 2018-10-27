@@ -105,8 +105,9 @@
           </label>
           <div id="qtags" style="border: 1px solid #ddd; padding: 10px; display: flex; flex-direction: column; flex-wrap: wrap;">
               <div class="tag-holder" style="display: inline-flex; align-items: center;" data-id="tag-holder"></div>
-              <input style="flex-grow:1" data-id="tag-input" placeholder="Neues Tag hinzufügen (min. 1, max. 5)" onblur="showRI('rally-info-topic'); hideRI('rally-info-tags');" onfocus="hideRI('rally-info-topic'); showRI('rally-info-tags')">
+              <input onkeyup="" style="flex-grow:1" data-id="tag-input" placeholder="Neues Tag hinzufügen (min. 1, max. 5)" onblur="showRI('rally-info-topic'); hideRI('rally-info-tags');" onfocus="hideRI('rally-info-topic'); showRI('rally-info-tags')">
           </div>
+          <input type="hidden" id="qtags_syncwith" name="tags">
           &nbsp;<br>{% if fullwizard %}<button onclick="rallyBack()" type="button">&laquo; Zurück</button>&nbsp;<button class="primary-btn" onclick="rallyTo()" type="button">Weiter &raquo;</button>{% else %}<button type="submit" class="primary-btn" id="sbmbtn">Frage stellen</button>{% endif %}
         </div>
         <div class="rally-infobox">

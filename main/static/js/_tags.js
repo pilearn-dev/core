@@ -61,9 +61,9 @@ _TagInput.prototype._onKeyPress = function (e) {
             self.tags.push(this.value)
             this.value = "";
             this.oldValue = "";
-            self._update();
         }
         e.preventDefault();
     }
     this.oldValue = this.value;
+    self._update();
 }

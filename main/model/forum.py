@@ -805,7 +805,6 @@ class Article:
     def getAnswers(self):
         try:
             con = lite.connect('databases/forum.db')
-            con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM answers WHERE forumID=? AND articleID=? ORDER BY isAcceptedAnswer DESC, deleted ASC, score DESC, RANDOM()", (self.getDetail("forumID"), self.id))
             data = cur.fetchall()

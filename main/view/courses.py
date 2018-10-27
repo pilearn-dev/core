@@ -1,6 +1,6 @@
 # coding: utf-8
 from flask import render_template, redirect, abort, url_for, request
-from model import privileges as mprivileges, courses as mcourses, user as muser, survey as msurvey, proposal as mproposal
+from model import privileges as mprivileges, courses as mcourses, user as muser, survey as msurvey, proposal as mproposal, forum as mforum
 from controller import query as cquery
 import json
 def courses_index():
@@ -199,6 +199,13 @@ def unit_show(unit_id,course_id,unit_label=None,course_label=None):
         return render_template('courses/unit_survey.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit, survey=s)
     elif unit.getType() == "quiz":
         return render_template('courses/unit_quiz.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
+    elif unit.getType() == "pinboard":
+        aid = int(unit.getJSON())
+        if aid == 0:
+            a = None
+        else:
+            a = mforum.Article(aid)
+        return render_template('courses/unit_pinboard.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit, post=a)
     abort(500)
 
 def unit_edit(unit_id,course_id,unit_label=None,course_label=None):
@@ -228,6 +235,8 @@ def unit_edit(unit_id,course_id,unit_label=None,course_label=None):
             return render_template('courses/edit_unit_survey.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
         elif unit.getType() == "quiz":
             return render_template('courses/edit_unit_quiz.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
+        elif unit.getType() == "pinboard":
+            return render_template('courses/edit_unit_pinboard.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
         abort(500)
 
 
@@ -294,7 +303,8 @@ def unit_new(course_id):
     empty_set = {
         "info":"[]",
         "quiz":"[]",
-        "extvideo": '{"platform":"youtube", "embedcode": ""}'
+        "extvideo": '{"platform":"youtube", "embedcode": ""}',
+        "pinboard": '0'
     }
     if request.json["type"] == "survey":
         s = msurvey.Survey.new(course.id, cuser.id)

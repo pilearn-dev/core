@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+{% block body %}
+  <nav class="coursenav">
+    {% set topic = course.getTopic() %}
+    <h2>{{ course.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
+    {{ course.getByLine()|markdown }}
+    <ul>
+      <li><a href="/course/{{ course.id }}/{{ course.getLabel() }}/details">Informationen</a></li>
+      <li class="active"><a href="#!">Kursinhalte</a></li>
+      <li><a href="/forum/{{ course.id }}/{{ course.getLabel() }}/list">Kursforum</a></li>
+    </ul>
+  </nav>
+ <div class="split-screen">
+   <aside>
+     <h3>Alle Inhalte</h3>
+     <ol>
+       {% for element in course.getMenu() %}
+        {% if element.availible %}
+        {% if element.id == data.id %}
+        <li><a href="/c/{{ course.id }}/u/{{ element.id }}" class="current">{{ element.title }}</a>
+        {% else %}
+        <li><a href="/c/{{ course.id }}/u/{{ element.id }}">{{ element.title }}</a>
+        {% endif %}
+        {% elif user.isMod() or course.getCourseRole(user) >=3 %}
+        <li class="current visited"><a style="opacity: 0.4" href="/c/{{ course.id }}/u/{{ element.id }}">{{ element.title }}</a>
+        {% endif %}
+          {% if element.children %}
+          <ol>
+            {% for child in element.children %}
+             {% if child.availible %}
+             {% if child.id == data.id %}
+             <li><a href="/c/{{ course.id }}/u/{{ child.id }}" class="current">{{ child.title }}</a>
+             {% else %}
+             <li><a href="/c/{{ course.id }}/u/{{ child.id }}">{{ child.title }}</a>
+             {% endif %}
+             {% elif user.isMod() or course.getCourseRole(user) >=3 %}
+             <li><a style="opacity: 0.4" href="/c/{{ course.id }}/u/{{ child.id }}">{{ child.title }}</a>
+             {% endif %}
+            {% endfor %}
+          </ol>
+          {% endif %}
+        </li>
+       {% endfor %}
+       {% if course.getCourseRole(user) >=3 %}
+       <a href="#!" onclick="document.getElementById('unit-type-dialog-parent').value=0;document.getElementById('unit-type-dialog').classList.add('open')">Neue Seite</a>
+       {% endif %}
+     </ol>
+   </aside>
+   <main>
+     {% if user.isMod() or course.getCourseRole(user) >= 3 %}
+     <p style="margin: 0; font-size: 0.8em;"><strong>{{ data.getTitle() }}</strong> &ndash; {% if data.isDisabled() %}<span style="color: #d00;">Unveröffentlichte Seite</span>{% else %}Öffentliche Seite{% endif %} &ndash; <a href="/c/{{ course.id }}/u/{{ data.id }}/edit"><i class="fa fa-pencil"></i> Bearbeiten</a>{% if data.getDetail("parent") == 0 and course.getCourseRole(user) >= 3 %} &ndash; <a href="#!" onclick="document.getElementById('unit-type-dialog-parent').value={{ data.id }};document.getElementById('unit-type-dialog').classList.add('open')">Neue Unterseite</a>{% endif %}</p>
+     <hr>
+     {% endif %}
+     {% if data.isDisabled() %}<div class="deleted-section" style="padding: 10px;">{% endif %}
+       {% if not post %}
+        <p>Es wurde noch kein Beitrag für dieses Pinboard ausgewählt.</p>
+       {% else %}
+         <div style="padding: 5px 10px; background-color: #eee; border: 1px solid #ddd; font-size: 1.25em; margin: 5px; box-shadow: 0 0 8px -5px #666;">
+           {{ post.getContent()|markdown }}
+         </div>
+         {% if post.isClosed() %}
+           <div class="warning">
+             {{ post.getClosureWarning()|markdown }}
+           </div>
+         {% endif %}
+         {% set aw = post.getAnswers() %}
+         <h2>Antworten</h2>
+         {% for answer in aw if answer.mayBeSeen(user) %}
+         <div style="padding: 2px 10px; max-width: 600px; background-color: #eee; border: 1px solid #ddd; font-size: 1.125em; margin: 5px; {% if answer.getScore() > 5 %}box-shadow: 0 0 8px -5px #666;{% elif answer.getScore() < -2 %}opacity: 0.7;{% endif %}{% if post.isDeleted() or answer.isDeleted() %} background-color: #fee;{% endif %}">
+           {{ answer.getContent()|markdown }}
+           <p id="rate-{{ answer.id }}" style="font-size: 1rem;"><button onclick="$post('forum/{{ post.getDetail("forumID") }}/answer/{{ answer.id }}/vote', {'direction':1}, function(e){e=JSON.parse(e);document.querySelector('#rate-{{answer.id}} span').innerText=e.score;})"><i class="fa fa-thumbs-up"></i></button> <span style="margin: 0 5px; font-size: 1.1em;">{{ answer.getScore() }}</span> <button onclick="$post('forum/{{ post.getDetail("forumID") }}/answer/{{ answer.id }}/vote', {'direction':-1}, function(e){e=JSON.parse(e);document.querySelector('#rate-{{answer.id}} span').innerText=e.score;})"><i class="fa fa-thumbs-down"></i></button></p>
+         </div>
+         {% endfor %}
+         <h2>Kommentar hinzufügen</h2>
+         <form action="/f/{{ post.getDetail('forumID') }}/post/{{ post.id }}/answer" method="post">
+             <input name="answer" maxlength="280">
+             <button type="submit">Absenden</button>
+         </form>
+       {% endif %}
+     {% if data.isDisabled() %}</div>{% endif %}
+   </main>
+   {% if course.getCourseRole(user) >= 3 %}
+   {% include "courses/_create_unit.html" %}
+   {% endif %}
+ </div>
+{% endblock %}

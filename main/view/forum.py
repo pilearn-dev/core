@@ -62,30 +62,27 @@ def forum_post_answer(forum_id, post_id, forum_label=None):
     if mforum.Forum.exists(forum_id):
         forum = mforum.Forum.from_id(forum_id)
         cuser = muser.getCurrentUser()
-        if forum_label != forum.getDetail("label"):
-            return redirect(url_for("forum_post_answer", forum_id=forum_id, label=forum.getDetail("label")))
-        else:
-            if mforum.Article.exists(forum_id, post_id):
-                article = mforum.Article(post_id)
-                if request.form == {}:
-                    abort(405)
-                else:
-                    form = dict(request.form)
-                    content = u"[Kein Inhalt gesetzt]"
-                    comment = u"Ursprüngliche Version"
-                    if "answer" in form.keys():
-                        content = request.form["answer"]
-                    answer = mforum.Answer.createNew(forum_id, post_id, content, cuser)
-                    answer.addRevision(content, cuser, comment)
-                    au = article.getAuthor()
-                    if au.id == -1:
-                        answer.setDetail("author", -1)
-                        answer.addRevComm("anonymized", cuser, "-1")
-                    elif au.id != -3:
-                        au.notify("answered", "Es gibt eine neue Antwort auf deinen Foren-Beitrag \"" + article.getTitle() + "\"", "/f/"+str(forum_id)+"/"+str(post_id) + "#answer-" + str(answer.id))
-                    return redirect("/f/"+str(forum_id)+"/"+str(post_id) + "#answer-" + str(answer.id))
+        if mforum.Article.exists(forum_id, post_id):
+            article = mforum.Article(post_id)
+            if request.form == {}:
+                abort(405)
             else:
-                abort(404)
+                form = dict(request.form)
+                content = u"[Kein Inhalt gesetzt]"
+                comment = u"Ursprüngliche Version"
+                if "answer" in form.keys():
+                    content = request.form["answer"]
+                answer = mforum.Answer.createNew(forum_id, post_id, content, cuser)
+                answer.addRevision(content, cuser, comment)
+                au = article.getAuthor()
+                if au.id == -1:
+                    answer.setDetail("author", -1)
+                    answer.addRevComm("anonymized", cuser, "-1")
+                elif au.id != -3:
+                    au.notify("answered", "Es gibt eine neue Antwort auf deinen Foren-Beitrag \"" + article.getTitle() + "\"", "/f/"+str(forum_id)+"/"+str(post_id) + "#answer-" + str(answer.id))
+                return redirect("/f/"+str(forum_id)+"/"+str(post_id) + "#answer-" + str(answer.id))
+        else:
+            abort(404)
     else:
         abort(404)
 
@@ -876,7 +873,7 @@ def apply(app):
             )
         )
     )
-    app.route('/forum/<forum_id>/<forum_label>/post/<post_id>/answer', methods=["POST"])(forum_post_answer)
+    app.route('/f/<forum_id>/post/<post_id>/answer', methods=["POST"])(app.route('/forum/<forum_id>/<forum_label>/post/<post_id>/answer', methods=["POST"])(forum_post_answer))
     app.route('/forum/<forum_id>/<forum_label>/post/<post_id>/delete', methods=["POST"])(app.route('/f/<forum_id>/post/<post_id>/delete', methods=["POST"])(forum_post_delete))
     app.route('/forum/<forum_id>/<forum_label>/post/<post_id>/destroy', methods=["POST"])(forum_post_destroy)
     app.route('/forum/<forum_id>/<forum_label>/post/<post_id>/undelete', methods=["POST"])(app.route('/f/<forum_id>/post/<post_id>/undelete', methods=["POST"])(forum_post_undelete))

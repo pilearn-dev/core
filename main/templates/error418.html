@@ -1,39 +1,103 @@
-{% extends "layout.html" %}
-{% block body %}
-    <div class="httperror">
-      <div>
-        <h2>Extrem fataler Fehler!</h2>
-        <p><strong>404 - Fehler nicht gefunden</strong></p>
-        <p>Solltest du diese Meldung sehen, ist <strong>irgendetwas ganz fatal schiefgelaufen</strong>.</p>
-        <p style="font-size: 0.6em">Du könntest jetzt zum Beispiel in der Zwischenzeit ein Buch lesen oder draußen spazierengehen oder ...</p>
-        <p style="font-size: 0.3em">... <em>einfach nur dem Computer ausmachen</em></p>
-        <hr>
-        <small>Fehlercode: <b>418</b></small>
-      </div>
-    </div>
-    <style>
-    html {
-      font-family: 'Comic Sans MS', 'Comic Sans', 'Jokerman', italic;
-    }
-    .httperror {
-      animation: blink 2s ease infinite;
-    }
-    @keyframes blink {
-      0% {
-        opacity: 0;
-      }
-      25% {
-        opacity: 0;
-      }
-      50% {
-        opacity: 0.1;
-      }
-      75% {
-        opacity: 1;
-      }
-    }
-    footer, .login-request, .ban-message, .global-note {
-      display: none;
-    }
-    </style>
-{% endblock %}
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <style>
+            html {
+                background-color: hsl(0,100%,50%);
+                animation: konstantin .2s infinite steps(100);
+                overflow: hidden;
+            }
+            @keyframes konstantin {
+                0% {
+                    background-color: hsl(0,100%,70%);
+                }
+                25% {
+                    background-color: hsl(64, 100%, 70%);
+                }
+                50% {
+                    background-color: hsl(127, 100%, 70%);
+                }
+                75% {
+                    background-color: hsl(191, 100%, 70%);
+                }
+                100% {
+                    background-color: hsl(255,100%,70%);
+                }
+            }
+            @keyframes konstantin2 {
+                0% {
+                    color: yellow;
+                transform: skew(-10deg) rotateX(-10deg) translateX(-50%) translateY(-50%);
+                }
+                51% {
+                    color: purple;
+                transform: skew(10deg) rotateX(10deg) translateX(-50%) translateY(-50%);
+                }
+            }
+            @keyframes konstantin3 {
+                0% {
+                    left: -50px;
+                transform: skew(-10deg) rotateX(-40deg);
+                }
+                67% {
+                    left: 100px;
+                transform: skew(30deg) rotateX(80deg);
+                }
+            }
+            @keyframes konstantin4 {
+                0% {
+                    width: 0ch;
+                }
+                51% {
+                    width: auto;
+                }
+            }
+            body {
+                display: flex;
+                flex-wrap: wrap;
+                height: 100%;
+            }
+            .object {
+                margin: 5px;
+                height: 100px; width: 100px;
+                animation: konstantin .2s infinite steps(100), konstantin3 2s infinite ease;
+                flex-grow: 1;
+                animation-delay: .1s;
+                filter: blur(5px);
+                position: relative;
+                border-radius: 50%;
+            }
+            .object:nth-child(2n) {
+                animation-delay: .12s;
+            }
+            .object:nth-child(3n) {
+                animation-delay: .13s;
+            }
+            .object:nth-child(5n) {
+                animation-delay: .15s;
+            }
+            .object:nth-child(7n) {
+                animation-delay: .17s;
+            }
+            h1 {
+                display: flex;
+                align-items: center;
+                font-size: 8em;
+                position: absolute;
+                left: 50%; top: 50%;
+                transform: translateX(-50%) translateY(-50%);
+                margin: 0;
+                white-space: nowrap;
+                color: #fff;
+                font-family: 'Comic Sans MS', sans-serif;
+                animation: konstantin2 .3s ease infinite;
+                text-shadow: 10px 10px 0px #a8a;
+            }
+        </style>
+    </head>
+    <body>
+    <div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div><div class="object"></div>
+    <h1>I ❤ Comic Sans</h1>
+    </body>
+</html>
