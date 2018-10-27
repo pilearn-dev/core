@@ -219,7 +219,12 @@ def tools_user_ops_index(uid):
     elif action == "merge":
         if request.method == "POST":
             mid = str(request.json["otherid"])
-            if muser.User.exists(mid):
+            if int(mid) == 0:
+                data.setDetail("mergeto", None)
+                data.setDetail("deleted", 0)
+                data.addAnnotation("merge", "Un-Merge - " + request.json["reason"], cuser, time.time())
+                return render_template("tools/user_ops_merge.html", title="Werkzeuge - Benutzerfunktionen", thispage="tools", data=data)
+            elif muser.User.exists(mid):
                 to = muser.User.from_id(mid)
                 if to.getDetail("mergeto") or data.isMod() or data.isTeam():
                     return render_template("tools/user_ops_merge.html", title="Werkzeuge - Benutzerfunktionen", thispage="tools", data=data, error=1)

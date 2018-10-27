@@ -86,7 +86,7 @@ class Answer:
                 "revid": (self.getRevisionCount() if id == "latest" else id),
                 "id": data["id"],
                 "type": data["type"],
-                "editor": muser.User.from_id(data["editor"]),
+                "editor": muser.User.safe(data["editor"]),
                 "content": data["new_content"],
                 "comment": data["comment"]
             }
@@ -108,7 +108,7 @@ class Answer:
             data = {
                 "id": data["id"],
                 "type": data["type"],
-                "editor": muser.User.from_id(data["editor"]),
+                "editor": muser.User.safe(data["editor"]),
                 "title": data["new_title"],
                 "content": data["new_content"],
                 "tags": data["new_tags"],
@@ -268,7 +268,7 @@ class Answer:
         fb = self.getDetail("frozenBy")
         if fb == 0:
             fb = -3
-        return muser.User.from_id(fb)
+        return muser.User.safe(fb)
 
     def getFrozenMessage(self):
         return self.getDetail("frozenMessage")
@@ -280,7 +280,7 @@ class Answer:
         return self.getDetail("moderatorNotice")
 
     def getAuthor(self):
-        return muser.User.from_id(self.getDetail("author"))
+        return muser.User.safe(self.getDetail("author"))
 
     def isDeleted(self):
         return self.getDetail("deleted") == 1 or self.isDestroyed()
@@ -483,7 +483,7 @@ class Article:
                 "revid": (self.getRevisionCount() if id == "latest" else id),
                 "id": data["id"],
                 "type": data["type"],
-                "editor": muser.User.from_id(data["editor"]),
+                "editor": muser.User.safe(data["editor"]),
                 "title": data["new_title"],
                 "content": data["new_content"],
                 "tags": data["new_tags"],
@@ -510,7 +510,7 @@ class Article:
             data = {
                 "id": data["id"],
                 "type": data["type"],
-                "editor": muser.User.from_id(data["editor"]),
+                "editor": muser.User.safe(data["editor"]),
                 "title": data["new_title"],
                 "content": data["new_content"],
                 "tags": data["new_tags"],
@@ -717,7 +717,7 @@ class Article:
                         break
                 else:
                     reasons.append({"text":flag[7], "voters":[flag[4]]})
-            flagger = muser.User.from_id(flag[4])
+            flagger = muser.User.safe(flag[4])
             voters += ", ["+flagger.getHTMLName()+"](/u/"+str(flagger.id)+")"
         voters = voters[2:]
         text = "### "
@@ -730,7 +730,7 @@ class Article:
         elif majority_reason == "off-topic":
             rs_ = []
             for r in reasons:
-                rs_.append("&quot;" + r["text"] + "&quot; <span class='name-list'>&ndash; " + (", ".join(list(map(lambda x:muser.User.from_id(x).getHTMLName(), r["voters"])))) + "</span>")
+                rs_.append("&quot;" + r["text"] + "&quot; <span class='name-list'>&ndash; " + (", ".join(list(map(lambda x:muser.User.safe(x).getHTMLName(), r["voters"])))) + "</span>")
             text += "Dieser Beitrag wurde als **"+self.CLOSURE_LABELS[majority_reason] +"** geschlossen\n\n- " + ("\n- ".join(rs_)) + "\n\n"
         else:
             text += "Dieser Beitrag wurde als **"+self.CLOSURE_LABELS[majority_reason] +"** geschlossen\n\n"+self.CLOSURE_TEXTS[majority_reason]+"\n\n"
@@ -749,7 +749,7 @@ class Article:
         fb = self.getDetail("frozenBy")
         if fb == 0:
             fb = -3
-        return muser.User.from_id(fb)
+        return muser.User.safe(fb)
 
     def getFrozenMessage(self):
         return self.getDetail("frozenMessage")
@@ -778,7 +778,7 @@ class Article:
         return self.getDetail("moderatorNotice")
 
     def getAuthor(self):
-        return muser.User.from_id(self.getDetail("author"))
+        return muser.User.safe(self.getDetail("author"))
 
     def getTags(self):
         tags = self.getDetail("tags")
@@ -800,7 +800,7 @@ class Article:
         return self.getDetail("protected") == 2
 
     def getProtectedBy(self):
-        return muser.User.from_id(self.getDetail("protectionBy"))
+        return muser.User.safe(self.getDetail("protectionBy"))
 
     def getAnswers(self):
         try:
@@ -856,7 +856,7 @@ class Article:
                 flags = cur.fetchall()
                 voters = ""
                 for flag in flags:
-                    flagger = muser.User.from_id(flag[4])
+                    flagger = muser.User.safe(flag[4])
                     voters += u", ["+flagger.getHTMLName()+u"](/u/"+str(flagger.id)+u")"
                 voters = voters[2:]
                 return u"### Dieser Beitrag wurde **gelöscht**\n\nDer Beitrag wurde von " + voters + u" gelöscht."
@@ -1082,7 +1082,7 @@ class Article:
                 for flag in all:
                     if flag["type"] != "vote":
                         continue
-                    flagger = muser.User.from_id(flag["flagger_id"])
+                    flagger = muser.User.safe(flag["flagger_id"])
                     voters += ", ["+flagger.getHTMLName()+"](/u/"+str(flagger.id)+")"
                 self.addRevComm("undeleted", muser.User.from_id(-1), voters[2:])
             return True
@@ -1145,7 +1145,7 @@ class Article:
                 for flag in all:
                     if flag["type"] != "vote":
                         continue
-                    flagger = muser.User.from_id(flag["flagger_id"])
+                    flagger = muser.User.safe(flag["flagger_id"])
                     voters += ", ["+flagger.getHTMLName()+"](/u/"+str(flagger.id)+")"
                 self.addRevComm("reopened", muser.User.from_id(-1), voters[2:])
             return True
@@ -1391,13 +1391,13 @@ class ForumComment:
         return [t, ctimes.stamp2german(t), ctimes.stamp2relative(t)]
 
     def getAuthor(self):
-        return muser.User.from_id(self.getDetail("comment_author"))
+        return muser.User.safe(self.getDetail("comment_author"))
 
     def isDeleted(self):
         return self.getDetail("deleted") == 1
 
     def getDeletedBy(self):
-        return muser.User.from_id(self.getDetail("deletedby"))
+        return muser.User.safe(self.getDetail("deletedby"))
 
     def getInfo(self):
         try:

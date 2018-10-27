@@ -623,6 +623,13 @@ class User:
         return cls(id)
 
     @classmethod
+    def safe(cls, id):
+        u = cls(id)
+        if u.getDetail("mergeto"):
+            u = cls(u.getDetail("mergeto"))
+        return u
+
+    @classmethod
     def login(cls, username, password):
         try:
             con = lite.connect('databases/user.db')
