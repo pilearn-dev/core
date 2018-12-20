@@ -6,7 +6,7 @@ import secrets, random
 
 from controller import md, num as cnum
 from model import privileges as mprivileges, tags as mtags, user as muser, forum as mforum, proposal as mproposal, courses as mcourses, reviews as mreviews, post_templates as mpost_templates
-from view import auth as vauth, user as vuser, review as vreview, help as vhelp, courses as vcourses, forum as vforum, jsonapi as vjsonapi, survey as vsurvey, proposal as vproposal, tools as vtools, dialog as vdialog
+from view import auth as vauth, user as vuser, review as vreview, help as vhelp, courses as vcourses, forum as vforum, jsonapi as vjsonapi, survey as vsurvey, proposal as vproposal, tools as vtools, dialog as vdialog, winter2018
 
 from sha1 import md5
 
@@ -336,6 +336,7 @@ vsurvey.apply(app)
 vproposal.apply(app)
 vtools.apply(app)
 vdialog.apply(app)
+winter2018.apply(app)
 
 @app.errorhandler(404)
 def error404(x):

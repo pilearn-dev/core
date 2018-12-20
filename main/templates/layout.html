@@ -35,6 +35,7 @@
                   {% endif %}
                   <li class="no-fill"><a title="Hilfe -- Zugang zu Hilfezentrum, Code of Conduct, Datenschutz, Impressum und Tour" href="/help"><i class="fa fa-question-circle-o fa-large fa-small"></i></a></li>
                   {% if user.isLoggedIn() %}
+                    <li class="no-fill keep-on-mobile"><a style="background-color: #f66; color: #23a;" title="Winter Event 2018" href="/event/winter2018"><i class="fa fa-tree"></i></a></li>
                     {% set notificationCount = g.countNotifications(user_messages) %}
                     {% if notificationCount > 0 %}
                       <li class="no-fix-or-fill keep-on-mobile"><a id="notification-trigger" class="has-subitem nav-cta" href="#!"><i class="fa fa-exclamation-circle fa-small" aria-hidden="true"></i><span class="some-messages">{{ notificationCount }}</span></a></li>

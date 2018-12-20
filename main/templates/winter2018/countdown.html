@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block body %}
+<link rel="stylesheet" href="/static/css/winter2018.css">
+<div class="w-countdown">
+  <div class="w-countdown-before">
+    Das Winter-Event startet in
+  </div>
+  <div class="w-countdown-time" id="w-c-time">
+    der Zukunft
+  </div>
+  <div class="w-countdown-after">
+    Besuche &pi;-Learn im Winter und erhalte gratis Reputation
+  </div>
+</div>
+<script>
+  function countdownRun() {
+    now = Date.now();
+    event = Date.parse("21 Dec 2018 00:00:00 GMT");
+    left = Math.floor((event - now) / 1000);
+    if(left < 0) {
+      window.removeInterval(INTERVAL);
+      window.location.reload();
+    }
+    seconds = left % 60;
+    left = Math.floor(left / 60);
+    minutes = left % 60;
+    left = Math.floor(left / 60);
+    hours = left % 24;
+    left = Math.floor(left / 24);
+    days = left;
+    string = "";
+    if(days) {
+      string += days + "d "
+    }
+    if(hours) {
+      string += hours + "h "
+    }
+    if(minutes) {
+      string += minutes + "min "
+    }
+    if(seconds) {
+      string += seconds + "s "
+    }
+    document.getElementById("w-c-time").innerText = string.trim();
+  }
+  window.onload = function(){countdownRun();}
+  INTERVAL = window.setInterval(countdownRun, 300)
+</script>
+{% endblock %}

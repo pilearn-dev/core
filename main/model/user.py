@@ -19,7 +19,8 @@ class User:
         "update": "Korrektur",
         "forum_vote": "Beitragsbewertung",
         "forum_accept": "Beitrag akzeptiert",
-        "enroll": "Neuer Kursbesucher"
+        "enroll": "Neuer Kursbesucher",
+        "winter": "Winter 2018"
     }
 
     labels = {
