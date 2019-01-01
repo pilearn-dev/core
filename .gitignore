@@ -13,3 +13,4 @@ build_css.py
 !privileges.json
 !privilege_data.json
 *.pyc
+archive/*
