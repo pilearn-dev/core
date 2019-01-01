@@ -4,6 +4,7 @@ databases_original/*
 flaskext/*
 markdown/*
 pi-proxy/*
+upload-images/*
 *.bat
 build_css.py
 *.db
@@ -11,3 +12,4 @@ build_css.py
 !pidata.json
 !privileges.json
 !privilege_data.json
+*.pyc

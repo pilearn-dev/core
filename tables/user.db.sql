@@ -62,4 +62,12 @@ appointment_date INT,
 election_link VARCHAR(100),
 resignation_date INT,
 comment TEXT
+);
+CREATE TABLE user_uploads (
+  id INTEGER PRIMARY KEY,
+  user_id INT,
+  file_path VARCHAR(50),
+  removed_by INT,
+  upload_at INT,
+  file_size INT
 )

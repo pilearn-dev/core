@@ -2,7 +2,7 @@
 import datetime as d
 from flask import render_template, redirect, url_for, request
 import model.user as muser
-W2018TC = d.datetime(day=11, month=12, year=2018)
+W2018TC = d.datetime(day=21, month=12, year=2018)
 
 QUIZ_DATA = {
     14: {
@@ -25,7 +25,7 @@ QUIZ_DATA = {
         "q": u"Es gibt ... Wintermonate",
         "a1": "1",
         "a2": "2",
-        "a3": "3"
+        "a3": "3",
         "correct": [3],
         "reputation": 2
     },
@@ -33,7 +33,7 @@ QUIZ_DATA = {
         "q": u"Wenn bei uns Winter ist, wird in Australien ... gefeiert.",
         "a1": "Halloween",
         "a2": "Weihnachten",
-        "a3": "Ostern"
+        "a3": "Ostern",
         "correct": [2],
         "reputation": 2
     },
@@ -41,7 +41,7 @@ QUIZ_DATA = {
         "q": u"Geschenke! Wähle irgendetwas aus!",
         "a1": "mich",
         "a2": "mich",
-        "a3": "mich"
+        "a3": "mich",
         "correct": [1,2,3],
         "reputation": 10
     },
@@ -49,7 +49,7 @@ QUIZ_DATA = {
         "q": u"1. Weihnachtsfeiertag! Wähle irgendetwas aus",
         "a1": "hier",
         "a2": "hier",
-        "a3": "hier"
+        "a3": "hier",
         "correct": [1,2,3],
         "reputation": 5
     },
@@ -57,7 +57,7 @@ QUIZ_DATA = {
         "q": u"Es gibt ... Wintermonate",
         "a1": "1",
         "a2": "2",
-        "a3": "2"
+        "a3": "2",
         "correct": [3],
         "reputation": 2
     }

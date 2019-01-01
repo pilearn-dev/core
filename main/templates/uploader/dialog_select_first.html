@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Bild hochladen</title>
+    <link rel="stylesheet" href="/static/css/uploader.css">
+  </head>
+  <body>
+    {% if cu.isLoggedIn() %}
+    <h1>Du hast bereits Bilder hochgeladen.</h1>
+    <p>Du kannst eines dieser Bilder auswählen, anstatt ein neues hochladen zu müssen.</p>
+    <div class="gallery">
+    {% for img in images %}
+      <button onclick="copyTextToClipboard('/upload/{{ img.id }}/{{ img.getPath() }}'); alert('Bild-Link in Zwischenablage kopiert')"><img class="thumbnail" src="/upload/{{ img.id }}/{{ img.getPath() }}"></button>
+    {% endfor %}
+    </div>
+    {% if images|length >= ufl %}
+    <p class="error">Du hast dein Limit an Bildern erreicht. Bitte lade Bilder über externe Dienste (z.B. imgur oder eine eigene Webseite) hoch und füge sie mit diesem Link dann hier ein.</p>
+    {% else %}
+    <form method="get" action="/upload/dialog">
+      <input type="hidden" name="upload-for-sure" value="42">
+      <button type="submit">Ich möchte ein neues Bild hochladen</button>
+    </form>
+    {% endif %}
+    {% else %}
+    <h1>Nur angemeldete Benutzer können Bilder hochladen.</h1>
+    {% endif %}
+    <script>
+    // Copy url to clipboard
+    // Taken from https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
+    function fallbackCopyTextToClipboard(text) {
+      var textArea = document.createElement("textarea");
+      textArea.value = text;
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      try {
+        var successful = document.execCommand('copy');
+        var msg = successful ? 'successful' : 'unsuccessful';
+        console.log('Fallback: Copying text command was ' + msg);
+      } catch (err) {
+        console.error('Fallback: Oops, unable to copy', err);
+      }
+
+      document.body.removeChild(textArea);
+    }
+    function copyTextToClipboard(text) {
+      if (!navigator.clipboard) {
+        fallbackCopyTextToClipboard(text);
+        return;
+      }
+      navigator.clipboard.writeText(text).then(function() {
+        console.log('Async: Copying to clipboard was successful!');
+      }, function(err) {
+        console.error('Async: Could not copy text: ', err);
+      });
+    }
+    </script>
+  </body>
+</html>

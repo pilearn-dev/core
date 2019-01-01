@@ -277,3 +277,15 @@ ol.horizontal-progress li.done::before {
 	font-size: 13px;
 	margin: 3px 0;
 }
+
+/* - iframe styles */
+iframe {
+  border: none;
+  display: block;
+  width: 100%;
+  min-height: 250px;
+}
+
+iframe.hidden {
+  display: none;
+}

@@ -202,10 +202,17 @@ var MODEL = {
       return el;
     },
     "getEditor": function (box) {
+      m = document.createElement("div");
+      ifr = document.createElement("iframe");
+      ifr.setAttribute("src", "/upload/dialog");
+
       el = document.createElement("input");
       el.setAttribute("placeholder", "Image-URL");
       el.value = box.data.source;
-      return el;
+
+      m.appendChild(ifr);
+      m.appendChild(el);
+      return m;
     },
     "getEditedContent": function (el) {
       elel = el.querySelector("input");
@@ -227,10 +234,17 @@ var MODEL = {
       return el;
     },
     "getEditor": function (box) {
+      m = document.createElement("div");
+      ifr = document.createElement("iframe");
+      ifr.setAttribute("src", "/upload/dialog");
+
       el = document.createElement("input");
       el.setAttribute("placeholder", "Image-URL");
       el.value = box.data.source;
-      return el;
+
+      m.appendChild(ifr);
+      m.appendChild(el);
+      return m;
     },
     "getEditedContent": function (el) {
       elel = el.querySelector("input");

@@ -63,6 +63,7 @@
                 <link rel="stylesheet" href="/static/css/simplemde.min.css">
                 <script src="/static/js/simplemde.min.js"></script>
                 <h3>Antworten</h3>
+                {% include "uploader/button.html" %}
                 <form action="/forum/{{ forum.id }}/{{ forum.getDetail("label") }}/post/{{ post.id }}/answer" method="post">
                     <textarea id="qanswer" name="answer"></textarea>
                     <button type="submit">Absenden</button>

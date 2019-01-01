@@ -77,6 +77,7 @@
             2. Dein Problem nennen
             {% endif %}
           </div>
+          {% include "uploader/button.html" %}
           <textarea id="qcontent" name="content"></textarea>
           {% if fullwizard %}
           &nbsp;<br><button onclick="rallyBack()" type="button">&laquo; Zurück</button>&nbsp;<button class="primary-btn" onclick="rallyTo()" type="button">Weiter &raquo;</button>

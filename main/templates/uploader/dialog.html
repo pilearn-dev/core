@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Bild hochladen</title>
+    <link rel="stylesheet" href="/static/css/uploader.css">
+  </head>
+  <body>
+    {% if cu.isLoggedIn() %}
+    <h1>Wähle ein Bild zum Hochladen aus.</h1>
+    {% if request.values.get("error") == "not-allowed" %}
+    <p class="error">Dieser Dateityp ist nicht erlaubt. Erlaubt sind nur Bilder.</p>
+    {% elif request.values.get("error") == "not-selected" %}
+    <p class="error">Bitte wähle eine Datei aus.</p>
+    {% endif %}
+    <form method="post" action="/upload/post" enctype="multipart/form-data">
+      <input type="file" name="file">
+      <button type="submit">Hochladen!</button>
+    </form>
+    {% else %}
+    <h1>Nur angemeldete Benutzer können Bilder hochladen.</h1>
+    {% endif %}
+  </body>
+</html>
