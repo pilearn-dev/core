@@ -31,6 +31,8 @@ IN_BETA = pidata["in_beta"]
 SITE_LABEL = pidata["label"]
 BETA_TOKEN = pidata["beta_token"]
 
+HAS_MATHJAX = pidata["mathjax"]
+
 f = open("version.json", "r")
 pivers = json.loads(f.read())
 f.close()
@@ -69,7 +71,9 @@ def prepare_template_context():
         "site_label": SITE_LABEL,
         "__version__": __version__,
         "cssid": md5(__version__),
-        "num2suff": cnum.num2suff
+        "num2suff": cnum.num2suff,
+        "has_mathjax": HAS_MATHJAX,
+        "needs_mathjax": False
     }
 
 @app.before_request
