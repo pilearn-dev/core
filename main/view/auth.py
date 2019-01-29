@@ -5,7 +5,6 @@ from controller import query as cquery
 import json, time, re
 
 def login():
-    global LOGGED_INS
     error = False
     if request.method == 'POST':
         if request.form['login_provider'] == "local_account":
@@ -40,8 +39,6 @@ def login():
                 return redirect(url_for('user_page', id=user_id))
             else:
                 return redirect(url_for('index'))
-    if IS_OFFLINE:
-        abort(503)
     return render_template('login.html', error=error, title="Anmelden", thispage="login")
 
 def reset_password():
@@ -55,34 +52,6 @@ def logout():
     user = muser.getCurrentUser()
     session.pop('login', None)
     return redirect(url_for('index'))
-
-def beta_login():
-    error = None
-    f = open("main/help-documents/terms_offline.md", "r")
-    terms = f.read()
-    f.close()
-    f = open("main/help-documents/data_info_offline.md", "r")
-    data_policy = f.read()
-    f.close()
-    LOGIN_KEY = pidata["register_key"]
-    if request.method == "POST":
-        if request.form["beta-passkey"] == LOGIN_KEY or LOGIN_KEY is None:
-            if re.match("[a-zA-Z0-9-_]{2,30}", request.form['username']) and len(request.form["realname"]) <= 25:
-                data = muser.User.register(request.form['username'], request.form['password'], request.form['realname'], request.form['email'])
-                if data != -3:
-                    user_id = data
-                    cuser = muser.User.from_id(user_id)
-                    cuser.setDetail("labels", '["beta", "betaaccess"]')
-                    cuser.setDetail("email", request.form["email"])
-                    session['login'] = user_id
-                    return redirect(url_for('tour'))
-                else:
-                    error = "any"
-            else:
-                error = "format"
-        else:
-            error = "invalid_key"
-    return render_template('beta.html', title="Webseite im Offlinemodus", message=OFFLINE_NOTE, beta_token=BETA_TOKEN, terms=terms, data_policy=data_policy, error=error, passkey=LOGIN_KEY)
 
 def oauth_authorize(provider):
     if not muser.require_login():
@@ -131,17 +100,9 @@ def get_google_oauth_token():
     return session.get('google_token')
 
 def apply(app, pidata2):
-    global IS_OFFLINE, OFFLINE_NOTE, IN_BETA, SITE_LABEL, BETA_TOKEN, pidata
-    IS_OFFLINE = pidata2["is_offline"]
-    OFFLINE_NOTE = pidata2["offline_note"]
-    IN_BETA = pidata2["in_beta"]
-    SITE_LABEL = pidata2["label"]
-    BETA_TOKEN = pidata2["beta_token"]
-    pidata = pidata2
     app.route("/~dev/login", methods=['GET', 'POST'])(app.route("/login", methods=['GET', 'POST'])(login))
     app.route("/reset-password", methods=['GET', 'POST'])(reset_password)
     app.route('/logout')(logout)
-    app.route("/beta", methods=["GET", "POST"])(beta_login)
     app.route('/oauth/<provider>')(oauth_authorize)
     app.route('/oauth2callback/<provider>')(oauth_callback)
     mauth.apply(app)

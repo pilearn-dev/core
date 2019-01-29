@@ -2,7 +2,6 @@
 from flask import request, session, redirect, url_for, abort, render_template, jsonify
 from model import privileges as mprivileges, tags as mtags, user as muser, reviews as mreviews, forum as mforum, post_templates as mposttemplates
 from controller import num as cnum, times as ctimes
-import helpdesk.model as hm
 
 import markdown as md
 

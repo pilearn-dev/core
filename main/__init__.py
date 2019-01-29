@@ -6,7 +6,7 @@ import secrets, random
 
 from controller import md, num as cnum
 from model import privileges as mprivileges, tags as mtags, user as muser, forum as mforum, proposal as mproposal, courses as mcourses, reviews as mreviews, post_templates as mpost_templates
-from view import auth as vauth, user as vuser, review as vreview, help as vhelp, courses as vcourses, forum as vforum, jsonapi as vjsonapi, survey as vsurvey, proposal as vproposal, tools as vtools, dialog as vdialog, upload
+from view import auth as vauth, user as vuser, review as vreview, help as vhelp, courses as vcourses, forum as vforum, jsonapi as vjsonapi, survey as vsurvey, proposal as vproposal, tools as vtools, dialog as vdialog, modmsg as vmodmsg, helpdesk as vhelpdesk, upload
 
 from sha1 import md5
 
@@ -30,7 +30,7 @@ OFFLINE_NOTE = pidata["offline_note"]
 IN_BETA = pidata["in_beta"]
 SITE_LABEL = pidata["label"]
 BETA_TOKEN = pidata["beta_token"]
-
+BETA_AUTH_KEY = pidata["register_key"]
 HAS_MATHJAX = pidata["mathjax"]
 
 f = open("version.json", "r")
@@ -79,8 +79,14 @@ def prepare_template_context():
 @app.before_request
 def prepare_request():
     user = muser.getCurrentUser()
-    if IS_OFFLINE and not (user.isTeam() or "betaaccess" in user.getDetail("labels")) and not (request.path.startswith("/static") or (request.path.startswith("/~dev/login") and request.method == "POST" or request.path.startswith("/beta") or request.path.startswith("/ban-notice"))):
+
+    if IS_OFFLINE and request.values.get("beta_auth") == BETA_TOKEN or request.values.get("beta_key")==BETA_AUTH_KEY:
+        resp = redirect(url_for("index"))
+        resp.set_cookie("pi-beta-auth-token", BETA_TOKEN)
+        return resp
+    elif IS_OFFLINE and not request.cookies.get("pi-beta-auth-token") == BETA_TOKEN and not request.path.startswith("/static"):
         abort(503)
+
     if not user.isLoggedIn():
         return
     if user.isDeleted():
@@ -341,6 +347,8 @@ vsurvey.apply(app)
 vproposal.apply(app)
 vtools.apply(app)
 vdialog.apply(app)
+vmodmsg.apply(app)
+vhelpdesk.apply(app)
 upload.apply(app)
 
 @app.errorhandler(404)

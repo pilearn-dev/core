@@ -70,4 +70,28 @@ CREATE TABLE user_uploads (
   removed_by INT,
   upload_at INT,
   file_size INT
+);
+create table modmsg_threads (
+  id INTEGER PRIMARY KEY,
+  initiated_by INT,
+  last_activity INT,
+  contacted_user INT,
+  closed TINYINT
+);
+create table modmsg_messages (
+  id INTEGER PRIMARY KEY,
+  thread_id INT,
+  submitted_by INT,
+  submission_time INT,
+  message_receiver INT,
+  content TEXT,
+  suspension_length INT,
+  template INT,
+  closed_thread TINYINT
+);
+create table modmsg_templates (
+  id INTEGER PRIMARY KEY,
+  title VARCHAR(50),
+  content TEXT,
+  may_be_used TINYINT
 )

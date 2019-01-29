@@ -2,18 +2,15 @@
 import os, sys
 sys.path.append("./main")
 sys.path.append("./election")
-sys.path.append("./helpdesk")
 sys.path.append("./chat")
 
 from werkzeug.wsgi import DispatcherMiddleware
 from main import app as main
 from election import app as election
-from helpdesk import app as helpdesk
 #from pychat import app as chat
 
 app = DispatcherMiddleware(main, {
     '/election': election,
-    '/helpdesk': helpdesk,
 #    '/beta-chat': chat
 })
 

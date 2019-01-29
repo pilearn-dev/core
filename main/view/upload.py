@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 UPLOAD_PATH = os.path.abspath("upload-images")
-USER_FILE_LIMIT = 10
+USER_FILE_LIMIT = 20
 
 def allowed_file(filename):
     return '.' in filename and \
@@ -15,7 +15,7 @@ def upload_dialog():
     cu = muser.getCurrentUser()
     uc = mupload.UserUpload.has_by_user(cu)
     if uc > 0:
-        if request.values.get("upload-for-sure", 0) == 0 or uc >= USER_FILE_LIMIT:
+        if request.values.get("upload-for-sure", 0) == 0 or (uc >= USER_FILE_LIMIT and not cu.isTeam()):
             return render_template("uploader/dialog_select_first.html", cu=cu, images=mupload.UserUpload.get_by_user(cu), ufl=USER_FILE_LIMIT)
     return render_template("uploader/dialog.html", cu=cu)
 

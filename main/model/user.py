@@ -447,7 +447,7 @@ class User:
                     "ban_end": data['ban_end'],
                     "role": data['role'],
                     "reputation": data['reputation'] if not data["banned"] == 1 else 0,
-                    "profile_image": data["profile_image"] if data["profile_image"] is not None and data["profile_image"] != "" else ("https://www.gravatar.com/avatar/"+md5(data["email"]+"#pilearn#"+str(data["id"]))+"?d=identicon" if data["reputation"] > 100 else False),
+                    "profile_image": data["profile_image"] if data["profile_image"] is not None and data["profile_image"] != "" else ("https://www.gravatar.com/avatar/"+md5(data["email"]+"#pilearn#"+str(data["id"]))+"?d=identicon"),
                     "password": secrets.token_urlsafe(16) if data["password"] != "" else "",
                     "aboutme":data["aboutme"] if data["aboutme"] != None else "",
                     "frozen": bool(data["frozen"]),
