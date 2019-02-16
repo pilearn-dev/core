@@ -68,15 +68,11 @@ def prepare_request():
 
 @app.route('/')
 def index():
-    return render_template("index.html", title=u"Startseite", thispage="index")
+    return redirect("/election/list")
 
 @app.route('/list')
 def list():
     return render_template("list.html", title=u"Wahlen", thispage="elections", data=Election.getAll())
-
-@app.route('/history')
-def history():
-    return render_template("history.html", title=u"Übersicht", thispage="history", data=Election.getAll())
 
 @app.route('/vote/<int:id>')
 def vote(id):
@@ -159,7 +155,7 @@ def candidate(id):
     e = Election(id)
     cuser = muser.getCurrentUser()
     if not Nomination.exists(id, cuser):
-        if e.getMinCandRep() >= cuser.getReputation():
+        if cuser.getReputation() >= e.getMinCandRep():
             Nomination.new(id, cuser, request.json["message"])
     else:
         Nomination.from_user(id, cuser).setDetail("message", request.json["message"])

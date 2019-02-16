@@ -1,30 +1,35 @@
 {% extends "layout.html" %}
 {% block body %}
     <h2 class="bigheading">Bearbeiten</h2>
-    <div class="election-list">
+    <div class="_datalist">
     {% for e in data %}
-      <div class="election-item">
-        <h3><a href="/election/edit/{{ e.id }}">{{ e.getTitle() }}</a></h3>
-        {% if e.getState() == 1 %}
-        <p style="font-weight: bold;">Die Wahl befindet sich in der Ankündigungsphase.</p>
-        {% elif e.getState() == 2 %}
-        <p style="font-weight: bold;">Die Wahl befindet sich in der Nominationsphase.</p>
-        {% elif e.getState() == 3 or e.getState() == 4 %}
-        <p style="font-weight: bold;">Die Wahl befindet sich in der Interviewphase.</p>
-        {% elif e.getState() == 5 %}
-        <p style="font-weight: bold;">Die Wahl befindet sich in der Wahlphase.</p>
-        {% elif e.getState() == 6 %}
-        <p style="font-weight: bold;">Die Wahl ist beendet.</p>
-        {% endif %}
-        <p>Verfügbare Plätze: {{ e.getPlaces() }}, Anzahl Kandidaten: {{ e.getCandidates()|length }}</p>
-        <p class="action-bar">
-        <a href="/election/vote/{{ e.id }}"><i class="fa fa-pie-chart"></i> Anzeigen</a>
-        {% if user.isDev() %}
-        <a href="/election/edit/{{ e.id }}"><i class="fa fa-pencil"></i> Bearbeiten</a>
-        {% endif %}
-        </p>
+      <div class="_datalist-item">
+        <div class="fs-heading col-dark m2">#{{ loop.index }}</div>
+        <div class="_datalist-field"><a href="/election/edit/{{ e.id }}">{{ e.getTitle() }}</a></div>
+        <div class="_datalist-field">
+          {% if e.getState() == 1 %}
+          angekündigt
+          {% elif e.getState() == 2 %}
+          Nominationsphase
+          {% elif e.getState() == 3 or e.getState() == 4 %}
+          Interviewphase
+          {% elif e.getState() == 5 %}
+          Wahlphase
+          {% elif e.getState() == 6 %}
+          Ergebnisse veröffentlicht
+          {% endif %}
+        </div>
+        <div class="_datalist-field">{{ e.getCandidates()|length }} <span class="fs-caption">Kandidaten</span></div>
+        <div class="_datalist-field">{{ e.getPlaces() }} <span class="fs-caption">Plätze</span></div>
+        <div class="_datalist-actions">
+          <a href="/election/vote/{{ e.id }}">anzeigen</a>
+          {% if user.isDev() %}
+          <a href="/election/edit/{{ e.id }}">bearbeiten</a>
+          {% endif %}
+        </div>
       </div>
     {% endfor %}
-    <a href="/election/new"><button class="warn-btn block-btn big-btn">Neue Wahl erstellen</button></a>
+    </div>
+    <a href="/election/new"><button class="_btn _btn-danger _btn-lighter _btn-xs">Neue Wahl erstellen</button></a>
     </div>
 {% endblock %}

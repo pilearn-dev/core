@@ -1,55 +1,12 @@
-{% macro user_card(user, is_expanded=False) %}
-  {% set card_id=g.random_number(1, 99999) %}
-  <div class="user-profile-meta">
-  <div class="user-profile-badge{% if user.isTeam() %} is-dev{% endif %}{% if is_expanded %} expanded{% endif %}" id="user-card-{{ user.id }}-{{ card_id }}">
-      <div class="image-area">
-          {% if user.id == -1 %}{% elif user.getDetail("profile_image") %}
-              <img src="{{ user.getDetail("profile_image") }}" alt="">
-          {% else %}
-              <i class="fa fa-user fa-2x" aria-hidden="true"></i>
-          {% endif %}
-      </div>
-      <div class="text-area">
-          {% if user.id == -3 %}
-            <h4>Anonymer Benutzer</h4>
-            <span class="author-role"> &nbsp; </span>
-            &nbsp;
-          {% elif user.id == -1 %}
-            <h4>Community-Beitrag</h4>
-            <span class="author-role"> &nbsp; </span>
-            &nbsp;
-          {% else %}
-            <h4><a href="/u/{{ user.id }}">{{ user.getHTMLName()|safe }}</a></h4>
-            {% if user.isTeam() %}
-                <span class="author-role">&pi;-Learn Team</span>
-            {% elif user.isAdmin() %}
-                <span class="author-role">ADMINISTRATOR</span>
-            {% elif user.isMod() %}
-                <span class="author-role">MODERATOR</span>
-            {% else %}
-            <span class="author-role"> &nbsp; </span>
-            {% endif %}
-            <span class="author-rep"> Reputation: {{ g.num2suff(user.getReputation()) }}</span>
-          {% endif %}
-      </div>
-    {% if user.getDetail("labels")|length != 0 and user.id != -1 and user.id != -3 %}
-    <div class="below-area">
-        <p class="expandable">
-            {{ user.getDetail("realname") }} ist
-            {% for label in user.getDetail("labels") %}
-                {% if loop.first %}{% elif loop.last %} und {% else %}, {% endif %}<strong>{{ user.labels[label] }}</strong>{% if loop.last %}.{% endif %}
-            {% endfor %}
-        </p>
-        <p class="expandable">
-          {{ user.getShortProfileText()|striptags|safe }}
-        </p>
-        {% if not is_expanded %}
-            <a href="#!" onclick="document.getElementById('user-card-{{ user.id }}-{{ card_id }}').classList.toggle('expanded');if(this.innerText=='(mehr)'){this.innerText='(weniger)'}else{this.innerText='(mehr)'}">(mehr)</a>
-        {% else %}
-            <a href="#!" onclick="document.getElementById('user-card-{{ user.id }}-{{ card_id }}').classList.toggle('expanded');if(this.innerText=='(mehr)'){this.innerText='(weniger)'}else{this.innerText='(mehr)'}">(weniger)</a>
-        {% endif %}
-    </div>
+{% macro user_card(user, is_exposed=False) %}
+  <div class="m1 p3 b-r1 base2{% if is_exposed %} bg--primary-lll{% endif %}" style="width: 200px;">
+    {% if user.id == -3 %}
+      Anonym
+    {% else %}
+        <img src="{{ user.getDetail("profile_image") }}" alt="" class="thumbnail-xs mr2 push-left">
+        <a class="fs-base3 anchor--primary d-b" href="/u/{{ user.id }}">{{ user.getHTMLName()|safe }}</a>
+        <span class="_badge _badge-score">{{ user.getReputation() }}</span>
+        <div class="push-reset"></div>
     {% endif %}
   </div>
-</div>
 {% endmacro %}

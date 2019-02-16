@@ -1,33 +1,28 @@
 {% extends "layout.html" %}
 {% block body %}
-    <link rel="stylesheet" href="/static/css/simplemde.min.css">
-    <script src="/static/js/simplemde.min.js"></script>
-    <h2 class="bigheading">{{ vote_name }}</h2>
-    <p style="text-align: center;">Entscheide, wer {{ vote_position }} auf &pi;-Learn werden soll!</p>
-    <div class="split-screen">
-      <aside>
-        <div style="position: sticky; top: 10px;">
-          <h3>Überblick</h3>
-          <ol>
-            <li class="visited"><a href="#primary-note">Hinweise</a></li>
-            <li class="visited"><a href="#results-note">Ergebnisse</a></li>
-            <li class="visited"><a href="#candidate-list">Kandidaten</a></li>
-            {% if vote_state == 2 and user.getReputation() >= candminrep %}
-              <li></li>
-              <li class="visited current"><a href="#!" onclick="document.getElementById('nomination-dialog').classList.add('open');">Zur Wahl stellen</a></li>
-            {% endif %}
-          </ol>
-          <h4>Zu besetzende Plätze</h4>
-          {{ vote_places }}
-          <h4>Anzahl Kandidaten</h4>
-          {{ vote_candidate|length }}
-        </div>
+    <h2 class="fs-display1 ta-c">{{ vote_name }}</h2>
+    <div class="grid">
+      <aside class="column3 column12__sm">
+        <h3>Überblick</h3>
+        <ol class="_nav _nav-v">
+          <li><a href="#primary-note">Hinweise</a></li>
+          <li><a href="#results-note">Ergebnisse</a></li>
+          <li><a href="#candidate-list">Kandidaten</a></li>
+        </ol>
+          {% if vote_state == 2 and user.getReputation() >= candminrep %}<a class="_btn _btn--primary _btn-sm" href="#!" onclick="document.getElementById('nomination-dialog').classList.remove('hide');">Zur Wahl stellen</a>
+          {% endif %}
+        <dl>
+          <dt>Zu besetzende Plätze</dt>
+          <dd>{{ vote_places }}</dd>
+          <dt>Anzahl Kandidaten</dt>
+          <dd>{{ vote_candidate|length }}</dd>
+        </dl>
       </aside>
-      <main>
+      <main class="column9 column12__sm">
         <h2 id="primary-note">Hinweise</h2>
         {{ vote_message|markdown }}
         <h2 id="results-note">Ergebnisse</h2>
-        <div class="elected-notice">
+        <div class="bg-dark-lll p2 b1s b-dark-ll">
           {% if vote_state == 1 %}
           <p>Diese Wahl befindet sich im Moment in der <em>Ankündigungsphase</em>. Es können noch keine Kandidaturen eingereicht werden.</p>
           {% elif vote_state == 2 %}
@@ -55,65 +50,59 @@
         <h2 id="candidate-list">Kandidaten</h2>
         <p>Folgende Benutzer stehen in dieser Wahl als Kandidaten zur Verfügung:</p>
         {% for c in vote_candidate if (not c.isRetracted() or c.isFailed()) or user.isDev() %}
-          <div class="vote-candidate {% if c.isRetracted() or c.isFailed() %}deleted-section{% endif %}">
-            <h3 class="candidate_title">Kandidierende(r): <strong>{{ c.getCandidate().getDetail("realname") }}</strong></h3>
-            {% if c.isRetracted() %}
-              <div class="error inline">
-                <p>Die Kandidatur wurde zurückgezogen.</p>
-              </div>
-            {% elif c.isFailed() %}
-              <div class="error inline">
-                <p>{{ c.getCandidate().getDetail("realname") }} kam nicht in die nächste Runde.</p>
-              </div>
-            {% elif c.isElected() %}
-              <div class="success inline">
-                <p>{{ c.getCandidate().getDetail("realname") }} wurde gewählt. HERZLICHEN GLÜCKWUNSCH!</p>
-              </div>
-            {% endif %}
-            {% if vote_state == 5 %}
-              <div>
-                {% if user_vote.is1(c.id) %}
-                <button class="danger-btn" onclick="$post('election/api/{{ vote_id }}', {'action':'vote', 'vote':1, 'candidate': 0}, function(){window.location.reload();})">1. Wahl</button>
-                {% else %}
-                {% if not user_vote.is2(c.id) %}
-                <button onclick="$post('election/api/{{ vote_id }}', {'action':'vote', 'vote':1, 'candidate': {{ c.id }}}, function(){window.location.reload();})">1. Wahl</button>
-                {% else %}
-                <button disabled>1. Wahl</button>
-                {% endif %}
-                {% endif %}
-                {% if user_vote.is2(c.id) %}
-                <button class="danger-btn" onclick="$post('election/api/{{ vote_id }}', {'action':'vote', 'vote':2, 'candidate': 0}, function(){window.location.reload();})">2. Wahl</button>
-                {% else %}
-                {% if not user_vote.is1(c.id) %}
-                <button onclick="$post('election/api/{{ vote_id }}', {'action':'vote', 'vote':2, 'candidate': {{ c.id }}}, function(){window.location.reload();})">2. Wahl</button>
-                {% else %}
-                <button disabled>2. Wahl</button>
-                {% endif %}
-                {% endif %}
-              </div>
-            {% endif %}
-            <div>
+          <div class="_card {% if c.isRetracted() or c.isFailed() %}_card-danger{% endif %}">
+            <div class="_card-title">{{ c.getCandidate().getDetail("realname") }}</div>
+            <div class="_card-content">
+              {% if c.isRetracted() %}
+                <p class="f-bold col-danger-dd">Die Kandidatur wurde zurückgezogen.</p>
+              {% elif c.isFailed() %}
+                <p class="f-bold col-danger-dd">{{ c.getCandidate().getDetail("realname") }} kam nicht in die nächste Runde.</p>
+              {% elif c.isElected() %}
+                <p class="f-bold col-success-dd">{{ c.getCandidate().getDetail("realname") }} wurde gewählt. HERZLICHEN GLÜCKWUNSCH!</p>
+              {% endif %}
+              {% if vote_state == 5 %}
+                <div class="_btnlist">
+                  {% if user_vote.is1(c.id) %}
+                  <button class="_btn -active _btn--primary" onclick="$post('election/api/{{ vote_id }}', {'action':'vote', 'vote':1, 'candidate': 0}, function(){window.location.reload();})">1. Wahl</button>
+                  {% else %}
+                  {% if not user_vote.is2(c.id) %}
+                  <button class="_btn _btn--primary" onclick="$post('election/api/{{ vote_id }}', {'action':'vote', 'vote':1, 'candidate': {{ c.id }}}, function(){window.location.reload();})">1. Wahl</button>
+                  {% else %}
+                  <button class="_btn _btn--primary" disabled>1. Wahl</button>
+                  {% endif %}
+                  {% endif %}
+                  {% if user_vote.is2(c.id) %}
+                  <button  class="_btn -active _btn--primary" onclick="$post('election/api/{{ vote_id }}', {'action':'vote', 'vote':2, 'candidate': 0}, function(){window.location.reload();})">2. Wahl</button>
+                  {% else %}
+                  {% if not user_vote.is1(c.id) %}
+                  <button  class="_btn _btn--primary" onclick="$post('election/api/{{ vote_id }}', {'action':'vote', 'vote':2, 'candidate': {{ c.id }}}, function(){window.location.reload();})">2. Wahl</button>
+                  {% else %}
+                  <button class="_btn _btn--primary" disabled>2. Wahl</button>
+                  {% endif %}
+                  {% endif %}
+                </div>
+              {% endif %}
               {% if vote_state < 5 %}
                 {{ c.getMessage()|markdown }}
               {% else %}
-                <div class="split-11">
-                  <div>
+                <div class="grid">
+                  <div class="column6__lg column12">
                     {{ c.getMessage()|markdown }}
                   </div>
-                  <div>
+                  <div class="column6__lg column12">
                     <h2>Antworten auf eure Fragen</h2>
+                    <dl>
                     {% for q in c.getQuestions() if q.getA() != "" %}
-                      <h4>{{ q.getQ() }}</h4>
-                      <p>{{ q.getA() }}</p>
+                      <dt>{{ q.getQ() }}</dt>
+                      <dd>{{ q.getA() }}</dd>
                     {% endfor %}
+                    </dl>
                   </div>
                 </div>
               {% endif %}
-              <div class="alignment-right" style="min-height: 124px;">
-                {{ user_card(c.getCandidate()) }}
-                <div style="flex-grow: 1;">
-                  <hr>
-                  <div class="action-bar">
+              <div class="grid">
+                <div class="column7__lg column12">
+                  <div class="_link-list">
                     {% if (user.isDev() or user.id == c.getCandidate().id) and c.getDetail("state") == 0 and vote_state < 4 %}
                       <a href="#!" onclick="if(confirm('Willst du diese Kandidatur wirklich zurückziehen? Du kannst danach nicht erneut kandidieren und die Kandidatur kann nicht wiederhergestellt werden.'))$post('election/api/{{ vote_id }}', {'action':'retract', 'candidate': {{ c.id }}}, function(){window.location.reload();})" style="font-weight:bold;">Zurückziehen</a>
                     {% endif %}
@@ -121,25 +110,26 @@
                       <a href="#!" onclick="if(confirm('Die Kandidatur kann nicht wiederhergestellt werden. Wollen Sie wirklich fortfahren?'))$post('election/api/{{ vote_id }}', {'action':'retract', 'candidate': {{ c.id }}}, function(){window.location.reload();})" style="font-weight:bold;">Vereinbarung abgelehnt</a>
                     {% endif %}
                     {% if vote_state == 3 and user.id != c.getCandidate().id %}
-                      <a href="#!" onclick="document.getElementById('ask-{{ c.id }}-dialog').classList.add('open');" style="font-weight:normal;">Frage stellen</a>
+                      <a href="#!" onclick="document.getElementById('ask-{{ c.id }}-dialog').classList.remove('hide');" style="font-weight:normal;">Frage stellen</a>
                     {% elif vote_state == 3 or (vote_state == 4 and user.id == c.getCandidate().id) %}
-                      <a href="#!" onclick="document.getElementById('answer-{{ c.id }}-dialog').classList.add('open');" style="font-weight:bold;">Fragen beantworten</a>
+                      <a href="#!" onclick="document.getElementById('answer-{{ c.id }}-dialog').classList.remove('hide');" style="font-weight:bold;">Fragen beantworten</a>
                     {% endif %}
-                    </div>
+                  </div>
                 </div>
+                <div class="column5__lg column12"><div class="push-right">{{ user_card(c.getCandidate(), True) }}</div></div>
               </div>
             </div>
           </div>
           {% if vote_state == 3 and user.id != c.getCandidate().id %}
-            <div class="flagging-modal" id="ask-{{ c.id }}-dialog">
+            <div class="_dialog hide" id="ask-{{ c.id }}-dialog">
               <div class="flagging-dialog">
-                  <div class="close-link"><a href="#!" onclick="document.getElementById('ask-{{ c.id }}-dialog').classList.remove('open');">&times;</a></div>
+                  <a href="#!" class="_xbtn _dialog-xbtn" onclick="document.getElementById('ask-{{ c.id }}-dialog').classList.add('hide');">&times;</a>
                   <h3>Interview</h3>
                   <p>Welche Frage möchtest du {{ c.getCandidate().getHTMLName()|safe }} stellen?</p>
-                  <input id="ask-{{ c.id }}-question" name="ask-{{ c.id }}-{{ g.random_number(1, 100) }}">
+                  <input id="ask-{{ c.id }}-question" class="form" name="ask-{{ c.id }}-{{ g.random_number(1, 100) }}">
                   <p>Diese Fragen wurden bereits gestellt:</p>
-                  <div class="paper" style="max-height: 200px; box-shadow: none;">
-                    <input placeholder="Suche" id="ask-{{ c.id }}-search">
+                  <div class="p2 s2">
+                    <input placeholder="Suche" class="form" id="ask-{{ c.id }}-search">
                     <p id="ask-{{ c.id }}-searchlabel">Insgesamt {{ c.getQuestions()|length }} Fragen</p>
                     <ul id="ask-{{ c.id }}-questionlist">
                       {% for q in c.getQuestions() %}
@@ -170,16 +160,16 @@
                   })
                   </script>
                   <p>
-                      <button onclick="add_Question({{ c.id }})" class="primary-btn">Frage stellen</button>
-                      <button onclick="document.getElementById('ask-{{ c.id }}-dialog').classList.remove('open');">Abbrechen</button>
+                      <button class="_btn _btn-dark" onclick="add_Question({{ c.id }})">Frage stellen</button>
+                      <button class="_btn" onclick="document.getElementById('ask-{{ c.id }}-dialog').classList.add('hide');">Abbrechen</button>
                   </p>
             </div>
           </div>
           {% endif %}
           {% if (vote_state == 3 or vote_state == 4) and user.id == c.getCandidate().id %}
-            <div class="flagging-modal" id="answer-{{ c.id }}-dialog">
+            <div class="_dialog hide" id="answer-{{ c.id }}-dialog">
               <div class="flagging-dialog">
-                  <div class="close-link"><a href="#!" onclick="document.getElementById('answer-{{ c.id }}-dialog').classList.remove('open');">&times;</a></div>
+                  <a href="#!" class="_xbtn _dialog-xbtn" onclick="document.getElementById('answer-{{ c.id }}-dialog').classList.add('hide');">&times;</a>
                   <h3>Interview</h3>
                   <div class="paper" style="box-shadow: none; border: none; max-height: 350px;">
                   <ul id="ask-{{ c.id }}-questionlist">
@@ -192,7 +182,7 @@
                   </ul>
                   </div>
                   <p>
-                    <button onclick="document.getElementById('answer-{{ c.id }}-dialog').classList.remove('open');" class="primary-btn">Fertig</button>
+                    <button onclick="document.getElementById('answer-{{ c.id }}-dialog').classList.add('hide');" class="_btn _btn-dark">Fertig</button>
                   </p>
             </div>
           </div>
@@ -202,20 +192,18 @@
     </div>
 
 {% if vote_state == 2 and user.getReputation() >= candminrep %}
-<div class="flagging-modal open" id="nomination-dialog">
+<div class="_dialog hide" id="nomination-dialog">
     <div class="flagging-dialog">
-        <div class="close-link"><a href="#!" onclick="document.getElementById('nomination-dialog').classList.remove('open');">&times;</a></div>
+        <a href="#!" class="_xbtn _dialog-xbtn" onclick="document.getElementById('nomination-dialog').classList.add('hide');">&times;</a>
         <h3>Kandidideren</h3>
         <p>Warum möchtest du gerne als {{ vote_position }} kandidieren?</p>
         <textarea id="nomination_message"></textarea>
 
         <p>
-            <button onclick="addNomination()" class="primary-btn">Kandidieren</button>
-            <button onclick="document.getElementById('nomination-dialog').classList.remove('open');">Abbrechen</button>
+            <button onclick="addNomination()" class="_btn _btn-danger">Kandidieren</button>
+            <button onclick="document.getElementById('nomination-dialog').classList.add('hide');" class="_btn">Abbrechen</button>
         </p>
         <script>
-        var simplemde = new SimpleMDE({ element: document.getElementById("nomination_message"), forceSync:true, parsingConfig: {strikethrough: false}, promptURLs:true, spellChecker:false });
-        document.getElementById('nomination-dialog').classList.remove('open');
         function addNomination() {
           $post('election/candidate/{{ vote_id }}', { 'message':document.getElementById("nomination_message").value }, function(resp){window.location.reload();});
         }
