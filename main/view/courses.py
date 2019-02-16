@@ -198,7 +198,13 @@ def unit_show(unit_id,course_id,unit_label=None,course_label=None):
         s = msurvey.Survey(unit.getJSON()["survey"])
         return render_template('courses/unit_survey.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit, survey=s)
     elif unit.getType() == "quiz":
-        return render_template('courses/unit_quiz.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
+        try:
+            return render_template('courses/unit_quiz.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
+        except:
+            if request.values.get("re-submit", 0)=="true":
+                abort(500)
+            data = {"re-submit":"true", "submission-error": "incomplete"}
+            return redirect(url_for("unit_show", course_id=course_id, course_label=course_label, unit_id=unit_id, unit_label=unit.getLabel(), **data))
     elif unit.getType() == "pinboard":
         aid = int(unit.getJSON())
         if aid == 0:
@@ -358,7 +364,7 @@ def apply(app):
     app.route("/courses")(courses_index)
     app.route("/course/propose", methods=["GET", "POST"])(courses_propose)
     app.route("/c/search")(app.route("/course/search")(courses_search))
-    app.route("/c/<int:id>/info")(app.route("/course/<int:id>/<label>/details")(course_info))
+    app.route("/c/<int:id>")(app.route("/c/<int:id>/info")(app.route("/course/<int:id>/<label>/details")(course_info)))
     app.route("/c/<int:id>/proposal")(app.route("/course/<int:id>/<label>/proposal")(course_related_proposal))
     app.route("/c/<int:id>/edit", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/edit", methods=["GET", "POST"])(course_edit))
     app.route("/@/c/<int:id>/permissions", methods=["GET", "POST"])(app.route("/@/course/<int:id>/<label>/permissions", methods=["GET", "POST"])(course_permissions))

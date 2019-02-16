@@ -27,13 +27,16 @@
 
  {% if user.isMod() or data.getCourseRole(user) == 4 %}
  <hr>
+ <div class="user-warning">
   <h3>Den Kurs veröffentlichen</h3>
   {% if data.getDetail("state") == 0 %}
-  <p>Willst du diesen Kurs veröffentlichen? Dies kann nicht widerrufen werden. Andere Benutzer werden auf diesen Kurs zugreifen können. <button class="danger-btn" onclick="$post('c/{{ data.id }}/publish', {}, function(){window.location.reload();})">Veröffentlichen</button></p>
+  <p>Ist dieser Kurs fertig, getestet und bereit, veröffentlicht zu werden?</p>
+  <p>Sei dir sicher, denn dies kann <strong>nicht</strong> widerrufen werden. <a href="#!" onclick="if(prompt('ACHTUNG!\n========\n\nBestätige, dass der Kurs\n - fertig,\n - getestet und\n - bereit, veröffentlicht zu werden,\nist, indem du `sicher` in das Eingabefeld eingibst.', '')!='sicher'){return;} $post('c/{{ data.id }}/publish', {}, function(){window.location.reload();}); alert('Erfolg. Der Kurs wird veröffentlicht...'); ">Veröffentlichen</a></p>
   {% else %}
-  <label for="state" style="opacity: 0.5"><input type="checkbox" checked style="pointer-events: none;"> Soll dieser Kurs öffentlich verfügbar sein?</label>
+  <p>Dieser Kurs wurde veröffentlicht.</p>
   {% endif %}
  {% endif %}
+ </div>
  <script>
  document.getElementById("save").addEventListener("click", function() {
      $post("course/{{ data.id }}/{{ data.getLabel() }}/edit", {

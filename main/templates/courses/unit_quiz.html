@@ -52,6 +52,12 @@
      <hr>
      {% endif %}
      {% if data.isDisabled() %}<div class="deleted-section" style="padding: 10px;">{% endif %}
+       {% if request.values.get("submission-error") == "incomplete" %}
+       <div class="error">
+         <h3>Dieses Quiz muss erneut abgeschickt werden</h3>
+         <p>Ein Fehler ist aufgetreten (wahrscheinlich wurde das Quiz geändert) und daher muss das Quiz erneut abgeschickt werden.</p>
+       </div>
+       {% endif %}
       {% if data.hasViewData(user) and not request.values.get("re-submit", "false") == "true" %}
         {% set eval_data = data.getViewData(user, as_json=True) %}
         <div class="info">Du hast an diesem Quiz bereits teilgenommen und <big>{{ (""~eval_data.sum).replace(".",",") }}</big> von {{ eval_data.max }} Punkten erreicht. <strong><a href="?re-submit=true">Erneut teilnehmen.</a></strong></div>

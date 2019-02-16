@@ -82,10 +82,10 @@ var MODEL = {
     "is_editable": true,
     "empty": {"text":"Text hier einfügen"},
     "getPreview": function (box) {
-      text = box.data.text.replace(/\*\*\*(.*)\*\*\*/g, "<strong><em>$1</em></strong>");
-      text = text.replace(/\*\*(.*)\*\*/g, "<strong>$1</strong>");
-      text = text.replace(/\*(.*)\*/g, "<em>$1</em>");
-      text = text.replace(/\`(.*)\`/g, "<code>$1</code>");
+      text = box.data.text.replace(/\*\*\*(.*?)\*\*\*/g, "<strong><em>$1</em></strong>");
+      text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+      text = text.replace(/\*(.*?)\*/g, "<em>$1</em>");
+      text = text.replace(/\`(.*?)\`/g, "<code>$1</code>");
       text = text.replace(/\n\n/g, "</p><p>");
       el = document.createElement("div");
       el.innerHTML = "<p>"+text+"</p>"
@@ -101,10 +101,10 @@ var MODEL = {
       return {"text": elel.value};
     },
     "getView": function (box) {
-      text = box.data.text.replace(/\*\*\*(.*)\*\*\*/g, "<strong><em>$1</em></strong>");
-      text = text.replace(/\*\*(.*)\*\*/g, "<strong>$1</strong>");
-      text = text.replace(/\*(.*)\*/g, "<em>$1</em>");
-      text = text.replace(/\`(.*)\`/g, "<code>$1</code>");
+      text = box.data.text.replace(/\*\*\*(.*?)\*\*\*/g, "<strong><em>$1</em></strong>");
+      text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+      text = text.replace(/\*(.*?)\*/g, "<em>$1</em>");
+      text = text.replace(/\`(.*?)\`/g, "<code>$1</code>");
       text = text.replace(/\n\n/g, "</p><p>");
       el = document.createElement("div");
       el.innerHTML = "<p>"+text+"</p>"
@@ -163,10 +163,10 @@ var MODEL = {
     "is_editable": true,
     "empty": {"text":"Zitat hier einfügen"},
     "getPreview": function (box) {
-      text = box.data.text.replace(/\*\*\*(.*)\*\*\*/g, "<strong><em>$1</em></strong>");
-      text = text.replace(/\*\*(.*)\*\*/g, "<strong>$1</strong>");
-      text = text.replace(/\*(.*)\*/g, "<em>$1</em>");
-      text = text.replace(/\`(.*)\`/g, "<code>$1</code>");
+      text = box.data.text.replace(/\*\*\*(.*?)\*\*\*/g, "<strong><em>$1</em></strong>");
+      text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+      text = text.replace(/\*(.*?)\*/g, "<em>$1</em>");
+      text = text.replace(/\`(.*?)\`/g, "<code>$1</code>");
       text = text.replace(/\n\n/g, "</p><p>");
       el = document.createElement("blockquote");
       el.innerHTML = "<p>"+text+"</p>"
@@ -182,10 +182,10 @@ var MODEL = {
       return {"text": elel.value};
     },
     "getView": function (box) {
-      text = box.data.text.replace(/\*\*\*(.*)\*\*\*/g, "<strong><em>$1</em></strong>");
-      text = text.replace(/\*\*(.*)\*\*/g, "<strong>$1</strong>");
-      text = text.replace(/\*(.*)\*/g, "<em>$1</em>");
-      text = text.replace(/\`(.*)\`/g, "<code>$1</code>");
+      text = box.data.text.replace(/\*\*\*(.*?)\*\*\*/g, "<strong><em>$1</em></strong>");
+      text = text.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+      text = text.replace(/\*(.*?)\*/g, "<em>$1</em>");
+      text = text.replace(/\`(.*?)\`/g, "<code>$1</code>");
       text = text.replace(/\n\n/g, "</p><p>");
       el = document.createElement("blockquote");
       el.innerHTML = "<p>"+text+"</p>"
