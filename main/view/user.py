@@ -33,6 +33,32 @@ def user_page(id, name=None):
     else:
         abort(404)
 
+def user_edit_page(id, name=None):
+    try:
+        id = int(id)
+    except:
+        abort(404)
+    if muser.User.exists(id):
+        user = muser.User.from_id(id)
+        cuser = muser.getCurrentUser()
+        mt = user.getDetail("mergeto")
+        if mt and not cuser.isAdmin():
+            return redirect(url_for("user_edit_page", id=mt))
+        if user.isDeleted():
+            if not cuser.isAdmin():
+                abort(404)
+            else:
+                return redirect(url_for("user_deleted_page", id=id))
+        if user.id != cuser.id and not cuser.isAdmin():
+            abort(404)
+        if name != user.getDetail("name"):
+            return redirect(url_for("user_edit_page", id=id, name=user.getDetail("name")))
+        else:
+            temp = None
+            return render_template("user/edit.html", data=user, thispage="user", title="Benutzerkonto bearbeiten " + user.getHTMLName(False))
+    else:
+        abort(404)
+
 def user_flags_page(id, name=None):
     try:
         id = int(id)
@@ -426,6 +452,7 @@ def apply(app):
     app.route('/u/<id>/rep')(app.route('/user/<id>/<name>/reputation')(user_rep_page))
     app.route('/u/<id>/del')(app.route('/user/<id>/<name>/delete')(user_del_page))
     app.route('/user/<id>/deletion', methods=["POST"])(delete_user)
+    app.route('/u/<id>/edit')(app.route('/user/<id>/<name>/edit')(user_edit_page))
     app.route('/user/set/<field>', methods=["GET", "POST"])(set_user)
     app.route('/user/<id>/flag', methods=["GET", "POST"])(flag_user)
     app.route("/user/<uid>/toggle-privilege", methods=["GET", "POST"])(user_toggle_priv)

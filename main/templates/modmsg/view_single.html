@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+{% block body %}
+{% if user.isMod() %}
+<p class="warning">Du siehst die <strong>Benutzeransicht</strong> dieses Threads. <a href="?mod=1">Moderatorenansicht zeigen</a></p>
+{% endif %}
+{% set msgs = thread.getMessages() %}
+{% for msg in msgs %}
+<div class="split-screen">
+  <aside style="background-color: #eee; padding: 10px">
+    {% if loop.index == 1 %}
+    <h4>Ursprüngliche Nachricht</h4>
+    {% else %}
+    <h4>Antwort</h4>
+    {% endif %}
+
+    {% if msg.getDetail("message_receiver") == thread.getDetail("contacted_user") %}{% set c = msg.getReceiver() %}
+    <dl>
+      <dt>von</dt>
+      <dd>&pi;-Learn Moderatoren</dd>
+      <dt>an</dt>
+      <dd><a href="/u/{{ c.id }}">{{ c.getHTMLName()|safe }}</a></dd>
+    </dl>
+    {% else %}{% set c = msg.getSubmitter() %}
+    <dl>
+      <dt>von</dt>
+      <dd><a href="/u/{{ c.id }}">{{ c.getHTMLName()|safe }}</a></dd>
+      <dt>an</dt>
+      <dd>&pi;-Learn Moderatoren</dd>
+    </dl>
+    {% endif %}
+    <p>gesendet vor 2 Tagen</p>
+  </aside>
+  <main>
+    {{ msg.getContent()|markdown }}
+  </main>
+</div>
+<hr>
+{% endfor %}
+<div class="split-screen">
+  <aside style="background-color: #eee; padding: 10px">
+    <h4>Antwort hinzufügen</h4>
+  </aside>
+  <main>
+    {% if thread.isClosed() %}
+    <p>Dieser Nachrichtenverlauf ist geschlossen. Es können keine neuen Nachrichten hinzugefügt werden.
+    {% elif msgs[-1].getDetail("submitted_by") == user.id and not user.isAdmin() %}
+    <p>Vielen Dank für deine Antwort</p>
+    <p>Du hast auf die letzte Nachricht bereits geantwortet. Du kannst keine neuen Antworten hinzufügen, bis das Moderatorenteam reagiert hat.</p>
+    {% else %}
+    {% if user.id == thread.getDetail("contacted_user") %}
+    <div class="warning">
+      <p>Um die Situation bestmöglich zu lösen, beachte diese Hinweise:</p>
+      <ul>
+        <li>Sei freundlich, auch wenn ein Fehler passiert sein sollte.</li>
+        <li>Belege deine Aussagen und zeige Regelverständnis.</li>
+        <li>Nutze eine formale Schreibweise, keinen Slang etc.</li>
+      </ul>
+    </div>
+    {% endif %}
+    <form action="/user-message/{{ thread.getDetail("contacted_user") }}/thread/{{thread.id}}/add-response" method="post">
+        {% if user.id == thread.getDetail("contacted_user") %}
+        <textarea id="qresponse" name="response">Hallo,
+
+&lt;!-- Text hier einfügen --&gt;
+
+Viele Grüße, {{ thread.getContacted().getDetail("realname") }}</textarea>
+        {% else %}
+        <textarea id="qresponse" name="response">Hallo {{ thread.getContacted().getDetail("realname") }},
+
+&lt;!-- Text hier einfügen --&gt;
+
+Das &pi;-Learn Moderatorenteam</textarea>
+        {% endif %}
+        <button type="submit">Absenden</button>
+    </form>
+    {% endif %}
+  </main>
+</div>
+{% endblock %}
