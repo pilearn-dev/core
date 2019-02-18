@@ -315,8 +315,9 @@ iframe.hidden {
 #reorder .reorder-item.indented {
   margin-left: 25px;
 }
-#reorder .reorder-item .arrays {
-  display: flex;
-  flex-direction: column;
-  padding: 0 10px;
+#reorder .reorder-item.drop-hover {
+  box-shadow: 0 4px 5px -2px #aaa;
+}
+#reorder .reorder-item span {
+  flex-grow: 1;
 }

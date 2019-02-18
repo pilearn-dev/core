@@ -365,13 +365,22 @@ def course_unit_reorder(id,label=None):
         abort(404)
     course = mcourses.Courses(id)
     cuser = muser.getCurrentUser()
-    if course.getLabel() != label:
-        return redirect(url_for("course_unit_reorder", id=id, label=course.getLabel()))
     if not(course.getCourseRole(cuser) == 4):
         abort(404)
     if request.method == "POST":
+        data = (request.json)
+        for item in data:
+            u = mcourses.Units(item["id"])
+            u.setDetail("unit_order", item["order"])
+            u.setDetail("parent", 0)
+            for subitem in item["subitems"]:
+                u = mcourses.Units(subitem["id"])
+                u.setDetail("unit_order", subitem["order"])
+                u.setDetail("parent", item["id"])
         return "ok"
     else:
+        if course.getLabel() != label:
+            return redirect(url_for("course_unit_reorder", id=id, label=course.getLabel()))
         return render_template('courses/unit_reorder.html', title="Kursmodule neu anordnen: " + course.getTitle(), thispage="course", data=course)
 
 def apply(app):
