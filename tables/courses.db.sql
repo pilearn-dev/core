@@ -26,6 +26,7 @@ CREATE TABLE courses (
     type varchar,
     parent integer,
     availible integer
+    unit_order integer
 )
 
 ;CREATE TABLE visits (
