@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+{% block body %}
+ <nav class="coursenav">
+   {% set topic = data.getTopic() %}
+   <h2>{{ data.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
+   {{ data.getByLine()|markdown }}
+   {% if data.getDetail("state") == 0 and not data.getCourseRole(user) >= 2 %}
+   {% elif data.isEnrolled(user) or not user.isLoggedIn() %}
+   <ul>
+     <li><a href="/course/{{ data.id }}/{{ data.getLabel() }}/details">Informationen</a></li>
+     <li class="active"><a href="/course/{{ data.id }}/{{ data.getLabel() }}/start">Kursinhalte</a></li>
+     <li><a href="/forum/{{ data.id }}/{{ data.getLabel() }}/list">Kursforum</a></li>
+   </ul>
+   {% endif %}
+ </nav>
+ <h2>Kursmodule neu anordnen</h2>
+ <div id="reorder">
+  </div>
+ <button class="primary-btn">Speichern</button>
+ <a href="/course/{{ data.id }}/{{ data.getLabel() }}/start">Abbrechen</a>
+ <script>
+   var REORDER_DATA = [
+     {% for element in data.getMenu() %}
+     {
+       "availible": {{ element.availible|tojson }},
+       "title": {{ element.title|tojson }},
+       "id": {{ element.id }},
+       "subitems": [
+         {% for child in element.children %}
+         {
+           "availible": {{ child.availible|tojson }},
+           "title": {{ child.title|tojson }},
+           "id": {{ child.id }}
+         }
+         {% endfor %}
+       ]
+     }{% if not loop.last %},{% endif %}
+     {% endfor %}
+    ];
+</script>
+<script src="/static/js/reorder.js" charset="utf-8"></script>
+{% endblock %}

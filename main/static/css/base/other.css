@@ -289,3 +289,34 @@ iframe {
 iframe.hidden {
   display: none;
 }
+
+
+/* - reorder */
+#reorder {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+}
+#reorder .reorder-item {
+  padding: 10px;
+  display: flex;
+  background-color: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  margin: 5px;
+  align-items: center;
+  box-shadow: 0 0 5px -2px #aaa;
+  transition: all .3s ease;
+  cursor: pointer;
+}
+#reorder .reorder-item:hover {
+  border-color: #bbb;
+}
+#reorder .reorder-item.indented {
+  margin-left: 25px;
+}
+#reorder .reorder-item .arrays {
+  display: flex;
+  flex-direction: column;
+  padding: 0 10px;
+}
