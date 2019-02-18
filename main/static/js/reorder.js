@@ -131,6 +131,11 @@ window.addEventListener("load", function() {
                                         .dataTransfer.getData(
                                             "text/html"),
                                     (this.classList.contains("indented")?L.firstChild.classList.add("indented"):L.firstChild.classList.remove("indented")),
+                                    La = L.firstChild.querySelector("a"),
+                                    La.container=L.firstChild,
+                                    (La.addEventListener("click", function() {
+                                      this.container.classList.toggle("indented");
+                                    })),
                                     this.parentNode.insertBefore(L.firstChild, this.nextSibling)),
                                 x = document
                                 .querySelectorAll(
