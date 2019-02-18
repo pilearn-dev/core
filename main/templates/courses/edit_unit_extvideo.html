@@ -84,12 +84,22 @@
        ps.show()
 
        function save() {
+         platform = document.getElementById("c_platform").value;
+         embedcode = document.getElementById("c_embed").value;
+         YOUTUBE_REGEX = /^(?:https?:\/\/)?(?:www\.)?(?:(?:youtu\.be\/([a-zA-Z0-9_-]+?))|(?:youtube\.com\/watch\?v=([a-zA-Z0-9_-]+?)))$/;
+
+         if(platform=="youtube") {
+           if(embedcode.match(YOUTUBE_REGEX)) {
+             embedcode = embedcode.replace(YOUTUBE_REGEX, "$1$2");
+           }
+         }
+
          $post("c/{{ course.id }}/u/{{ data.id }}/edit", {
            "title": document.getElementById("title").value,
            "availible": document.getElementById("availible").checked,
            "content": {
-             "platform": document.getElementById("c_platform").value,
-             "embedcode": document.getElementById("c_embed").value
+             "platform": platform,
+             "embedcode": embedcode
             }
          }, function () {
            window.location.reload();
