@@ -43,7 +43,7 @@
         </li>
        {% endfor %}
        {% if course.getCourseRole(user) >=3 %}
-       <a href="#!" onclick="document.getElementById('unit-type-dialog-parent').value=0;document.getElementById('unit-type-dialog').classList.add('open')">Neue Seite</a>
+       <a href="#!" onclick="document.getElementById('unit-type-dialog-parent').value=0;document.getElementById('unit-type-dialog').classList.add('open')">Neue Seite</a>|<a href="/c/{{ course.id }}/unit_reorder">Neu anordnen</a>
        {% endif %}
      </ol>
    </aside>

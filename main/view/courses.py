@@ -360,6 +360,33 @@ def topic_edit(name, id=None):
         topic.setDetail("giveable", data["giveable"])
         return "ok"
 
+def course_unit_reorder(id,label=None):
+    if not mcourses.Courses.exists(id):
+        abort(404)
+    course = mcourses.Courses(id)
+    cuser = muser.getCurrentUser()
+    if not(course.getCourseRole(cuser) == 4):
+        abort(404)
+    if request.method == "POST":
+        data = (request.json)
+        for item in data:
+            u = mcourses.Units(item["id"])
+            if u.getDetail("courseid") != id:
+                return "invalid"
+            u.setDetail("unit_order", item["order"])
+            u.setDetail("parent", 0)
+            for subitem in item["subitems"]:
+                u = mcourses.Units(subitem["id"])
+                if u.getDetail("courseid") != id:
+                    return "invalid"
+                u.setDetail("unit_order", subitem["order"])
+                u.setDetail("parent", item["id"])
+        return "ok"
+    else:
+        if course.getLabel() != label:
+            return redirect(url_for("course_unit_reorder", id=id, label=course.getLabel()))
+        return render_template('courses/unit_reorder.html', title="Kursmodule neu anordnen: " + course.getTitle(), thispage="course", data=course)
+
 def apply(app):
     app.route("/courses")(courses_index)
     app.route("/course/propose", methods=["GET", "POST"])(courses_propose)
@@ -379,3 +406,4 @@ def apply(app):
     app.route("/t/<name>")(app.route("/t/<name>/info")(app.route("/topic/<int:id>/<name>/info")(topic_info)))
     app.route("/t/<name>/c")(app.route("/t/<name>/courses")(app.route("/topic/<int:id>/<name>/courses")(topic_courses)))
     app.route("/t/<name>/e", methods=["GET", "POST"])(app.route("/topic/<int:id>/<name>/edit", methods=["GET", "POST"])(topic_edit))
+    app.route("/c/<int:id>/unit_reorder", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/unit_reorder", methods=["GET", "POST"])(course_unit_reorder))

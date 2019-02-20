@@ -222,9 +222,9 @@ class Courses:
             con.row_factory = lite.Row
             cur = con.cursor()
             if has_always_granted:
-                cur.execute("SELECT id FROM units WHERE courseid=? ORDER BY id ASC LIMIT 1", (self.id, ))
+                cur.execute("SELECT id FROM units WHERE courseid=? ORDER BY unit_order, id ASC LIMIT 1", (self.id, ))
             else:
-                cur.execute("SELECT id FROM units WHERE courseid=? AND availible=1 ORDER BY id ASC LIMIT 1", (self.id, ))
+                cur.execute("SELECT id FROM units WHERE courseid=? AND availible=1 ORDER BY unit_order, id ASC LIMIT 1", (self.id, ))
             d = cur.fetchone()
             if d is None:
                 return 0
@@ -272,7 +272,7 @@ class Courses:
             con = lite.connect('databases/courses.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT * FROM units WHERE courseid=? AND parent=0", (self.id, ))
+            cur.execute("SELECT * FROM units WHERE courseid=? AND parent=0 ORDER BY unit_order, id", (self.id, ))
             data = cur.fetchall()
             d = []
             for dd in data:
@@ -282,7 +282,7 @@ class Courses:
                     "availible": bool(dd["availible"]),
                     "children": []
                 }
-                cur.execute("SELECT * FROM units WHERE courseid=? AND parent=?", (self.id, dd["id"]))
+                cur.execute("SELECT * FROM units WHERE courseid=? AND parent=? ORDER BY unit_order, id", (self.id, dd["id"]))
                 ddd = cur.fetchall()
                 for dy in ddd:
                     dx["children"].append({
