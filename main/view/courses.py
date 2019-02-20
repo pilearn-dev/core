@@ -371,10 +371,14 @@ def course_unit_reorder(id,label=None):
         data = (request.json)
         for item in data:
             u = mcourses.Units(item["id"])
+            if u.getDetail("courseid") != id:
+                return "invalid"
             u.setDetail("unit_order", item["order"])
             u.setDetail("parent", 0)
             for subitem in item["subitems"]:
                 u = mcourses.Units(subitem["id"])
+                if u.getDetail("courseid") != id:
+                    return "invalid"
                 u.setDetail("unit_order", subitem["order"])
                 u.setDetail("parent", item["id"])
         return "ok"
