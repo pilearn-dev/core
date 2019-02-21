@@ -332,7 +332,7 @@ def set_user(field):
     elif field in ["realname", "email", "aboutme"]:
         new_value = data["new_value"]
         if field == "realname":
-            if len(new_value) > 25:
+            if len(new_value) > 35:
                 return "Anzeigename zu lang"
             if len(new_value) < 2:
                 return "Anzeigename zu kurz"
