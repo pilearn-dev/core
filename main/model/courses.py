@@ -489,7 +489,12 @@ class Units:
             con = lite.connect('databases/courses.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("INSERT INTO units (title, courseid, content, type, parent, availible) VALUES ('Neue Seite', ?, ?, ?, ?, 0)", (courseid,empty_set,type,parent))
+            try:
+                cur.execute("SELECT MAX(unit_order) AS o FROM units WHERE courseid=? AND parent=?", (courseid,parent))
+                unit_order = 1 + cur.fetchone()["o"]
+            except:
+                unit_order = 1
+            cur.execute("INSERT INTO units (title, courseid, content, type, parent, availible, unit_order) VALUES ('Neue Seite', ?, ?, ?, ?, 0, ?)", (courseid,empty_set,type,parent, unit_order))
             con.commit()
             return cur.lastrowid
         except lite.Error as e:
