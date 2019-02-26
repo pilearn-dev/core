@@ -119,11 +119,7 @@ var Polyskript = function (data) {
     },
     "new": function (e) {
       this.setAttribute("disabled", "disabled");
-      y = (this.offsetLeft - this.scrollLeft + this.clientLeft);
-      x = (this.offsetTop - this.scrollTop + this.clientTop);
       el = document.createElement("ul");
-      el.style.top = String(y) + "px";
-      el.style.left = String(x) + "px";
       el.classList.add("append-element-list");
       keys = Object.keys(MODEL);
       for (var i = 0; i < keys.length; i++) {

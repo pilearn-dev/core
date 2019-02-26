@@ -9,6 +9,7 @@
   display: flex;
   background-color: #fff;
   border: 1px solid #ddd;
+  position: relative;
 }
 .polyskript * {
   box-sizing: border-box;
@@ -200,14 +201,13 @@
   width: 100%;
   max-width: 400px;
   background-color: white;
-  margin: 0;
+  margin: 10px;
   padding: 0;
   list-style: none;
-  position: absolute;
-  box-shadow: 1px 1px 3px #ddd;
+  box-shadow: 0px 0px 3px #ddd;
+  border: 1px solid #ccc;
   max-height: 150px;
   overflow: auto;
-  transform: translateY(-100%);
 }
 .polyskript .append-element-list li {
   padding: 5px;
