@@ -45,13 +45,13 @@ PiJS.extend("topbar", {
       x = $(window).width() - pos.right;
       y = pos.bottom;
 
-      var dialog = $("<div class='_floatbox _dialog-largest p2 p-f -no-round js--topbar-dialog js--topbar-dialog-user'>");
+      var dialog = $("<div class='_floatbox _dialog-limited _dialog-largest p2 p-f -no-round js--topbar-dialog js--topbar-dialog-user'>");
       dialog.css({right:x+"px", top:y+"px"});
       dialog.html("Lade <a href='" + $this.attr("href") + "'>Mein Profil</a> ...");
 
       $.ajax({
         url: "/topbar/user-info",
-        timeout: 1000,
+        timeout: 4000,
         success: function( result ) {
           dialog.removeClass("p2");
           dialog.html(result);
@@ -74,13 +74,13 @@ PiJS.extend("topbar", {
       x = $(window).width() - pos.right;
       y = pos.bottom;
 
-      var dialog = $("<div class='_floatbox p-f -no-round js--topbar-dialog js--topbar-dialog-inbox'>");
+      var dialog = $("<div class='_floatbox _dialog-limited _dialog-large p-f -no-round js--topbar-dialog js--topbar-dialog-inbox'>");
       dialog.css({right:x+"px", top:y+"px"});
       dialog.html("<div class='_floatbox-header bg-dark-ll'>Lade Posteingang ...</div>");
 
       $.ajax({
         url: "/topbar/inbox",
-        timeout: 1000,
+        timeout: 4000,
         success: function( result ) {
           dialog.html(result);
         },
@@ -102,13 +102,13 @@ PiJS.extend("topbar", {
       x = $(window).width() - pos.right;
       y = pos.bottom;
 
-      var dialog = $("<div class='_floatbox p-f -no-round js--topbar-dialog js--topbar-dialog-rep-audit'>");
+      var dialog = $("<div class='_floatbox _dialog-limited _dialog-large p-f -no-round js--topbar-dialog js--topbar-dialog-rep-audit'>");
       dialog.css({right:x+"px", top:y+"px"});
       dialog.html("<div class='_floatbox-header bg-dark-ll'>Lade Reputation ...</div>");
 
       $.ajax({
         url: "/topbar/rep-audit",
-        timeout: 1000,
+        timeout: 4000,
         success: function( result ) {
           dialog.html(result);
         },

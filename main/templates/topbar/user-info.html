@@ -1,0 +1,34 @@
+<div class="_floatbox-header bg-dark-l">
+  Profil-Informationen
+</div>
+<div class="_nav _nav-t _nav-t-smaller">
+  <a href="#!" class="-active">&pi;-Learn</a>
+  <a href="/logout">Abmelden</a>
+</div>
+<div class="p3">
+  <img src="{{ user.getDetail("profile_image") }}" class="thumbnail-l push-left mb2 mr2">
+  {% if user.isMod() %}<span class="col-dark fs-subheading d-b push-right f-brand pt2">Moderator</span>{% endif %}
+  <span class="fs-heading d-b"><a href="/u/{{ user.id }}">{{ user.getHTMLName()|safe }}</a></span>
+  <div class="-relative fs-base3"><span class="_badge _badge-score">{{ user.getReputation() }}</span></div>
+  <p class="fs-3">{{ user.getShortProfileText()|striptags|safe }} <a href="/u/{{ user.id }}">mehr</a></p>
+  {% if global_notification %}
+  <hr class="hr-original push-reset">
+  <h4 class="f-bold">Ankündigung</h4>
+  <div class="bg-warning-ll p2 hr-original">{{ global_notification|markdown }}</div>
+  {% endif %}
+  {#<hr class="hr-original">
+  <h4 class="f-bold">Aktivität (11/20)</h4>
+  <ul class="p0 pl5 mt1 mb1 m0">
+    <li><span class="_badge _badge-completion">2/5</span><strong class="col-danger-dd">Bewertungen</strong><p>Bewerte mehr Beiträge. Bewerte auch mal Kommentare oder Kurse.</p></li>
+    <li><span class="_badge _badge-completion">2/5</span><strong class="col-danger-dd">Kurse</strong><p>Schlage auch selber einen Kurs vor. Bewerte auch mal einen Kurs.</p></li>
+    <li><span class="_badge _badge-completion">3/5</span><strong>Moderation</strong><p>Melde mehr Beiträge, die geschlossen werden sollten.</p></li>
+    <li><span class="_badge _badge-completion">4/5</span><strong>Bearbeiten</strong><p>Du könntest noch häufiger Forenbeiträge Bearbeiten. Achte besonders auf die richtige Verwendung von Tags.</p></li>
+  </ul>
+  <hr class="hr-original">
+  <h4 class="f-bold">Deine Highlights</h4>
+  <ul>
+    <li>Antwort: <a href="#!">Wie esse ich einen Apfel</a> [+20]</li>
+    <li>Frage: <a href="#!">Wie esse ich einen Apfel</a> [+42]</li>
+    <li>Kurs: <a href="#!">Grundlagen des Apfelessens</a> [56/+45]</li>
+  </ul>#}
+</div>

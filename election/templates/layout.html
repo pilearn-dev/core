@@ -61,7 +61,7 @@
 
           {% set notificationCount = g.countNotifications(user_messages) %}
           <a class="_header-icon p-r js--topbar-inbox" id="notification-trigger" href="#!" title="Posteingang: Du hast {% if notificationCount == 0 %}keine{% elif notificationCount == 1 %}eine{% else %}{{ notificationCount }}{%endif%} neue Nachrichten">
-            {% if notificationCount != 0 %}<span class="_badge _badge-s-danger p-a">{{ notificationCount }}</span>{% endif %}
+            {% if notificationCount != 0 %}<span class="_badge _badge-s-danger -wbd p-a xa-r__sp ya-t__sp">{{ notificationCount }}</span>{% endif %}
             <svg width="3em" height="3em" viewbox="3 3 45 45">
               <path d="M6,12 h36 v24 h-36 z" fill="transparent" stroke-width="1" />
               <path d="M6,36 h36" fill="transparent" stroke-width="4" />
@@ -71,7 +71,7 @@
 
           {% set delta = user.getRepDelta() %}
           <a class="_header-icon p-r js--topbar-rep-audit" id="repscreen-trigger" href="#!" title="Auszeichnungen: Du hast {% if delta == 0 %}keine{% else %}eine{%endif%} Änderung deiner Reputation">
-            {% if delta > 0 %}<span class="_badge _badge-s-success p-a">+{{ num2suff(delta) }}</span>{% endif %}
+            {% if delta > 0 %}<span class="_badge _badge-s-success -wbd p-a xa-r__sp ya-t__sp">+{{ num2suff(delta) }}</span>{% endif %}
             <svg width="3em" height="3em" viewbox="3 3 45 45">
               <path d="M14,10 q0,15 8,15 M34,10 q0,15 -8,15 M14,10 h20 M22,25 v10 M26,25 v10 M22,35 h-8 v4 h20 v-4 z" fill="transparent" stroke-width="1" />
               <path d="M14,11 q0,15 8,15 M34,10 q0,15 -8,15 M13.5,40 h21" fill="transparent" stroke-width="2" />

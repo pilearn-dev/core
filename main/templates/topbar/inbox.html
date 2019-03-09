@@ -1,0 +1,13 @@
+<div class="_floatbox-header bg-dark-ll">Posteingang</div>
+<div class="p1">
+  <div class="_list">
+  {% for msg in user_messages[::-1] %}
+    <a class="_list-item fs-base1 p-r _list-item-keepcolor {% if msg.visibility != 0 %}-highlighted{% endif %}" href="{{ msg.link }}">
+      {#<span class="d-b col-dark-dd push-right">vor 2 min</span>#}
+      <span class="d-b col-dark-dd mb1">{{ types[msg.type] }}</span>
+      {#<span class="d-b mb1">{{ msg.title }}</span>#}
+      <span class="d-b col-black">{{ msg.message }}</span>
+    </a>
+  {% endfor %}
+  </div>
+</div>
