@@ -36,7 +36,17 @@ class Vote:
         b = self.getDetail("ballot")
         b2 = {
             "first": b["first"],
-            "second": candidate
+            "second": candidate,
+            "third": b["third"]
+        }
+        self.setDetail("ballot", json.dumps(b2))
+
+    def setThirdVote(self, candidate):
+        b = self.getDetail("ballot")
+        b2 = {
+            "first": b["first"],
+            "second": b["second"],
+            "third": candidate
         }
         self.setDetail("ballot", json.dumps(b2))
 
@@ -44,13 +54,14 @@ class Vote:
         b = self.getDetail("ballot")
         b2 = {
             "first": candidate,
-            "second": b["second"]
+            "second": b["second"],
+            "third": b["third"]
         }
         self.setDetail("ballot", json.dumps(b2))
 
     def as_list(self):
         b = self.getDetail("ballot")
-        return [b["first"], b["second"]]
+        return [b["first"], b["second"], b["third"]]
 
     def getInfo(self):
         try:
@@ -116,7 +127,7 @@ class Vote:
             con = lite.connect('databases/election.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("INSERT INTO votes (election_id, voter, ballot) VALUES (?, ?, '{\"first\":0,\"second\":0}')", (election_id, user.id))
+            cur.execute("INSERT INTO votes (election_id, voter, ballot) VALUES (?, ?, '{\"first\":0,\"second\":0,\"third\":0}')", (election_id, user.id))
             con.commit()
             return cls(cur.lastrowid)
         except lite.Error as e:
@@ -417,48 +428,28 @@ class Election:
                 con.close()
 
     def tallyVotes(self):
-        candidates = self.getCandidates()
-        votes = self.getVotes()
-        TALLY_VOTES = {}
-        TALLY_ELECTED = []
-        SEATS = self.getDetail("places")
-        QUOTA = ((len(votes)) / (float(SEATS)+1.0)) + 1
-        QUOTA2 = ((2*len(votes)) / (float(SEATS)+1.0)) + 1
-        for c in candidates:
-            TALLY_VOTES[c.id] = [0, 0]
-        for v in votes:
-            v_ = v.as_list()
-            if v_[0] != 0:
-                TALLY_VOTES[v_[0]][0] += 1
-                TALLY_VOTES[v_[0]][1] += 1
-            if v_[1] != 0:
-                TALLY_VOTES[v_[1]][1] += 1
-        elected = []
-        for c in candidates:
-            if TALLY_VOTES[c.id][0] >= QUOTA:
-                elected.append([c.id, TALLY_VOTES[c.id][0]])
-        elected = sorted(elected, key=lambda x:x[1])[:SEATS]
-        TALLY_ELECTED.extend([e[0] for e in elected])
-        if SEATS - len(TALLY_ELECTED) > 0:
-            elected = []
-            for c in candidates:
-                if TALLY_VOTES[c.id][0] >= QUOTA2:
-                    elected.append([c.id, TALLY_VOTES[c.id][1]])
-            elected = sorted(elected, key=lambda x:x[1])[:SEATS - len(TALLY_ELECTED)]
-            TALLY_ELECTED.extend([e[0] for e in elected])
-            if SEATS - len(TALLY_ELECTED) > 0:
-                elected = []
-                for c in candidates:
-                    elected.append([c.id, TALLY_VOTES[c.id][1]])
-                elected = sorted(elected, key=lambda x:x[1])[:SEATS - len(TALLY_ELECTED)]
-                TALLY_ELECTED.extend([e[0] for e in elected])
-        # {
-        #  quota:   "first round quota",
-        #  quota2:  "second round quota",
-        #  elected: "list of elected candidates (candidate.id)",
-        #  scores:  "[fv,fv+sv]"
-        # }
-        return {"scores": TALLY_VOTES, "elected": TALLY_ELECTED, "quota": QUOTA, "quota2": QUOTA2}
+        try:
+            con = lite.connect('databases/election.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT ballot, count(*) AS vc FROM votes WHERE election_id=? GROUP BY ballot", (self.id, ))
+            data = []
+            d = cur.fetchall()
+            for i in d:
+                b = json.loads(i["ballot"])
+                arr = [i["vc"], b["first"]]
+                if b["second"]:
+                    arr.append(b["second"])
+                if b["third"]:
+                    arr.append(b["third"])
+                data.append(arr)
+            return data
+        except lite.Error as e:
+            #raise lite.Error from e
+            raise e
+        finally:
+            if con:
+                con.close()
 
     def getInfo(self):
         try:
@@ -494,17 +485,9 @@ class Election:
             cur = con.cursor()
             STDTEXT = u"""Unser Konzept ist es, dass &pi;-Learn eine Community-kontrollierte Open Learning-Plattform sein soll. Dieses Konzept wird zum ersten durch die Reputation erfüllt, eine Punktzahl, die jedem Benutzer aufgrund der Qualität seiner Inhalte zugewiesen wird. Dieser Reputation entsprechen bestimmte Privilegien, mit denen die Benutzer helfen können, diese Seite zu verwalten.
 
-Weiterhin wollen wir, dass jeder sein Wissen gleichberechtigt mit anderen teilen darf und vermeiden es daher, den Inhalt durch von uns beauftragte Benutzer zu moderieren. Statdessen soll dieser Auftrag von den Benutzern dieser Webseite selbst kommen. Darum halten wir bei Bedarf Wahlen ab, um Moderatoren und Administratoren zu ernenen. Diesen Moderatoren und Administratoren kommt eine besondere Verantwortung zu, da sie Zugriff auf die höchsten Privilegien erhalten.
+Weiterhin wollen wir, dass jeder sein Wissen gleichberechtigt mit anderen teilen darf und vermeiden es daher, den Inhalt durch von uns beauftragte Benutzer zu moderieren. Statdessen soll dieser Auftrag von den Benutzern dieser Webseite selbst kommen. Darum halten wir bei Bedarf Wahlen ab, um Moderatoren zu ernenen. Diesen Moderatoren kommt eine besondere Verantwortung zu, da sie Zugriff auf die höchsten Privilegien erhalten.
 
-<!-- Moderatorenwahl: -->
-
-Moderatoren verwalten und kontrollieren ("moderieren") die Inhalte von π-Learn. Jeder Moderator hat ein bestimmtes Fachgebiet (Thema), für das er verantwortlich ist.
-
-In dieser Wahl suchen wir Moderatoren für das Thema [[Thema|topic]].
-
-<!-- Administratorenwahl: -->
-
-Administratoren verwalten und kontrollieren ("administrieren") die gesamte Webseite π-Learn. Sie überprüfen auch die Handlungen von Moderatoren und können Benutzer, die sich nicht an die Regeln halten, sperren oder sogar löschen."""
+Moderatoren verwalten und kontrollieren ("moderieren") die gesamte Webseite π-Learn. Sie können dafür zum Beispiel Benutzer, die sich nicht an die Regeln halten, sperren oder sogar löschen."""
             cur.execute("INSERT INTO elections (title, message, places, position, state, minvoterep, mincandrep) VALUES ('Unbestimmte Wahl', ?, 1, 'Benutzergruppe', 1, 50, 100)", (STDTEXT,))
             con.commit()
             return cur.lastrowid

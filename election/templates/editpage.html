@@ -1,16 +1,17 @@
 {% extends "layout.html" %}
 {% block body %}
-    <link rel="stylesheet" href="/static/css/simplemde.min.css">
-    <script src="/static/js/simplemde.min.js"></script>
+<script src="/static/new_js/pilearn.markdown.js" charset="utf-8"></script>
+<script src="/static/new_js/pilearn.editor.js" charset="utf-8"></script>
+
     <h2 class="fs-display1"><input value="{{ vote_name }}" id="vote-name" class="form ta-c"></h2>
     <div class="grid">
       <aside class="column3 column12__sm p2">
         <h3>Überblick</h3>
-        <ol class="_nav _nav-v">
-          <li><a href="#primary-note">Hinweise</a></li>
-          <li><a href="#results-note">Einstellungen</a></li>
-          <li><a href="#candidate-list">Kandidaten</a></li>
-        </ol>
+        <div class="_nav _nav-v">
+          <a href="#primary-note">Hinweise</a>
+          <a href="#results-note">Einstellungen</a>
+          <a href="#candidate-list">Kandidaten</a>
+        </div>
         <dl>
           <dt>Zu besetzende Plätze</dt>
           <dd><input type="number" min="1" max="5" value="{{ vote_places }}" id="places" class="form form-small"></dd>
@@ -21,10 +22,10 @@
       </aside>
       <main class="column9 column12__sm p2">
         <h2 id="primary-note">Hinweise</h2>
-        <textarea id="election-message">{{ vote_message }}</textarea>
-        <script>
-        var simplemde = new SimpleMDE({ element: document.getElementById("election-message"), forceSync:true, parsingConfig: {strikethrough: false}, promptURLs:true, spellChecker:false });
-        </script>
+        <div class="js--editor p2 js--editor:preview">
+          <textarea id="election-message" class="form form-large js--editor-textarea">{{ vote_message }}</textarea>
+          <div class="p2 js--editor-preview hr-original"></div>
+        </div>
         <h2 id="results-note">Einstellungen</h2>
         <p>Aktuelle Phase:</p>
         <select id="state-selection" class="form">
@@ -36,34 +37,31 @@
           <option{% if vote_state==6 %} selected{% endif %} value="6">Ergebnisphase</option>
         </select>
         {% if vote_state == 6 %}
-        <p><button onclick="$post('election/api/{{ vote_id }}', {'action':'tally'}, function(){window.location.reload();})" class="_btn _btn--primary _btn-lighter">Sieger ermitteln</button>
-        <button onclick="$post('election/api/{{ vote_id }}', {'action':'untally'}, function(){window.location.reload();})" class="_btn _btn-danger _btn-on-light">Sieger zurücksetzen</button></p>
+        <p>Lade die .blt-Datei herunter, führe Sie in OpenSTV aus und kopieren sie von der Zeile mit *The winners are* die Liste der Namen. Sie können auch die Namen manuell eingeben (Format: benutzername.id@pilearn.de)</p>
+        <a href="/election/get-ballot-data/{{ vote_id }}/result.blt" class="_btn _btn--primary _btn-lighter">Stimmen herunterladen</a>
+        <textarea class="form form-small" placeholder="Hier Benutzercodes der Sieger (z.B. paulpidev.1@pilearn.de; durch Komma getrennt) einfügen" id="result-names-set"></textarea>
+        <button onclick="calc_result()" class="_btn _btn--primary">Sieger ermitteln</button><button onclick="reset_result();" class="_btn _btn-danger _btn-on-light">Sieger zurücksetzen</button>
         {% endif %}
         <h2 id="candidate-list">Kandidaten</h2>
         <p>Folgende Benutzer stehen in dieser Wahl als Kandidaten zur Verfügung:</p>
         {% for c in vote_candidate %}
-          <div class="vote-candidate {% if c.isRetracted() or c.isFailed() %}deleted-section{% endif %}">
-            <h3 class="candidate_title">Kandidat: <strong><a href="/u/{{ c.getCandidate().id }}">{{ c.getCandidate().getDetail("realname") }}</a></strong> <span class="badge">{{ c.getCandidate().getReputation() }}</span></h3>
-            {% if c.isRetracted() %}
-              <div class="error inline">
-                <p>Die Kandidatur wurde zurückgezogen.</p>
-              </div>
-            {% elif c.isFailed() %}
-              <div class="error inline">
-                <p>{{ c.getCandidate().getDetail("realname") }} kam nicht in die nächste Runde.</p>
-              </div>
-            {% elif c.isElected() %}
-              <div class="success inline">
-                <p>{{ c.getCandidate().getDetail("realname") }} wurde gewählt. HERZLICHEN GLÜCKWUNSCH!</p>
-              </div>
-            {% endif %}
-            <div>
+          <div class="_card {% if c.isRetracted() or c.isFailed() %}_card-danger{% endif %}">
+            <div class="_card-title"><a href="/u/{{ c.getCandidate().id }}">{{ c.getCandidate().getDetail("realname") }}</a></div>
+            <div class="_card-content">
+              {% if c.isRetracted() %}
+              <p class="f-bold col-danger-dd">Die Kandidatur wurde zurückgezogen.</p>
+              {% elif c.isFailed() %}
+              <p class="f-bold col-danger-dd">{{ c.getCandidate().getDetail("realname") }} kam nicht in die nächste Runde.</p>
+              {% elif c.isElected() %}
+              <p class="f-bold col-success-dd">{{ c.getCandidate().getDetail("realname") }} wurde gewählt. HERZLICHEN GLÜCKWUNSCH!</p>
+              {% endif %}
               {% set annot = c.getCandidate().getAnnotations() %}
+              <h3>Anmerkungen</h3>
               <ul>
               {% for a in annot %}
-                  <li class="{% if a.deleted %}deleted-line{% endif %}">{{ a.content|markdown }}</li>
+                  <li class="{% if a.deleted %}bg-danger-lll{% endif %}">{{ a.content|markdown }}</li>
               {% endfor %}
-            </ul>
+              </ul>
             </div>
           </div>
         {% endfor %}
@@ -71,7 +69,54 @@
     </div>
 <script>
 function save_all() {
-  $post('election/api/{{ vote_id }}', {'action':'update', 'name': document.getElementById("vote-name").value, 'position': "Moderator", 'message': document.getElementById("election-message").value, 'places': document.getElementById("places").value, 'state': document.getElementById("state-selection").value}, function(){window.location.reload();})
+  $.ajax({
+    "url": "/election/api/{{ vote_id }}",
+    "method": "POST",
+    "data": JSON.stringify({
+      "action": "update",
+      "name": $("#vote-name").val(),
+      "position": "Moderator",
+      "message": $("#election-message").val(),
+      "places": $("#places").val(),
+      "state": $("#state-selection").val()
+    }),
+    "contentType": "application/json; charset=utf-8",
+    "success": function () {
+      window.location.reload();
+    }
+  });
 }
+
+function calc_result() {
+  $.ajax({
+    "url": "/election/api/{{ vote_id }}",
+    "method": "POST",
+    "data": JSON.stringify({
+      "action": "tally",
+      "results": $("#result-names-set").val()
+    }),
+    "contentType": "application/json; charset=utf-8",
+    "success": function () {
+      window.location.reload();
+    }
+  });
+}
+
+function reset_result() {
+  $.ajax({
+    "url": "/election/api/{{ vote_id }}",
+    "method": "POST",
+    "data": JSON.stringify({
+      "action": "untally",
+    }),
+    "contentType": "application/json; charset=utf-8",
+    "success": function () {
+      window.location.reload();
+    }
+  });
+}
+
+PiJS.editor.init();
+
 </script>
 {% endblock %}

@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from flask import Flask, request, session, redirect, url_for, abort, render_template, g, jsonify
+from flask import Flask, request, session, redirect, url_for, abort, render_template, g, jsonify, Response
 
 import secrets, random
 
@@ -84,7 +84,7 @@ def vote(id):
     if votes is not None:
         votes = votes.as_list()
     else:
-        votes = (0, 0)
+        votes = (0, 0, 0)
     return render_template(
         "votepage.html",
         title=e.getTitle(),
@@ -99,7 +99,8 @@ def vote(id):
         vote_candidate=Nomination.from_election(id),
         user_vote={
             "is1": lambda x:x == votes[0],
-            "is2": lambda x:x == votes[1]
+            "is2": lambda x:x == votes[1],
+            "is3": lambda x:x == votes[2]
         })
 
 @app.route('/editor')
@@ -147,6 +148,41 @@ def tally(id):
     e = Election(id)
     results = e.tallyVotes()
     return jsonify(results)
+
+@app.route('/get-ballot-data/<int:id>/<filename>', methods=["GET", "POST"])
+def get_ballot_data(id, filename=None):
+    cuser = muser.getCurrentUser()
+    if not cuser.isDev():
+        abort(404)
+    if not Election.exists(id):
+        abort(404)
+    e = Election(id)
+    name = e.getTitle()
+    candidates = e.getCandidates()
+    places = e.getPlaces()
+    ballots = e.tallyVotes()
+    print(ballots)
+
+    candidate_assoc = {}
+    i=1
+    for candidate in candidates:
+        candidate_assoc[candidate.id] = [i, candidate]
+        i+=1
+
+    header = "%i %i" % (len(candidates), places)
+    main = []
+    for b in ballots:
+        main.append(" ".join(map(str, b)) + " 0")
+
+
+    cl = []
+    items = sorted(candidate_assoc.values(), key=lambda x:x[0])
+    for i in items:
+        c = i[1].getCandidate()
+        cl.append('"' + c.getDetail('name') + '.' + str(c.id) + '@pilearn.de"')
+
+    file = header +"\n"+ ("\n".join(main)) + "\n0\n" + ("\n".join(cl)) + "\n" + '"'+name+'"'
+    return Response(file, mimetype='text/blt')
 
 @app.route('/candidate/<int:id>', methods=["POST"])
 def candidate(id):
@@ -203,12 +239,24 @@ def api(id):
             v = Vote.new(e.id, cuser)
         if command["vote"] == 1:
             v.setFirstVote(command["candidate"])
+        elif command["vote"] == 3:
+            v.setThirdVote(command["candidate"])
         else:
             v.setSecondVote(command["candidate"])
     elif action == "tally":
-        results = e.tallyVotes()
-        for el in results["elected"]:
-            Nomination(el).setDetail("state", 1)
+        if command["results"] == "":
+            ids = []
+        else:
+            ids = command["results"].split(",")
+            ids = [s.strip()[:-len("@pilearn.de")] for s in ids]
+            ids = [s.split(".")[1] for s in ids]
+            ids = map(int, ids)
+        cand = e.getCandidates()
+        for c in cand:
+            if c.getDetail("state") == 1:
+                c.setDetail("state", 0)
+            if c.getCandidate().id in ids:
+                c.setDetail("state", 1)
     elif action == "untally":
         cand = e.getCandidates()
         for c in cand:
