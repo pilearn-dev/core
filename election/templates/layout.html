@@ -14,7 +14,7 @@
   <script src="/static/new_js/pilearn.js" charset="utf-8"></script>
   <script src="/static/new_js/pilearn.topbar.js" charset="utf-8"></script>
 </head>
-<body class="loading">
+<body>
   <header class="_header _header-sm _header-bordered p-st">
     <div class="single-fluid d-f _header-container">
       <nav class="_header-items hide__lg">
@@ -93,24 +93,6 @@
       </nav>
     </div>
   </div>
-  <nav class="side-nav hide" id="side-nav">
-    <ul {% if user.may("forum_reviewEdits") or user.may("course_reviewEdits") %} class="is5" {% endif %}>
-      <li><a href="/" class="has-icon" style="font-weight: bold;"><i class="fa fa-home fa-large fa-small" aria-hidden="true"></i> &pi;-Learn</a></li>
-      <li{% if thispage == "index" %} class="active"{% endif %}><a href="/election">Startseite</a></li>
-      <li{% if thispage == "history" %} class="active"{% endif %}><a href="/election/history">Überblick</a></li>
-      <li{% if thispage == "elections" %} class="active"{% endif %}><a href="/election/list">Wahlen</a></li>
-      {% if user.isDev() %}<li><a href="/election/editor"> Editor</a></li>{% endif %}
-    </ul>
-    {% if user.isLoggedIn() %}
-    <div class="user">
-        <i class="fa fa-user" aria-hidden="true"></i>
-        <a href="/u/{{ user.id }}">{{ user.getHTMLName()|safe }}</a>
-        <a href="/logout">Abmelden</a>
-    </div>
-    {% endif %}
-  </nav>
-<div id="notification-area" style="top:-1000px" class="_floatbox -no-round p-f p1"></div>
-<div id="repscreen-area" style="top:-1000px" class="_floatbox -no-round p-f p1"></div>
  {% if global_notification != "" %}
     {% for subnote in global_notification.split("\n_____\n") %}
         <div class="_banner _banner-warning">
