@@ -131,14 +131,39 @@
         {% block body %}{% endblock %}
       </main>
     </div>
-    <footer class="bg-dark-ddd col-white anchor-white mt3">
-    <div class="single-fluid p5">
-        <img alt="Creative Commons Lizenzvertrag" style="float: right; padding: 5px;" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png">
-        <div class="copyright-notice">Alle Inhalte in Form von Texten und Bildern aus Kursen und Foren stehen unter der Creative-Commons-Lizenz <a href="https://creativecommons.org/licenses/by-sa/3.0/de/">CC-BY-SA</a> zur Verfügung. Alle anderen Inhalte sind urheberrechtlich geschützt und dürfen nur mit der expliziten Erlaubnis des Urhebers verwendet werden.</div>
-        <strong>Wichtige Links:</strong>
-        <div class="footer-links"><a href="/">Startseite</a><a href="/help/legal/impress">Impressum</a><a href="/help/legal/data-info">Datenschutz</a><a href="/help/legal/coc">Code of Conduct</a><a href="/election">Wahlen</a><a href="/helpdesk">Helpdesk</a></div>
-        <hr>
-        <div class="program-notice">&pi;-Learn Version <code>{{ __version__ }}</code></div>
+    <footer class="bg--primary-lll col-black anchor-dark mt3 mt1__sm">
+    <div class="single-fluid p4">
+      <div class="grid">
+        <div class="column12__sm column3 p1">
+          <h4 class="p1 fs-base2 f-caps f-bold col--primary-ddd">&pi;-Learn</h4>
+          <a class="d-b m1" href="/">Startseite</a>
+          <a class="d-b m1" href="/courses">Kurse</a>
+          <a class="d-b m1" href="/f/0">Globales Forum</a>
+          <a class="d-b m1" href="/help/legal/coc">Code of Conduct</a>
+        </div>
+        <div class="column12__sm column3 p1">
+          <h4 class="p1 fs-base2 f-caps f-bold col--primary-ddd">Hilfe</h4>
+          <a class="d-b m1" href="/help">Hilfethemen</a>
+          <a class="d-b m1" href="/help/legal/impress">Impressum</a>
+          <a class="d-b m1" href="/help/legal/data-info">Datenschutz</a>
+          <a class="d-b m1" href="/helpdesk">Helpdesk</a>
+          </ul>
+        </div>
+        <div class="column12__sm column3 p1">
+          <h4 class="p1 fs-base2 f-caps f-bold col--primary-ddd">Über uns</h4>
+          <a class="d-b m1" href="https://twitter.com/@pi_learn">Twitter</a>
+          <a class="d-b m1" href="/about/mission">Mission</a>
+          <a class="d-b m1" href="/about/team">Unser Team</a>
+          <a class="d-b m1" href="/about/apply">Mitmachen</a>
+        </div>
+        <div class="column12__sm column3 pt3 p1">
+          <img class="push-right p2" alt="Creative Commons BY-SA (mit Namensnennung, Weitergabe unter gleichen Bedingungen)" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png">
+          <p>Texte und Bilder aus Kursen und Foren verfügbar unter <a href="https://creativecommons.org/licenses/by-sa/3.0/de/">CC-BY-SA</a> zur Verfügung.</p>
+          <p>Alle anderen Inhalte sind urheberrechtlich geschützt.</p>
+        </div>
+        <div class="column12 p1">
+          <p>Diese Webseite nutzt die &pi;-Learn-Software in der Version {{ __version__ }}. Design, System und Logo &copy; &pi;-Learn</p>
+        </div>
         </div>
     </div>
     </footer>
