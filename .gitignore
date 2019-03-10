@@ -9,7 +9,7 @@ upload-images/*
 build_css.py
 *.db
 *.json
-!pidata.json
+pidata.json
 !privileges.json
 !privilege_data.json
 !version.json
