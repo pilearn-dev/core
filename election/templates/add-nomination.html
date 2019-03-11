@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+{% block body %}
+  <script src="/static/new_js/pilearn.markdown.js" charset="utf-8"></script>
+  <script src="/static/new_js/pilearn.editor.js" charset="utf-8"></script>
+  <h1 class="fs-display1 ta-c">{{ vote_name }}</h1>
+  <div class="grid">
+    <main class="column9 column12__sm p3">
+      <h2>Als Moderator kandidieren</h2>
+      <p>Wir erwarten, dass alle Kandidaten einen kurzen Text schreiben, in dem sie sich vorstellen und sagen, warum sie als Moderator geeignet wären.</p>
+      {% if user.getReputation() < candminrep %}
+      <div class="content-warning">
+        <p>Du scheinst gerade weniger als {{ candminrep }} Reputation zu haben. Du kannst daher nur eine bereits vorhandene Kandidatur bearbeiten und keine neue hinzufügen.</p>
+      </div>
+      {% endif %}
+      <form action="" method="POST">
+        <div class="js--editor p2 js--editor:preview">
+          <textarea name="message" id="election-message" class="form form-large js--editor-textarea">{{ pretext }}</textarea>
+          <div class="p2 js--editor-preview hr-original"></div>
+        </div>
+        <p>Du kannst zwar deinen Text später noch verbesser, er sollte aber jetzt schon fertig sein, wenn du ihn veröffentlichst.</p>
+        <button type="submit" class="_btn _btn--primary">Absenden</button>
+        <a href="/election/{{ vote_id }}" class="_btn _btn--primary _btn-on-light">Abbrechen</a>
+      </form>
+    </main>
+    <aside class="column3 column12__sm">
+      <div class="_card _card-info">
+        <div class="_card-title">Hinweise</div>
+        <div class="_card-content">
+          <p>Gute Moderatoren zeichnen sich durch diese Eigenschaften aus:</p>
+          <ul>
+            <li>ruhig, fair und mit gutem Beispiel vorangehend</li>
+            <li>Kenntnis und Befolgung der Community-Richtlinien</li>
+            <li>in der Lage Fehler einzugestehen</li>
+            <li>aktive Mitgestaltung der Community im <a href="#!">globalen Forum</a> oder Chat</li>
+            <li>hinreichend aktive Beteiligung</li>
+          </ul>
+        </div>
+      </div>
+    </aside>
+  </div>
+  <script>
+    PiJS.editor.init();
+  </script>
+{% endblock %}

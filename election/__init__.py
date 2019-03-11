@@ -68,13 +68,9 @@ def prepare_request():
 
 @app.route('/')
 def index():
-    return redirect("/election/list")
-
-@app.route('/list')
-def list():
     return render_template("list.html", title=u"Wahlen", thispage="elections", data=Election.getAll())
 
-@app.route('/vote/<int:id>')
+@app.route('/<int:id>')
 def vote(id):
     if not Election.exists(id):
         abort(404)
@@ -103,13 +99,6 @@ def vote(id):
             "is3": lambda x:x == votes[2]
         })
 
-@app.route('/editor')
-def editor():
-    cuser = muser.getCurrentUser()
-    if not cuser.isDev():
-        abort(404)
-    return render_template("editor.html", title=u"Bearbeiten", thispage="editor", data=Election.getAll())
-
 @app.route('/new')
 def new():
     cuser = muser.getCurrentUser()
@@ -118,7 +107,7 @@ def new():
     newid = Election.new()
     return redirect(url_for("edit", id=newid))
 
-@app.route('/edit/<int:id>')
+@app.route('/<int:id>/edit')
 def edit(id):
     if not Election.exists(id):
         abort(404)
@@ -138,18 +127,7 @@ def edit(id):
         vote_id=id,
         vote_candidate=e.getCandidates())
 
-@app.route('/tally/<int:id>', methods=["GET", "POST"])
-def tally(id):
-    cuser = muser.getCurrentUser()
-    if not cuser.isDev():
-        abort(404)
-    if not Election.exists(id):
-        abort(404)
-    e = Election(id)
-    results = e.tallyVotes()
-    return jsonify(results)
-
-@app.route('/get-ballot-data/<int:id>/<filename>', methods=["GET", "POST"])
+@app.route('/<int:id>/get-ballot-data/<filename>', methods=["GET", "POST"])
 def get_ballot_data(id, filename=None):
     cuser = muser.getCurrentUser()
     if not cuser.isDev():
@@ -184,20 +162,27 @@ def get_ballot_data(id, filename=None):
     file = header +"\n"+ ("\n".join(main)) + "\n0\n" + ("\n".join(cl)) + "\n" + '"'+name+'"'
     return Response(file, mimetype='text/blt')
 
-@app.route('/candidate/<int:id>', methods=["POST"])
+@app.route('/<int:id>/add-nomination', methods=["GET", "POST"])
 def candidate(id):
     if not Election.exists(id):
         abort(404)
     e = Election(id)
     cuser = muser.getCurrentUser()
-    if not Nomination.exists(id, cuser):
-        if cuser.getReputation() >= e.getMinCandRep():
-            Nomination.new(id, cuser, request.json["message"])
+    if request.method == "POST":
+        if not Nomination.exists(id, cuser):
+            if cuser.getReputation() >= e.getMinCandRep():
+                Nomination.new(id, cuser, request.form["message"])
+        else:
+            nom = Nomination.from_user(id, cuser)
+            nom.setDetail("message", request.form["message"])
+        return redirect(url_for("vote", id=id))
     else:
-        Nomination.from_user(id, cuser).setDetail("message", request.json["message"])
-    return ""
+        pretext = ""
+        if Nomination.exists(id, cuser):
+            pretext = Nomination.from_user(id, cuser).getDetail("message")
+        return render_template("add-nomination.html", vote_name=e.getTitle(), vote_id=id, title=e.getTitle() + u" - Kandidatur bearbeiten", pretext=pretext, candminrep=e.getMinCandRep())
 
-@app.route('/api/<int:id>', methods=["POST"])
+@app.route('/<int:id>/api', methods=["POST"])
 def api(id):
     if not Election.exists(id):
         abort(404)

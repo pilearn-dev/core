@@ -102,17 +102,9 @@
         </div>
     {% endfor %}
   {% endif %}
-    <div class="container single-fluid">
-      {% if user.isDev() %}
-      <div class="_nav _nav-h">
-        <a href="/election/list">Wahlen</a>
-        <a href="/election/editor">Editor</a>
-      </div>
-      {% endif %}
-      <main class="p2">
-        {% block body %}{% endblock %}
-      </main>
-    </div>
+    <main class="container single-fluid">
+      {% block body %}{% endblock %}
+    </main>
     <footer class="bg--primary-lll col-black anchor-dark mt3 mt1__sm">
     <div class="single-fluid p4">
       <div class="grid">

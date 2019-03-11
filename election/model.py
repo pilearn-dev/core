@@ -519,7 +519,7 @@ Moderatoren verwalten und kontrollieren ("moderieren") die gesamte Webseite π-L
             con = lite.connect('databases/election.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT * FROM elections ORDER BY state ASC, id DESC")
+            cur.execute("SELECT * FROM elections ORDER BY id DESC")
             data = cur.fetchall()
             l = list(map(lambda x:Election(x[0]), data))
             return l

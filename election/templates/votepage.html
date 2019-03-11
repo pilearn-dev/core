@@ -2,38 +2,24 @@
 {% block body %}
     <h2 class="fs-display1 ta-c">{{ vote_name }}</h2>
     <div class="grid">
-      <aside class="column3 column12__sm">
-        <h3>Überblick</h3>
-        <div class="_nav _nav-v">
-          <a href="#primary-note">Hinweise</a>
-          <a href="#results-note">Ergebnisse</a>
-          <a href="#candidate-list">Kandidaten</a>
-        </div>
-          {% if vote_state == 2 and user.getReputation() >= candminrep %}<a class="_btn _btn--primary _btn-sm" href="#!" onclick="document.getElementById('nomination-dialog').classList.remove('hide');">Zur Wahl stellen</a>
-          {% endif %}
-        <dl>
-          <dt>Zu besetzende Plätze</dt>
-          <dd>{{ vote_places }}</dd>
-          <dt>Anzahl Kandidaten</dt>
-          <dd>{{ vote_candidate|length }}</dd>
-        </dl>
-      </aside>
-      <main class="column9 column12__sm">
-        <h2 id="primary-note">Hinweise</h2>
+      <main class="column9 column12__sm p2">
         {{ vote_message|markdown }}
-        <h2 id="results-note">Ergebnisse</h2>
         <div class="content-box">
           {% if vote_state == 1 %}
-          <p>Diese Wahl befindet sich im Moment in der <em>Ankündigungsphase</em>. Es können noch keine Kandidaturen eingereicht werden.</p>
           {% elif vote_state == 2 %}
-          <p>Diese Wahl befindet sich im Moment in der <em>Nominationsphase</em>. Alle Benutzer mit mindestens {{ candminrep }} Reputationspunkten können sich selber nominieren.</p>
+          <p>Diese Wahl befindet sich im Moment in der <em>Nominationsphase</em>.</p>
+          {% if user.getReputation() >= candminrep %}
+          <p>Du hast mindestens {{ candminrep }} Reputationspunkte und kannst dich <a class="_btn _btn--primary _btn-sm _btn-outline" href="/election/{{ vote_id }}/add-nomination">zur Wahl stellen</a>.</p>
+          {% else %}
+          <p>Benutzer mit mindestens {{ candminrep }} Reputationspunkten können sich nominieren.</p>
+          {% endif %}
           {% elif vote_state == 3 %}
           <p>Diese Wahl befindet sich im Moment in der <em>Interviewphase</em>. Du kannst an die Kandidaten Fragen stellen.</p>
           {% elif vote_state == 4 %}
-          <p>Die <em>Interviewphase</em> ist vorbei. Die Kandidaten haben noch kurz Zeit die Fragen zu beantworten</p>
+          <p>Die <em>Interviewphase</em> ist vorbei. Die Kandidaten haben noch kurz Zeit die Fragen zu beantworten.</p>
           {% elif vote_state == 5 %}
           <h3>Es wird gewählt!</h3>
-          <p>Du kannst für bis zu zwei Kandidaten stimmen. Wähle deine erste und zweite Wahl.</p>
+          <p>Du kannst für bis zu drei Kandidaten stimmen. Wähle deine erste, zweite und dritte Wahl.</p>
           {% elif vote_state == 6 %}
           <h3>Ergebnis der {{ vote_name }}</h3>
           <p>Die Wahl ist beendet und die Stimmen wurden ausgezählt. Es wurden folgende Kandidaten gewählt:</p>
@@ -44,10 +30,10 @@
           </li>
           {% endfor %}
           </ul>
-          <p>Die Ergebnisse können <a href="/election/get-ballot-data/{{ vote_id }}">hier</a> im .blt-Format heruntergeladen werden und z.B. mit <a href="https://github.com/Conservatory/openstv">OpenSTV</a> überprüft wrden.</p>
+          <p>Die Ergebnisse können <a href="/election/{{ vote_id }}/get-ballot-data/ergebnise.blt">hier</a> im .blt-Format heruntergeladen werden und z.B. mit <a href="https://github.com/Conservatory/openstv">OpenSTV</a> überprüft werden.</p>
           {% endif %}
         </div>
-        <h2 id="candidate-list">Kandidaten</h2>
+        <h2 id="candidate-list">{{ vote_candidate|length }} Kandidat{{ "en" if vote_candidate|length != 1 else "" }}</h2>
         <p>Folgende Benutzer stehen in dieser Wahl als Kandidaten zur Verfügung:</p>
         {% for c in vote_candidate if (not c.isRetracted() or c.isFailed()) or user.isDev() %}
           <div class="_card {% if c.isRetracted() or c.isFailed() %}_card-danger{% endif %}">
@@ -117,10 +103,11 @@
                 <div class="column7__lg column12">
                   <div class="_link-list">
                     {% if (user.isDev() or user.id == c.getCandidate().id) and c.getDetail("state") == 0 and vote_state < 4 %}
-                      <a href="#!" onclick="if(confirm('Willst du diese Kandidatur wirklich zurückziehen? Du kannst danach nicht erneut kandidieren und die Kandidatur kann nicht wiederhergestellt werden.'))$post('election/api/{{ vote_id }}', {'action':'retract', 'candidate': {{ c.id }}}, function(){window.location.reload();})" style="font-weight:bold;">Zurückziehen</a>
+                      <a href="#!" onclick="if(confirm('Willst du diese Kandidatur wirklich zurückziehen? Du kannst danach nicht erneut kandidieren und die Kandidatur kann nicht wiederhergestellt werden.'))$.ajax({'url': '/election/{{ vote_id }}/api', method:'POST', contentType: 'application/json; charset=utf-8', data: JSON.stringify({'action':'retract', 'candidate': 1 }), 'success':function(){window.location.reload();}})">zurückziehen</a>
+                      <a href="/election/{{ vote_id }}/add-nomination">bearbeiten</a>
                     {% endif %}
                     {% if user.isDev() and vote_state == 6 %}
-                      <a href="#!" onclick="if(confirm('Die Kandidatur kann nicht wiederhergestellt werden. Wollen Sie wirklich fortfahren?'))$post('election/api/{{ vote_id }}', {'action':'retract', 'candidate': {{ c.id }}}, function(){window.location.reload();})" style="font-weight:bold;">Vereinbarung abgelehnt</a>
+                      <a href="#!" onclick="if(confirm('Willst du diese Kandidatur wirklich zurückziehen? Du kannst danach nicht erneut kandidieren und die Kandidatur kann nicht wiederhergestellt werden.'))$.ajax({'url': '/election/{{ vote_id }}/api', method:'POST', contentType: 'application/json; charset=utf-8', data: JSON.stringify({'action':'retract', 'candidate': 1 }), 'success':function(){window.location.reload();}})">Vereinbarung abgelehnt</a>
                     {% endif %}
                     {% if vote_state == 3 and user.id != c.getCandidate().id %}
                       <a href="#!" onclick="document.getElementById('ask-{{ c.id }}-dialog').classList.remove('hide');" style="font-weight:normal;">Frage stellen</a>
@@ -188,7 +175,7 @@
                   <ul id="ask-{{ c.id }}-questionlist">
                     {% for q in c.getQuestions() %}
                       <li>
-                        {% if q.isLate() %}<p style="color: #a00"><strong>[Verspätet]</strong> {% elif q.getA() %}<p style="color: #0a0">{% else %}<p style="color: #aa0">{% endif %}{{ q.getQ() }} <a href="#!" onclick="self=this;$post('election/api/{{ vote_id }}', {'action':'answer', 'candidate': {{ c.id }}, 'answer': document.getElementById('answer-question-{{ q.id }}').value, 'question': {{ q.id }} }, function(){self.innerText='Gespeichert.'; window.setTimeout(function(x) {x.innerText='Speichern'}, 1000, self)})">Speichern</a></p>
+                        {% if q.isLate() %}<p style="color: #a00"><strong>[Verspätet]</strong> {% elif q.getA() %}<p style="color: #0a0">{% else %}<p style="color: #aa0">{% endif %}{{ q.getQ() }} <a href="#!" onclick="self=this;$.ajax({'url': '/election/{{ vote_id }}/api', method:'POST', contentType: 'application/json; charset=utf-8', data: JSON.stringify({'action':'answer', 'candidate': {{ c.id }}, 'answer': document.getElementById('answer-question-{{ q.id }}').value, 'question': {{ q.id }} }), 'success':function(){self.innerText='Gespeichert.'; window.setTimeout(function(x) {x.innerText='Speichern'}, 1000, self)});">Speichern</a></p>
                         <input id="answer-question-{{ q.id}}" value="{{ q.getA() }}">
                       </li>
                     {% endfor %}
@@ -202,45 +189,50 @@
           {% endif %}
         {% endfor %}
       </main>
+      <aside class="column3 column12__sm">
+        <div class="p2">
+          <dl>
+            <dt>Zu besetzende Plätze</dt>
+            <dd>{{ vote_places }}</dd>
+            <dt>Anzahl Kandidaten</dt>
+            <dd>{{ vote_candidate|length }}</dd>
+          </dl>
+        </div>
+        <div class="_card _card-info">
+          <div class="_card-title _card-title-small">Ablauf</div>
+          <div class="_card-content">
+            <p>Eine Wahl besteht aus drei Phasen. In der <strong>Nominationsphase</strong> können Benutzer mit mindestens {{ mincandrep }} Reputationspunkten ihre Kandidatur erklären. In der <strong>Interviewphase</strong> können den Kandidaten Fragen gestellt werden. In der <strong>Wahlphase</strong> können alle Benutzer für drei Kandidaten stimmen. Die Rangfolge (1., 2. oder 3. Wahl) wird nach einem Verfahren namens <a href="https://de.wikipedia.org/wiki/%C3%9Cbertragbare_Einzelstimmgebung">Meek STV</a> ausgewertet und so werden die Sieger bestimmt.</p>
+          </div>
+        </div>
+      </aside>
     </div>
 
-{% if vote_state == 2 and user.getReputation() >= candminrep %}
-<div class="_dialog hide" id="nomination-dialog">
-    <div class="flagging-dialog">
-        <a href="#!" class="_xbtn _dialog-xbtn" onclick="document.getElementById('nomination-dialog').classList.add('hide');">&times;</a>
-        <h3>Kandidideren</h3>
-        <p>Warum möchtest du gerne als {{ vote_position }} kandidieren?</p>
-        <textarea id="nomination_message"></textarea>
 
-        <p>
-            <button onclick="addNomination()" class="_btn _btn-danger">Kandidieren</button>
-            <button onclick="document.getElementById('nomination-dialog').classList.add('hide');" class="_btn">Abbrechen</button>
-        </p>
-        <script>
-        function addNomination() {
-          $post('election/candidate/{{ vote_id }}', { 'message':document.getElementById("nomination_message").value }, function(resp){window.location.reload();});
-        }
-        </script>
-  </div>
-</div>
-{% elif vote_state == 3 %}
+{% if vote_state == 3 %}
 <script>
 function add_Question(id) {
-  $post('election/api/{{ vote_id }}', {'candidate': id, 'action':"ask", 'message':document.getElementById("ask-"+String(id)+"-question").value }, function(resp){
-    _ = document.createElement("li")
-    _.innerText = document.getElementById("ask-"+String(id)+"-question").value;
-    document.getElementById("ask-"+String(id)+"-questionlist").appendChild(_);
-    ul = document.getElementById("ask-"+String(id)+"-questionlist").children.length;
-    document.getElementById("ask-"+String(id)+"-searchlabel").innerText = "Insgesamt " + String(ul) + " Fragen";
-    document.getElementById("ask-"+String(id)+"-question").value = "";
-  });
+  $.ajax({
+    'url': '/election/{{ vote_id }}/api',
+    method:'POST',
+    contentType: 'application/json; charset=utf-8', data: JSON.stringify({
+      'action':'retract', 'candidate': 1
+    }),
+    'success':function(){
+      _ = document.createElement("li")
+      _.innerText = document.getElementById("ask-"+String(id)+"-question").value;
+      document.getElementById("ask-"+String(id)+"-questionlist").appendChild(_);
+      ul = document.getElementById("ask-"+String(id)+"-questionlist").children.length;
+      document.getElementById("ask-"+String(id)+"-searchlabel").innerText = "Insgesamt " + String(ul) + " Fragen";
+      document.getElementById("ask-"+String(id)+"-question").value = "";
+    }
+  })
 }
 </script>
 {% elif vote_state == 5 %}
 <script>
   function vote(vote_nr, c) {
     $.ajax({
-      "url": "/election/api/{{ vote_id }}",
+      "url": "/election/{{ vote_id }}/api",
       "method": "POST",
       "data": JSON.stringify({
         "action": "vote",
