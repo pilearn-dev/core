@@ -275,6 +275,8 @@ PiJS.extend("editor", {
         editor.prepend(horizontal_list);
       }
 
+      $(this).find("button").attr("type", "button");
+
       (new PiJS__Editor(editor)).init();
     });
   },
