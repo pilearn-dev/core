@@ -6,7 +6,7 @@ PiJS.extend("topbar", {
     repaudit: ".js--topbar-rep-audit"
   },
   menu_items: [
-    {"title": "Startseite", "url": "/index"},
+    {"title": "Startseite", "url": "/"},
     {"title": "Forum", "url": "/f/0"},
     {"title": "Kurse", "url": "/courses"},
     {"title": "Moderation", "url": "/review"}
