@@ -103,17 +103,17 @@
   }
 
   .global-note {
-    background-color: #d9d900;
+    background-color: #444;
     color: #fff;
     border-radius: 0;
-    margin: .3em auto;
-    max-width: 1000px;
-    width: 99%;
-  }
-  .global-note .note-center {
-    padding: 8px 10px;
     margin: 0;
     max-width: 100%;
+    width: 100%;
+  }
+  .global-note .note-center {
+    padding: 10px;
+    margin: 0 auto;
+    max-width: 1000px;
     width: 100%;
   }
 
