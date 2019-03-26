@@ -182,7 +182,7 @@ class User:
             con = lite.connect('databases/user.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("INSERT INTO reputation (user_id, type, message, amount, recognized) VALUES (?, ?, ?, ?, 0)", (self.id, type, msg, amount))
+            cur.execute("INSERT INTO reputation (user_id, type, message, amount, recognized, given_date) VALUES (?, ?, ?, ?, 0, strftime('%s','now'))", (self.id, type, msg, amount))
             con.commit()
             return True
         except lite.Error as e:
