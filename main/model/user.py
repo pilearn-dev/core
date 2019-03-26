@@ -201,8 +201,13 @@ class User:
             all = cur.fetchall()
             if all is None:
                 return []
-            all = list(map(dict, all))
-            return all
+            allnew = []
+            for i in all:
+                i = dict(i)
+                d = i["given_date"]
+                i["parsed_date"] = [d, ctimes.stamp2german(d), ctimes.stamp2shortrelative(d, False)]
+                allnew.append(i)
+            return allnew
         except lite.Error as e:
             return []
         finally:

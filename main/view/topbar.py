@@ -28,17 +28,15 @@ def topbar_repaudit():
         x["amount_text"] = cnum.num2suff(x["amount"])
         x["message_html"] = md.markdown(x["message"])
         x["count"] = 1
-        if len(dat) >0 and x["message"] == dat[-1]["message"]:
+        if len(dat) >0 and x["message"] == dat[-1]["message"] and x["given_date"] - dat[-1]["given_date"] < 24*3600:
             dat[-1]["count"] += 1
             dat[-1]["amount"] += x["amount"]
             dat[-1]["amount_text"] = cnum.num2suff(dat[-1]["amount"])
         else:
-            print x["message"]
             dat.append(x)
         if len(dat) == 20:
             break
     cuser.knowReputationChanges()
-    print dat
     return render_template("topbar/rep-audit.html", data=dat)
 
 def topbar_user_info():

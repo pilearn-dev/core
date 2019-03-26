@@ -6,7 +6,7 @@
       <div class="grid">
         <div class="colbox p1"><span class="_badge _badge-vote _badge-vote-{{ "danger" if d.amount < 0 else "success" }} _badge-vote-fw _badge-vote-sm">{{ d.amount_text }}</span></div>
         <div class="colbox-fill p1">
-          {#<span class="d-b col-dark-dd push-right">vor 2 min</span>#}
+          <span class="d-b col-dark-dd push-right" title="{{ d.parsed_date[1] }}">{{ d.parsed_date[2] }}</span>
           {#<span class="d-b col-dark-dd mb1">Forum</span>#}
           <span class="d-b">{{ d.message_html|striptags }}</span>
           <span class="d-b fs-caption col-black">{{ d.count }} Ereignis{{ "" if d.count == 1 else "se" }}</span>
