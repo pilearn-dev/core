@@ -69,8 +69,8 @@ def stamp2german(stamp):
     return date
 
 def stamp2shortrelative(stamp, is_delta=False):
-    now = t.time()
-    relta = stamp - now
+    now = int(t.time())
+    relta = (stamp - now)
     if relta > 0:
         if is_delta:
             prefix = "bis in "
@@ -81,52 +81,43 @@ def stamp2shortrelative(stamp, is_delta=False):
             prefix = "seit "
         else:
             prefix = "vor "
-    lang = ["zwei", "drei", "vier", u"fünf", "sechs", "sieben", "acht", "neun", "zehn", "elf", u"zwölf"]
     delta = abs(relta)
     if delta == 1:
         suffix = "1s"
-    elif delta < 12:
-        suffix = lang[delta - 2] + "s"
     elif delta < 60:
         suffix = str(delta) + "s"
     else:
         delta = int(0.5+delta / 60.0)
         if delta == 1:
             suffix = "1 min"
-        elif delta < 12:
-            suffix = lang[delta - 2] + " min"
         elif delta < 60:
             suffix = str(delta) + " min"
         else:
             delta = int(0.5+delta / 60.0)
             if delta == 1:
                 suffix = "1h"
-            elif delta < 12:
-                suffix = lang[delta - 2] + "h"
             elif delta < 24:
                 suffix = str(delta) + "h"
             else:
                 delta = int(0.5+delta / 24.0)
                 if delta < 7:
-                    suffix = lang[delta - 2] + "d"
+                    suffix = str(delta) + "d"
                 else:
                     delta = int(0.5+delta / 7.0)
                     if delta == 1:
                         suffix = "w"
                     elif delta < 4:
-                        suffix = lang[delta - 2] + "w"
+                        suffix = str(delta) + "w"
                     else:
                         delta = int(0.5+delta / 4.0)
                         if delta == 1:
                             suffix = "m"
                         elif delta < 12:
-                            suffix = lang[delta - 2] + "m"
+                            suffix = str(delta) + "m"
                         else:
                             delta = int(0.5+delta / 12.0)
                             if delta == 1:
                                 suffix = "y"
-                            elif delta <= 12:
-                                suffix = lang[delta - 2] + "y"
                             else:
                                 suffix = str(delta) + "y"
     return prefix + suffix
