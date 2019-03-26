@@ -68,6 +68,69 @@ def stamp2german(stamp):
             str(loct.tm_sec).zfill(2)
     return date
 
+def stamp2shortrelative(stamp, is_delta=False):
+    now = t.time()
+    relta = stamp - now
+    if relta > 0:
+        if is_delta:
+            prefix = "bis in "
+        else:
+            prefix = "in "
+    else:
+        if is_delta:
+            prefix = "seit "
+        else:
+            prefix = "vor "
+    lang = ["zwei", "drei", "vier", u"fünf", "sechs", "sieben", "acht", "neun", "zehn", "elf", u"zwölf"]
+    delta = abs(relta)
+    if delta == 1:
+        suffix = "1s"
+    elif delta < 12:
+        suffix = lang[delta - 2] + "s"
+    elif delta < 60:
+        suffix = str(delta) + "s"
+    else:
+        delta = int(0.5+delta / 60.0)
+        if delta == 1:
+            suffix = "1 min"
+        elif delta < 12:
+            suffix = lang[delta - 2] + " min"
+        elif delta < 60:
+            suffix = str(delta) + " min"
+        else:
+            delta = int(0.5+delta / 60.0)
+            if delta == 1:
+                suffix = "1h"
+            elif delta < 12:
+                suffix = lang[delta - 2] + "h"
+            elif delta < 24:
+                suffix = str(delta) + "h"
+            else:
+                delta = int(0.5+delta / 24.0)
+                if delta < 7:
+                    suffix = lang[delta - 2] + "d"
+                else:
+                    delta = int(0.5+delta / 7.0)
+                    if delta == 1:
+                        suffix = "w"
+                    elif delta < 4:
+                        suffix = lang[delta - 2] + "w"
+                    else:
+                        delta = int(0.5+delta / 4.0)
+                        if delta == 1:
+                            suffix = "m"
+                        elif delta < 12:
+                            suffix = lang[delta - 2] + "m"
+                        else:
+                            delta = int(0.5+delta / 12.0)
+                            if delta == 1:
+                                suffix = "y"
+                            elif delta <= 12:
+                                suffix = lang[delta - 2] + "y"
+                            else:
+                                suffix = str(delta) + "y"
+    return prefix + suffix
+
 def stamp2relative(stamp, is_delta=False):
     now = t.time()
     relta = stamp - now
@@ -78,7 +141,7 @@ def stamp2relative(stamp, is_delta=False):
             prefix = "in "
     else:
         if is_delta:
-            prefix = "seit"
+            prefix = "seit "
         else:
             prefix = "vor "
     lang = ["zwei", "drei", "vier", u"fünf", "sechs", "sieben", "acht", "neun", "zehn", "elf", u"zwölf"]
