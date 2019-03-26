@@ -19,7 +19,7 @@ visible TINYINT
 
 ;CREATE TABLE annotations (id INTEGER PRIMARY KEY, user_id INT, creator_id INT, creation_date INT, is_hidden TINYINT, content TEXT, type VARCHAR(20))
 
-;CREATE TABLE reputation (id INTEGER PRIMARY KEY, user_id INT, type VARCHAR(20), message TEXT, amount INT, recognized TINYINT)
+;CREATE TABLE reputation (id INTEGER PRIMARY KEY, user_id INT, type VARCHAR(20), message TEXT, amount INT, recognized TINYINT, given_date INT)
 
 ;CREATE TABLE reviewbans (id INTEGER PRIMARY KEY, queue VARCHAR(25), user_id INT, given_by INT, cancelled_by INT, start_date INT, end_date INT, invalidated TINYINT, comment TEXT)
 
