@@ -4,7 +4,7 @@
   {% for d in data if d.amount != 0 %}
     <a class="_list-item fs-base1 p-r _list-item-keepcolor {% if not d.recognized %}-highlighted{% endif %}" href="#!">
       <div class="grid">
-        <div class="colbox p1"><span class="_badge _badge-vote _badge-vote-{{ "danger" if d.amount < 0 else "success" }} _badge-vote-fw _badge-vote-sm">{{ d.amount_text }}</span></div>
+        <div class="colbox p1"><span class="_badge _badge-vote _badge-vote-{{ "danger" if d.amount < 0 else "success" }} _badge-vote-fw _badge-vote-sm">{{ "+" if d.amount > 0 else "" }}{{ d.amount_text }}</span></div>
         <div class="colbox-fill p1">
           <span class="d-b col-dark-dd push-right" title="{{ d.parsed_date[1] }}">{{ d.parsed_date[2] }}</span>
           {#<span class="d-b col-dark-dd mb1">Forum</span>#}
