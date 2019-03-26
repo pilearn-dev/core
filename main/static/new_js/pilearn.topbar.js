@@ -51,7 +51,7 @@ PiJS.extend("topbar", {
 
       $.ajax({
         url: "/topbar/user-info",
-        timeout: 4000,
+        timeout: 7000,
         success: function( result ) {
           dialog.removeClass("p2");
           dialog.html(result);
@@ -80,7 +80,6 @@ PiJS.extend("topbar", {
 
       $.ajax({
         url: "/topbar/inbox",
-        timeout: 4000,
         success: function( result ) {
           dialog.html(result);
         },
@@ -108,7 +107,6 @@ PiJS.extend("topbar", {
 
       $.ajax({
         url: "/topbar/rep-audit",
-        timeout: 4000,
         success: function( result ) {
           dialog.html(result);
         },
