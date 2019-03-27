@@ -2,6 +2,34 @@
 <div class="p1">
   <div class="_list">
   {% for d in data if d.amount != 0 %}
+    {% if 24*3600 > now - d.given_date > 0 %}
+      {% set mg=1 %}
+    {% elif 2*24*3600 > now - d.given_date > 24*3600 %}
+      {% set mg=2 %}
+    {% elif 7*24*3600 > now - d.given_date > 2*24*3600 %}
+      {% set mg=3 %}
+    {% elif 30*24*3600 > now - d.given_date > 7*24*3600 %}
+      {% set mg=4 %}
+    {% elif 365*24*3600 > now - d.given_date > 30*24*3600 %}
+      {% set mg=5 %}
+    {% else %}
+      {% set mg=6 %}
+    {% endif %}
+    {% if changed(mg) %}
+      {% if mg == 1 %}
+        <span class="_list-seperator col-dark-dd">Heute</span>
+      {% elif mg == 2 %}
+        <span class="_list-seperator col-dark-dd">Gestern</span>
+      {% elif mg == 3 %}
+        <span class="_list-seperator col-dark-dd">Letzte Woche</span>
+      {% elif mg == 4 %}
+        <span class="_list-seperator col-dark-dd">Letzter Monat</span>
+      {% elif mg == 5 %}
+        <span class="_list-seperator col-dark-dd">Letztes Jahr</span>
+      {% elif mg == 6 %}
+        <span class="_list-seperator col-dark-dd">Älter als ein Jahr</span>
+      {% endif %}
+    {% endif %}
     <a class="_list-item fs-base1 p-r _list-item-keepcolor {% if not d.recognized %}-highlighted{% endif %}" href="#!">
       <div class="grid">
         <div class="colbox p1"><span class="_badge _badge-vote _badge-vote-{{ "danger" if d.amount < 0 else "success" }} _badge-vote-fw _badge-vote-sm">{{ "+" if d.amount > 0 else "" }}{{ d.amount_text }}</span></div>

@@ -6,7 +6,7 @@ from controller import num as cnum, times as ctimes
 import markdown as md
 
 from sha1 import sha1
-import json, time
+import json, time, pprint
 
 def topbar_inbox():
     TYPES = {
@@ -37,7 +37,12 @@ def topbar_repaudit():
         if len(dat) == 20:
             break
     cuser.knowReputationChanges()
-    return render_template("topbar/rep-audit.html", data=dat)
+    request.prev=None
+    def changed(l):
+        b = l != request.prev
+        request.prev = l
+        return b
+    return render_template("topbar/rep-audit.html", data=dat, now=time.time(), changed=changed)
 
 def topbar_user_info():
     return render_template("topbar/user-info.html")

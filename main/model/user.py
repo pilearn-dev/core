@@ -197,7 +197,7 @@ class User:
             con = lite.connect('databases/user.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT * FROM reputation WHERE user_id=? ORDER BY id DESC", (self.id, ))
+            cur.execute("SELECT * FROM reputation WHERE user_id=? ORDER BY given_date DESC, id DESC", (self.id, ))
             all = cur.fetchall()
             if all is None:
                 return []
