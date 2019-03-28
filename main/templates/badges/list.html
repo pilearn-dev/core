@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h2>Abzeichen</h2>
+    <p>Zusätzlich zur Reputation gibt es noch Abzeichen, die du für die Benutzung der Seite erhalten kannst. Abzeichen kommen in drei Stufen: <span class="ubadge ubadge-bronze"><span class="ubadge-icon"></span>Bronze</span>, <span class="ubadge ubadge-silver"><span class="ubadge-icon"></span>Silber</span> und <span class="ubadge ubadge-gold"><span class="ubadge-icon"></span>Gold</span></p>
+    {% for b in badges %}
+    {% if changed(b.getClass()) %}
+    {% if not loop.first %}
+    </ul>
+    {% endif %}
+    <h3>{{ {"bronze": "Bronze", "silver":"Silber", "gold": "Gold"}[b.getClass()] }}</h3>
+    <ul>
+    {% endif %}
+      <li><a class="ubadge ubadge-{{ b.getClass() }}" href="/badges/{{ b.id }}"><span class="ubadge-icon"></span>{{ b.getName() }}</a> &ndash; {{ b.getDescription() }}</li>
+    {% endfor %}
+    </ul>
+{% endblock %}
