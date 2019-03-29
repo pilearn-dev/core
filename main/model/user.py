@@ -135,6 +135,21 @@ class User:
             if con:
                 con.close()
 
+    def hasUnknownBadges(self):
+        if self.id == -3: return
+        try:
+            con = lite.connect('databases/user.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT Count(*) FROM badge_associations WHERE userid = ? AND recognized=0", (self.id,))
+            d = cur.fetchone()[0]
+            return d != 0
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
     def getHTMLName(self, with_border=True):
         try:
             name = self.getDetail("realname")
@@ -214,6 +229,30 @@ class User:
             if con:
                 con.close()
 
+    def getTopbarAwards(self):
+        if self.id == -3: return []
+        try:
+            con = lite.connect('databases/user.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM (SELECT \"reputation\" AS type, amount AS data, given_date, message AS label, Null AS class, recognized FROM reputation WHERE user_id=? UNION SELECT \"badge\" AS type, badge_associations.data AS data, badge_associations.given_date, badges.name AS label, badges.class AS class, badge_associations.recognized AS recognized FROM badges, badge_associations WHERE userid=? AND badge_associations.badgeid=badges.id) ORDER BY given_date DESC LIMIT 50", (self.id, self.id))
+            all = cur.fetchall()
+            if all is None:
+                return []
+            allnew = []
+            for i in all:
+                i = dict(i)
+                d = i["given_date"]
+                i["parsed_date"] = [d, ctimes.stamp2german(d), ctimes.stamp2shortrelative(d, False)]
+                allnew.append(i)
+            return allnew
+        except lite.Error as e:
+            print(e)
+            return []
+        finally:
+            if con:
+                con.close()
+
     def getUnknownReputationChanges(self):
         if self.id == -3: return []
         try:
@@ -239,6 +278,21 @@ class User:
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE reputation SET recognized=1 WHERE user_id=? AND recognized=0", (self.id, ))
+            all = con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def knowNewBadges(self):
+        if self.id == -3: return []
+        try:
+            con = lite.connect('databases/user.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("UPDATE badge_associations SET recognized=1 WHERE userid=? AND recognized=0", (self.id, ))
             all = con.commit()
             return True
         except lite.Error as e:

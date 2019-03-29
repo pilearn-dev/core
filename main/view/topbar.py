@@ -24,19 +24,21 @@ def topbar_inbox():
 def topbar_repaudit():
     cuser = muser.getCurrentUser()
     dat = []
-    for x in cuser.getReputationChanges():
-        x["amount_text"] = cnum.num2suff(x["amount"])
-        x["message_html"] = md.markdown(x["message"])
-        x["count"] = 1
-        if len(dat) >0 and x["message"] == dat[-1]["message"] and x["given_date"] - dat[-1]["given_date"] < 24*3600:
-            dat[-1]["count"] += 1
-            dat[-1]["amount"] += x["amount"]
-            dat[-1]["amount_text"] = cnum.num2suff(dat[-1]["amount"])
-        else:
+    for x in cuser.getTopbarAwards():
+        if x["type"] == "reputation":
+            x["amount_text"] = cnum.num2suff(x["data"])
+            x["message_html"] = md.markdown(x["label"])
+            x["count"] = 1
+            if len(dat) >0 and dat[-1]["type"] == "reputation" and x["label"] == dat[-1]["label"] and x["given_date"] - dat[-1]["given_date"] < 24*3600:
+                dat[-1]["count"] += 1
+                dat[-1]["amount"] += x["amount"]
+                dat[-1]["amount_text"] = cnum.num2suff(dat[-1]["amount"])
+            else:
+                dat.append(x)
+        elif x["type"] == "badge":
             dat.append(x)
-        if len(dat) == 20:
-            break
     cuser.knowReputationChanges()
+    cuser.knowNewBadges()
     request.prev=None
     def changed(l):
         b = l != request.prev
