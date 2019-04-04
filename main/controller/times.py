@@ -82,21 +82,15 @@ def stamp2shortrelative(stamp, is_delta=False):
         else:
             prefix = "vor "
     delta = abs(relta)
-    if delta == 1:
-        suffix = "1s"
-    elif delta < 60:
+    if delta < 60:
         suffix = str(delta) + "s"
     else:
         delta = int(0.5+delta / 60.0)
-        if delta == 1:
-            suffix = "1 min"
-        elif delta < 60:
+        if delta < 60:
             suffix = str(delta) + " min"
         else:
             delta = int(0.5+delta / 60.0)
-            if delta == 1:
-                suffix = "1h"
-            elif delta < 24:
+            if delta < 24:
                 suffix = str(delta) + "h"
             else:
                 delta = int(0.5+delta / 24.0)
@@ -104,22 +98,15 @@ def stamp2shortrelative(stamp, is_delta=False):
                     suffix = str(delta) + "d"
                 else:
                     delta = int(0.5+delta / 7.0)
-                    if delta == 1:
-                        suffix = "w"
-                    elif delta < 4:
+                    if delta < 4:
                         suffix = str(delta) + "w"
                     else:
                         delta = int(0.5+delta / 4.0)
-                        if delta == 1:
-                            suffix = "m"
-                        elif delta < 12:
+                        if delta < 12:
                             suffix = str(delta) + "m"
                         else:
                             delta = int(0.5+delta / 12.0)
-                            if delta == 1:
-                                suffix = "y"
-                            else:
-                                suffix = str(delta) + "y"
+                            suffix = str(delta) + "y"
     return prefix + suffix
 
 def stamp2relative(stamp, is_delta=False):
