@@ -13,5 +13,12 @@ def badges_page():
         return b
     return render_template("badges/list.html", title="Abzeichen", badges=sorted(mbadges.Badge.getAll(), key=lambda x:["bronze","silver","gold"].index(x.getClass())), changed=changed)
 
+def badges_single(id):
+    if not mbadges.Badge.exists(id):
+        abort(404)
+    badge = mbadges.Badge(id)
+    return render_template("badges/single.html", title="Abzeichen " + badge.getName(), b=badge)
+
 def apply(app):
     app.route('/badges')(badges_page)
+    app.route('/badges/<int:id>')(badges_single)

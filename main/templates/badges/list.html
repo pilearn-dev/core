@@ -9,8 +9,8 @@
     {% endif %}
     <h3>{{ {"bronze": "Bronze", "silver":"Silber", "gold": "Gold"}[b.getClass()] }}</h3>
     <ul>
-    {% endif %}
-      <li><a class="ubadge ubadge-{{ b.getClass() }}" href="/badges/{{ b.id }}"><span class="ubadge-icon"></span>{{ b.getName() }}</a> &ndash; {{ b.getDescription() }}</li>
+    {% endif %}{% set ac = b.getAwardeeCount() %}
+      <li><a class="ubadge ubadge-{{ b.getClass() }}" href="/badges/{{ b.id }}"><span class="ubadge-icon"></span>{{ b.getName() }}</a> &ndash; {{ b.getDescription() }}{% if ac != 0 %} <em>({{ ac }} &times; verliehen)</em>{% endif %}</li>
     {% endfor %}
     </ul>
 {% endblock %}

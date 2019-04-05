@@ -28,6 +28,42 @@ class Badge:
             if con:
                 con.close()
 
+    def getAwardees(self):
+        try:
+            con = lite.connect('databases/user.db')
+            cur = con.cursor()
+            cur.execute("SELECT * FROM badge_associations WHERE badgeid=? ORDER BY given_date DESC", (self.id,))
+            data = cur.fetchall()
+            d = []
+            for _ in data:
+                dt = _[4]
+                dt = [dt, ctimes.stamp2german(dt), ctimes.stamp2shortrelative(dt, False)]
+                d.append({
+                    "user": muser.User.from_id(_[0]),
+                    "data": _[2],
+                    "time": dt
+                })
+                if len(d) == 40:
+                    break
+            return d
+        except lite.Error as e:
+            return []
+        finally:
+            if con:
+                con.close()
+
+    def getAwardeeCount(self):
+        try:
+            con = lite.connect('databases/user.db')
+            cur = con.cursor()
+            cur.execute("SELECT Count(*) FROM badge_associations WHERE badgeid=? ORDER BY given_date DESC", (self.id,))
+            return cur.fetchone()[0]
+        except lite.Error as e:
+            return 0
+        finally:
+            if con:
+                con.close()
+
     def getName(self): return self.getDetail("name")
     def getClass(self): return self.getDetail("class")
     def getDescription(self): return self.getDetail("description")
