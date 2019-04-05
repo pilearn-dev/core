@@ -470,6 +470,21 @@ class User:
     def getReputation(self):
         return max(0, self.getDetail("reputation"))
 
+    def getBadgeBreakdown(self):
+        try:
+            con = lite.connect('databases/user.db')
+            cur = con.cursor()
+            cur.execute("SELECT Count(*), badges.class FROM badges, badge_associations WHERE badge_associations.badgeid=badges.id AND badge_associations.userid=? GROUP BY badges.class", (self.id, ))
+            data = cur.fetchall()
+            data = sorted(data, key=lambda x:["gold", "silver", "bronze"].index(x[1]))
+            return data
+        except lite.Error as e:
+            print(e)
+            return []
+        finally:
+            if con:
+                con.close()
+
     def editAnnotation(self, id, d, v):
         try:
             con = lite.connect('databases/user.db')

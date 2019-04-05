@@ -57,6 +57,9 @@
               <img src="{{ user.getDetail("profile_image") }}" class="_header-img mr2__lg mr0" aria-hidden="true">
             {% endif %}
             <span class="_badge _badge-score hide__md hide__sm">{{ user.getReputation() }}</span>
+            {% for type in user.getBadgeBreakdown() %}
+            <span class="_badge _badge-score _badge-score-{{ type[1] }} hide__md hide__sm"><span class="_badge-icon"></span>{{ type[0] }}</span>
+            {% endfor %}
           </a>
 
           {% set notificationCount = g.countNotifications(user_messages) %}
