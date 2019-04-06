@@ -1,7 +1,7 @@
 <div class="_floatbox-header bg-dark-ll">Auszeichnungen</div>
 <div class="p1">
   <div class="_list">
-  {% for d in data if d.amount != 0 %}
+  {% for d in data if d.data != 0 %}
     {% if 24*3600 > now - d.given_date > 0 %}
       {% set mg=1 %}
     {% elif 2*24*3600 > now - d.given_date > 24*3600 %}

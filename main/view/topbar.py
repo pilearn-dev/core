@@ -26,13 +26,11 @@ def topbar_repaudit():
     dat = []
     for x in cuser.getTopbarAwards():
         if x["type"] == "reputation":
-            x["amount_text"] = cnum.num2suff(x["data"])
             x["message_html"] = md.markdown(x["label"])
             x["count"] = 1
             if len(dat) >0 and dat[-1]["type"] == "reputation" and x["label"] == dat[-1]["label"] and x["given_date"] - dat[-1]["given_date"] < 24*3600:
                 dat[-1]["count"] += 1
-                dat[-1]["amount"] += x["amount"]
-                dat[-1]["amount_text"] = cnum.num2suff(dat[-1]["amount"])
+                dat[-1]["data"] += x["data"]
             else:
                 dat.append(x)
         elif x["type"] == "badge":
