@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block body %}
+    <h2>Abzeichen <span class="ubadge ubadge-{{ b.getClass() }}"><span class="ubadge-icon"></span>{{ b.getName() }}</span></h2>
+    <p>{{ b.getDescription() }}</p>
+    <h3>Verliehen an</h3>
+    <ul>
+    {% for data in b.getAwardees() %}
+      <li><a href="/u/{{ data.user.id }}">{{ data.user.getHTMLName()|safe }}</a> <span title="{{ data.time[1] }}">{{ data.time[2] }}</span></li>
+    {% endfor %}
+    </ul>
+{% endblock %}

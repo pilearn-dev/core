@@ -1,4 +1,4 @@
-<div class="_floatbox-header bg-dark-ll">Reputation</div>
+<div class="_floatbox-header bg-dark-ll">Auszeichnungen</div>
 <div class="p1">
   <div class="_list">
   {% for d in data if d.amount != 0 %}
@@ -31,8 +31,9 @@
       {% endif %}
     {% endif %}
     <a class="_list-item fs-base1 p-r _list-item-keepcolor {% if not d.recognized %}-highlighted{% endif %}" href="#!">
+      {% if d.type == "reputation" %}
       <div class="grid">
-        <div class="colbox p1"><span class="_badge _badge-vote _badge-vote-{{ "danger" if d.amount < 0 else "success" }} _badge-vote-fw _badge-vote-sm">{{ "+" if d.amount > 0 else "" }}{{ d.amount_text }}</span></div>
+        <div class="colbox p1"><span class="_badge _badge-vote _badge-vote-{{ "danger" if d.data < 0 else "success" }} _badge-vote-fw _badge-vote-sm">{{ "+" if d.data > 0 else "&ndash;" }}{{ d.data if data > 0 else -d.data }}</span></div>
         <div class="colbox-fill p1">
           <span class="d-b col-dark-dd push-right" title="{{ d.parsed_date[1] }}">{{ d.parsed_date[2] }}</span>
           {#<span class="d-b col-dark-dd mb1">Forum</span>#}
@@ -40,6 +41,12 @@
           <span class="d-b fs-caption col-black">{{ d.count }} Ereignis{{ "" if d.count == 1 else "se" }}</span>
         </div>
       </div>
+      {% elif d.type == "badge" %}
+      <div class="p1">
+        <span class="d-b col-dark-dd push-right" title="{{ d.parsed_date[1] }}">{{ d.parsed_date[2] }}</span>
+        <span class="d-b col-black">Du hast das Abzeichen <span class="_badge _badge-award _badge-award-{{ d.class }}"><span class="_badge-icon"></span>{{ d.label }}</span> erhalten.</span>
+      </div>
+      {% endif %}
     </a>
   {% endfor %}
   </div>

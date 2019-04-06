@@ -94,4 +94,17 @@ create table modmsg_templates (
   title VARCHAR(50),
   content TEXT,
   may_be_used TINYINT
-)
+);
+
+create table badges (id INTEGER PRIMARY KEY, name VARCHAR(40), class VARCHAR(10), description TEXT, internal_id VARCHAR(50));create table badge_associations (userid INT, badgeid INT, data TEXT, recognized TINYINT, given_date INT);
+
+insert into badges (name, class, description, internal_id) values ("Genie", "silver", "Erreiche 100 Reputation", "100-reputation"), ("Hoch und Heilig", "bronze", "Erkläre deine Absicht, an einem Kurs teilzunehmen, der bisher nur als Vorschlag vorliegt.", "first-course-promise"), ("Angebot", "bronze", "Ersten Kursvorschlag eingereicht", "first-course-proposal"), ("Nachfrage", "bronze", "Ersten erfolgreichen Kursvorschlag eingereicht (Kurs wurde erstellt)", "first-course"), ("Unaufhörlich", "silver", "Fünf erfolgreiche Kursvorschläge eingereicht (Kurse wurden erstellt)", "lots-of-courses"), ("Geschafft", "silver", "Ersten Kurs fertiggestellt und veröffentlicht", "first-course-completed"), ("Cooler Kurs", "bronze", "Einen Kurs mit 5 Teilnehmenden anbieten", "course-user-small"), ("Großartiger Kurs", "silver", "Einen Kurs mit 40 Teilnehmenden anbieten", "course-user-medium"), ("Wahnsinniger Kurs", "gold", "Einen Kurs mit 100 Teilnehmenden anbieten", "course-user-large");
+
+insert into badges (name, class, description, internal_id) values ("Anerkennend", "bronze", "Gebe einem Post einen Upvote", "first-upvote"), ("Kritisch", "bronze", "Gebe einem Post einen Downvote", "first-downvote"), ("Stammwähler", "silver", "Gebe 50 Bewertungen von Posts ab.", "lots-of-votes"), ("Cooler Beitrag", "bronze", "Einen Beitrag mit einer Bewertung von 5 veröffentlichen", "post-score-small"), ("Großartiger Beitrag", "silver", "Einen Beitrag mit einer Bewertung von 20 veröffentlichen", "post-score-medium"), ("Wahnsinniger Beitrag", "gold", "Einen Beitrag mit einer Bewertung von 50 veröffentlichen", "post-score-large");
+
+
+insert into badges (name, class, description, internal_id) values ("Nachgefragt", "bronze", "Poste deine erste Frage (mit positiver Bewertung)", "first-question"), ("Herr Warum", "silver", "Poste fünf Fragen (mit positiver Bewertung)", "lots-of-questions"), ("Erleuchtung", "bronze", "Stelle eine Frage und akzeptiere eine Antwort", "first-accept");
+
+insert into badges (name, class, description, internal_id) values ("Gewusst!", "bronze", "Beantworte eine Frage (mit positiver Bewertung)", "first-answer"), ("Schlaumeier", "silver", "Beantworte fünf Fragen (mit positiver Bewertung)", "lots-of-answers"), ("Besserwisser", "silver", "Drei eigene Antworten wurden akzeptiert, obwohl es weitere Antworten gab.", "better-than-rivalry-answers");
+
+insert into badges (name, class, description, internal_id) values ("Moderator", "gold", "Diene als Community-gewählter Moderator für mindestens ein halbes Jahr (Dieses Abzeichen wird manuell verliehen)", "moderator"), ("Möchtegern-Moderator", "gold", "Nehme als Kandidat an einer Moderatoren-Wahl teil und erreiche die Endrunde", "election-finalist"), ("Wähler", "silver", "Stimme für einen Kandidaten in der Endrunde einer Moderatoren-Wahl", "election-voter")

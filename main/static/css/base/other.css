@@ -1,7 +1,7 @@
 /* other styles */
 
 /* - badge/flag */
-.badge {
+.ubadge {
     margin: 2px;
     background-color: #666;
     color: #fff;
@@ -11,19 +11,19 @@
     border-radius: 2px;
     font-weight: bold;
 }
-.badge.positive {
+.ubadge.positive {
   background-color: #4a4;
 }
-.badge.negative {
+.ubadge.negative {
   background-color: #a44;
 }
-.badge.primary {
+.ubadge.primary {
   background-color: #22c;
 }
-.badge.warn {
+.ubadge.warn {
   background-color: #cc2;
 }
-.badge.important {
+.ubadge.important {
   background-color: #c82;
 }
 .flag {
@@ -321,3 +321,14 @@ iframe.hidden {
 #reorder .reorder-item span {
   flex-grow: 1;
 }
+
+
+.ubadge {display:inline-block;font-size:.85rem;margin:.15rem;padding:.24rem .6rem;border-radius:.16rem;background-color:#e6e6e6;color:#666}
+a.ubadge:hover {background-color:#d5d5d5;cursor:pointer}
+.ubadge .ubadge-icon {height:.625em;width:.625em;position:relative;top:-0.25px;border-radius:50%;background-color:#fff;display:inline-block;margin-right:.3rem}
+.ubadge.ubadge-gold .ubadge-icon {background-color:#ebc600}
+.ubadge.ubadge-silver .ubadge-icon {background-color:#b0b0b0}
+.ubadge.ubadge-bronze .ubadge-icon {background-color:#8c7853}
+
+.ubadge .ubadge-revoke {margin:0 .15rem;height:1.05em;width:1.1em;text-align:center;line-height:1;color:#fff;border-radius:50%;background-color:#737373;display:inline-block;text-decoration:none}
+.ubadge .ubadge-revoke:hover{background-color:#595959}

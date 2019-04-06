@@ -9,7 +9,12 @@
   <img src="{{ user.getDetail("profile_image") }}" class="thumbnail-l push-left mb2 mr2">
   {% if user.isMod() %}<span class="col-dark fs-subheading d-b push-right f-brand pt2">Moderator</span>{% endif %}
   <span class="fs-heading d-b"><a href="/u/{{ user.id }}">{{ user.getHTMLName()|safe }}</a></span>
-  <div class="-relative fs-base3"><span class="_badge _badge-score">{{ user.getReputation() }}</span></div>
+  <div class="-relative fs-base3">
+    <span class="_badge _badge-score">{{ user.getReputation() }}</span>
+    {% for type in user.getBadgeBreakdown() %}
+    <span class="_badge _badge-score _badge-score-{{ type[1] }} hide__md hide__sm"><span class="_badge-icon"></span>{{ type[0] }}</span>
+    {% endfor %}
+  </div>
   <p class="fs-3">{{ user.getShortProfileText()|striptags|safe }} <a href="/u/{{ user.id }}">mehr</a></p>
   {% if global_notification %}
   <hr class="hr-original push-reset">
