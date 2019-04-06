@@ -235,7 +235,7 @@ class User:
             con = lite.connect('databases/user.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT * FROM (SELECT \"reputation\" AS type, amount AS data, given_date, message AS label, Null AS class, recognized FROM reputation WHERE user_id=? UNION SELECT \"badge\" AS type, badge_associations.data AS data, badge_associations.given_date, badges.name AS label, badges.class AS class, badge_associations.recognized AS recognized FROM badges, badge_associations WHERE userid=? AND badge_associations.badgeid=badges.id) ORDER BY given_date DESC LIMIT 50", (self.id, self.id))
+            cur.execute("SELECT * FROM (SELECT \"reputation\" AS type, amount AS data, given_date, message AS label, Null AS class, recognized FROM reputation WHERE user_id=? UNION ALL SELECT \"badge\" AS type, badge_associations.data AS data, badge_associations.given_date, badges.name AS label, badges.class AS class, badge_associations.recognized AS recognized FROM badges, badge_associations WHERE userid=? AND badge_associations.badgeid=badges.id) ORDER BY given_date DESC LIMIT 50", (self.id, self.id))
             all = cur.fetchall()
             if all is None:
                 return []
