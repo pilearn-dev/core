@@ -7,9 +7,9 @@
       <p>Dieser Benutzeraccount wurde gelöscht.</p>
     </div>
 {% elif data.isDisabled() %}
-  <div class="user-warning">{% set end=data.getBanEnd(True) %}
-      <p>Dieser Benutzer wurde <strong>{{ data.getBanReason() }}</strong> <span title="{{ end[1] }}">{{ end[2] }}</span> <a href="/help/users/banned">gesperrt.</a></p>
-    </div>
+  <div class="user-warning">{% set end=data.getBanEnd() %}
+    <p>Dieser Benutzer wurde <strong>{{ data.getBanReason() }}</strong> <a href="/help/users/banned">gesperrt</a>. Die Sperrung endet <span title="{{ end[1] }}">{{ end[2] }}</span>.</p>
+  </div>
 {% endif %}
 <div class="tabination">
   <ul>

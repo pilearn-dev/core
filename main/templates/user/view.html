@@ -8,9 +8,9 @@
       <p>Dieser Benutzeraccount wurde gelöscht.</p>
     </div>
 {% elif data.isDisabled() %}
-  <div class="user-warning">{% set end=data.getBanEnd(True) %}
-      <p>Dieser Benutzer wurde <strong>{{ data.getBanReason() }}</strong> <span title="{{ end[1] }}">{{ end[2] }}</span> <a href="/help/users/banned">gesperrt.</a></p>
-    </div>
+  <div class="user-warning">{% set end=data.getBanEnd() %}
+    <p>Dieser Benutzer wurde <strong>{{ data.getBanReason() }}</strong> <a href="/help/users/banned">gesperrt</a>. Die Sperrung endet <span title="{{ end[1] }}">{{ end[2] }}</span>.</p>
+  </div>
 {% endif %}
   {% if user.isAdmin() or user.id == data.id %}
     <div class="tabination">
@@ -161,11 +161,6 @@
             <p class="tiny action-bar">
                 {% if not data.isDeleted() %}
                     <a href="#!" onclick="document.getElementById('privilege-modal').classList.add('open');">Privilegien entziehen</a>
-                    {% if not data.isDisabled() %}
-                    <a href="#!" onclick="document.getElementById('ban-modal').classList.add('open');">Benutzer sperren</a>
-                    {% else %}
-                    <a href="#!" onclick="$post('user/{{ data.id }}/flag', {'type':'unban'}, function (e) {window.location.reload();})">Benutzer entsperren</a>
-                    {% endif %}
                     {% if not data.getDetail("frozen") %}
                     <a href="#!" onclick="$post('user/set/frozen', {'new_value': '1', 'userid': {{ data.id}} }, function(){window.location.reload();});">Konto einfrieren</a>
                     {% else %}
@@ -234,86 +229,6 @@
     <button onclick="document.getElementById('privilege-modal').classList.remove('open');">Fertig</button>
     </div>
 </div>
-{% endif %}
-{% if user.isAdmin() and data.isEnabled() and not data.isDev() %}
-<div class="flagging-modal" id="ban-modal">
-    <div class="flagging-dialog">
-        <div class="close-link"><a href="#!" onclick="document.getElementById('ban-modal').classList.remove('open');">&times;</a></div>
-        <h3>Benutzer sperren</h3>
-        <p>Diesen Benutzer sperren, da er die Nutzungsbedingungen missachtet hat. <strong>Achtung, dies führt zu einer privaten Nachricht und einem Eintrag in den Anmerkungsverlauf</strong></p>
-        <label for="ban-reason">Benutzer <select id="ban-reason"><option value=""></option>{% for opt in data.BAN_REASON.keys()|sort %}<option value="{{ opt }}">{{ data.BAN_REASON[opt] }}</option>{% endfor %}</select> sperren</label>
-        <label for>Dauer</label>
-        <div style="padding: 5px; border: 1px solid #000; margin-left: 75px;" id="ban-duration">
-          <label for="ban-duration-2h" data-ban-recommended-for="50calm-down"><input id="ban-duration-2h" type="radio" name="ban-duration" value="2"> 2 Stunden</label>
-          <label for="ban-duration-1d" data-ban-recommended-for="50calm-down"><input id="ban-duration-1d" type="radio" name="ban-duration" value="24"> 1 Tag</label>
-          <label for="ban-duration-2d" data-ban-recommended-for="50calm-down"><input id="ban-duration-2d" type="radio" name="ban-duration" value="48"> 2 Tage</label>
-          <label for="ban-duration-1w" data-ban-recommended-for="40conflicts 20spam 30offensive 00rule-violation"><input id="ban-duration-1w" type="radio" name="ban-duration" value="168"> 1 Woche</label>
-          <label for="ban-duration-2w" data-ban-recommended-for="40conflicts 20spam 30offensive 00rule-violation"><input id="ban-duration-2w" type="radio" name="ban-duration" value="336"> 2 Wochen</label>
-          <label for="ban-duration-1m" data-ban-recommended-for="40conflicts 20spam 30offensive 00rule-violation"><input id="ban-duration-1m" type="radio" name="ban-duration" value="720"> 1 Monat</label>
-          <label for="ban-duration-3m" data-ban-recommended-for="40conflicts 20spam 30offensive 00rule-violation 10sockpuppets 60no-improvements 70no-contribution"><input id="ban-duration-3m" type="radio" name="ban-duration" value="2160"> 3 Monate</label>
-          <label for="ban-duration-1y" data-ban-recommended-for="40conflicts 20spam 30offensive 00rule-violation 10sockpuppets 60no-improvements 70no-contribution"><input id="ban-duration-1y" type="radio" name="ban-duration" value="8760"> 1 Jahr</label>
-          {% if not user.isTeam() %}
-          <label for="ban-duration-c" data-ban-recommended-for="@custom"><input id="ban-duration-c" type="radio" name="ban-duration" value="c"> <input style="display: inline-block; max-width: 80px; font-weight: normal;" type="number" max="365" min="1" id="ban-duration-c-input"> <small>Tage</small></label>
-          {% else %}
-          <label for="ban-duration-c" data-ban-recommended-for="@custom">
-            <input id="ban-duration-c" type="radio" name="ban-duration" value="c"> <input style="display: inline-block; max-width: 80px; font-weight: normal;" type="number" max="30" min="0" value="0" id="ban-duration-c-input-y"> <small>Jahre</small>&nbsp;&nbsp;
-            <input style="display: inline-block; max-width: 80px; font-weight: normal;" type="number" max="12" min="0" value="0" id="ban-duration-c-input-m"> <small>Monate</small>&nbsp;&nbsp;
-            <input style="display: inline-block; max-width: 80px; font-weight: normal;" type="number" max="30" min="0" value="0" id="ban-duration-c-input-d"> <small>Tage</small>
-          </label>
-          {% endif %}
-        </div>&nbsp;<br>
-        <button class="danger-btn big-btn" onclick="ban()">Jetzt sperren</button>
-    </div>
-</div>
-<script>
-document.getElementById("ban-reason").addEventListener("change", function () {
-  bandur = document.getElementById("ban-duration");
-  for (var i = 0; i < bandur.children.length; i++) {
-    if(bandur.children[i].getAttribute("data-ban-recommended-for") == "@custom") {
-      continue;
-    }
-    if(this.value == "") {
-      bandur.children[i].style.backgroundColor = "#f5f5f5";
-      bandur.children[i].style.opacity = 0.6;
-    } else if(bandur.children[i].getAttribute("data-ban-recommended-for").indexOf(this.value) != -1) {
-      bandur.children[i].style.backgroundColor = "#dfd";
-      bandur.children[i].style.opacity = 1;
-    } else {
-      bandur.children[i].style.opacity = 0.2;
-      bandur.children[i].style.backgroundColor = "#fdd";
-    }
-  }
-})
-bandur = document.getElementById("ban-duration");
-for (var i = 0; i < bandur.children.length; i++) {
-  if(bandur.children[i].getAttribute("data-ban-recommended-for") == "@custom") {
-    continue;
-  }
-  bandur.children[i].style.backgroundColor = "#f5f5f5";
-  bandur.children[i].style.opacity = 0.6;
-}
-function ban() {
-  reason = document.getElementById("ban-reason").value;
-  if(reason == "") {
-    return;
-  }
-  duration = document.querySelector("#ban-duration input[type='radio']:checked");
-  if(duration == null) {
-    return;
-  }
-  duration = duration.value;
-  if(duration == "c") {
-    {% if user.isTeam() %}
-    duration = 24*(document.getElementById("ban-duration-c-input-d").value + 30*document.getElementById("ban-duration-c-input-m").value + 365*document.getElementById("ban-duration-c-input-y").value);
-    {% else %}
-    duration = document.getElementById("ban-duration-c-input").value;
-    {% endif %}
-  }
-  $post("user/{{ data.id }}/flag", {"type":"ban", "reason": reason, "duration": duration}, function (e) {
-    window.location.reload()
-  })
-}
-</script>
 {% endif %}
 {% if user.isDev() and not data.isDeleted() %}
 <div class="flagging-modal" id="labels-modal">

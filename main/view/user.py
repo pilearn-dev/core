@@ -230,28 +230,6 @@ def flag_user(id):
                         return "Ein Fehler ist aufgetreten."
                 else:
                     return "Dir fehlt etwas Reputation, um Nutzer zu melden."
-            elif data["type"] == "ban":
-                if cuser.isAdmin():
-                    user.setDetail("banned", 1)
-                    user.setDetail("ban_reason", data["reason"])
-                    if not cuser.isTeam() and data["duration"] > 24 * 365:
-                        return "Nur das Team kann Benutzer für mehr als ein Jahr sperren. Kontaktieren Sie uns über das Helpdesk."
-                    ban_end = int(time.time()) + 5 + 60 * 60 * int(data["duration"])
-                    user.setDetail("ban_end", ban_end)
-
-                    user.addAnnotation("ban", "**Sperrung** wegen " + user.BAN_REASON[data["reason"]] + u" für " + ctimes.duration2text(60 * 60 * int(data["duration"])), cuser, time.time())
-                    return "{ok}"
-                else:
-                    return "Nur Administratoren dürfen dies."
-            elif data["type"] == "unban":
-                if cuser.isAdmin():
-                    user.setDetail("banned", 0)
-                    user.setDetail("ban_reason", "")
-                    user.setDetail("ban_end", 0)
-                    user.addAnnotation("unban", "manual", cuser, time.time())
-                    return "{ok}"
-                else:
-                    return "Nur Administratoren dürfen dies."
 
         else:
             return "Der Benutzer wurde nicht gefunden. Vielleicht wurde er bereits gelöscht."

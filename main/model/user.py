@@ -34,17 +34,6 @@ class User:
     }
     possibleLabels = ["beta", "mod_active", "mod_retired", "admin_active", "admin_retired", "robot", "betaaccess"]
 
-    BAN_REASON = {
-        "rule-violation": u"wegen Regelverletzung",
-        "sock-puppets": u"wegen illegaler Zweitkonten",
-        "spam": u"wegen des Verbreitens von SPAM",
-        "offensive": u"wegen beleidigenden Verhaltens",
-        "conflicts": u"wegen andauernden Konflikten mit anderen Benutzern",
-        "cool-down": u"zur Konfliktauflösung",
-        "no-improvement": u"als unfähig unsere Regeln zu lernen",
-        "no-positive-contribution": u"als keine Bereicherung für die Community"
-    }
-
     def __init__(self, id):
         self.id = id
         self.__data = self.getInfo()
@@ -168,12 +157,14 @@ class User:
         return name
 
     def getBanReason(self):
-        return User.BAN_REASON[self.getDetail("ban_reason")]
+        return self.getDetail("ban_reason")
 
     def getBanEnd(self, asRelative=False):
         d = self.getDetail("ban_end")
         if asRelative:
             d = [d, ctimes.stamp2german(d), ctimes.stamp2relative(d, True)]
+        else:
+            d = [d, ctimes.stamp2german(d), ctimes.stamp2relative(d)]
         return d
 
     def setDetail(self, d, v):
