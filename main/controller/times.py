@@ -58,6 +58,33 @@ def duration2text(dur):
                           else:
                               return str(dur) +  " Jahren"
 
+def duration2shorttext(dur):
+    if dur < 60:
+      return str(dur) + "s"
+    else:
+      dur = int(0.5+dur / 60.0)
+      if dur < 60:
+          return str(dur) + " min"
+      else:
+          dur = int(0.5+dur / 60.0)
+          if dur < 24:
+              return str(dur) + "h"
+          else:
+              dur = int(dur / 24.0)
+              if dur < 7:
+                  return str(dur) + "d"
+              else:
+                  dur = int(dur / 7.0)
+                  if dur < 4:
+                      return str(dur) + "w"
+                  else:
+                      dur = int(dur / 4.0)
+                      if dur < 12:
+                          return str(dur) + "m"
+                      else:
+                          dur = int(dur / 12.0)
+                          return str(dur) +  "y"
+
 def stamp2german(stamp):
     loct = t.localtime(stamp)
     date = str(loct.tm_mday).zfill(2) + "." + \
