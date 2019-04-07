@@ -1,77 +1,63 @@
 {% extends "layout.html" %}
 {% block body %}
 <p class="warning">Du siehst die <strong>Moderatorenansicht</strong> dieses Threads. <a href="?">Benutzeransicht zeigen</a></p>
+
+{% set msgs = thread.getMessages() %}
+{% for msg in msgs %}
 <div class="split-screen">
   <aside style="background-color: #eee; padding: 10px">
+    {% if loop.index == 1 %}
     <h4>Ursprüngliche Nachricht</h4>
-    <p><a href="/u/2">9hax</a> &rarr; <a href="/u/1">paul&pi;dev</a></p>
-    <p>gesendet vor 2 Tagen</p>
-    <p>Template: Illegitime Bewertungen</p>
-    <p>Suspendierung: 2 Tage</p>
+    {% else %}
+    <h4>Antwort</h4>
+    {% endif %}
+
+    {% set c1 = msg.getSubmitter() %}
+    {% set c2 = msg.getReceiver() %}
+    <dl>
+      {% if msg.getDetail("message_receiver") == thread.getDetail("contacted_user") %}{% set c1 = msg.getSubmitter() %}{% set c2 = msg.getReceiver() %}
+      <dl>
+        <dt>von</dt>
+        <dd><a href="/u/{{ c1.id }}">{{ c1.getHTMLName()|safe }}</a></dd>
+        <dt>an</dt>
+        <dd><a href="/u/{{ c2.id }}">{{ c2.getHTMLName()|safe }}</a></dd>
+        {% set cs = msg.getSuspensionLength() %}
+        {% if cs[0] %}
+        <dt>Suspendierung:</dt>
+        <dd title="{{ cs[1] }}">{{ cs[2] }}</dd>
+        {% endif %}
+        <dt>Template:</dt>
+        <dd>{{ msg.getTemplateName(alt="(kein)") }}</dd>
+      </dl>
+      {% else %}{% set c = msg.getSubmitter() %}
+      <dl>
+        <dt>von</dt>
+        <dd><a href="/u/{{ c.id }}">{{ c.getHTMLName()|safe }}</a></dd>
+        <dt>an</dt>
+        <dd>&pi;-Learn Moderatoren</dd>
+      </dl>
+      {% endif %}{% set ct=msg.getSubmissionTime() %}
+    </dl>
+    {% set ct=msg.getSubmissionTime() %}
+    <p>gesendet <span title="{{ ct[1] }}">{{ ct[2] }}</span></p>
   </aside>
   <main>
-{% filter markdown %}
-Hallo paul&pi;dev,
-
-In letzter Zeit haben wir Aktivitäten um dein Konto bemerkt, die durch unseren [Kodex][codex] verboten werden. Diese Aktivitäten betreffen hauptsächlich deine Bewertungen im Forum. Eigentlich darf jeder Benutzer so Beiträge bewerten, wie er es für richtig hält. Diese Freiheit wird nur durch eine Regel eingeschränkt: Bewerte die Inhalte und nicht die Autoren.
-
-Wenn man nämlich Inhalte aufgrund der Autoren bewertet, führt dies dazu dass das ganze Reputations-System nicht mehr funktioniert. Besonders problematisch ist es auch, wenn die Bewertungen eines Kontos gezielt gegen ein anderes Konto gerichtet sind. Dies kann zu unnatürlichen, unfairen Veränderungen der Reputation eines Benutzers führen.
-
-Konkrete Beispiele von solchem Verhalten sind:
-
-- Alle Beiträge eines Benutzers (aus Rache) negativ bewerten.
-- Alle Beiträge eines Benutzers positiv bewerten.
-- Alle Beiträge eines Bekannten positiv bewerten.
-- Beiträge bewerten, damit sich die Reputation des Autors in eine bestimmte Richtung verändert.
-
-Aufgrund dieser Beobachtungen haben wir beschlossen, dein Konto für **2 Tage** zu suspendieren. Danach freuen wir uns, dich wieder zu begrüßen.
-
-Das &pi;-Learn Moderatorenteam
-
-  [codex]: /help/codex
-{% endfilter %}
+    {{ msg.getContent()|markdown }}
   </main>
 </div>
 <hr>
+{% endfor %}
 <div class="split-screen">
   <aside style="background-color: #eee; padding: 10px">
-    <h4>Antwort</h4>
-    <p><a href="/u/1">paul&pi;dev</a> &rarr; Moderatoren</p>
-    <p>gesendet gestern</p>
+    <h4>Aktionen</h4>
   </aside>
   <main>
-{% filter markdown %}
-Hallo,
-
-ich habe dieses Verhalten nicht absichtlich gezeigt. Die Korrektheit von Inhalten liegt mir sehr am Herzen. Darum gehe ich manchmal durch die Beiträge von einzelnen Konten durch, überprüfe alle Inhalte und bewerte sie entsprechend. Dabei kann der Eindruck des genannten Verhaltens entstehen.
-
-Viele Grüße,
-Paul
-{% endfilter %}
+    <p>Dies ist die Moderatorenansicht. Um auf diesen Thread zu antworten, musst du <a href="?"><strong>Benutzeransicht wechseln</strong></a>.
+    <p>{% if thread.isClosed() %}
+    <button class="danger-btn" onclick="$post('user-message/{{ thread.getDetail("contacted_user") }}/thread/{{ thread.id }}/close-or-reopen', {}, function(){window.location.reload()})">Thread wieder öffnen</button>
+    {% else %}
+    <button class="danger-btn" onclick="$post('user-message/{{ thread.getDetail("contacted_user") }}/thread/{{ thread.id }}/close-or-reopen', {}, function(){window.location.reload()})">Thread schließen (Antworten verhindern)</button>
+    {% endif %}</p>
   </main>
 </div>
-<hr>
-<div class="split-screen">
-  <aside style="background-color: #eee; padding: 10px">
-    <h4>Antwort</h4>
-    <p><a href="/u/2">9hax</a> &rarr; <a href="/u/1">paul&pi;dev</a></p>
-    <p>gesendet gerade jetzt</p>
-    <p>Thread geschlossen</p>
-    <p>Suspendierung aufgehoben</p>
-  </aside>
-  <main>
-{% filter markdown %}
-Hallo paul&pi;dev,
-
-Aufgrund deiner bisherigen Beiträge zu der Webseite und deiner Erklärung haben wir nach interner Beratung beschlossen, deine Sperrung vorzeitig aufzuheben.
-
-Bitte unterlasse solches Verhalten in Zukunft dennoch. Diese Art der Bewertung ist unnatürlich und schadet längerfristig unserem System.
-
-Das &pi;-Learn Moderatorenteam
-
-  [codex]: /help/codex
-{% endfilter %}
-  </main>
-</div>
-<button class="danger-btn">Thread wieder öffnen</button>
 {% endblock %}

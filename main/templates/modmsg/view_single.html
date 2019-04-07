@@ -27,8 +27,8 @@
       <dt>an</dt>
       <dd>&pi;-Learn Moderatoren</dd>
     </dl>
-    {% endif %}
-    <p>gesendet vor 2 Tagen</p>
+    {% endif %}{% set ct=msg.getSubmissionTime() %}
+    <p>gesendet <span title="{{ ct[1] }}">{{ ct[2] }}</span></p>
   </aside>
   <main>
     {{ msg.getContent()|markdown }}
@@ -63,13 +63,15 @@
 
 &lt;!-- Text hier einfügen --&gt;
 
-Viele Grüße, {{ thread.getContacted().getDetail("realname") }}</textarea>
+Viele Grüße,
+{{ thread.getContacted().getDetail("realname") }}</textarea>
         {% else %}
         <textarea id="qresponse" name="response">Hallo {{ thread.getContacted().getDetail("realname") }},
 
 &lt;!-- Text hier einfügen --&gt;
 
-Das &pi;-Learn Moderatorenteam</textarea>
+Viele Grüße,
+&pi;-Learn Moderatorenteam</textarea>
         {% endif %}
         <button type="submit">Absenden</button>
     </form>
