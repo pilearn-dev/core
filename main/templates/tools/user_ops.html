@@ -44,22 +44,14 @@
           <div class="tool-ops-selection">
             <input type="radio" name="userops_action" value="contact" id="userops_action_contact">
             <label for="userops_action_contact">
-              <h4>Benutzer kontaktieren</h4>
-              <p>Benutzer kontaktieren oder wegen Regelverletzungen verwarnen. <em>Dies wird protokolliert.</em><p>
+              <h4>Benutzer kontaktieren (enthält Sperrung)</h4>
+              <p>Benutzer wegen Regelverletzungen oder anderen ernsthaften Problemen kontaktieren. Optional kann eine Sperrung von maximal einem Jahr angewendet werden. <em>Dies wird protokolliert.</em><p>
             </label>
           </div>
-          {% if not data.isDisabled() %}
+          {% if data.isDisabled() %}
           <div class="tool-ops-selection">
-            <input type="radio" name="userops_action" value="ban" id="userops_action_ban">
-            <label for="userops_action_ban">
-              <h4>Benutzer sperren</h4>
-              <p>Benutzer wegen Regelverletzungen zeitweilig von der Benutzung der Webseite ausschließen. <em>Dies wird protokolliert.</em><p>
-            </label>
-          </div>
-          {% else %}
-          <div class="tool-ops-selection">
-            <input type="radio" name="userops_action" value="ban" id="userops_action_ban">
-            <label for="userops_action_ban">
+            <input type="radio" name="userops_action" value="unban" id="userops_action_unban">
+            <label for="userops_action_unban">
               <h4>Benutzer entsperren</h4>
               <p>Benutzer ist aktuell gesperrt. Die Sperrung vorzeitig aufheben <em>Dies wird protokolliert.</em><p>
             </label>

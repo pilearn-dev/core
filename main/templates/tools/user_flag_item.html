@@ -53,7 +53,7 @@
         </div>
         {% if item.state == 0 %}
         <h3>Aktionen</h3>
-        <a href="/tools/user/ops/{{ item.user.id }}" target="_blank"><button class="primary-btn">Zu AdminOps</button></a> <a href="/tools/user/ops/{{ item.user.id }}?action=ban" target="_blank"><button class="primary-btn">Benutzer sperren</button></a>
+        <a href="/tools/user/ops/{{ item.user.id }}" target="_blank"><button class="primary-btn">Zu AdminOps</button></a> <a href="/tools/user/ops/{{ item.user.id }}?action=contact" target="_blank"><button class="primary-btn">Benutzer kontaktieren/sperren</button></a>
         <a href="/u/{{ item.user.id }}/del" target="_blank"><button class="primary-btn">Benutzer löschen</button></a> <button class="primary-btn" onclick="$post('tools/user/flags/{{ item.id }}/finish', {}, function(){window.location.reload()});">Fertig</button>
         {% else %}
         <a href="/tools/user/flags"><button class="primary-btn">&larr; Zurück</button></a>

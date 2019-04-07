@@ -243,8 +243,15 @@ def tools_user_ops_index(uid):
                 data.addAnnotation("accessdata", request.form["reason"], cuser, time.time())
                 show_data = True
         return render_template("tools/user_ops_access-pii.html", title="Werkzeuge - Benutzerfunktionen", thispage="tools", data=data, show_data=show_data)
-    elif action == "ban":
-        return render_template("tools/user_ops_ban.html", title="Werkzeuge - Benutzerfunktionen", thispage="tools", data=data)
+    elif action == "unban":
+        if data.isDisabled():
+            data.setDetail("banned", 0)
+            data.setDetail("ban_reason", "")
+            data.setDetail("ban_end", 0)
+            data.addAnnotation("unban", "manual", cuser, time.time())
+    elif action == "contact":
+        return redirect("/user-message/" + str(data.id) + "/new-thread")
+
     return redirect(url_for("tools_user_ops_index", uid=uid))
 
 def apply(app):
