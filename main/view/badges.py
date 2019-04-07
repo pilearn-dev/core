@@ -19,6 +19,29 @@ def badges_single(id):
     badge = mbadges.Badge(id)
     return render_template("badges/single.html", title="Abzeichen " + badge.getName(), b=badge)
 
+def badges_award(id):
+    if not mbadges.Badge.exists(id):
+        abort(404)
+    if not muser.getCurrentUser().isDev():
+        abort(403)
+    badge = mbadges.Badge(id)
+    data = request.form["data"]
+    if not data:
+        data = None
+    badge.awardTo(request.form["to"], data)
+    return redirect(url_for("badges_single", id=id))
+
+def badges_revoke(id):
+    if not mbadges.Badge.exists(id):
+        abort(404)
+    if not muser.getCurrentUser().isDev():
+        abort(403)
+    badge = mbadges.Badge(id)
+    badge.revokeFrom(request.form["from"], request.form["ts"])
+    return redirect(url_for("badges_single", id=id))
+
 def apply(app):
     app.route('/badges')(badges_page)
     app.route('/badges/<int:id>')(badges_single)
+    app.route('/badges/<int:id>/award', methods=["POST"])(badges_award)
+    app.route('/badges/<int:id>/revoke', methods=["POST"])(badges_revoke)

@@ -1,11 +1,27 @@
 {% extends "layout.html" %}
 {% block body %}
-    <h2>Abzeichen <span class="ubadge ubadge-{{ b.getClass() }}"><span class="ubadge-icon"></span>{{ b.getName() }}</span></h2>
+    <h2><a href="/badges">Abzeichen</a> / <span class="ubadge ubadge-{{ b.getClass() }}"><span class="ubadge-icon"></span>{{ b.getName() }}</span></h2>
+    {% if user.isDev() %}
+    <a href="?dev-options=1">Mit Entwickleroptionen</a>
+    {% endif %}
     <p>{{ b.getDescription() }}</p>
     <h3>Verliehen an</h3>
     <ul>
     {% for data in b.getAwardees() %}
-      <li><a href="/u/{{ data.user.id }}">{{ data.user.getHTMLName()|safe }}</a> <span title="{{ data.time[1] }}">{{ data.time[2] }}</span></li>
+      <li>
+        <a href="/u/{{ data.user.id }}">{{ data.user.getHTMLName()|safe }}</a> <span title="{{ data.time[1] }}">{{ data.time[2] }}</span>
+        {% if user.isDev() and request.values.get("dev-options",0)=="1" %}
+        <form action="/badges/{{ b.id }}/revoke" method="post"><input name="from" type="hidden" value="{{ data.user.id }}"><input name="ts" type="hidden" value="{{ data.time[0] }}"><button type="submit">Entziehen</button></form>
+        {% endif %}
+      </li>
     {% endfor %}
     </ul>
+    {% if user.isDev() and request.values.get("dev-options",0)=="1" %}
+      <h3>An einen Benutzer verleihen</h3>
+      <form action="/badges/{{ b.id }}/award" method="post">
+        <input name="to" placeholder="Benutzer-ID">
+        <input name="data" placeholder="Daten (leer=Null)">
+        <button type="submit">Verleihen</button>
+      </form>
+    {% endif %}
 {% endblock %}

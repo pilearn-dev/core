@@ -28,6 +28,32 @@ class Badge:
             if con:
                 con.close()
 
+    def awardTo(self, user_id, data):
+        try:
+            con = lite.connect('databases/user.db')
+            cur = con.cursor()
+            cur.execute("INSERT INTO badge_associations (badgeid, userid, data, given_date, recognized) VALUES (?, ?, ?, strftime('%s','now'), 0)", (self.id,user_id, data))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def revokeFrom(self, user_id, ts):
+        try:
+            con = lite.connect('databases/user.db')
+            cur = con.cursor()
+            cur.execute("DELETE FROM badge_associations WHERE badgeid=? AND userid=? AND given_date=?", (self.id,user_id, ts))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
     def getAwardees(self):
         try:
             con = lite.connect('databases/user.db')
