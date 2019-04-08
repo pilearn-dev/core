@@ -1,0 +1,159 @@
+{% from "makros.html" import user_card, forum_close_dialog %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google-site-verification" content="vSvlVOqzIXqIPAJHn1n2sHTbfLF-7TipRxK_T4jokls" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>&pi;-Learn &ndash; {{ title|safe }}</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+  <link rel="stylesheet" href="/static/new_css/framework.css">
+  <link rel="stylesheet" href="/static/fa/css/font-awesome.min.css">
+  <script src="/static/new_js/jquery.min.js" charset="utf-8"></script>
+  <script src="/static/new_js/pilearn.js" charset="utf-8"></script>
+  <script src="/static/new_js/pilearn.topbar.js" charset="utf-8"></script>
+</head>
+<body>
+  <header class="_header _header-sm _header-bordered p-st">
+    <div class="single-fluid d-f _header-container">
+      <nav class="_header-items hide__lg">
+        <a class="_header-icon js--topbar-menu" href="#!">
+          <svg width="3em" height="3em" viewbox="0 0 48 48">
+            <path d="M6,8 h36 v7 h-36 z M6,21 h36 v7 h-36 z M6,34 h36 v7 h-36 z" fill="transparent" stroke-width="1" />
+            <path d="M5.5,15 h37 M5.5,28 h37 M5.5,41 h37" fill="transparent" stroke-width="2.5" />
+          </svg>
+        </a>
+      </nav>
+      <a class="_header-brand pl2 pr2" href="#!"><img src="/static/img/logo_pi-learn.svg"><span class="hide__sm">&pi;-Learn</span></a>
+      <div class="_header-spacer"></div>
+      <nav class="_header-items">
+        {% if user.isMod() %}
+        <a href="/tools" class="_header-icon hide__sm" title="Werkzeuge -- Besondere Funktionen und Bemerkenswerte Beiträge -- Nur für Moderatoren">
+          <svg width="3em" height="3em" viewbox="0 0 48 48">
+            <path d="M24,8 l12,16 l-12,16 l-12-16 z" fill="transparent" stroke-width="1" />
+            <path d="M12,24 l12,16 l12,-16" fill="transparent" stroke-width="3" />
+          </svg>
+        </a>
+        {% endif %}
+        {% if user.may("forum_reviewEdits") or user.may("course_reviewEdits") %}{% set revC = review.getReviewCountState(user) %}
+        <a href="/review" class="_header-icon hide__md hide__sm" title="Moderation -- Überprüfe Beiträge auf dieser Seite und entscheide, wie mit diesen weiter zu verfahren ist.">
+          <svg width="3em" height="3em" viewbox="0 0 48 48">
+            <path d="M6,8 h16 v7 h-16 z M6,21 h16 v7 h-16 z M6,34 h16 v7 h-16 z" fill="transparent" stroke-width="1" />
+            <path d="M5.5,15 h17 M5.5,28 h17 M5.5,41 h17" fill="transparent" stroke-width="2.5" />
+            <g transform="scale(0.5) translate(50 0)">
+              <path d="M6,32 l10,10 l26,-26 l-5,-5 l-21,21 l-5,-5 z" stroke-width="1" />
+            </g>
+            <g transform="scale(0.5) translate(50 40)">
+              <path d="M18,9 l8.5,8.5 l8.5,-8.5 l8.5,8.5 l-8.5,8.5 l8.5,8.5 l-8.5,8.5 l-8.5,-8.5 l-8.5,8.5 l-8.5,-8.5 l8.5,-8.5 l-8.5,-8.5 z" stroke-width="1" />
+            </g>
+          </svg>
+        </a>
+        {% endif %}
+        {% if user.isLoggedIn() %}
+
+          <a href="/u/{{ user.id }}" title="Eigenes Benutzerprofil" class="_header-mix  js--topbar-user">
+            {% if user.getDetail("profile_image") %}
+              <img src="{{ user.getDetail("profile_image") }}" class="_header-img mr2__lg mr0" aria-hidden="true">
+            {% endif %}
+            <span class="_badge _badge-score hide__md hide__sm">{{ user.getReputation() }}</span>
+            {% for type in user.getBadgeBreakdown() %}
+            <span class="_badge _badge-score _badge-score-{{ type[1] }} hide__md hide__sm"><span class="_badge-icon"></span>{{ type[0] }}</span>
+            {% endfor %}
+          </a>
+
+          {% set notificationCount = g.countNotifications(user_messages) %}
+          <a class="_header-icon p-r js--topbar-inbox" id="notification-trigger" href="#!" title="Posteingang: Du hast {% if notificationCount == 0 %}keine{% elif notificationCount == 1 %}eine{% else %}{{ notificationCount }}{%endif%} neue Nachrichten">
+            {% if notificationCount != 0 %}<span class="_badge _badge-s-danger -wbd p-a xa-r__sp ya-t__sp">{{ notificationCount }}</span>{% endif %}
+            <svg width="3em" height="3em" viewbox="3 3 45 45">
+              <path d="M6,12 h36 v24 h-36 z" fill="transparent" stroke-width="1" />
+              <path d="M6,36 h36" fill="transparent" stroke-width="4" />
+              <path d="M6,12 l18,12 l18,-12" fill="transparent" stroke-width="2" />
+            </svg>
+          </a>
+
+          {% set delta = user.getRepDelta() %}
+          {% set badges = user.hasUnknownBadges() %}
+          <a class="_header-icon p-r js--topbar-rep-audit" id="repscreen-trigger" href="#!" title="Auszeichnungen: Du hast {% if delta == 0 %}keine{% else %}eine{%endif%} Änderung deiner Reputation. Du hast{% if not badges %}keine{%endif%} neue{% if not badges %}n{%endif%} Abzeichen.">
+            {% if delta > 0 %}<span class="_badge _badge-s-success -wbd p-a xa-r__sp ya-t__sp">+{{ num2suff(delta) }}</span>{% endif %}
+            {% if badges %}<span class="_badge _badge-dot-success -wbd p-a xa-r__sp ya-b__sp">neue Abzeichen</span>{% endif %}
+            <svg width="3em" height="3em" viewbox="3 3 45 45">
+              <path d="M14,10 q0,15 8,15 M34,10 q0,15 -8,15 M14,10 h20 M22,25 v10 M26,25 v10 M22,35 h-8 v4 h20 v-4 z" fill="transparent" stroke-width="1" />
+              <path d="M14,11 q0,15 8,15 M34,10 q0,15 -8,15 M13.5,40 h21" fill="transparent" stroke-width="2" />
+            </svg>
+          </a>
+        {% else %}
+          <a href="/login">anmelden</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
+  <div class="col-white bg--primary p3 bb3s bb--primary-dd" id="site-bar">
+    <div class="grid single-fluid -full-center">
+      <div class="column6__lg"><h1 class="m0 fs-subtitle f-brand">{{ (site_label|markdown)[3:-4] }}</h1></div>
+      <nav class="_nav _nav-h hide__sm hide__md _nav-right column6 col-white">
+        <a href="/"{% if thispage == "index" %} class="-active"{% endif %}>Startseite</a>
+        <a href="/f/0"{% if thispage == "forum" %} class="-active"{% endif %}>Forum</a>
+        <a href="/courses"{% if thispage == "courses" %} class="-active"{% endif %}>Kurse</a>
+      </nav>
+    </div>
+  </div>
+ {% if global_notification != "" %}
+    {% for subnote in global_notification.split("\n_____\n") %}
+        <div class="_banner _banner-warning">
+            <div class="single-fluid">
+                {{ subnote }}
+            </div>
+        </div>
+    {% endfor %}
+  {% endif %}
+    <main class="container single-fluid">
+      {% block body %}{% endblock %}
+    </main>
+    <footer class="bg--primary-lll col-black anchor-dark mt3 mt1__sm">
+    <div class="single-fluid p4">
+      <div class="grid">
+        <div class="column12__sm column3 p1">
+          <h4 class="p1 fs-base2 f-caps f-bold col--primary-ddd">&pi;-Learn</h4>
+          <a class="d-b m1" href="/">Startseite</a>
+          <a class="d-b m1" href="/courses">Kurse</a>
+          <a class="d-b m1" href="/f/0">Globales Forum</a>
+          <a class="d-b m1" href="/help/legal/coc">Code of Conduct</a>
+        </div>
+        <div class="column12__sm column3 p1">
+          <h4 class="p1 fs-base2 f-caps f-bold col--primary-ddd">Hilfe</h4>
+          <a class="d-b m1" href="/help">Hilfethemen</a>
+          <a class="d-b m1" href="/help/legal/impress">Impressum</a>
+          <a class="d-b m1" href="/help/legal/data-info">Datenschutz</a>
+          <a class="d-b m1" href="/helpdesk">Helpdesk</a>
+          </ul>
+        </div>
+        <div class="column12__sm column3 p1">
+          <h4 class="p1 fs-base2 f-caps f-bold col--primary-ddd">Über uns</h4>
+          <a class="d-b m1" href="https://twitter.com/@pi_learn">Twitter</a>
+          <a class="d-b m1" href="/about/mission">Mission</a>
+          <a class="d-b m1" href="/about/team">Unser Team</a>
+          <a class="d-b m1" href="/about/apply">Mitmachen</a>
+        </div>
+        <div class="column12__sm column3 pt3 p1">
+          <img class="push-right p2" alt="Creative Commons BY-SA (mit Namensnennung, Weitergabe unter gleichen Bedingungen)" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png">
+          <p>Texte und Bilder aus Kursen und Foren verfügbar unter <a href="https://creativecommons.org/licenses/by-sa/3.0/de/">CC-BY-SA</a> zur Verfügung.</p>
+          <p>Alle anderen Inhalte sind urheberrechtlich geschützt.</p>
+        </div>
+        <div class="column12 p1">
+          <p>Diese Webseite nutzt die &pi;-Learn-Software in der Version {{ __version__ }}. Design, System und Logo &copy; &pi;-Learn</p>
+        </div>
+        </div>
+    </div>
+    </footer>
+    {% if not (user.isLoggedIn() or request.cookies.get("hide-hero-login-request", False)) %}
+        <div class="_banner _banner--primary _banner-strong _banner-bottom _banner-with-decoration">
+            <div class="single-fluid grid">
+              <p class="column9 column12__sm">Willst du auch mitmachen und dein Wissen teilen?</p><div class="column3 column12__sm al-r"><a href="/login" class="_btn _btn--primary _btn-lighter">Registrieren</a><a href="#!" onclick="K=this;$post('hide-hero', {'hero':'login-request'}, function(){K.parentNode.style.display='none';})" class="_btn _btn--primary _btn-on-dark">&times;</a></div></div>
+        </div>
+    {% endif %}
+    <script>
+      PiJS.topbar.init();
+    </script>
+</body>
+</html>
