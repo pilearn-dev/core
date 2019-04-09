@@ -1,87 +1,101 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
+  <script src="/static/new_js/pilearn.markdown.js" charset="utf-8"></script>
+  <script src="/static/new_js/pilearn.editor.js" charset="utf-8"></script>
 <script src="/static/js/systemerror.js"></script>
-<div class="flagging-modal open">
-<div class="flagging-dialog">
-<h2>Benutzer kontaktieren</h2>
-<div class="action-forbidden red-style">
+<div class="p3">
+<h1 class="fs-heading">Benutzer kontaktieren</h1>
+<div class="content-warning">
   <p>Du bist dabei, diesen Benutzer vertraulich zu kontaktieren. Verwende dies nur für ernsthafte Probleme. Du kannst auch entscheiden, das Benutzerkonto für maximal ein Jahr zu suspendieren.</p>
 </div>
-<label for="user-code">Benutzer:</label>
-<input name="user-code" disabled id="user-code" value="{{ u.getDetail('name') }}.{{ u.id }}@pilearn.de">
-<label for="template">Nachrichtenvorlage:</label>
-<select name="template" id="template">
+<label for="user-code" class="form">Benutzer:</label>
+<input name="user-code" readonly class="form" id="user-code" value="{{ u.getDetail('name') }}.{{ u.id }}@pilearn.de">
+<label for="template" class="form">Nachrichtenvorlage:</label>
+<select name="template" id="template" class="form">
   <option value="0">(anderes)</option>
   {% for tpl in templates %}
   <option value="{{ tpl.id }}">{{ tpl.title }}</option>
   {% endfor %}
 </select>
 
-<textarea id="message" name="message"></textarea>
+<div class="js--editor js--editor:preview">
+  <textarea id="message" name="message" class="form form-large js--editor-textarea"></textarea>
+  <div class="js--editor-preview p2"></div>
+</div>
 <small>Begrüßung, Suspendierungshinweis und Verabschiedung werden automatisch hinzugefügt.</small>
 
 <p>Konto
-  <select name="susp_reason" id="susp_reason">
+  <select name="susp_reason" id="susp_reason" class="form form-inline">
     <option value="[false]">(nicht)</option>
     <option value="">(keinen Grund anzeigen)</option>
     <option>zum Abkühlen</option>
     <option>wegen Regelverletzungen</option>
     <option>wegen der Umgehung von Beschränkungen</option>
   </select>
-  für <input type="number" id="susp_duration" min="1" max="365" style="display: inline-block; max-width: 80px; font-weight: normal;"> Tage suspendieren.</p>
+  für <input type="number" id="susp_duration" class="form form-inline form-small" min="1" max="365"> Tage suspendieren.</p>
 
-<button class="danger-btn" id="submit">Benutzer kontaktieren</button>
-</div>
+<button class="_btn _btn-danger" id="submit">Benutzer kontaktieren</button>
 </div>
 <script>
-  document.getElementById("template").addEventListener("change", function() {
-    if(this.value == "0") {
-      document.getElementById("message").value="";
-      msg.removeAttribute("disabled");
+  $("#template").on("change", function() {
+    $this = $(this);
+    msg = $("#message");
+    if($this.val() == "0") {
+      $("#message").val("");
+      msg.removeAttr("disabled");
     } else {
-      msg = document.getElementById("message");
-      msg.setAttribute("disabled", true);
-      $post("user-message/template-data/" + this.value, {}, function(r) {
-        msg.value = JSON.parse(r).content;
-        msg.removeAttribute("disabled");
-      })
+      msg.attr("disabled", true);
+      $.ajax({
+        url: "/user-message/template-data/" + $this.val(),
+        success: function( result ) {
+          msg.val(result.content);
+          msg.removeAttr("disabled");
+        }
+      });
     }
   });
 
-  document.getElementById("submit").addEventListener("click", function() {
-    msg = document.getElementById("message").value;
-    tpl = document.getElementById("template").value;
-    sr = document.getElementById("susp_reason").value;
-    sd = document.getElementById("susp_duration").value;
+  $("#submit").on("click", function() {
+    msg = $("#message").val();
+    tpl = $("#template").val();
+    sr = $("#susp_reason").val();
+    sd = $("#susp_duration").val();
 
     if(msg=="") {
-      issueSystemError("Eine Nachricht muss eingegeben werden.");
+      alert("Eine Nachricht muss eingegeben werden.");
       return
     } else if(msg.length < 50) {
-      issueSystemError("Die Nachricht muss mehr Zeichen enthalten. Füge Beispiele hinzu, linke zu Regelerklärungen o.ä., damit der kontaktierte Benutzer diese Nachricht versteht.");
+      alert("Die Nachricht muss mehr Zeichen enthalten. Füge Beispiele hinzu, linke zu Regelerklärungen o.ä., damit der kontaktierte Benutzer diese Nachricht versteht.");
       return
     }
 
     if(sr != "[false]") {
       if (sd < 1) {
-        issueSystemError("Ähem! Die Eingabe in das Feld für die Sperrungsdauer ist ungültig");
+        alert("Ähem! Die Eingabe in das Feld für die Sperrungsdauer ist ungültig");
         return
       } else if (sd > 365) {
-        issueSystemError("Maximale Dauer einer Sperrung beträgt 365 Tage. Kontaktiere das &pi;-Learn Team für längere Sperrungen.");
+        alert("Maximale Dauer einer Sperrung beträgt 365 Tage. Kontaktiere das &pi;-Learn Team für längere Sperrungen.");
         return
       }
     }
 
-    $post("user-message/{{ u.id }}/new-thread", {
-      "template": tpl,
-      "message": msg,
-      "suspend": sr != "[false]",
-      "suspension_reason": sr,
-      "suspension_length": sd
-    }, function(r) {
-      window.location.href=r;
-    })
-
+    $.ajax({
+      url: "/user-message/{{ u.id }}/new-thread",
+      method: "POST",
+      data: JSON.stringify({
+        "template": tpl,
+        "message": msg,
+        "suspend": sr != "[false]",
+        "suspension_reason": sr,
+        "suspension_length": sd
+      }),
+      contentType: "application/json; charset=UTF-8",
+      success: function( result ) {
+        window.location.href=result;
+      }
+    });
   });
+
+PiJS.editor.init();
 </script>
 {% endblock %}

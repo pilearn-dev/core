@@ -1,63 +1,64 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-<p class="warning">Du siehst die <strong>Moderatorenansicht</strong> dieses Threads. <a href="?">Benutzeransicht zeigen</a></p>
+<h1>Moderator-Nachrichten an {{ thread.getContacted().getDetail("realname") }}</h1>
+<div class="_banner _banner-dark">Du siehst die <strong>Moderatorenansicht</strong> dieses Threads. <a href="?">Benutzeransicht zeigen</a></div>
 
 {% set msgs = thread.getMessages() %}
 {% for msg in msgs %}
-<div class="split-screen">
-  <aside style="background-color: #eee; padding: 10px">
-    {% if loop.index == 1 %}
-    <h4>Ursprüngliche Nachricht</h4>
-    {% else %}
-    <h4>Antwort</h4>
-    {% endif %}
-
+<div class="p2 m2 mb6 grid bb1s bb-dark-ll">
+  <div class="p2 column2 column12__sm">
+    <dl>
+      <dt>gesendet</dt>{% set ct=msg.getSubmissionTime() %}
+      <dd title="{{ ct[1] }}">{{ ct[2] }}</dd>
     {% set c1 = msg.getSubmitter() %}
     {% set c2 = msg.getReceiver() %}
-    <dl>
-      {% if msg.getDetail("message_receiver") == thread.getDetail("contacted_user") %}{% set c1 = msg.getSubmitter() %}{% set c2 = msg.getReceiver() %}
-      <dl>
-        <dt>von</dt>
-        <dd><a href="/u/{{ c1.id }}">{{ c1.getHTMLName()|safe }}</a></dd>
-        <dt>an</dt>
-        <dd><a href="/u/{{ c2.id }}">{{ c2.getHTMLName()|safe }}</a></dd>
-        {% set cs = msg.getSuspensionLength() %}
-        {% if cs[0] %}
-        <dt>Suspendierung:</dt>
-        <dd title="{{ cs[1] }}">{{ cs[2] }}</dd>
-        {% endif %}
-        <dt>Template:</dt>
-        <dd>{{ msg.getTemplateName(alt="(kein)") }}</dd>
-      </dl>
+    {% if msg.getDetail("message_receiver") == thread.getDetail("contacted_user") %}{% set c1 = msg.getSubmitter() %}{% set c2 = msg.getReceiver() %}
+      <dt>von</dt>
+      <dd><a href="/u/{{ c1.id }}">{{ c1.getHTMLName()|safe }}</a></dd>
+      <dt>an</dt>
+      <dd><a href="/u/{{ c2.id }}">{{ c2.getHTMLName()|safe }}</a></dd>
+      {% set cs = msg.getSuspensionLength() %}
+      {% if cs[0] %}
+      <dt>Suspendierung:</dt>
+      <dd title="{{ cs[1] }}">{{ cs[2] }}</dd>
+      {% endif %}
+      <dt>Template:</dt>
+      <dd>{{ msg.getTemplateName(alt="(kein)") }}</dd>
       {% else %}{% set c = msg.getSubmitter() %}
-      <dl>
-        <dt>von</dt>
-        <dd><a href="/u/{{ c.id }}">{{ c.getHTMLName()|safe }}</a></dd>
-        <dt>an</dt>
-        <dd>&pi;-Learn Moderatoren</dd>
-      </dl>
-      {% endif %}{% set ct=msg.getSubmissionTime() %}
+      <dt>von</dt>
+      <dd><a href="/u/{{ c.id }}">{{ c.getHTMLName()|safe }}</a></dd>
+      <dt>an</dt>
+      <dd>&pi;-Learn Moderatoren</dd>
+      {% endif %}
     </dl>
-    {% set ct=msg.getSubmissionTime() %}
-    <p>gesendet <span title="{{ ct[1] }}">{{ ct[2] }}</span></p>
-  </aside>
-  <main>
+  </div>
+  <div class="column10 column12__sm p2 fs-base2">
     {{ msg.getContent()|markdown }}
-  </main>
+  </div>
 </div>
-<hr>
 {% endfor %}
-<div class="split-screen">
-  <aside style="background-color: #eee; padding: 10px">
-    <h4>Aktionen</h4>
-  </aside>
-  <main>
-    <p>Dies ist die Moderatorenansicht. Um auf diesen Thread zu antworten, musst du <a href="?"><strong>Benutzeransicht wechseln</strong></a>.
-    <p>{% if thread.isClosed() %}
-    <button class="danger-btn" onclick="$post('user-message/{{ thread.getDetail("contacted_user") }}/thread/{{ thread.id }}/close-or-reopen', {}, function(){window.location.reload()})">Thread wieder öffnen</button>
+<div class="p2 m2 mb6 grid bb1s bb-dark-ll">
+  <div class="p2 column2 column12__sm">
+    <h3 class="fs-subheading">Aktionen</h3>
+  </div>
+  <div class="column10 column12__sm p2 fs-base2">
+    <p>Dies ist die Moderatorenansicht. Um auf diesen Thread zu antworten, musst du <a href="?"><strong>in die Benutzeransicht wechseln</strong></a>.
+    {% if thread.isClosed() %}
+    <button class="_btn _btn-danger d-b _btn-lighter" onclick="toggle_state();">Thread wieder öffnen</button>
     {% else %}
-    <button class="danger-btn" onclick="$post('user-message/{{ thread.getDetail("contacted_user") }}/thread/{{ thread.id }}/close-or-reopen', {}, function(){window.location.reload()})">Thread schließen (Antworten verhindern)</button>
-    {% endif %}</p>
-  </main>
+    <button class="_btn _btn-danger d-b _btn-lighter" onclick="toggle_state();">Thread schließen (Antworten verhindern)</button>
+    {% endif %}
+  </div>
 </div>
+<script>
+  function toggle_state() {
+    $.ajax({
+      url: "/user-message/{{ thread.getDetail("contacted_user") }}/thread/{{ thread.id }}/close-or-reopen",
+      method: "POST",
+      success: function( result ) {
+        window.location.reload();
+      }
+    });
+  }
+</script>
 {% endblock %}
