@@ -73,10 +73,10 @@
           </a>
 
           {% set delta = user.getRepDelta() %}
-          {% set badges = user.hasUnknownBadges() %}
+          {% set unknow_badges = user.hasUnknownBadges() %}
           <a class="_header-icon p-r js--topbar-rep-audit" id="repscreen-trigger" href="#!" title="Auszeichnungen: Du hast {% if delta == 0 %}keine{% else %}eine{%endif%} Änderung deiner Reputation. Du hast{% if not badges %}keine{%endif%} neue{% if not badges %}n{%endif%} Abzeichen.">
             {% if delta > 0 %}<span class="_badge _badge-s-success -wbd p-a xa-r__sp ya-t__sp">+{{ num2suff(delta) }}</span>{% endif %}
-            {% if badges %}<span class="_badge _badge-dot-success -wbd p-a xa-r__sp ya-b__sp">neue Abzeichen</span>{% endif %}
+            {% if unknow_badges %}<span class="_badge _badge-dot-success -wbd p-a xa-r__sp ya-b__sp">neue Abzeichen</span>{% endif %}
             <svg width="3em" height="3em" viewbox="3 3 45 45">
               <path d="M14,10 q0,15 8,15 M34,10 q0,15 -8,15 M14,10 h20 M22,25 v10 M26,25 v10 M22,35 h-8 v4 h20 v-4 z" fill="transparent" stroke-width="1" />
               <path d="M14,11 q0,15 8,15 M34,10 q0,15 -8,15 M13.5,40 h21" fill="transparent" stroke-width="2" />
