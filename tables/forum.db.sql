@@ -122,3 +122,13 @@ timestamp INT)
   comment VARCHAR(50),
   action VARCHAR(20)
 )
+;CREATE TABLE announcements (
+  id INTEGER PRIMARY KEY,
+  forum INT,
+  link VARCHAR(150),
+  title VARCHAR(150),
+  start_date INT,
+  end_date INT,
+  show_from INT,
+  show_until INT
+)
