@@ -101,7 +101,7 @@ def prepare_request():
 
 @app.route("/")
 def index():
-    return render_template('index.html', title="Startseite", thispage="index", globalForum=mforum.Forum.from_id(0), _proposal=mproposal.Proposal)
+    return render_template('index.html', title="Startseite", thispage="index", globalForum=mforum.Forum.from_id(0), _proposal=mproposal.Proposal, courses=mcourses.Courses)
 
 @app.route("/hide-hero", methods=["POST"])
 def hide_hero():

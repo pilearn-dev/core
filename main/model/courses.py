@@ -52,6 +52,24 @@ class Courses:
                 con.close()
 
     @classmethod
+    def getRandomBeloved(cls, uid):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT id FROM courses WHERE topicid IN (SELECT topics.id FROM topics, courses, enrollments WHERE courses.topicid=topics.id AND enrollments.courseid=courses.id AND enrollments.userid=? GROUP BY topics.id HAVING Count(*) >= 2) AND state=1 ORDER BY Random() LIMIT 3", (uid,))
+            all = cur.fetchall()
+            if all is None:
+                return []
+            all = list(map(lambda x: Courses(x["id"]), all))
+            return all
+        except lite.Error as e:
+            return []
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
     def queryNum(cls, q, add):
         try:
             con = lite.connect('databases/courses.db')

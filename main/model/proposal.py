@@ -96,7 +96,7 @@ class Proposal:
 
     def getCreationTime(self):
         t = self.getDetail("proposal_time")
-        return [t, ctimes.stamp2german(t), ctimes.stamp2relative(t)]
+        return [t, ctimes.stamp2german(t), ctimes.stamp2relative(t), ctimes.stamp2shortrelative(t)]
 
     def getScore(self):
         return self.getDetail("score")
