@@ -70,6 +70,24 @@ class Courses:
                 con.close()
 
     @classmethod
+    def getGlobalBeloved(cls):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM (SELECT courses.id FROM courses, enrollments WHERE courses.id=enrollments.courseid GROUP BY courses.id HAVING Count(*)>=3 ORDER BY Count(*) DESC LIMIT 10) AS c ORDER BY Random() LIMIT 3")
+            all = cur.fetchall()
+            if all is None:
+                return []
+            all = list(map(lambda x: Courses(x["id"]), all))
+            return all
+        except lite.Error as e:
+            return []
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
     def queryNum(cls, q, add):
         try:
             con = lite.connect('databases/courses.db')

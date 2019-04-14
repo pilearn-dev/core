@@ -7,21 +7,15 @@
       <p>Willkommen bei &pi;-Learn. Du kannst dir einen <a href="/courses">Kurs</a> zum Stöbern suchen oder dich <a href="/login">anmelden</a>, um Teil der Community zu werden.</p>
       <p>Dies sind die beliebtesten Kurse dieser Seite:</p>
       <div class="_list">
-          <a class="_list-item fs-base1 _list-item-keepcolor" href="#!">
-              <span class="d-b mb1 fs-base3">OOP in Python <span class="_badge _badge-unit">/t/Programmieren</span></span>
-              <span class="d-b col-black">Das Programmierkonzept OOP wird anhand der Programmiersprache Python erklärt.</span>
+        {% for c in courses.getGlobalBeloved() %}
+          <a class="_list-item fs-base1 _list-item-keepcolor" href="/c/{{ c.id }}">
+              <span class="d-b mb1 fs-base3">{{ c.getTitle() }} <span class="_badge _badge-unit">{{ c.getTopic().getTitle() }}</span></span>
+              <span class="d-b col-black">{{ c.getShortdesc() }}</span>
           </a>
-          <a class="_list-item fs-base1 _list-item-keepcolor" href="#!">
-              <span class="d-b mb1 fs-base3">OOP in Python <span class="_badge _badge-unit">/t/Programmieren</span></span>
-              <span class="d-b col-black">Das Programmierkonzept OOP wird anhand der Programmiersprache Python erklärt.</span>
-          </a>
-          <a class="_list-item fs-base1 _list-item-keepcolor" href="#!">
-              <span class="d-b mb1 fs-base3">OOP in Python <span class="_badge _badge-unit">/t/Programmieren</span></span>
-              <span class="d-b col-black">Das Programmierkonzept OOP wird anhand der Programmiersprache Python erklärt.</span>
-          </a>
+        {% endfor %}
       </div>
     {% else %}
-      <h1>Willkommen paul&pi;dev!</h1>
+      <h1>Willkommen {{ user.getHTMLName()|safe }}!</h1>
       {% if delta > 0 or notificationCount != 0 %}
       <p>Du hast {% if notificationCount!=0 %}<span class="_badge _badge-s-danger">{{ notificationCount }}</span> neue Nachricht{{ "en" if notificationCount != 1 }}{% endif %}{% if delta > 0 and notificationCount != 0 %} und {% endif %}{% if delta != 0 %}<span class="_badge _badge-s-success">+{{ delta }}</span> neue Reputation.{% endif %}.</p>
       {% endif %}
@@ -32,30 +26,22 @@
               <span class="d-b mb1 fs-base3">{{ c.getTitle() }} <span class="_badge _badge-unit">{{ c.getTopic().getTitle() }}</span></span>
               <span class="d-b col-black">{{ c.getShortdesc() }}</span>
           </a>
+        {% else %}
+        {% for c in courses.getGlobalBeloved() %}
+          <a class="_list-item fs-base1 _list-item-keepcolor" href="/c/{{ c.id }}">
+              <span class="d-b mb1 fs-base3">{{ c.getTitle() }} <span class="_badge _badge-unit">{{ c.getTopic().getTitle() }}</span></span>
+              <span class="d-b col-black">{{ c.getShortdesc() }}</span>
+          </a>
+        {% endfor %}
         {% endfor %}
       </div>
     {% endif %}
-    {% set pinnedArticles = globalForum.getPinnedArticles() %}
-    {% set pinnedCArticles = globalForum.getCoursePinnedArticles(user) %}
-    {% if pinnedArticles|length + pinnedCArticles|length > 0 %}
-      <h2>Ankündigungen</h2>
-      <div class="_list">
-      {% for article in pinnedArticles %}
-      <a class="_list-item fs-base1 _list-item-keepcolor" href="/f/0/{{ article.id }}">
-          <span class="d-n col-dark-dd push-right">31.12.</span>
-          <span class="d-b col-dark-dd mb1">Globale Ankündigung</span>
-          <span class="d-b mb1 fs-base3">{{ article.getTitle() }}</span>
-      </a>
-      {% endfor %}
-      {% for article in pinnedCArticles %}{% set gac=article.getAnswerCount() %}
-        <a class="_list-item fs-base1 _list-item-keepcolor" href="/f/{{article.getDetail("forumID")}}/{{ article.id }}">
-            <span class="d-n col-dark-dd push-right">31.12.</span>
-            <span class="d-b col-dark-dd mb1">Kurs: {{ article.getForum().getTitle() }}</span>
-            <span class="d-b mb1 fs-base3">{{ article.getTitle() }}</span>
-        </a>
-      {% endfor %}
+      <p>Du kannst dir auch eins unserer Themen aussuchen, um in diesem nach interessanten Kursen zu suchen:</p>
+      <div class="horizontal-list">
+        {% for t in topics.getAll() %}
+        <a href="/t/{{ t.getName() }}/courses" class="_badge _badge-unit">{{ t.getTitle() }}</a>
+        {% endfor %}
       </div>
-    {% endif %}
       <h2>Kursvorschläge</h2>
       <p>Diese Kurse wurden von Benutzern vorgeschlagen. Wähle die aus, die dich interessieren und unterstütze sie, indem du versprichst, dass du an ihnen teilnehmen möchtest.</p>
       {% set courseProposals = _proposal.getFeatured() %}
@@ -87,6 +73,31 @@
               <a href="/tour">mehr erfahren</a>
               <a href="/login">anmelden</a>
           </div>
+      </div>
+    {% endif %}
+    {% set announcements = globalForum.getAnnouncements(user) %}
+    {% if announcements|length > 0 %}
+    <div class="_card">
+      <div class="_card-title _card-subtitle">Ankündigungen</div>
+      <div class="_card-content _card-content-direct">
+      <div class="_list _list-unbordered">
+      {% for a in announcements %}
+      <a class="_list-item fs-base1 _list-item-keepcolor" href="{{ a.getLink() }}">
+          {% if a.getEnd() %}
+            <span class="d-b col-dark-dd push-right">{{ a.getStart()[1] }} - {{ a.getEnd()[1] }}</span>
+          {% else %}
+            <span class="d-b col-dark-dd push-right">{{ a.getStart()[1] }}</span>
+          {% endif %}
+          {% if a.getDetail("forum") == 0 %}
+          <span class="d-b col-dark-dd mb1">Globale Ankündigung</span>
+          {% else %}
+          <span class="d-b col-dark-dd mb1">Kurs: {{ a.getForum().getTitle() }}</span>
+          {% endif %}
+          <span class="d-b mb1 fs-base2">{{ a.getTitle() }}</span>
+      </a>
+      {% endfor %}
+      </div>
+      </div>
       </div>
     {% endif %}
       <div class="_card">
