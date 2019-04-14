@@ -1262,24 +1262,9 @@ class Forum:
             if con:
                 con.close()
 
-    def getPinnedArticles(self):
-        try:
-            con = lite.connect('databases/forum.db')
-            con.row_factory = lite.Row
-            cur = con.cursor()
-            cur.execute("SELECT id FROM articles WHERE pinned=1 AND forumID=? ORDER BY score DESC, id DESC", (self.id, ))
-            data = cur.fetchall()
-            return list(map(lambda x:Article(x[0]), data))
-        except lite.Error as e:
-            return []
-        finally:
-            if con:
-                con.close()
-
-    def getCoursePinnedArticles(self, user):
+    def getAnnouncements(self, user):
         try:
             con = lite.connect('databases/courses.db')
-            con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT courseid FROM enrollments WHERE userid=?", (user.id, ))
             dl = cur.fetchall()
@@ -1290,22 +1275,11 @@ class Forum:
             if con:
                 con.close()
 
-        try:
-            con = lite.connect('databases/forum.db')
-            con.row_factory = lite.Row
-            cur = con.cursor()
-            data = []
-            for dll in dl:
-                cur.execute("SELECT id FROM articles WHERE pinned=1 AND forumID=?  ORDER BY score DESC, id DESC", (dll[0], ))
-                dldata = cur.fetchall()
-                data.extend(dldata)
-            return list(map(lambda x:Article(x[0]), data))
-        except lite.Error as e:#
-            print(e)
-            return []
-        finally:
-            if con:
-                con.close()
+        announcements = ForumAnnouncement.byForum(0)
+        for d in dl:
+            announcements += ForumAnnouncement.byForum(d[0])
+
+        return announcements
 
     def getInfo(self):
         if self.id != 0:
@@ -1474,6 +1448,154 @@ class ForumComment:
         except lite.Error as e:
             print(e)
             return [0,0,0]
+        finally:
+            if con:
+                con.close()
+
+
+
+class ForumAnnouncement:
+
+    def __init__(self, id):
+        self.id = id
+        self.__data = self.getInfo()
+
+    def getDetail(self, d):
+        return self.__data[d]
+
+    def setDetail(self, d, v):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("UPDATE announcements SET "+d+"=? WHERE id=?", (v, self.id))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def getShownFrom(self):
+        t = self.getDetail("show_from")
+        return [t, ctimes.stamp2germandate(t), ctimes.stamp2shortrelative(t)]
+
+    def getShownFromForForm(self):
+        t = self.getDetail("show_from")
+        return ctimes.dateforform(t)
+
+    def getShownUntil(self):
+        t = self.getDetail("show_until")
+        return [t, ctimes.stamp2germandate(t), ctimes.stamp2shortrelative(t)]
+
+    def getShownUntilForForm(self):
+        t = self.getDetail("show_until")
+        return ctimes.dateforform(t)
+
+    def getStart(self):
+        t = self.getDetail("start_date")
+        return [t, ctimes.stamp2germandate(t), ctimes.stamp2shortrelative(t)]
+
+    def getStartDateForForm(self):
+        t = self.getDetail("start_date")
+        return ctimes.dateforform(t)
+
+    def getEnd(self):
+        t = self.getDetail("end_date")
+        if not t: return None
+        return [t, ctimes.stamp2germandate(t), ctimes.stamp2shortrelative(t)]
+
+    def getEndDateForForm(self):
+        t = self.getDetail("end_date")
+        if not t: return None
+        return ctimes.dateforform(t)
+
+    def getForum(self):
+        return Forum(self.getDetail("forum"))
+
+    def isShown(self):
+        return self.getDetail("show_from") < time.time() < self.getDetail("show_until")
+
+    def getTitle(self):
+        return self.getDetail("title")
+
+    def getLink(self):
+        return self.getDetail("link")
+
+    def getInfo(self):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM announcements WHERE id=?", (self.id, ))
+            data = cur.fetchone()
+            if data is None:
+                raise ValueError("ForumAnnouncement not found with id " + str(self.id))
+            return {
+                "id": data['id'],
+                "forum": data['forum'],
+                "link": data['link'],
+                "title": data['title'],
+                "start_date": data['start_date'],
+                "end_date": data['end_date'],
+                "show_from": data['show_from'],
+                "show_until": data['show_until']
+            }
+        except lite.Error as e:
+            #raise lite.Error from e
+            raise e
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def byForum(cls, forum_id, all=False):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            if not all:
+                cur.execute("SELECT * FROM announcements WHERE forum=? AND show_from < ? and show_until > ?", (forum_id, time.time(), time.time()))
+            else:
+                cur.execute("SELECT * FROM announcements WHERE forum=?", (forum_id,))
+            data = cur.fetchall()
+            return [cls(_["id"]) for _ in data]
+        except lite.Error as e:
+            print(e)
+            return []
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def createNew(cls, forumID, title, link, show_from, show_until, start_date, end_date=None):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("INSERT INTO announcements (forum, link, title, show_from, show_until, start_date, end_date) VALUES (?, ?, ?, ?, ?, ?, ?)", (forumID, link, title, show_from, show_until, start_date, end_date))
+            con.commit()
+            return cls(cur.lastrowid)
+        except lite.Error as e:
+            print(e)
+            return False
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def exists(cls, id):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM announcements WHERE id=?", (id,))
+            data = cur.fetchone()
+            return data is not None
+        except lite.Error as e:
+            print(e)
+            return False
         finally:
             if con:
                 con.close()

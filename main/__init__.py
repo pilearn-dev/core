@@ -6,7 +6,7 @@ import secrets, random
 
 from controller import md, num as cnum
 from model import privileges as mprivileges, tags as mtags, user as muser, forum as mforum, proposal as mproposal, courses as mcourses, reviews as mreviews, post_templates as mpost_templates
-from view import auth as vauth, user as vuser, review as vreview, help as vhelp, courses as vcourses, forum as vforum, jsonapi as vjsonapi, survey as vsurvey, proposal as vproposal, tools as vtools, dialog as vdialog, modmsg as vmodmsg, helpdesk as vhelpdesk, upload, topbar as vtopbar, badges as vbadges
+from view import auth as vauth, user as vuser, review as vreview, help as vhelp, courses as vcourses, forum as vforum, jsonapi as vjsonapi, survey as vsurvey, proposal as vproposal, tools as vtools, dialog as vdialog, modmsg as vmodmsg, helpdesk as vhelpdesk, upload, topbar as vtopbar, badges as vbadges, announcements as vannouncements
 
 from sha1 import md5
 
@@ -101,7 +101,7 @@ def prepare_request():
 
 @app.route("/")
 def index():
-    return render_template('index.html', title="Startseite", thispage="index", globalForum=mforum.Forum.from_id(0), _proposal=mproposal.Proposal, courses=mcourses.Courses)
+    return render_template('index.html', title="Startseite", thispage="index", globalForum=mforum.Forum.from_id(0), topics=mcourses.Topic, _proposal=mproposal.Proposal, courses=mcourses.Courses)
 
 @app.route("/hide-hero", methods=["POST"])
 def hide_hero():
@@ -352,6 +352,7 @@ vhelpdesk.apply(app)
 upload.apply(app)
 vtopbar.apply(app)
 vbadges.apply(app)
+vannouncements.apply(app)
 
 @app.errorhandler(404)
 def error404(x):

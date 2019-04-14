@@ -37,7 +37,7 @@
   <aside style="padding: 4px;">
     <div class="big-sidebar-num">{{ data.getEnrolledCount() }}</div>
     <div class="big-sidebar-num-label">Teilnehmer</div>
-    {% set pinnedArticles = data.getForum().getPinnedArticles() %}
+    {# set pinnedArticles = data.getForum().getPinnedArticles() %}
     {% if pinnedArticles|length > 0 %}
     <h3>Wichtige Nachrichten</h3>
       {% for article in pinnedArticles %}{% set gac=article.getAnswerCount() %}
@@ -46,7 +46,7 @@
           <div class="fia-title"><a href="/f/0/{{ article.id }}">{{ article.getTitle() }}</a></div>
         </div>
       {% endfor %}
-    {% endif %}
+    {% endif #}
     <h3>Du hast eine Frage zum Kurs?</h3>
     <p>Dann stelle diese im <a href="/f/{{ data.id }}">Kursforum</a>.</p>
     <h3>Gefällt dir dieser Kurs?</h3>

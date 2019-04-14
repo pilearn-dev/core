@@ -1,0 +1,25 @@
+{% extends "layout_new.html" %}
+{% block body %}
+<h1>Ankündigungen: {{ forum.getTitle() }}</h1>
+<p>Ankündigungen werden auf der Startseite für alle Benutzer angezeigt, die Zugriff auf dieses Forum haben.</p>
+<p>Wähle eine Ankündigung zum Bearbeiten:</p>
+<div class="_list">
+  {% for a in announcements %}
+    <a class="_list-item fs-base1 _list-item-keepcolor" href="/announcements/{{ forum.id }}/edit/{{ a.id }}">
+      {% if a.getEnd() %}
+        <span class="d-b col-dark-dd push-right">{{ a.getStart()[1] }} - {{ a.getEnd()[1] }}</span>
+      {% else %}
+        <span class="d-b col-dark-dd push-right">{{ a.getStart()[1] }}</span>
+      {% endif %}
+      {% if a.isShown() %}
+        <span class="d-b col-success-dd mb1">aktiv ({{ a.getShownFrom()[1] }} - {{ a.getShownUntil()[1] }})</span>
+      {% else %}
+        <span class="d-b col-danger-dd mb1">inaktiv ({{ a.getShownFrom()[1] }} - {{ a.getShownUntil()[1] }})</span>
+      {% endif %}
+        <span class="d-b mb1 fs-base2 col-black">{{ a.getTitle() }}</span>
+        <span class="d-b mb1">{{ a.getLink() }}</span>
+    </a>
+  {% endfor %}
+</div>
+<a class="_btn" href="/announcements/{{ forum.id }}/add">Ankündigung hinzufügen</a>
+{% endblock %}
