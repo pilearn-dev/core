@@ -107,7 +107,11 @@
         </div>
     {% endfor %}
   {% endif %}
+  {% if pattern=="individual" %}
+    <main>
+  {% else %}
     <main class="container single-fluid">
+  {% endif %}
       {% block body %}{% endblock %}
     </main>
     <footer class="bg--primary-lll col-black anchor-dark mt3 mt1__sm">
@@ -149,7 +153,8 @@
     {% if not (user.isLoggedIn() or request.cookies.get("hide-hero-login-request", False)) %}
         <div class="_banner _banner--primary _banner-strong _banner-bottom _banner-with-decoration">
             <div class="single-fluid grid">
-              <p class="column9 column12__sm">Willst du auch mitmachen und dein Wissen teilen?</p><div class="column3 column12__sm al-r"><a href="/login" class="_btn _btn--primary _btn-lighter">Registrieren</a><a href="#!" onclick="K=this;$post('hide-hero', {'hero':'login-request'}, function(){K.parentNode.style.display='none';})" class="_btn _btn--primary _btn-on-dark">&times;</a></div></div>
+              <p class="column9 column12__sm">Willst du auch mitmachen und dein Wissen teilen?</p><div class="column3 column12__sm al-r"><a href="/login" class="_btn _btn--primary _btn-lighter">Registrieren</a><a href="#!" onclick="K=this;$.ajax({url:'/hide-hero',method:'POST', data:JSON.stringify({'hero':'login-request'}),
+              contentType: 'application/json; charset=utf-8',success:function(){K.parentNode.parentNode.parentNode.style.display='none';}});" class="_btn _btn--primary _btn-on-dark">&times;</a></div></div>
         </div>
     {% endif %}
     <script>

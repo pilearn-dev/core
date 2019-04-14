@@ -8,7 +8,7 @@ def login():
     error = False
     if request.method == 'POST':
         if request.form['login_provider'] == "local_account":
-            data = muser.User.login(request.form['username'], request.form['password'])
+            data = muser.User.login(request.form['email'], request.form['password'])
             if data == -4:
                 error = "forbidden"
             elif data == -3:
@@ -16,12 +16,12 @@ def login():
             else:
                 user_id = data
         elif request.form["login_provider"] == "local_registration":
-            if re.match("[a-zA-Z0-9-_]{2,30}", request.form['username']):
-                llin = muser.User.login(request.form['username'], request.form['password'])
+            if re.match("[a-zA-Z0-9.+_-]+\@[a-zA-Z0-9.+_-]+\.[a-zA-Z]{2,10}", request.form['email']):
+                llin = muser.User.login(request.form['email'], request.form['password'])
                 if llin == -4:
-                    data = muser.User.reset_deletion(request.form['username'], request.form['password'])
+                    data = muser.User.reset_deletion(request.form['email'], request.form['password'])
                 else:
-                    data = muser.User.register(request.form['username'], request.form['password'], request.form['realname'], request.form['email'])
+                    data = muser.User.register(request.form['password'], request.form['realname'], request.form['email'])
                 if data == -3:
                     error = "forbidden"
                 else:
@@ -70,7 +70,6 @@ def oauth_callback(provider):
             return redirect("/oauth-error/google")
         session[provider+'_token'] = (resp['access_token'], '')
         me = mauth.google.get('userinfo')
-        print(me.data)
         email = me.data["email"]
         username = me.data["name"].lower().replace(" ", ".")
         username = re.sub("[^a-z0-9.-]", "", username)
@@ -100,10 +99,21 @@ def get_google_oauth_token():
     return session.get('google_token')
 
 def apply(app, pidata2):
-    app.route("/~dev/login", methods=['GET', 'POST'])(app.route("/login", methods=['GET', 'POST'])(login))
-    app.route("/reset-password", methods=['GET', 'POST'])(reset_password)
-    app.route('/logout')(logout)
-    app.route('/oauth/<provider>')(oauth_authorize)
+    @app.route("/login")
+    def login_redirect():
+        return redirect(url_for("login"))
+    app.route("/auth/login", methods=['GET', 'POST'])(login)
+
+    app.route("/auth/password-reset", methods=['GET', 'POST'])(reset_password)
+
+
+    @app.route("/logout")
+    def logout_redirect():
+        return redirect(url_for("logout"))
+    app.route('/auth/logout')(logout)
+
+    app.route('/auth/oauth-provider/<provider>')(oauth_authorize)
     app.route('/oauth2callback/<provider>')(oauth_callback)
+
     mauth.apply(app)
     mauth.google.tokengetter(get_google_oauth_token)

@@ -503,7 +503,7 @@ class User:
                     return {}
                 return {
                     "id": data['id'],
-                    "name": data["name"],
+                    "name": data["realname"],
                     "realname": data['realname'],
                     "email": data['email'],
                     "deleted": data['deleted'],
@@ -530,7 +530,7 @@ class User:
         else:
             return {
                 "id": -3,
-                "name": "<anonym>",
+                "name": "Anonymer Benutzer",
                 "realname": "Anonymer Benutzer",
                 "email": "",
                 "deleted": 1,
@@ -696,12 +696,12 @@ class User:
         return u
 
     @classmethod
-    def login(cls, username, password):
+    def login(cls, email, password):
         try:
             con = lite.connect('databases/user.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT * FROM user WHERE name=? AND (password=? OR password='') AND login_provider='local_account'", (username, sha1(password)))
+            cur.execute("SELECT * FROM user WHERE email=? AND (password=? OR password='') AND login_provider='local_account'", (email, sha1(password)))
             data = cur.fetchone()
             if data is None:
                 return -3
@@ -744,15 +744,15 @@ class User:
                 con.close()
 
     @classmethod
-    def register(cls, username, password, realname, email):
+    def register(cls, password, realname, email):
         try:
             con = lite.connect('databases/user.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute(u"SELECT * FROM user WHERE name=? OR email=?", (username, email))
+            cur.execute(u"SELECT * FROM user WHERE email=?", (email,))
             if cur.fetchone():
                 return -3
-            cur.execute(u"INSERT INTO user (name, realname, email, password, banned, role, reputation, aboutme, login_provider) VALUES (?, ?, ?, ?, 0, 'user', 0, ?, 'local_account')", (username, realname, email, sha1(password), u""))
+            cur.execute(u"INSERT INTO user (name, realname, email, password, banned, role, reputation, aboutme, login_provider) VALUES (?, ?, ?, ?, 0, 'user', 0, ?, 'local_account')", (realname, realname, email, sha1(password), u""))
             data = cur.lastrowid
             con.commit()
             return data
@@ -764,14 +764,14 @@ class User:
                 con.close()
 
     @classmethod
-    def reset_deletion(cls, username, password):
+    def reset_deletion(cls, email, password):
         try:
             con = lite.connect('databases/user.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute(u"UPDATE user SET deleted=0 WHERE name=? AND password=?", (username, sha1(password)))
+            cur.execute(u"UPDATE user SET deleted=0 WHERE email=? AND password=?", (email, sha1(password)))
             con.commit()
-            cur.execute(u"SELECT id FROM user WHERE name=? AND password=?", (username, sha1(password)))
+            cur.execute(u"SELECT id FROM user WHERE email=? AND password=?", (email, sha1(password)))
             data = cur.fetchone()["id"]
             return data
         except lite.Error as e:
@@ -797,12 +797,12 @@ class User:
                 con.close()
 
     @classmethod
-    def passwdreset(cls, username, email):
+    def passwdreset(cls, email):
         try:
             con = lite.connect('databases/user.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("UPDATE user SET password='' WHERE name=? AND email=?", (username, email))
+            cur.execute("UPDATE user SET password='' WHERE email=?", (email,))
             con.commit()
             return True
         except lite.Error as e:

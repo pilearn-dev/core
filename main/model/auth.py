@@ -21,7 +21,7 @@ def apply(app):
         consumer_key=OAUTH_CREDENTIALS["google"]["id"],
         consumer_secret=OAUTH_CREDENTIALS["google"]["secret"],
         request_token_params={
-            'scope': 'email'
+            'scope': 'profile email'
         },
         base_url='https://www.googleapis.com/oauth2/v1/',
         request_token_url=None,
