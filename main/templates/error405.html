@@ -1,12 +1,17 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-    <div class="httperror">
-      <div>
-        <h2>Ungültiger Zugriff</h2>
-        <p>Oh nein! Diese Zugriffsmethode ist für die gewählte Adresse ungültig. Versuche die Navigation zu verwenden, um auf &pi;-Learn zu navigieren.</p>
-        <p>Dies liegt wahrscheinlich daran, dass du auf eine API-Schnittstelle direkt zugegriffen hast oder du Daten an eine statische Seite gesendet hast.</p>
-        <hr>
-        <small>Fehlercode: <b>405</b></small>
-      </div>
+<div class="p3">
+  <div class="grid">
+    <div class="column4 column3__md hide__sm p4">
+      <div class="col--primary-dd p2 ta-c f-bold fs-display3">???</div>
     </div>
+    <div class="column8 column9__md column12__sm p2">
+      <h1>Ungültige Anfrage</h1>
+      <p class="p-lead">Oh nein! Deine Anfrage ist unverständlich.</p>
+      <p>Diese Zugriffsmethode ist für die gewählte Adresse ungültig. Versuche die Navigation zu verwenden, um auf &pi;-Learn zu navigieren.</p>
+      <p>Dies liegt wahrscheinlich daran, dass du auf eine API-Schnittstelle direkt zugegriffen hast oder du Daten an eine statische Seite gesendet hast.</p>
+      <p>Wenn du der Meinung bist, dass hier etwas falsch ist, melde dies <a href="/f/0">im globalen Forum</a> mit dem Tag <em>Fehler</em>.</p>
+    </div>
+  </div>
+</div>
 {% endblock %}

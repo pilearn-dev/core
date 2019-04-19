@@ -1,15 +1,25 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-    <div class="httperror">
-      <div class="img">
-        <img src="/static/img/error404.jpg">
-      </div>
-      <div>
-        <h2>Nicht gefunden</h2>
-        <p>Oh nein! Wir haben die von dir angegebene Adresse nicht gefunden. Versuche die Navigation zu verwenden, um auf &pi;-Learn zu navigieren.</p>
-        <p>Wenn du ganz sicher bist, dass diese Seite hier vorhanden sein sollte, und sie <b>nicht eventuell in der Zwischenzeit gelöscht worden ist</b>, melde diesen Fehler im <a href="/forum/0/global/list">globalen Forum</a> mit dem Tag <span class="tag">bug</span>.</p>
-        <hr>
-        <small>Fehlercode: <b>404</b></small>
-      </div>
+<div class="p3">
+  <div class="grid">
+    <div class="column4 column3__md hide__sm p4">
+      <div class="col--primary-dd p2 ta-c f-bold fs-display">404</div>
     </div>
+    <div class="column8 column9__md column12__sm p2">
+      <h1>Seite nicht gefunden</h1>
+      <p class="p-lead">Oh nein! Die angeforderte Seite kann nicht gefunden werden.</p>
+      <p>Vielleicht existierte diese Seite nie oder der Inhalt wurde gelöscht oder ist andersweitig nicht verfügbar.</p>
+      <p>Du kannst ...</p>
+      <ul>
+        {% if not user.isLoggedIn() %}
+        <li>dich <a href="/login">anmelden</a>,</li>
+        {% endif %}
+        <li>zur <a href="/">Startseite</a> gehen,</li>
+        <li>die <a href="/topics">Liste der Themenbereiche</a> anschauen oder</li>
+        <li>alle <a href="/courses/search">Kurse durchsuchen</a>.</li>
+      </ul>
+      <p>Wenn du der Meinung bist, dass hier etwas fehlt, melde dies <a href="/f/0">im globalen Forum</a> mit dem Tag <em>Fehler</em>.</p>
+    </div>
+  </div>
+</div>
 {% endblock %}

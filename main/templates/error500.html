@@ -1,22 +1,23 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-    <div class="httperror">
-      <div class="img">
-        <img src="/static/img/error500.png">
-      </div>
-      <div>
-        <h2>Server-Fehler</h2>
-        <p>Oh nein! Irgend etwas ist schiefgelaufen. <i>Das ist vermutlich unsere Schuld.</i>. Der Fehler wurde von unserem System registriert und wir werden ihn schnellstmöglich beheben.</p>
-        <p>Solltest du diese Seite sehen, obwohl du <b>keinen Eingabefehlern gemacht hast</b> und bleibt diese Seite auch nach einem Neuaufruf der Webseite für dich sichtbar, melde diesen Fehler im <a href="/forum/0/global/list">globalen Forum</a> mit dem Tag <span class="tag">bug</span>.</p>
-        <hr>
-        <small>Fehlercode: <b>500</b></small>
-        {% if user.isDev() %}
-            <hr>
-            <details>
-              <summary>Traceback: (bitte bei Fehlermeldungen angeben)</summary>
-              <pre>{{ data }}</pre>
-            </details>
-        {% endif %}
-      </div>
+<div class="p3">
+  <div class="grid">
+    <div class="column4 column3__md hide__sm p4">
+      <div class="col--primary-dd p2 ta-c f-bold fs-display3">:(</div>
+    </div>
+    <div class="column8 column9__md column12__sm p2">
+      <h1>Ein Fehler ist aufgetreten</h1>
+      <p class="p-lead">Huch?! Dies hätte nicht passieren sollen!</p>
+      <p>Dieser Fehler ist unerwartet (sogar für uns). Es handelts sich also wahrscheinlich um die Spanische Inquisition.</p>
+      <p>Dies ist unsere Schuld. Wir entschuldigen uns für eventuelle Unanehmlichkeiten.</p>
+      <p>Wenn du uns beim beheben dieses Fehlers unterstützen möchtest, melde ihn <a href="/f/0">im globalen Forum</a> mit dem Tag <em>Fehler</em>.</p>
+      {% if user.isDev() %}
+      <details>
+        <summary>Traceback: (bitte bei Fehlermeldungen angeben)</summary>
+        <pre>{{ data }}</pre>
+      </details>
+      {% endif %}
+    </div>
   </div>
+</div>
 {% endblock %}
