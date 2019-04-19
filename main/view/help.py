@@ -10,9 +10,9 @@ def help_cathome(caturl):
     if mhelp.HelpCategory.exists_url(caturl):
         cat = mhelp.HelpCategory.from_url(caturl)
         cuser = muser.getCurrentUser()
-        if not cat.isActive() and not cuser.isAdmin():
+        if not cat.isActive() and not cuser.isMod():
             abort(404)
-        if request.values.get("editor", "no") == "yes" and cuser.isAdmin() and (cat.mayAdminEdit() or cuser.isTeam()):
+        if request.values.get("editor", "no") == "yes" and cuser.isMod() and (cat.mayAdminEdit() or cuser.isTeam()):
             if request.method == "POST":
                 if not cuser.isTeam() or request.form["action"] == "save":
                     cat.setDetail("override_excerpt", request.form["excerpt"])
@@ -44,10 +44,10 @@ def help_any(fullurl):
     if mhelp.HelpEntry.exists_url(fullurl):
         entry = mhelp.HelpEntry.from_url(fullurl)
         cuser = muser.getCurrentUser()
-        if not entry.isActive() and not cuser.isAdmin():
+        if not entry.isActive() and not cuser.isMod():
             abort(404)
         cat = mhelp.HelpCategory(entry.getDetail("help_cat"))
-        if request.values.get("editor", "no") == "yes" and cuser.isAdmin() and (entry.mayAdminEdit() or cuser.isTeam()):
+        if request.values.get("editor", "no") == "yes" and cuser.isMod() and (entry.mayAdminEdit() or cuser.isTeam()):
             if request.method == "POST":
                 if not cuser.isTeam() or request.form["action"] == "save":
                     entry.setDetail("override_content", request.form["content"])
@@ -97,7 +97,7 @@ def help_newelement(element):
         if mhelp.HelpCategory.exists_url(cat):
             cat = mhelp.HelpCategory.from_url(cat)
             cuser = muser.getCurrentUser()
-            if not cat.isActive() and not cuser.isAdmin():
+            if not cat.isActive() and not cuser.isMod():
                 abort(400)
             if not (cat.mayAdminCreateNewpage() or cuser.isTeam()):
                 abort(403)

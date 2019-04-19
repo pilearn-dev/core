@@ -268,8 +268,6 @@ def flags_act(queue, id):
     cuser = muser.getCurrentUser()
     if not cuser.isMod():
         return "Du bist kein Moderator und kannst diese Aktion daher nicht machen."
-    if queue == "admin" and not cuser.isAdmin():
-        return "Du bist kein Administrator und kannst diese Aktion daher nicht machen."
     q = {
         "mod": mreviews.ModQueue,
         "admin": mreviews.AdminQueue
@@ -296,8 +294,6 @@ def flags_complete(queue, id):
         abort(404)
     cuser = muser.getCurrentUser()
     if not cuser.isMod():
-        abort(404)
-    if queue == "admin" and not cuser.isAdmin():
         abort(404)
     q = {
         "mod": mreviews.ModQueue,

@@ -11,7 +11,7 @@ import json, time, pprint
 def topbar_inbox():
     TYPES = {
       "helpdesk": "Helpdesk",
-      "pm": "Admin-Nachricht",
+      "pm": "Moderatoren-Nachricht",
       "ping": "Benutzer-PING",
       "answered": "Neue Antwort",
       "commented": "Neuer Kommentar",

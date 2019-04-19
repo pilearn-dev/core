@@ -22,10 +22,8 @@
             <h4><a href="/u/{{ user.id }}">{{ user.getHTMLName()|safe }}</a></h4>
             {% if user.isTeam() %}
                 <span class="author-role">&pi;-Learn Team</span>
-            {% elif user.isAdmin() %}
-                <span class="author-role">ADMINISTRATOR</span>
             {% elif user.isMod() %}
-                <span class="author-role">MODERATOR</span>
+                <span class="author-role">(Moderator)</span>
             {% else %}
             <span class="author-role"> &nbsp; </span>
             {% endif %}

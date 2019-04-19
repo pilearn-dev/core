@@ -110,3 +110,12 @@ insert into badges (name, class, description, internal_id) values ("Gewusst!", "
 insert into badges (name, class, description, internal_id) values ("Moderator", "gold", "Diene als Community-gewählter Moderator für mindestens ein halbes Jahr (Dieses Abzeichen wird manuell verliehen)", "moderator"), ("Möchtegern-Moderator", "gold", "Nehme als Kandidat an einer Moderatoren-Wahl teil und erreiche die Endrunde", "election-finalist"), ("Wähler", "silver", "Stimme für einen Kandidaten in der Endrunde einer Moderatoren-Wahl", "election-voter")
 
 insert into badges (name, class, description, internal_id) values ("Beta", "gold", "Sei aktiv während der Beta von π-Learn und erhalte mindestens 10 Reputation", "beta"), ("Skimaske", "gold", "Finde eine Sicherheitslücke auf π-Learn und melde sie zuerst an das π-Learn-Team, um so für die Sicherheit der Webseite zu sorgen (Dieses Abzeichen wird manuell verliehen)", "hacker")
+
+;CREATE TABLE user_roles (
+  id INTEGER PRIMARY KEY,
+  name VARCHAR(50),
+  is_mod TINYINT,
+  is_dev TINYINT,
+  is_team TINYINT
+);
+INSERT INTO user_roles (name, is_mod, is_dev, is_team) VALUES ("Normaler Benutzer", 0,0,0), ("Moderator (ernannt)", 1,0,0), ("Moderator (gewählt)", 1,0,0), ("Team (ohne Moderatorenrechte)", 0,0,1), ("Team (mit Moderatorenrechten)", 1,0,1), ("Team (Entwicklerrechte)", 1,1,1)

@@ -6,7 +6,7 @@
    <ul class="subnav">
      <li class=""><a href="./info">Informationen</a></li>
      <li class="active"><a href="#!">Kurse</a></li>
-     {% if user.isAdmin() %}
+     {% if user.isMod() %}
        <li class=""><a href="./edit">Bearbeiten</a></li>
      {% endif %}
      <form action="/course/search" method="get"><li class="input"><input class="inline" placeholder="Kurse durchsuchen" name="title"><input name="topic" type="hidden" value="{{ data.id }}"><button><span class="fa fa-search"></span></button></li></form>

@@ -9,7 +9,7 @@ def proposal_show(id):
         abort(404)
     data = mproposal.Proposal(id)
     cuser = muser.getCurrentUser()
-    if data.isDeleted() and not cuser.isAdmin():
+    if data.isDeleted() and not cuser.isMod():
         abort(404)
     return render_template('proposal/show.html', title=u"Kursvorschlag: " + data.getTitle(), thispage="course", data=data)
 
@@ -18,7 +18,7 @@ def proposal_delete(id):
         abort(404)
     proposal = mproposal.Proposal(id)
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
     data = request.json
     proposal.setDetail("deleted", 1)
@@ -30,7 +30,7 @@ def proposal_undelete(id):
         abort(404)
     proposal = mproposal.Proposal(id)
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
     proposal.setDetail("deleted", 0)
     proposal.setDetail("delete_reason", "")
@@ -41,7 +41,7 @@ def proposal_close(id):
         abort(404)
     proposal = mproposal.Proposal(id)
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
     data = request.json
     proposal.setDetail("declined", 1)
@@ -53,7 +53,7 @@ def proposal_unclose(id):
         abort(404)
     proposal = mproposal.Proposal(id)
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
     proposal.setDetail("declined", 0)
     proposal.setDetail("decline_reason", "")
@@ -75,6 +75,8 @@ def proposal_accept(id):
         abort(404)
     proposal = mproposal.Proposal(id)
     cuser = muser.getCurrentUser()
+    if not cuser.isMod():
+        abort(403)
     if proposal.getDetail("courseid") == 0:
         proposal.createCourse()
     return "{ok}"

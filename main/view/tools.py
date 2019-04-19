@@ -11,7 +11,7 @@ def tools_info():
 
 def tools_courses_latest():
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
     num = int(request.values.get("num", 5))
     if num not in [5, 10, 15, 20, 25]:
@@ -22,14 +22,14 @@ def tools_courses_latest():
 
 def tools_courses_proposalsearch():
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
     return render_template("tools/proposal_search.html", title="Werkzeuge - Vorschlagsuche", thispage="tools", num=5, page=max(0, min(10, int(request.values.get("page", "1")))), pages=10, topic=mcourses.Topic)
 
 
 def tools_user_flags_index():
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
 
     flagged = mreviews.CustomQueue.getItems(["user"])
@@ -44,7 +44,7 @@ def tools_user_flags_index():
 
 def tools_user_flags_item(id):
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
 
     flagged = mreviews.CustomQueue.getItemData(id)
@@ -68,7 +68,7 @@ def tools_user_flags_item(id):
 
 def tools_user_flags_action(id):
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
 
     flagged = mreviews.CustomQueue.getItemData(id)
@@ -89,7 +89,7 @@ def tools_user_flags_action(id):
 
 def tools_user_flags_finish(id):
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
 
     flagged = mreviews.CustomQueue.getItemData(id)
@@ -108,7 +108,7 @@ def tools_user_flags_finish(id):
 
 def tools_forum_flags_index():
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
 
     flagged = mreviews.CustomQueue.getItems(["forum.question", "forum.answer"])
@@ -128,7 +128,7 @@ def tools_forum_flags_index():
 
 def tools_forum_flags_item(id):
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
 
     flagged = mreviews.CustomQueue.getItemData(id)
@@ -157,7 +157,7 @@ def tools_forum_flags_item(id):
 
 def tools_forum_flags_action(id):
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
 
     flagged = mreviews.CustomQueue.getItemData(id)
@@ -183,7 +183,7 @@ def tools_forum_flags_action(id):
 
 def tools_forum_flags_finish(id):
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
 
     flagged = mreviews.CustomQueue.getItemData(id)
@@ -204,7 +204,7 @@ def tools_forum_flags_finish(id):
 
 def tools_user_ops_index(uid):
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
     if not muser.User.exists(uid):
         abort(404)

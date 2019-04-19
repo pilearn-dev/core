@@ -11,7 +11,7 @@
                     <h4>Keine Belege gefunden</h4>
                     <p>Du hast keine Belege für das beanstandete Verhalten gefunden.</p>
                 </label>
-                {% if user.isAdmin() %}
+                {% if user.isMod() %}
                 <label class="flagging-reason-item">
                     <input type="radio" id="denial-dialog-noadminreq_reason" name="reason" value="noadminreq">
                     <h4>Benötigt keine Einwirkung eines Moderators</h4>

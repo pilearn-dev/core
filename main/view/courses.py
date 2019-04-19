@@ -346,7 +346,7 @@ def topic_edit(name, id=None):
     if topic.id != id:
         return redirect(url_for("topic_edit", name=name, id=topic.id))
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
     if request.method == "GET":
         return render_template('topic/edit.html', title=topic.getTitle()+u" – Bearbeiten", thispage="course", data=topic)

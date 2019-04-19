@@ -12,14 +12,14 @@
     <p>Dieser Benutzer wurde <strong>{{ data.getBanReason() }}</strong> <a href="/help/users/banned">gesperrt</a>. Die Sperrung endet <span title="{{ end[1] }}">{{ end[2] }}</span>.</p>
   </div>
 {% endif %}
-  {% if user.isAdmin() or user.id == data.id %}
+  {% if user.isMod() or user.id == data.id %}
     <div class="tabination">
       <ul>
         <li class="active"><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}">Profil</a></li>
         <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/flags">Meldungen</a></li>
         <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/reputation">Reputation</a></li>
-        {% if user.isAdmin() %}
-        <li><a href="/tools/user/ops/{{ data.id }}" target="_blank"><em>AdminOps</em></a></li>
+        {% if user.isMod() %}
+        <li><a href="/tools/user/ops/{{ data.id }}" target="_blank"><em>UserOps</em></a></li>
         {% else %}
         <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/delete">Löschen</a></li>
         {% endif %}
@@ -28,14 +28,14 @@
   {% endif %}
     <h2>
       <span id="realname">{{ data.getDetail("realname") }}</span>
-      {% if user.isAdmin() or (data.id == user.id and not data.getDetail("frozen")) %}
+      {% if user.isMod() or (data.id == user.id and not data.getDetail("frozen")) %}
         <a href="#!" onclick="edit('realname')"><i class="fa fa-pencil" aria-hidden="true"></i></a>
       {% endif %}
     </h2>
-    {% if user.isAdmin() or user.id == data.id %}
+    {% if user.isMod() or user.id == data.id %}
       <h3>
         Benutzername: <i id="name">{{ data.getDetail("name") }}</i>
-        {% if user.isAdmin() %}
+        {% if user.isMod() %}
           <a href="#!" onclick="edit('name')"><i class="fa fa-pencil" aria-hidden="true"></i></a>
         {% endif %}
       </h3>
@@ -46,11 +46,11 @@
           {% for label in data.getDetail("labels") %}
             <span class="user-label">{{ data.labels[label] }}</span>{% if not loop.last %}, {% endif %}
           {% endfor %}
-          {% if user.isAdmin() %}
+          {% if user.isMod() %}
             <a href="#!" onclick="document.getElementById('labels-modal').classList.add('open');"><i class="fa fa-pencil" aria-hidden="true"></i></a>
           {% endif %}
       </p>
-    {% elif user.isAdmin() %}
+    {% elif user.isMod() %}
       <p><a href="#!" onclick="document.getElementById('labels-modal').classList.add('open');"><i class="fa fa-pencil" aria-hidden="true"></i> Label hinzufügen</a></p>
     {% endif %}
     {% if data.getDetail("profile_image") %}
@@ -74,10 +74,10 @@
     {% if data.getDetail("profile_image") %}
         </div>
     {% endif %}
-    {% if user.isAdmin() or (data.id == user.id and not data.getDetail("frozen")) %}
+    {% if user.isMod() or (data.id == user.id and not data.getDetail("frozen")) %}
         <button class="primary-btn" onclick="edit('aboutme', this)"><i class="fa fa-pencil" aria-hidden="true"></i> Bearbeiten</button><div style="display:none;" id="aboutme_content">{{ data.getDetail("aboutme") }}</div><br>&nbsp;
     {% endif %}
-    {% if data.getDetail("frozen") and (user.id==data.id or user.isAdmin()) %}
+    {% if data.getDetail("frozen") and (user.id==data.id or user.isMod()) %}
       <p class="tiny" style="color: #d00; font-weight:bold;">Dieser Account wurde aufgrund von Meinungsverschiedenheiten über Benutzerkonteneigenschaften (Anzeigename, Selbstbeschreibung, ...) eingefroren.</p>
     {% endif %}
     <div class="flexible-table">
@@ -119,7 +119,7 @@
                 {% else %}
                     <td style="width:100%;">aktiv</td>
                 {% endif %}
-                {% if data.id == user.id or user.isAdmin() %}
+                {% if data.id == user.id or user.isMod() %}
                     <td class="edit-column"></td>
                 {% endif %}
             </tr>
@@ -129,35 +129,26 @@
                 <td style="font-style: italic; font-weight: bold; width: 100%;">&pi;-Learn Team {% if user.isTeam() %}<code>{{ data.getDetail("role") }}</code>{% endif %}</td>
                 {% else %}
                     <td style="width:100%;">
-                        {% if data.isAdmin() %}
-                            Administrator
-                        {% elif data.isMod() %}
+                        {% if data.isMod() %}
                             Moderator
                         {% else %}
                             Standardbenutzer
                         {% endif %}
-                        {% if user.isDev() and not data.isDev() and data.isEnabled() and data.id != user.id and not data.getDetail("frozen") %}
-                            <p class="tiny action-bar">
-                                <a href="#!" onclick="$post('user/set/role', {'new_value': 'administrator', 'userid': {{ data.id}} }, function(){window.location.reload();});">Administrator</a>
-                                <a href="#!" onclick="$post('user/set/role', {'new_value': 'moderator', 'userid': {{ data.id}} }, function(){window.location.reload();});">Moderator</a>
-                                <a href="#!" onclick="$post('user/set/role', {'new_value': 'user', 'userid': {{ data.id}} }, function(){window.location.reload();});">Standardbenutzer</a>
-                            </p>
-                        {% endif %}
                     </td>
                 {% endif %}
-                {% if data.id == user.id or user.isAdmin() %}
+                {% if data.id == user.id or user.isMod() %}
                     <td class="edit-column"></td>
                 {% endif %}
             </tr>
             <tr>
                 <th>Reputation</th>
                 <td style="width:100%;"><span class="badge" id="reputation">{{ data.getReputation() }}</span></td>
-                {% if user.isAdmin() or data.id == user.id %}
+                {% if user.isMod() or data.id == user.id %}
                     <td class="edit-column"></td>
                 {% endif %}
             </tr>
         </table>
-        {% if user.isAdmin() and not data.isDev() and data.id != user.id %}
+        {% if user.isMod() and not data.isDev() and data.id != user.id %}
             <p class="tiny action-bar">
                 {% if not data.isDeleted() %}
                     <a href="#!" onclick="document.getElementById('privilege-modal').classList.add('open');">Privilegien entziehen</a>
@@ -173,7 +164,7 @@
     </div>
     &nbsp;
         {% endif %}
-    {% if data.id == user.id or user.isAdmin() %}
+    {% if data.id == user.id or user.isMod() %}
         <script src="/static/js/user_view.js"></script>
     {% endif %}
     {% if not data.isDeleted() and (not data.isDisabled() or user.id == data.id) %}
@@ -184,7 +175,7 @@
                 <div><button id="report-button">Melden</button></div>
             {% endif %}
         {% else %}
-            <div><button id="report-button">Einen Administrator kontaktieren</button></div>
+            <div><button id="report-button">Einen Moderatoren kontaktieren</button></div>
         {% endif %}
         {% set flagging_id = 'flag_user_' ~ data.id %}
         {% set flagging_user = data.id %}
@@ -203,7 +194,7 @@
 </div>
 {% endif %}
 
-{% if user.isAdmin() and data.isEnabled() and not data.isDev() %}
+{% if user.isMod() and data.isEnabled() and not data.isDev() %}
 <div class="flagging-modal" id="privilege-modal">
     <div class="flagging-dialog">
         <div class="close-link"><a href="#!" onclick="document.getElementById('privilege-modal').classList.remove('open');">&times;</a></div>

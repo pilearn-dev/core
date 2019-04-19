@@ -11,7 +11,7 @@
         </ol>
       </aside>
       <main>
-        <h3>AdminOps für {{ data.getDetail("realname") }}</h3>
+        <h3>UserOps für {{ data.getDetail("realname") }}</h3>
         <div class="tool-ops" id="userops_action">
           <div class="tool-ops-selection">
             <input type="radio" name="userops_action" value="access-pii" id="userops_action_access-pii">
@@ -24,7 +24,7 @@
             <input type="radio" name="userops_action" value="lookup-annotations" id="userops_action_lookup-annotations">
             <label for="userops_action_lookup-annotations">
               <h4>Anmerkungsverlauf anzeigen</h4>
-              <p>Anzeigen von Anmerkungen durch Administratoren und wichtigen administrativen Handlungen gegen {{ data.getDetail("realname") }}.</p>
+              <p>Anmerkungen von Moderatoren und wichtigen administrativen Handlungen gegen {{ data.getDetail("realname") }} anzeigen.</p>
             </label>
           </div>
           <div class="tool-ops-selection">

@@ -30,9 +30,9 @@
         <input type="checkbox" id="deprecated" name="deprecated" value="true" {% if entry.isDeprecated() %}checked{% endif %}>&nbsp;
         <label for="deprecated">Seite enthält veraltete Inhalte?</label><br>
         <input type="checkbox" id="may_edit" name="may_edit" value="true" {% if entry.mayAdminEdit() %}checked{% endif %}>&nbsp;
-        <label for="may_edit">Seite kann von Administratoren bearbeitet werden?</label><br>
+        <label for="may_edit">Seite kann von Moderatoren bearbeitet werden?</label><br>
         <input type="checkbox" id="subpage" name="subpage" value="true" {% if entry.mayAdminCreateSubpage() %}checked{% endif %}>&nbsp;
-        <label for="subpage">Administratoren können Unterseiten erstellen?</label><br>
+        <label for="subpage">Moderatoren können Unterseiten erstellen?</label><br>
         <input type="checkbox" id="pinned" name="pinned" value="true" {% if entry.isPinned() %}checked{% endif %}>&nbsp;
         <label for="pinned">Seite wird auf Hilfe-Startseite angezeigt und hervorgehoben?</label><br><br>
       {% endif %}

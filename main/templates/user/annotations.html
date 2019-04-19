@@ -15,7 +15,7 @@
     <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}">Profil</a></li>
     <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/flags">Meldungen</a></li>
     <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/reputation">Reputation</a></li>
-    {% if user.isAdmin() %}
+    {% if user.isMod() %}
     <li class="active"><a href="#!">Anmerkungen</a></li>
     {% endif %}
     <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/delete">Löschen</a></li>
@@ -32,7 +32,7 @@
 <table class="annotation-table">
   <tr>
     <th class="annot-icon">Art <a href="?order=type{% if order=='type' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='type' %}-down{% elif order=='type_reverse' %}-up{% endif %}"></i></a></th>
-    <th>Admin <a href="?order=creator_id{% if order=='creator_id' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='creator_id' %}-down{% elif order=='creator_id_reverse' %}-up{% endif %}"></i></a></th>
+    <th>Von <a href="?order=creator_id{% if order=='creator_id' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='creator_id' %}-down{% elif order=='creator_id_reverse' %}-up{% endif %}"></i></a></th>
     <th colspan="4">Kommentar</th>
     <th>Zeit <a href="?order=time{% if order=='time' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='time' %}-down{% elif order=='time_reverse' %}-up{% endif %}"></i></a></th>
     {% if user.isDev() %}

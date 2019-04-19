@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
     <h2><a href="/help">Hilfethemen</a> &raquo; <a href="/help/category:{{ cat.getUrlPart() }}">{{ cat.getTitle() }}</a> &raquo; {{ entry.getTitle() }}</h2>
-    {% if user.isAdmin() %}
+    {% if user.isMod() %}
     <p style="margin: 0; font-size: 0.8em;">{% if not entry.isActive() %}<span style="color: #d00;">inaktiver Eintrag</span>{% elif entry.isDeprecated() %}<span style="color: #aa0;">veralteter Eintrag</span>{% else %}aktiver Eintrag{% endif %} &ndash; {% if entry.mayAdminEdit() or user.isTeam() %}<a href="?editor=yes"><i class="fa fa-pencil"></i> Bearbeiten</a> &ndash; {% if user.isTeam() or entry.mayAdminCreateSubpage() %}<a href="/help/new:entry?parent={{ entry.id }}&category={{ cat.getUrlPart() }}">Neue Unterseite</a>{% endif %}{% else %}Bearbeitung nicht erlaubt{% endif %}</p>
     {% endif %}
     {% if entry.isDeprecated() %}

@@ -16,7 +16,7 @@
     <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}">Profil</a></li>
     <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/flags">Meldungen</a></li>
     <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/reputation">Reputation</a></li>
-    {% if user.isAdmin() %}
+    {% if user.isMod() %}
     <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/annotations">Anmerkungen</a></li>
     {% endif %}
     <li class="active"><a href="#!">Löschen</a></li>
@@ -24,7 +24,7 @@
 </div>
 {% set GRANT_TIME = 10 %}
 <h2>Benutzerkonto löschen</h2>
-{% if user.isAdmin() and user.id != data.id %}
+{% if user.isMod() and user.id != data.id %}
 <div class="text">
   <p>Konto: {{ data.getHTMLName()|safe }}</p>
 <big>Bitte wähle aus den verschiedenenen Löschoptionen aus:</big>

@@ -10,11 +10,6 @@ import time
 
 class User:
 
-    STD_USER = "u"
-    MOD_USER = "m"
-    ADMIN_USER = "a"
-    DEV_USER = "d"
-
     repActions = {
         "update": "Korrektur",
         "forum_vote": "Beitragsbewertung",
@@ -39,16 +34,16 @@ class User:
         self.__data = self.getInfo()
 
     def isDev(self):
-        return self.getDetail("role") == "team.dev"
+        return bool(self.getDetail("is_team"))
 
     def isTeam(self):
-        return self.getDetail("role").startswith("team.")
+        return bool(self.getDetail("is_dev"))
 
     def isAdmin(self):
-        return self.isDev() or self.getDetail("role") == "administrator" or self.getDetail("role") == "team.admin"
+        return self.isMod()
 
     def isMod(self):
-        return self.isAdmin() or self.getDetail("role") == "moderator" or self.getDetail("role") == "team.mod"
+        return bool(self.getDetail("is_mod"))
 
     def isDeleted(self):
         return self.getDetail("deleted") == 1
@@ -144,16 +139,11 @@ class User:
             name = self.getDetail("realname")
         except Exception as e:
             raise SyntaxError(self.id)
-        if self.isAdmin():
+        if self.isMod():
             if with_border:
-                name = name + " <span title='Administrator'>&#11042;</span>"
+                name = name + u" <span title='Moderator'>♦</span>"
             else:
-                name = name + " &#11042;"
-        elif self.isMod():
-            if with_border:
-                name = name + " <span title='Moderator'>&#11040;</span>"
-            else:
-                name = name + " &#11040;"
+                name = name + u" ♦"
         return name
 
     def getBanReason(self):
@@ -497,7 +487,7 @@ class User:
                 con = lite.connect('databases/user.db')
                 con.row_factory = lite.Row
                 cur = con.cursor()
-                cur.execute("SELECT * FROM user WHERE id=?", (self.id, ))
+                cur.execute("SELECT user.*, user_roles.is_mod, user_roles.is_dev, user_roles.is_team FROM user, user_roles WHERE user.id=? AND user.role=user_roles.id", (self.id, ))
                 data = cur.fetchone()
                 if data is None:
                     return {}
@@ -519,7 +509,10 @@ class User:
                     "suspension": json.loads(data["suspension"]) if data["suspension"] is not None else [],
                     "labels": json.loads(data["labels"]) if data["labels"] is not None else [],
                     "login_provider": data["login_provider"],
-                    "mergeto": data["mergeto"]
+                    "mergeto": data["mergeto"],
+                    "is_mod": data['is_mod'],
+                    "is_dev": data['is_dev'],
+                    "is_team": data['is_team'],
                 }
             except lite.Error as e:
                 #raise lite.Error from e
@@ -542,7 +535,10 @@ class User:
                 "aboutme":"",
                 "suspension": [],
                 "labels": [],
-                "login_provider": "none"
+                "login_provider": "none",
+                "is_mod": False,
+                "is_dev": False,
+                "is_team": False
             }
 
     def isLoggedIn(self):
@@ -584,10 +580,8 @@ class User:
         rep = self.getReputation()
         if rep >= mprivileges.getOne(prop) and (prop not in self.getDetail("suspension") or ignoreSuspension):
             return True
-        elif prop.startswith("forum_"):
-            return self.isMod()
         else:
-            return self.isAdmin()
+            return self.isMod()
 
 
     def notify(self, type,msg,url):

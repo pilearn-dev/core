@@ -38,7 +38,7 @@
     <div class="_alert _alert-danger">
       <p>Dieser Nachrichtenverlauf ist geschlossen. Es können keine neuen Nachrichten hinzugefügt werden.</p>
     </div>
-    {% elif msgs[-1].getDetail("submitted_by") == user.id and not user.isAdmin() %}
+    {% elif msgs[-1].getDetail("submitted_by") == user.id and not user.isMod() %}
     <div class="_alert _alert-danger">
       <p>Vielen Dank für deine Antwort</p>
       <p>Du hast auf die letzte Nachricht bereits geantwortet. Du kannst keine neuen Antworten hinzufügen, bis das Moderatorenteam reagiert hat.</p>

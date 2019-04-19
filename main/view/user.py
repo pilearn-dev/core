@@ -17,10 +17,10 @@ def user_page(id, name=None):
         user = muser.User.from_id(id)
         cuser = muser.getCurrentUser()
         mt = user.getDetail("mergeto")
-        if mt and not cuser.isAdmin():
+        if mt and not cuser.isMod():
             return redirect(url_for("user_page", id=mt))
         if user.isDeleted():
-            if not cuser.isAdmin():
+            if not cuser.isMod():
                 abort(404)
             else:
                 return redirect(url_for("user_deleted_page", id=id))
@@ -42,14 +42,14 @@ def user_edit_page(id, name=None):
         user = muser.User.from_id(id)
         cuser = muser.getCurrentUser()
         mt = user.getDetail("mergeto")
-        if mt and not cuser.isAdmin():
+        if mt and not cuser.isMod():
             return redirect(url_for("user_edit_page", id=mt))
         if user.isDeleted():
-            if not cuser.isAdmin():
+            if not cuser.isMod():
                 abort(404)
             else:
                 return redirect(url_for("user_deleted_page", id=id))
-        if user.id != cuser.id and not cuser.isAdmin():
+        if user.id != cuser.id and not cuser.isMod():
             abort(404)
         if name != user.getDetail("name"):
             return redirect(url_for("user_edit_page", id=id, name=user.getDetail("name")))
@@ -68,10 +68,10 @@ def user_flags_page(id, name=None):
         user = muser.User.from_id(id)
         cuser = muser.getCurrentUser()
         mt = user.getDetail("mergeto")
-        if mt and not cuser.isAdmin():
+        if mt and not cuser.isMod():
             return redirect(url_for("user_page", id=mt))
         if user.isDeleted():
-            if not cuser.isAdmin():
+            if not cuser.isMod():
                 abort(404)
             else:
                 return redirect(url_for("user_deleted_page", id=id))
@@ -157,10 +157,10 @@ def user_rep_page(id, name=None):
         user = muser.User.from_id(id)
         cuser = muser.getCurrentUser()
         mt = user.getDetail("mergeto")
-        if mt and not cuser.isAdmin():
+        if mt and not cuser.isMod():
             return redirect(url_for("user_page", id=mt))
         if user.isDeleted():
-            if not cuser.isAdmin():
+            if not cuser.isMod():
                 abort(404)
             else:
                 return redirect(url_for("user_deleted_page", id=id))
@@ -181,15 +181,15 @@ def user_del_page(id, name=None):
         user = muser.User.from_id(id)
         cuser = muser.getCurrentUser()
         mt = user.getDetail("mergeto")
-        if mt and not cuser.isAdmin():
+        if mt and not cuser.isMod():
             return redirect(url_for("user_page", id=mt))
         if user.isDeleted():
-            if not cuser.isAdmin():
+            if not cuser.isMod():
                 abort(404)
             else:
                 return redirect(url_for("user_deleted_page", id=id))
 
-        if not cuser.isAdmin() and cuser.id != id:
+        if not cuser.isMod() and cuser.id != id:
             abort(404)
         if name != user.getDetail("name"):
             return redirect(url_for("user_del_page", id=id, name=user.getDetail("name")))
@@ -249,17 +249,17 @@ def delete_user(id):
         if not user.isDeleted():
             if user.isMod() or user.isTeam():
                 return "Benutzer mit Rollen können nicht gelöscht werden."
-            if cuser.isAdmin() and data["type"] == "admin.delete":
+            if cuser.isMod() and data["type"] == "admin.delete":
                 user.setDetail("deleted", 1)
-                user.addAnnotation("delete", u"Benutzerkonto wurde durch Administrator gelöscht.", cuser, time.time())
+                user.addAnnotation("delete", u"Benutzerkonto wurde durch Moderator gelöscht.", cuser, time.time())
                 user.setDetail("realname", "b#" + str(user.id))
                 user.setDetail("reputation", "0")
                 user.setDetail("profile_image", "")
                 user.setDetail("frozen", "0")
                 return "{ok}"
-            elif cuser.isAdmin() and data["type"] == "admin.destroy":
+            elif cuser.isMod() and data["type"] == "admin.destroy":
                 user.setDetail("deleted", 1)
-                user.addAnnotation("delete", u"Benutzerkonto wurde durch Administrator zerstört.", cuser, time.time())
+                user.addAnnotation("delete", u"Benutzerkonto wurde durch Moderator zerstört.", cuser, time.time())
                 user.setDetail("realname", "b#" + str(user.id))
                 user.setDetail("name", "@")
                 user.setDetail("password", "@")
@@ -299,11 +299,11 @@ def set_user(field):
         abort(400)
     uid = data["userid"]
     cuser = muser.getCurrentUser()
-    if uid < 0 and not cuser.isAdmin():
+    if uid < 0 and not cuser.isMod():
         abort(403)
-    if not (cuser.isAdmin() or uid == cuser.id):
+    if not (cuser.isMod() or uid == cuser.id):
         abort(403)
-    if cuser.isAdmin() and field in ["name"]:
+    if cuser.isMod() and field in ["name"]:
         u = muser.User.from_id(uid)
         new_value = data["new_value"]
         u.setDetail(field, new_value)
@@ -328,7 +328,7 @@ def set_user(field):
         print(data["new_value"])
         if new_value in ["administrator", "moderator", "user"]:
             muser.User.from_id(uid).setDetail("role", new_value)
-    elif field in ["state", "frozen"] and cuser.isAdmin():
+    elif field in ["state", "frozen"] and cuser.isMod():
         new_value = data["new_value"]
         if new_value in ["1", "0", "-2"]:
             muser.User.from_id(uid).setDetail(field, new_value)
@@ -344,7 +344,7 @@ def user_toggle_priv(uid):
         abort(400)
     priv = data["privilege"]
     cuser = muser.getCurrentUser()
-    if uid < 0 and not cuser.isAdmin():
+    if uid < 0 and not cuser.isMod():
         abort(403)
     if priv not in mprivileges.getAll():
         return "ok"
@@ -367,7 +367,7 @@ def user_toggle_label(uid):
         abort(400)
     label = data["label"]
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(403)
     user = muser.User.from_id(uid)
     if label not in user.possibleLabels:
@@ -416,9 +416,9 @@ def user_deleted_page(id):
     if muser.User.exists(id):
         user = muser.User.from_id(id)
         cuser = muser.getCurrentUser()
-        if not user.isDeleted() or not cuser.isAdmin():
+        if not user.isDeleted() or not cuser.isMod():
             abort(404)
-        elif cuser.isAdmin():
+        elif cuser.isMod():
             return render_template("user/deleted-user-page.html", data=user, title="Benutzerkonto entfernt")
     else:
         abort(404)

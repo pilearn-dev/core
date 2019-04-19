@@ -5,7 +5,7 @@
     {% if data.getDetail("mergeto") %}
     <p>Dieses Benutzerkonto leitet jetzt automatisch zu <a href="/u/{{ data.getDetail("mergeto") }}">einem anderen Konto</a> weiter.</p>
     {% else %}
-    <p>Dieses Benutzerkonto wurde auf Anfrage des Kontoinhabers oder durch einen Administrator gelöscht.</p>
+    <p>Dieses Benutzerkonto wurde auf Anfrage des Kontoinhabers oder durch einen Moderatoren gelöscht.</p>
     {% endif %}
     <h3>Benutzerkonten-Informationen</h3>
 <pre style="background: transparent;"><strong>Anzeigename:</strong> {{ data.getDetail("realname") }}
@@ -27,7 +27,7 @@
 <table class="annotation-table">
   <tr>
     <th class="annot-icon">Art <a href="?order=type{% if order=='type' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='type' %}-down{% elif order=='type_reverse' %}-up{% endif %}"></i></a></th>
-    <th>Admin <a href="?order=creator_id{% if order=='creator_id' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='creator_id' %}-down{% elif order=='creator_id_reverse' %}-up{% endif %}"></i></a></th>
+    <th>Von <a href="?order=creator_id{% if order=='creator_id' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='creator_id' %}-down{% elif order=='creator_id_reverse' %}-up{% endif %}"></i></a></th>
     <th colspan="4">Kommentar</th>
     <th>Zeit <a href="?order=time{% if order=='time' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='time' %}-down{% elif order=='time_reverse' %}-up{% endif %}"></i></a></th>
   </tr>

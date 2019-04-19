@@ -14,7 +14,7 @@
 
     <p><strong>Themen</strong> sind Kategorien für Kurse. Jeder Kurs gehört in genau ein Thema.</p>
       <div class="course-list">
-        {% for t in topic.getTrueAll() if (user.isAdmin() or t.isGiveable()) %}
+        {% for t in topic.getTrueAll() if (user.isMod() or t.isGiveable()) %}
         {% if not t.isGiveable() %}<div class="deleted-section">{% endif %}
         <div class="course-list-item">
            <div class="headline">Thema: <a href="/t/{{ t.getName() }}">{{ t.getTitle() }}</a></div>
