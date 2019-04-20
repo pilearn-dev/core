@@ -1,12 +1,59 @@
-{% macro user_card(user, is_exposed=False) %}
-  <div class="m1 p3 b-r1 base2{% if is_exposed %} bg--primary-lll{% endif %}" style="width: 200px;">
-    {% if user.id == -3 %}
-      Anonym
-    {% else %}
-        <img src="{{ user.getDetail("profile_image") }}" alt="" class="thumbnail-xs mr2 push-left">
-        <a class="fs-base3 anchor--primary d-b" href="/u/{{ user.id }}">{{ user.getHTMLName()|safe }}</a>
-        <span class="_badge _badge-score">{{ user.getReputation() }}</span>
-        <div class="push-reset"></div>
+{#
+ # User card level specifier:
+ # n: name (always included)
+ # i: user profile image
+ # r: user reputation
+ # b: user badges
+ # a: additional html (specified by $additional_html)
+ #}
+{% macro user_card(user, highlight=False, level="nirb", additional_html="") %}
+  {% if user.id != -3 %}<a href="/u/{{ user.id }}"{% else %}<span{% endif %} class="m1 p3 b-r1{% if not("r" in level or "b" in level or "a" in level) %} d-f{% else %} d-b{% endif %} base2{% if highlight %} bg--primary-lll{% endif %}" style="line-height: 1;{% if "r" in level or "b" in level or "a" in level %} width: 200px;{% endif %}">
+    {% if "i" in level %}
+      <div class="grid">
+      {% if "r" in level or "b" in level %}
+        <div class="colbox-50 mr2">
+          {% if not user.getDetail("profile_image") %}
+          <svg class="thumbnail-xs" viewBox="0 0 48 48" width="3em" height="3em">
+            <path d="M18,6 l16,0 l0,16 l-16,0 z M32,22 l10,20 l-32,0 l10,-20" fill="transparent" stroke-width="1" />
+            <path d="M18,22 l16,0 M10,42 l32,0" fill="transparent" stroke-width="3" />
+          </svg>
+          {% else %}
+          <img src="{{ user.getDetail("profile_image") }}" alt="" class="thumbnail-xs">
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="colbox mr2">
+          {% if not user.getDetail("profile_image") %}
+          <svg class="thumbnail-xs" style="max-width: 1.75em" viewBox="0 0 48 48" width="1.75em" height="1.75em">
+            <path d="M18,6 l16,0 l0,16 l-16,0 z M32,22 l10,20 l-32,0 l10,-20" fill="transparent" stroke-width="1" />
+            <path d="M18,22 l16,0 M10,42 l32,0" fill="transparent" stroke-width="3" />
+          </svg>
+          {% else %}
+          <img src="{{ user.getDetail("profile_image") }}" alt="" class="thumbnail-xs" style="max-width: 1.75em">
+          {% endif %}
+        </div>
+      {% endif %}
+      <div class="colbox" style="flex-grow: 1;">
     {% endif %}
-  </div>
+    {% if user.id == -3 %}
+      <div class="fs-base3 col-dark-ddd d-b">Anonym</div>
+    {% else %}
+    <div class="fs-base3 anchor--primary d-b">{{ user.getHTMLName()|safe }}</div>
+    {% endif %}
+    {% if "r" in level and user.id != -3 %}
+      <span class="_badge _badge-score col-dark-ddd">{{ user.getReputation() }}</span>
+    {% endif %}
+    {% if "b" in level and user.id != -3 %}
+      {% for type in user.getBadgeBreakdown() %}
+      <span class="_badge _badge-score _badge-score-{{ type[1] }} col-dark-ddd"><span class="_badge-icon"></span>{{ type[0] }}</span>
+      {% endfor %}
+    {% endif %}
+    {% if "i" in level %}
+    </div>
+    </div>
+    {% endif %}
+    {% if "a" in level %}
+    <div class="col-black">{{ additional_html|safe }}</div>
+    {% endif %}
+  {% if user.id != -3 %}</a>{% else %}</span>{% endif %}</a>
 {% endmacro %}
