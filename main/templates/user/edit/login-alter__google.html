@@ -1,0 +1,25 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% set user_site = "edit" %}
+{% set user_edit_site = "login" %}
+{% include "user/_header.html" %}
+<div class="grid">
+  <div class="column2__lg column12 p2">
+    {% include "user/edit/_header.html" %}
+  </div>
+  <div class="column10__lg column12 p2">
+    <h1>Anmeldedaten ändern</h1>
+    {% if request.values.get("error") == "dualism" %}
+    <div class="_alert _alert-danger">
+      <p>Die Änderung der Anmeldedaten kann nicht vollendet werden, da ein anderes Konto mit diesen Anmeldedaten bereits existiert.</p>
+      <p>Lösche das andere Konto oder bitte einen Moderator, eine entsprechende Weiterleitung einzurichten, bevor du die Anmeldedaten erneut zu ändern versuchst.</p>
+    </div>
+    {% endif %}
+    <p>Klicke auf den Google-Button, um zu Google weitergeleitet zu werden und die Konten zu verknüpfen.</p>
+    <form action="/auth/oauth-provider/google" method="POST">
+      <input type="hidden" name="override" value="true">
+      <button type="submit" class="_btn _btn-service _btn-service-google">Google-Anmeldung</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

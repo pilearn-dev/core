@@ -38,7 +38,6 @@
           <span class="d-b col-dark-dd push-right" title="{{ d.parsed_date[1] }}">{{ d.parsed_date[2] }}</span>
           {#<span class="d-b col-dark-dd mb1">Forum</span>#}
           <span class="d-b">{{ d.message_html|striptags }}</span>
-          <span class="d-b fs-caption col-black">{{ d.count }} Ereignis{{ "" if d.count == 1 else "se" }}</span>
         </div>
       </div>
       {% elif d.type == "badge" %}

@@ -1,0 +1,90 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% set user_site = "edit" %}
+{% set user_edit_site = "dev" %}
+{% include "user/_header.html" %}
+<div class="grid">
+  <div class="column2__lg column12 p2">
+    {% include "user/edit/_header.html" %}
+  </div>
+  <div class="column10__lg column12 p2">
+    <h1>Entwickleroptionen</h1>
+    {% if data.isDeleted() %}
+    <div class="content-box">
+      <h2>Löschsperre übergehen</h2>
+      <p>Normalerweise werden Konten mit hoher Reputation nicht vom System gelöscht. Als Entwickler kannst du diese Sperre umgehen, indem du die Reputation dieses Benutzers auf 0 setzt (enthält nicht Sperrung) und so der Benutzer vom Hintergrund-Prozess nicht mehr ignoriert wird.</p>
+      <p>Aktuelle Reputation: {{ data.getReputation() }}</p>
+      <button onclick="override_delete_block()" class="_btn _btn--primary">Löschsperre aufheben</button>
+    </div>
+    {% endif %}
+    <h2>Rolle vergeben</h2>
+    <p>Als Entwickler kannst du dem Benutzer eine Rolle vergeben oder die Rolle ändern.</p>
+    <select id="possible_roles" class="form">
+    {% for role in roles %}
+      <option value="{{ role.id }}" {% if data.getDetail("role") == role.strid %}selected{% endif %}>{% if role.is_mod %}&diams; {% endif %}{{ role.name }}{% if role.is_dev %} &lt;dev&gt;{% endif %}{% if role.is_team %} &lt;team&gt;{% endif %}
+    {% endfor %}
+    </select>
+    <button onclick="update_role()" class="_btn _btn--primary">Rolle aktualisieren</button>
+    <h2>Reputation korrigieren</h2>
+    <p>Aufgrund von synchronen Prozessen (oder SQL-Abfragen) kann die Reputation eines Benutzers inkorrekt sein. Diese Funktion wird alle Diskrepanzen zwischen der Benutzerreputation und der Reputationstabelle entfernen.</p>
+    <p>Aktuelle Reputation: {{ data.getReputation() }}</p>
+    <button onclick="reget_rep(false)" class="_btn _btn--primary">Reputation korrigieren</button>
+    <button onclick="reget_rep(true)" class="_btn _btn-danger">Reputation GLOBAL korrigieren</button>
+  </div>
+</div>
+<script>
+  function override_delete_block() {
+    $.ajax({
+      method: "POST",
+      url: "/user/{{ data.id }}/dev-tools",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        action: "override-delete"
+      }),
+      success: function(r) {
+        alert("Erfolg!");
+      },
+      error: function() {
+        alert("Verbindung fehlgeschlagen!");
+      }
+    })
+  }
+
+  function reget_rep(global) {
+    $.ajax({
+      method: "POST",
+      url: "/user/{{ data.id }}/dev-tools",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        action: "reget-reputation",
+        global
+      }),
+      success: function(r) {
+        alert("Erfolg!");
+      },
+      error: function() {
+        alert("Verbindung fehlgeschlagen!");
+      }
+    })
+  }
+
+  function update_role() {
+    new_role = $("#possible_roles").val();
+    $.ajax({
+      method: "POST",
+      url: "/user/{{ data.id }}/dev-tools",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        action: "update-role",
+        role: new_role
+      }),
+      success: function(r) {
+        alert("Erfolg!");
+      },
+      error: function() {
+        alert("Verbindung fehlgeschlagen!");
+      }
+    })
+  }
+</script>
+{% endblock %}

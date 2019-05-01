@@ -1,0 +1,66 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% set user_site = "activity" %}
+{% set user_activity_site = "summary" %}
+{% include "user/_header.html" %}
+<div class="p2">
+  {% include "user/activity/_header.html" %}
+
+  <div class="grid anchor-dark">
+    <div class="column4__lg column12 p2">
+      <div class="content-box mb4">
+        <h4 class="m1"><a href="?page=reputation">Reputation</a></h4>
+        <div class="m1 fs-subtitle">{{ data.getReputation() }}</div>
+      </div>
+      <div class="content-box">
+        <h4 class="m1">Reichweite</h4>
+        <dl>
+          <dt>Benutzer erreicht</dt>
+          <dd>{{ num2suff(data.getUserReached()) }}</dd>
+          {% if user.isMod() or user.id == data.id %}
+          <dt><a href="?page=flags">Hilfreiche Meldungen</a></dt>
+          {% else %}
+          <dt>Hilfreiche Meldungen</dt>
+          {% endif %}
+          <dd>{{ data.getFlagHelpfulTotal() }}</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="column8__lg column12 p2">
+      <div class="content-box">
+        <h4 class="m1">Zusammenfassung</h4>
+        <div class="grid">
+          <div class="column6 column12__sm">
+            <dl>
+              {% if user.isMod() or user.id == data.id %}
+              <dt><a href="?page=courses&view=enrolled">Kurse besucht</a></dt>
+              {% else %}
+              <dt>Kurse besucht</dt>
+              {% endif %}
+              <dd>{{ courses.getFromUser(data)|length }}</dd>
+              <dt><a href="?page=courses&view=offered">Kurse angeboten</a></dt>
+              <dd>{{ courses.getByUser(data)|length }}</dd>
+              <dt><a href="?page=badges">Abzeichen</a></dt>
+              <dd>
+                {% for type in data.getBadgeBreakdown() %}
+                <span class="_badge _badge-score _badge-score-{{ type[1] }}"><span class="_badge-icon"></span>{{ type[0] }}</span>
+                {% endfor %}
+              </dd>
+            </dl>
+          </div>
+          <div class="column6 column12__sm">
+            <dl>
+              <dt><a href="?page=forum&view=questions">Fragen gestellt</a></dt>
+              <dd>{{ data.getForumQuestionCount() }}</dd>
+              <dt><a href="?page=forum&view=answers">Fragen beantwortet</a></dt>
+              <dd>{{ data.getForumAnswerCount() }}</dd>
+              <dt>Beiträge bewertet</dt>
+              <dd>{{ data.getForumVoteCount() }}</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

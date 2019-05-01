@@ -1,0 +1,37 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% set user_site = "activity" %}
+{% set user_activity_site = "reputation" %}
+{% include "user/_header.html" %}
+<div class="p2">
+  {% include "user/activity/_header.html" %}
+
+{% set repchgs = data.getReputationChanges() %}
+{% if repchgs|length == 0 %}
+  <p class="p-lead">{{ data.getHTMLName()|safe }} hat bisher noch keine Reputation gesammelt.</p>
+{% else %}
+<p class="p-lead">{{ data.getDetail("realname") }} hat insgesamt <span class="_badge _badge-vote _badge-vote--primary">{{ data.getReputation() }}</span> Reputationspunkte.</p>
+<table class="table">
+  <tr>
+    <th></th>
+    <th></th>
+    <th></th>
+    <th>Kommentar</th>
+  </tr>
+{% for change in repchgs %}
+  <tr>
+    <td title="{{ change.parsed_date[1] }}">{{ change.parsed_date[2] }}</td>
+    <td>
+      <span class="_badge _badge-vote _badge-vote-{% if change.amount > 0 %}success{% elif change.amount < 0 %}danger{% endif %}">
+        {% if change.amount > 0 %}+{% endif %}{{ change.amount }}
+      </span>
+    </td>
+    <th>{{ user.repActions[change.type] }}</th>
+    <td>
+      {{ change.message }}
+    </td>
+  </tr>
+{% endfor %}
+</table>
+{% endif %}
+{% endblock %}

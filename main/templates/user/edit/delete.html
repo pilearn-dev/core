@@ -1,0 +1,92 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% set user_site = "edit" %}
+{% set user_edit_site = "delete" %}
+{% include "user/_header.html" %}
+<div class="grid">
+  <div class="column2__lg column12 p2">
+    {% include "user/edit/_header.html" %}
+  </div>
+  <div class="column10__lg column12 p2">
+    {% set GRANT_TIME = 10 %}
+    <h1>Benutzerkonto löschen</h1>
+    {% if user.isMod() and user.id != data.id %}
+    <p class="p-lead">Die Löschung eines Benutzerkontos ist irreversibel. Bevor du dein Konto löschst, bitten wir dich daher, genau die Konsequenzen durchzulesen.</p>
+    <p>Du musst einen Grund angeben, wegen dem der Benutzer gelöscht werden soll:</p>
+    <textarea class="form form-small" id="delete_reason"></textarea>
+    <label for="destroy_confirm"><input type="checkbox" id="destroy_confirm"> Dieser Benutzer existiert nur, um Werbung oder Kauderwelsch zu posten oder die Mehrheit der Inhalte dieses Benutzers verstößt gegen die Nutzungsbedingungen.</label>
+    <button class="d-b _btn _btn-danger" id="delete_btn">Löschen</button>
+    <script>
+      $("#delete_btn").on("click", function () {
+        if($("#delete_reason").val().length < 10) {
+          alert("Ein Löschgrund muss eingegeben werden!")
+          return;
+        }
+        $.ajax({
+          method: "POST",
+          url: "/user/{{ data.id }}/delete",
+          contentType: "application/json; charset=utf-8",
+          data: JSON.stringify({
+            "reason": $("#delete_reason").val(),
+            "destroy": $("#destroy_confirm")[0].checked
+          }),
+          success: function( result ) {
+            window.location.reload();
+          },
+          error: function() {
+            alert("Ein Fehler ist aufgetreten. Bitte wende dich an den Support.");
+          }
+        });
+      });
+    </script>
+    {% else %}
+      {% if session.get("login_time", 0) + GRANT_TIME * 60 > current_time %}
+        {% if data.isDisabled() %}
+          <div class="_alert _alert-warning"><strong>Achtung:</strong> Du bist zur Zeit gesperrt. Wir empfehlen die Kontolöschung zu diesem Zeitpunkt nicht, du könntest dies später bereuen. Willst du dein Konto wirklich löschen, kontaktiere uns über das <a href="/helpdesk">Helpdesk</a></div>
+        {% else %}
+        <p class="p-lead">Die Löschung eines Benutzerkontos ist irreversibel. Bevor du dein Konto löschst, bitten wir dich daher, genau den Ablauf und die Konsequenzen durchzulesen.</p>
+        <h4>Ablauf</h4>
+        <ol>
+          <li>Wenn du mit der Löschung fortfährst, wirst du abgemeldet.</li>
+          <li>Dein Benutzerkonto wird sofort deaktiviert. Du kannst dich danach nicht mehr anmelden.</li>
+          <li>Dein Benutzerkonto wird in eine Warteschlange hinzugefügt und ein Löschtermin wird geplant (normalerweise innerhalb von 24 Stunden)</li>
+          <li>Zum Löschtermin wird dein Benutzerkonto gelöscht, es sei denn es treten Unklarheiten auf. Dann wird die Löschung so lange verzögert, bis jemand von unserem Team sie bestätigt hat.</li>
+        </ol>
+        <h4>Konsequenzen</h4>
+        <ul>
+          <li>Deine Reputation und deine Abzeichen werden entfernt.</li>
+          <li>Alle Forenbeiträge werden anonymisiert.</li>
+          <li>Deine Mitgliedschaften in Kursen, Abgaben für Aufgaben etc. werden entfernt.</li>
+        </ul>
+        <label for="delete_confirm"><input type="checkbox" id="delete_confirm" onchange="if(this.checked){$('#delete_btn').removeAttr('disabled')}else{$('#delete_btn').attr('disabled',true)}"> Ich bestätige, dass ich diesen Text sorgfältig gelesen habe und ich möchte mit der Löschung meines Kontos fortfahren.</label>
+        <button class="d-b _btn _btn-danger" id="delete_btn" disabled>Löschen</button>
+        <script>
+          $("#delete_btn").on("click", function () {
+            if(!$("#delete_confirm")[0].checked) {
+              alert("Sicherheitsabfrage bestätigen!")
+              return;
+            }
+            $.ajax({
+              method: "POST",
+              url: "/user/{{ data.id }}/delete",
+              success: function( result ) {
+                window.location.href="/user/deleted";
+              },
+              error: function() {
+                alert("Ein Fehler ist aufgetreten. Bitte wende dich an den Support.");
+              }
+            });
+          });
+        </script>
+        {% endif %}
+      {% else %}
+        <div class="_alert _alert-danger">
+          <h4>Löschung des Benutzerkontos verhindert</h4>
+          <p>Aus Sicherheitsgründen erfordern wir eine kürzliche Anmeldung auf diesem Gerät, bevor das Konto gelöscht werden kann.</p>
+          <p>Bitte bestätige, dass du Zugriff auf dieses Benutzerkonto hast, indem du dich erneut <a href="/auth/login">anmeldest</a>.</p>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

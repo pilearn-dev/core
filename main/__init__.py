@@ -41,9 +41,6 @@ __version__ = pivers["main"]
 @app.context_processor
 def prepare_template_context():
     user = muser.getCurrentUser()
-    if user.isDeleted():
-        session.pop('login', None)
-        user = muser.User.blank()
 
     notifications = user.getNotifications()
     moderator_tags = mtags.moderator_only
@@ -96,7 +93,6 @@ def prepare_request():
         uid = user.id
         session.pop('login', None)
         session["former_login"]=uid
-        print(uid)
         return redirect(url_for("youarebanned"))
 
 @app.route("/")

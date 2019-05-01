@@ -206,6 +206,24 @@ class Proposal:
                 con.close()
 
     @classmethod
+    def byProposer(cls, proposer):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT id FROM proposals WHERE proposer=?", (proposer.id,))
+            data = cur.fetchall()
+            DATA =  []
+            for d in data:
+                DATA.append(Proposal(d["id"]))
+            return DATA
+        except lite.Error as e:
+            return []
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
     def getFeatured(cls):
         try:
             con = lite.connect('databases/courses.db')

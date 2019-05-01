@@ -150,3 +150,30 @@ class Badge:
         finally:
             if con:
                 con.close()
+
+    @classmethod
+    def byUser(cls, u):
+        try:
+            con = lite.connect('databases/user.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT badges.*, badge_associations.given_date, badge_associations.data FROM badges, badge_associations WHERE badges.id=badge_associations.badgeid AND badge_associations.userid=? ORDER BY badge_associations.given_date DESC", (u.id,))
+            data = cur.fetchall()
+            DATA =  []
+            for d in data:
+                dt = d["given_date"]
+                dt = [dt, ctimes.stamp2german(dt), ctimes.stamp2shortrelative(dt, False)]
+                DATA.append({
+                    "id": d["id"],
+                    "name": d["name"],
+                    "class": d["class"],
+                    "description": d["description"],
+                    "given_date": dt,
+                    "data": d["data"]
+                })
+            return DATA
+        except lite.Error as e:
+            return []
+        finally:
+            if con:
+                con.close()

@@ -1,0 +1,134 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% set user_site = "activity" %}
+{% set user_activity_site = "flags" %}
+{% include "user/_header.html" %}
+<div class="p2">
+  {% include "user/activity/_header.html" %}
+<div class="grid">
+  <div class="column3 column12__sm p2">
+    <div>
+      <h2 class="fs-subheading">Überblick</h2>
+      <div class="_nav _nav-v">
+        <a href="?page=flags#post-closure">Beiträge schließen ({{ closure_total }})</a>
+        <div class="_nav _nav-v">
+          <a href="?page=flags&closure=helpful#post-closure">{{ closure_helpful }} hilfreich</a>
+          <a href="?page=flags&closure=declined#post-closure">{{ closure_declined }} nicht hilfreich</a>
+          <a href="?page=flags&closure=pending#post-closure">{{ closure_pending }} in Arbeit</a>
+        </div>
+        <a href="?page=flags#post-deletion">Beiträge löschen ({{ post_deletion_total }})</a>
+        <div class="_nav _nav-v">
+          <a href="?page=flags&post_deletion=helpful#post-deletion">{{ post_deletion_helpful }} hilfreich</a>
+          <a href="?page=flags&post_deletion=declined#post-deletion">{{ post_deletion_declined }} nicht hilfreich</a>
+          <a href="?page=flags&post_deletion=pending#post-deletion">{{ post_deletion_pending }} in Arbeit</a>
+        </div>
+        <a href="?page=flags#custom-flags">Andere Meldungen ({{ custom_total }})</a>
+        <div class="_nav _nav-v">
+          <a href="?page=flags&custom=helpful#post-deletion">{{ custom_helpful }} hilfreich</a>
+          <a href="?page=flags&custom=declined#post-deletion">{{ custom_declined }} nicht hilfreich</a>
+          <a href="?page=flags&custom=pending#post-deletion">{{ custom_pending }} in Arbeit</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="column9 column12__sm p2">
+    <h2 id="post-closure">Beiträge schließen</h2>
+    <div class="_list">
+    {% for f in closure_flags[::-1] %}
+      <div class="_list-item">
+        {% set target = f.item.getHTMLTitle()|safe %}
+          {% if f.item.isDeleted() %}
+          <div class="fs-base3 horizontal-list bg-danger-lll"><span class="_badge _badge-vote _badge-vote-success">{{ f.item.getScore() }}</span><a href="/f/{{ f.item.getDetail("forumID") }}/{{ f.item.id }}">{{ target }}</a></div>
+        {% else %}
+          <div class="fs-base3 horizontal-list"><span class="_badge _badge-vote _badge-vote-success">{{ f.item.getScore() }}</span><a href="/f/{{ f.item.getDetail("forumID") }}/{{ f.item.id }}">{{ target }}</a></div>
+        {% endif %}
+        <p>
+          {% if f.comment != "" %}{{ f.comment }}{% else %}{{ f.item.CLOSURE_LABELS[f.reason] }}{% endif %}
+          {% if f.state == 0 %}
+            <span class="_badge _badge-s--primary">in Arbeit</span>
+          {% elif f.state == -2 %}
+            <a href="/review/post-closure/{{ f.queue_id }}" class="_badge _badge-s-danger">nicht hilfreich</a>
+          {% elif f.state == 1 or f.state == 2 %}
+            <a href="/review/post-closure/{{ f.queue_id }}" class="_badge _badge-s-success">hilfreich</a>
+          {% elif f.state == -1 %}
+            <a href="/review/post-closure/{{ f.queue_id }}" class="_badge _badge-s-dark">zurückgewiesen</a>
+          {% endif %}
+      </div>
+    {% endfor %}
+    </div>
+
+    <h2 id="post-deletion">Beiträge löschen</h2>
+    <div class="_list">
+    {% for f in post_deletion_flags[::-1] %}
+      <div class="_list-item">
+        {% set target = f.item.getHTMLTitle()|safe %}
+          {% if f.item.isDeleted() %}
+          <div class="fs-base3 horizontal-list bg-danger-lll"><span class="_badge _badge-vote _badge-vote-success">{{ f.item.getScore() }}</span><a href="/f/{{ f.item.getDetail("forumID") }}/{{ f.item.id }}">{{ target }}</a></div>
+        {% else %}
+          <div class="fs-base3 horizontal-list"><span class="_badge _badge-vote _badge-vote-success">{{ f.item.getScore() }}</span><a href="/f/{{ f.item.getDetail("forumID") }}/{{ f.item.id }}">{{ target }}</a></div>
+        {% endif %}
+        <p>
+          {% if f.reason == "spam" %}
+          SPAM
+          {% elif f.reason == "offensive " %}
+          beleidigend
+          {% elif f.reason == "delvote" %}
+          Löschen
+          {% else %}
+          <em title="{{ f.reason }}">Filter</em>
+          {% endif %}
+          {% if f.state == 0 %}
+            <span class="_badge _badge-s--primary">in Arbeit</span>
+          {% elif f.state == -2 %}
+            <a href="/review/post-deletion/{{ f.queue_id }}" class="_badge _badge-s-danger">nicht hilfreich</a>
+          {% elif f.state == 1 or f.state == 2 %}
+            <a href="/review/post-deletion/{{ f.queue_id }}" class="_badge _badge-s-success">hilfreich</a>
+          {% elif f.state == -1 %}
+            <a href="/review/post-deletion/{{ f.queue_id }}" class="_badge _badge-s-dark">zurückgewiesen</a>
+          {% endif %}
+      </div>
+    {% endfor %}
+    </div>
+
+
+    <h2 id="post-deletion">Andere Meldungen</h2>
+    <div class="_list">
+    {% for f in custom_flags[::-1] %}
+      <div class="_list-item">
+
+        {% if f.item_type == "forum.question" %}
+        <span class="f-bold">Frage</span>
+        {% set target = f.item.getHTMLTitle()|safe %}
+          {% if f.item.isDeleted() %}
+            <div class="fs-base3 horizontal-list bg-danger-lll"><span class="_badge _badge-vote _badge-vote-success">{{ f.item.getScore() }}</span><a href="/f/{{ f.item.getDetail("forumID") }}/{{ f.item.id }}">{{ target }}</a></div>
+          {% else %}
+            <div class="fs-base3 horizontal-list"><span class="_badge _badge-vote _badge-vote-success">{{ f.item.getScore() }}</span><a href="/f/{{ f.item.getDetail("forumID") }}/{{ f.item.id }}">{{ target }}</a></div>
+          {% endif %}
+        {% elif f.item_type == "user" %}
+        <span class="f-bold">Benutzer</span>
+        {% set target = f.item.getHTMLName()|safe %}
+          {% if f.item.isDeleted() %}
+            <div class="fs-base3 horizontal-list bg-danger-lll"><a href="/u/{{ f.item.id }}">{{ target }}</a><span class="_badge _badge-vote">{{ f.item.getReputation() }}</span></div>
+          {% else %}
+            <div class="fs-base3 horizontal-list"><a href="/u/{{ f.item.id }}">{{ target }}</a><span class="_badge _badge-vote">{{ f.item.getReputation() }}</span></div>
+          {% endif %}
+        {% endif %}
+
+        <p>
+          {{ f.comment }}
+          {% if f.state == 0 %}
+            <span class="_badge _badge-s--primary">in Arbeit</span>
+          {% elif f.state == -2 %}
+            <span class="_badge _badge-s-danger">nicht hilfreich</span>
+          {% elif f.state == 1 or f.state == 2 %}
+            <span class="_badge _badge-s-success">hilfreich</span>
+          {% elif f.state == -1 %}
+            <span class="_badge _badge-s-dark">zurückgewiesen</span>
+          {% endif %}{% if f.response %}
+          &mdash; {{ f.response }}{% endif %}</p>
+      </div>
+    {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

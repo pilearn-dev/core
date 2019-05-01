@@ -1,0 +1,86 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% set user_site = "activity" %}
+{% set user_activity_site = "forum" %}
+{% include "user/_header.html" %}
+<div class="p2">
+  {% include "user/activity/_header.html" %}
+  {% set questions = mquestions.getByUser(data, (user.id == data.id or user.isMod())) %}
+  {% set answers = manswers.getByUser(data, (user.id == data.id or user.isMod())) %}
+  <div class="grid">
+    <div class="column3 column12__sm p2">
+      <div class="_nav _nav-v">
+        <a {% if request.values.get("view", "questions") == "questions" %}class="-active"{% endif %} href="?page=forum&view=questions">Fragen ({{ questions|length }})</a>
+        <a {% if request.values.get("view", "questions") == "answers" %}class="-active"{% endif %} href="?page=forum&view=answers">Antworten ({{ answers|length }})</a>
+      </div>
+    </div>
+    <div class="column9 column12__sm p2">
+      {% if request.values.get("view", "questions") == "questions" %}
+      <div class="col-dark fs-display2 push-right f-bold">{{ questions|length }}</div>
+      <h2 class="mt6 m2">Fragen</h2>
+      <div class="_list">
+      {% for q in questions %}
+      {% set f = q.getForum() %}
+        <a class="_list-item {% if q.isDeleted() %}bg-danger-lll{% endif %}" href="/f/{{ q.getDetail("forumID") }}/{{ q.id }}">
+          <div class="grid">
+            <div class="colbox75x75__lg column12 al-r__sm p1 p0__sm">
+              {% if q.hasAccepted() %}
+              <div class="bg-success b1s b-success pt3 b-r1 col-white ta-c fill-space auto-space__sm p2__sm">
+              {% elif q.getAnswerCount() != 0 %}
+              <div class="b1s b-success pt3 b-r1 col-success-ddd ta-c fill-space auto-space__sm p2__sm">
+              {% else %}
+              <div class="b1s b-dark-lll pt3 b-r1 col-black-l ta-c fill-space auto-space__sm p2__sm">
+              {% endif %}
+                  <div class="fs-caption d-i__sm fs-base2__sm">Bewertung<span class="hide__lg">:</span></div>
+                  <div class="fs-heading d-i__sm fs-base2__sm">{{ q.getScore() }}</div>
+              </div>
+            </div>
+            <div class="column12__sm colbox-fill p2 ml2 p0__sm ml0__sm">
+              <span class="push-right d-b fs-base3 mt2__sm hide__sm"><span class="col-dark-ddd">{{ f.getTitle() }}</span></span>
+              <span class="d-b fs-base3 mt2__sm hide__md hide__lg"><span class="col-dark-ddd">{{ f.getTitle() }}</span></span>
+              <div class="_list-heading">{{ q.getTitle() }}</div>
+              {% for tag in q.getTags() %}
+                  {% if tag in moderator_tags %}
+                      <span class='_badge _badge-tag _badge-tag-modonly'>{{ tag }}</span>
+                  {% else %}
+                      <span class='_badge _badge-tag '>{{ tag }}</span>
+                  {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+      </div>
+      {% elif request.values.get("view", "questions") == "answers" %}
+      <div class="col-dark fs-display2 push-right f-bold">{{ answers|length }}</div>
+      <h2 class="mt6 m2">Antworten</h2>
+      <div class="_list">
+      {% for a in answers %}
+      {% set q = mquestion(a.getDetail("articleID")) %}
+      {% set f = q.getForum() %}
+        <a class="_list-item {% if a.isDeleted() %}bg-danger-lll{% endif %}" href="/f/{{ q.getDetail("forumID") }}/{{ q.id }}#answer-{{ a.id }}">
+          <div class="grid">
+            <div class="colbox75x75__lg column12 al-r__sm p1 p0__sm">
+              {% if a.isAccepted() %}
+              <div class="bg-success b1s b-success pt3 b-r1 col-white ta-c fill-space auto-space__sm p2__sm">
+              {% else %}
+              <div class="b1s b-success pt3 b-r1 col-success-ddd ta-c fill-space auto-space__sm p2__sm">
+              {% endif %}
+                  <div class="fs-caption d-i__sm fs-base2__sm">Bewertung<span class="hide__lg">:</span></div>
+                  <div class="fs-heading d-i__sm fs-base2__sm">{{ a.getScore() }}</div>
+              </div>
+            </div>
+            <div class="column12__sm colbox-fill p2 ml2 p0__sm ml0__sm">
+              <span class="push-right d-b fs-base3 mt2__sm hide__sm"><span class="col-dark-ddd">{{ f.getTitle() }}</span></span>
+              <span class="d-b fs-base3 mt2__sm hide__md hide__lg"><span class="col-dark-ddd">{{ f.getTitle() }}</span></span>
+              <div class="_list-heading">{{ q.getTitle() }}</div>
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

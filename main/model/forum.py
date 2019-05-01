@@ -358,6 +358,24 @@ class Answer:
             if con:
                 con.close()
 
+    @classmethod
+    def getByUser(cls, user, deleted=False):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            if not deleted:
+                cur.execute("SELECT id FROM answers WHERE author=? AND deleted=0", (user.id,))
+            else:
+                cur.execute("SELECT id FROM answers WHERE author=?", (user.id,))
+            data = list(map(lambda x: cls(x["id"]), cur.fetchall()))
+            return data
+        except lite.Error as e:
+            return []
+        finally:
+            if con:
+                con.close()
+
 class Article:
 
     FREEZONS = [
@@ -1205,6 +1223,24 @@ class Article:
             return data
         except lite.Error as e:
             print(e)
+            return []
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def getByUser(cls, user, deleted=False):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            if not deleted:
+                cur.execute("SELECT id FROM articles WHERE author=? AND deleted=0", (user.id,))
+            else:
+                cur.execute("SELECT id FROM articles WHERE author=?", (user.id,))
+            data = list(map(lambda x: cls(x["id"]), cur.fetchall()))
+            return data
+        except lite.Error as e:
             return []
         finally:
             if con:

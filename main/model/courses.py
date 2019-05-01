@@ -137,6 +137,27 @@ class Courses:
             if con:
                 con.close()
 
+    @classmethod
+    def getByUser(cls, u, toponly=False):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            if not toponly:
+                cur.execute("SELECT id FROM courses WHERE id IN (SELECT courseid FROM enrollments WHERE userid=? AND permission>=3)", (u.id,))
+            else:
+                cur.execute("SELECT courses.id FROM enrollments As enr, courses, enrollments As own WHERE enr.courseid=courses.id AND own.courseid=courses.id AND own.permission=4 AND own.userid=? GROUP BY courses.id HAVING Count(*) >= 3 ORDER BY Count(*) DESC LIMIT 3", (u.id,))
+            all = cur.fetchall()
+            if all is None:
+                return []
+            all = list(map(lambda x: Courses(x["id"]), all))
+            return all
+        except lite.Error as e:
+            return []
+        finally:
+            if con:
+                con.close()
+
     def getTitle(self):
         return self.getDetail("title")
 
