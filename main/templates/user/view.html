@@ -1,21 +1,9 @@
 {% extends "layout_new.html" %}
 {% block body %}
 
-{% if data.isDisabled() %}
-<div class="behaviour-warning">{% set end=data.getBanEnd() %}
-  <p>Dieser Benutzer wurde <strong>{{ data.getBanReason() }}</strong> <a href="/help/users/banned">gesperrt</a>. Die Sperrung endet <span title="{{ end[1] }}">{{ end[2] }}</span>.</p>
-</div>
-{% endif %}
-<nav class="_nav _nav-t mt2">
-  <a href="/user/{{ data.id }}/{{ data.getDetail("name" ) }}" class="-active">Profil</a>
-  <a href="/user/{{ data.id }}/{{ data.getDetail("name" ) }}/activity" class="-">Aktivität</a>
-  {% if user.isMod() or user.id == data.id %}
-    <a href="/user/{{ data.id }}/{{ data.getDetail("name" ) }}/edit" class="-">Konto bearbeiten</a>
-    {% if user.isMod() %}
-    <a href="/tools/user/ops/{{ data.id }}" target="_blank" class="-">&diams; Ops</a>
-    {% endif %}
-  {% endif %}
-</nav>
+
+{% set user_site = "profile" %}
+{% include "user/_header.html" %}
 <div class="grid">
   <div class="column3 column5__md column12__sm p2">
     <div class="p4 bg-dark-llll ta-c bb3s bb--primary-dd">
