@@ -24,7 +24,7 @@ visible TINYINT
 ;CREATE TABLE reviewbans (id INTEGER PRIMARY KEY, queue VARCHAR(25), user_id INT, given_by INT, cancelled_by INT, start_date INT, end_date INT, invalidated TINYINT, comment TEXT)
 
 ;CREATE TABLE user (
-id INTEGER PRIMARY KEY,
+id INTEGER PRIMARY KEY AUTOINCREMENT,
 name VARCHAR(50),
 realname VARCHAR(100),
 email VARCHAR(100),
