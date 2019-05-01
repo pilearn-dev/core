@@ -43,7 +43,12 @@ labels TEXT,
 profile_image VARCHAR(100),
 last_login INT,
 last_email_change INT,
-last_password_reset INT
+last_password_reset INT,
+profile_place VARCHAR(100),
+profile_website VARCHAR(150),
+profile_twitter VARCHAR(150),
+profile_projects TEXT,
+member_since INT
 )
 ;INSERT INTO user (id, name, realname, email, login_provider, password, aboutme, deleted, banned, ban_reason, ban_end, frozen, role, reputation, suspension, labels, profile_image, last_login, last_email_change, last_password_reset) VALUES (-2,'system','𝕊𝕐𝕊𝕋𝔼𝕄','','none','','Hallo!\n\nIch führe alle automatisierten Aufgaben durch, die von unserem System erkannt werden.\n\n-----\n\nDein 𝕊𝕐𝕊𝕋𝔼𝕄-Benutzer',0,0,'',0,0,'user',0,'[]','[]','',0,0,0)
 ;INSERT INTO user (id, name, realname, email, login_provider, password, aboutme, deleted, banned, ban_reason, ban_end, frozen, role, reputation, suspension, labels, profile_image, last_login, last_email_change, last_password_reset) VALUES (-1,'admin','𝔸𝔻𝕄𝕀ℕ','','none','','Hallo!\n\nIch führe alle Aufgaben durch, die durch einen Community-Entscheid herbeigeführt wurden, für die also keine einzelnen Benutzer zuständig sind. Weiterhin besitze ich die Community-Beiträge, die jeder bearbeiten kann, der Bearbeitungsvorschläge einreichen kann.\n\n-----\n\nDein 𝔸𝔻𝕄𝕀ℕ-Benutzer',0,0,'',0,0,'user',0,'[]','[]','',0,0,0)
