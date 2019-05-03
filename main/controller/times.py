@@ -60,7 +60,7 @@ def duration2text(dur):
 
 def duration2shorttext(dur):
     if dur < 60:
-      return str(dur) + "s"
+      return str(int(dur)) + "s"
     else:
       dur = int(0.5+dur / 60.0)
       if dur < 60:
@@ -124,7 +124,7 @@ def stamp2shortrelative(stamp, is_delta=False):
             prefix = "vor "
     delta = abs(relta)
     if delta < 60:
-        suffix = str(delta) + "s"
+        suffix = str(int(delta)) + "s"
     else:
         delta = int(0.5+delta / 60.0)
         if delta < 60:

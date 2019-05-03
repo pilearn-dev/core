@@ -359,7 +359,7 @@ class User:
                     "deleted": bool(d_["is_hidden"]),
                     "user_id": d_["user_id"],
                     "creator": User.from_id(d_["creator_id"]),
-                    "relative_date": ctimes.stamp2relative(d_["creation_date"]),
+                    "relative_date": ctimes.stamp2shortrelative(d_["creation_date"]),
                     "absolute_date": ctimes.stamp2german(d_["creation_date"]),
                     "content": d_["content"],
                     "type": d_["type"]

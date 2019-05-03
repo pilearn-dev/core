@@ -20,7 +20,10 @@ def msg_new_thread(user):
         try:
             template, message, suspend, suspension_reason, suspension_length = \
             request.json["template"], request.json["message"], request.json["suspend"], \
-            request.json["suspension_reason"], int(request.json["suspension_length"])
+            request.json["suspension_reason"], request.json["suspension_length"]
+
+            if suspend:
+                suspension_length = int(suspension_length)
 
             if suspend and suspension_length > 365:
                 return "javascript:alert('Nur das Team kann Benutzer für mehr als ein Jahr sperren. Kontaktieren Sie uns über das Helpdesk.')"
@@ -42,8 +45,10 @@ def msg_new_thread(user):
                 t = mmodmsg.getTemplateById(template)
                 tt = t["title"]
                 u.notify("pm", "Ein Moderator hat dich wegen '" + tt + "' privat kontaktiert. Bitte beachte seine Nachricht!", URL)
+                u.addAnnotation("message", "["+tt+"]("+URL+")", cuser, time.time())
             else:
                 u.notify("pm", "Ein Moderator hat dich privat kontaktiert. Bitte beachte seine Nachricht!", URL)
+                u.addAnnotation("message", "[anderes]("+URL+")", cuser, time.time())
 
             if suspend:
                 u.setDetail("banned", 1)
@@ -51,7 +56,7 @@ def msg_new_thread(user):
                 ban_end = int(time.time()) + 5 + 60 * 60 * 24 * int(suspension_length)
                 u.setDetail("ban_end", ban_end)
 
-                u.addAnnotation("ban", "**Sperrung** " + suspension_reason + u" für " + ctimes.duration2text(60 * 60 * 24 * suspension_length), cuser, time.time())
+                u.addAnnotation("ban", "**Sperrung** " + suspension_reason + u" für " + str(suspension_length) + "d", cuser, time.time())
 
             return URL
         except Exception as e:

@@ -1,0 +1,240 @@
+<div class="js--modpage-home">
+  <h3>&diams;-Menü für den Benutzer {{ data.getHTMLName()|safe }}</h3>
+  <p class="p-lead">Was willst du mit diesem Benutzerkonto machen?</p>
+  <div class="_toollist">
+    <label class="_toollist-item" for="modmenu_dialog-modsummary">
+      <input type="radio" class="form-radio" id="modmenu_dialog-modsummary" name="modmenu_dialog" value="modsummary">
+      <div class="_toollist-data">
+        <h4>Anmerkungen anzeigen</h4>
+        <p class="fs-base1">Eine Liste mit Anmerkungen von Moderatoren, früheren Mod-Nachrichten und Sperrungen.</p>
+      </div>
+    </label>
+    <label class="_toollist-item" for="modmenu_dialog-annotate">
+      <input type="radio" class="form-radio" id="modmenu_dialog-annotate" name="modmenu_dialog" value="annotate">
+      <div class="_toollist-data">
+        <h4>anmerken</h4>
+        <p class="fs-base1">Eine Anmerkung an das Benutzerkonto heften, damit andere Moderatoren Entscheidungen besser nachvollziehen können oder auf Probleme hingewiesen werden.</p>
+      </div>
+    </label>
+    <label class="_toollist-item" for="modmenu_dialog-contact">
+      <input type="radio" class="form-radio" id="modmenu_dialog-contact" name="modmenu_dialog" value="contact">
+      <div class="_toollist-data">
+        <h4>kontaktieren (enthält Sperrung)</h4>
+        <p class="fs-base1">Den Benutzer wegen Verstoß gegen die Nutzungsbedingungen oder anderer, schwerwiegender Probleme kontaktieren.</p>
+        <p class="fs-base1">Du kannst dich außerdem entschließen, das Benutzerkonto für maximal ein Jahr zu sperren.</p>
+      </div>
+    </label>
+    {% if data.isDisabled() %}
+    <label class="_toollist-item" for="modmenu_dialog-unban">
+      <input type="radio" class="form-radio" id="modmenu_dialog-unban" name="modmenu_dialog" value="unban">
+      <div class="_toollist-data">
+        <h4><span class="mark">entsperren</span></h4>
+        <p class="fs-base1">Der Benutzer wurde von einem &diams;-Moderator gesperrt. Du kannst die Sperrung vorzeitig aufheben.</p>
+      </div>
+    </label>
+    {% endif %}
+    <label class="_toollist-item" for="modmenu_dialog-delete">
+      <input type="radio" class="form-radio" id="modmenu_dialog-delete" name="modmenu_dialog" value="delete">
+      <div class="_toollist-data">
+        <h4>löschen</h4>
+        <p class="fs-base1">Das Benutzerkonto wegen wiederholtem Verstoß gegen die Nutzungsbedingungen, Unfähigkeit die Regeln zu befolgen oder als Spammer löschen.</p>
+      </div>
+    </label>
+  </div>
+  <button class="push-right _btn _btn--primary js--modsubmit-home">Auswählen</
+  button>
+</div>
+<div class="js--modpage-annotate d-n">
+  <h3>Benutzer {{ data.getHTMLName()|safe }} anmerken</h3>
+  <p class="p-lead">Eine Anmerkung an das Benutzerkonto heften, damit andere Moderatoren Entscheidungen besser nachvollziehen können oder auf Probleme hingewiesen werden.</p>
+  <p>Tipp: Füge Beispiele (durch Links) hinzu, so dass andere Moderatoren deine Erläuterungen nachvollziehen können.</p>
+  <textarea class="form js--mod-annotation-comment"></textarea>
+  <button class="push-right _btn _btn--primary js--modsubmit-annotate">Anmerken</
+  button>
+  <button class="push-right _btn _btn--primary _btn-on-light js--modreturn-annotate">Zurück</
+  button>
+</div>
+<div class="js--modpage-contact d-n">
+  <h3>Benutzer {{ data.getHTMLName()|safe }} kontaktieren</h3>
+  <p class="p-lead">Den Benutzer wegen Verstoß gegen die Nutzungsbedingungen oder anderer, schwerwiegender Probleme kontaktieren.</p>
+  <p class="p-lead">Du kannst dich außerdem entschließen, das Benutzerkonto für maximal ein Jahr zu sperren.</p>
+
+  <label for="modcontact-template" class="form">Nachrichtenvorlage:</label>
+  <select name="template" id="modcontact-template" class="form">
+    <option value="0">(anderes)</option>
+    {% for tpl in templates %}
+    <option value="{{ tpl.id }}">{{ tpl.title }}</option>
+    {% endfor %}
+  </select>
+
+  <textarea id="modcontact-message" name="message" class="form form-large"></textarea>
+  <p class="fs-caption">Begrüßung, Suspendierungshinweis und Verabschiedung werden automatisch hinzugefügt.</p>
+
+  <p>Konto
+    <select name="susp_reason" id="modcontact-susp_reason" class="form form-inline">
+      <option value="[false]">(nicht)</option>
+      <option value="">(keinen Grund anzeigen)</option>
+      <option>zum Abkühlen</option>
+      <option>wegen Regelverletzungen</option>
+      <option>wegen der Umgehung von Beschränkungen</option>
+    </select>
+    für <input type="number" id="modcontact-susp_duration" class="form form-inline form-small" min="1" max="365"> Tage suspendieren.</p>
+
+  <button class="push-right _btn _btn--primary js--modsubmit-contact">Benutzer kontaktieren</
+  button>
+  <button class="push-right _btn _btn--primary _btn-on-light js--modreturn-contact">Zurück</
+  button>
+</div>
+<div class="js--modpage-delete d-n">
+  <h3>Benutzer {{ data.getHTMLName()|safe }} löschen</h3>
+  <p class="p-lead">Das Benutzerkonto wegen wiederholtem Verstoß gegen die Nutzungsbedingungen, Unfähigkeit die Regeln zu befolgen oder als Spammer löschen.</p>
+  <p>Tipp: Bitte begründe deine Entscheidung so, dass andere Moderatoren sie nachvollziehen können. Verweise zu Beispielen.</p>
+  <textarea class="form" id="moddelete-delete_reason"></textarea>
+  <label for="moddelete-destroy_confirm"><input type="checkbox" class="form-checkbox" id="moddelete-destroy_confirm"> Dieser Benutzer existiert nur, um Werbung oder Kauderwelsch zu posten oder die Mehrheit der Inhalte dieses Benutzers verstößt gegen die Nutzungsbedingungen.</label>
+  <button class="push-right _btn _btn-danger js--modsubmit-delete">Löschen</
+  button>
+  <button class="push-right _btn _btn--primary _btn-on-light js--modreturn-delete">Zurück</
+  button>
+</div>
+
+<script>
+  $(".js--modsubmit-home").click(function() {
+    decision = $("[name='modmenu_dialog']:checked").val();
+
+   if(decision == "modsummary") {
+     window.open("/tools/user/{{ data.id }}/summary/annotations")
+   } else if(decision == "annotate") {
+      $(".js--modpage-home").addClass("d-n");
+      $(".js--modpage-annotate").removeClass("d-n");
+    } else if(decision == "contact") {
+      $(".js--modpage-home").addClass("d-n");
+      $(".js--modpage-contact").removeClass("d-n");
+    } else if(decision == "delete") {
+      $(".js--modpage-home").addClass("d-n");
+      $(".js--modpage-delete").removeClass("d-n");
+    } else if(decision == "unban") {
+      $.ajax({
+        method: "POST",
+        url: "/tools/user/ops/{{ data.id }}?action=unban",
+        success: function( result ) {
+          window.location.reload();
+        },
+        error: function() {
+          alert("Ein Fehler ist aufgetreten. Bitte wende dich an den Support.");
+        }
+      });
+    }
+  })
+
+  $(".js--modreturn-annotate").click(function() {
+    $(".js--modpage-annotate").addClass("d-n");
+    $(".js--modpage-home").removeClass("d-n");
+  })
+  $(".js--modreturn-contact").click(function() {
+    $(".js--modpage-contact").addClass("d-n");
+    $(".js--modpage-home").removeClass("d-n");
+  })
+  $(".js--modreturn-delete").click(function() {
+    $(".js--modpage-delete").addClass("d-n");
+    $(".js--modpage-home").removeClass("d-n");
+  })
+
+  $(".js--modsubmit-annotate").click(function() {
+    $.ajax({
+      method: "POST",
+      url: "/tools/user/{{ data.id }}/summary/annotations",
+      data: JSON.stringify({
+        "comment": $(".js--mod-annotation-comment").val()
+      }),
+      contentType: "application/json; charset=utf-8",
+      success: function( result ) {
+        $(".js--modpage-home").parent().remove();
+      },
+      error: function() {
+        alert("Ein Fehler ist aufgetreten. Bitte wende dich an den Support.");
+      }
+    });
+  });
+
+
+  $("#modcontact-template").on("change", function() {
+    $this = $(this);
+    msg = $("#modcontact-message");
+    if($this.val() == "0") {
+      $("#modcontact-message").val("");
+      msg.removeAttr("disabled");
+    } else {
+      msg.attr("disabled", true);
+      $.ajax({
+        url: "/user-message/template-data/" + $this.val(),
+        success: function( result ) {
+          msg.val(result.content);
+          msg.removeAttr("disabled");
+        }
+      });
+    }
+  });
+
+  $(".js--modsubmit-contact").on("click", function() {
+    msg = $("#modcontact-message").val();
+    tpl = $("#modcontact-template").val();
+    sr = $("#modcontact-susp_reason").val();
+    sd = $("#modcontact-susp_duration").val();
+
+    if(msg=="") {
+      alert("Eine Nachricht muss eingegeben werden.");
+      return
+    } else if(msg.length < 50) {
+      alert("Die Nachricht muss mehr Zeichen enthalten. Füge Beispiele hinzu, linke zu Regelerklärungen o.ä., damit der kontaktierte Benutzer diese Nachricht versteht.");
+      return
+    }
+
+    if(sr != "[false]") {
+      if (sd < 1) {
+        alert("Ähem! Die Eingabe in das Feld für die Sperrungsdauer ist ungültig");
+        return
+      } else if (sd > 365) {
+        alert("Maximale Dauer einer Sperrung beträgt 365 Tage. Kontaktiere das &pi;-Learn Team für längere Sperrungen.");
+        return
+      }
+    }
+
+    $.ajax({
+      url: "/user-message/{{ data.id }}/new-thread",
+      method: "POST",
+      data: JSON.stringify({
+        "template": tpl,
+        "message": msg,
+        "suspend": sr != "[false]",
+        "suspension_reason": sr,
+        "suspension_length": sd
+      }),
+      contentType: "application/json; charset=UTF-8",
+      success: function( result ) {
+        window.location.href=result;
+      }
+    });
+  });
+
+  $(".js--modsubmit-delete").on("click", function() {
+    if($("#moddelete-delete_reason").val().length < 10) {
+      alert("Ein Löschgrund muss eingegeben werden!")
+      return;
+    }
+    $.ajax({
+      method: "POST",
+      url: "/user/{{ data.id }}/delete",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        "reason": $("#moddelete-delete_reason").val(),
+        "destroy": $("#moddelete-destroy_confirm")[0].checked
+      }),
+      success: function( result ) {
+        window.location.reload();
+      },
+      error: function() {
+        alert("Ein Fehler ist aufgetreten. Bitte wende dich an den Support.");
+      }
+    });
+  });
+</script>

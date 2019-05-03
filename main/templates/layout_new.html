@@ -161,5 +161,8 @@
     <script>
       PiJS.topbar.init();
     </script>
+    {% if user.isMod() %}
+    <script src="/static/new_js/moderator.js" charset="utf-8"></script>
+    {% endif %}
 </body>
 </html>
