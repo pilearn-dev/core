@@ -60,10 +60,10 @@ for user in select_query("user","SELECT id,deleted FROM user WHERE deleted != 0 
     execute_query("courses","DELETE FROM enrollments WHERE userid=? AND permission != 4;", user)
 
     # Do not remove the last course owner without adding -1 (system user)
-    for singlecourse in select_query("courses","SELECT courseid AS othercount FROM enrollments WHERE userid=? AND permission = 4 GROUP BY courseid HAVING othercount=1;", user):
+    for singlecourse in select_query("courses","SELECT courseid, Count(*) AS othercount FROM enrollments WHERE userid=? AND permission = 4 GROUP BY courseid HAVING othercount=1;", user):
         execute_query("courses","INSERT INTO enrollments (courseid, userid, lastunitid, permission) VALUES (?,-1,0,4)", singlecourse[0])
 
-    execute_query("courses","DELETE FROM enrollments WHERE id=? AND permission = 4;", user)
+    execute_query("courses","DELETE FROM enrollments WHERE userid=? AND permission = 4;", user)
 
 
 
