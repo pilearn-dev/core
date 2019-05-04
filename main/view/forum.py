@@ -30,23 +30,65 @@ def forum_new(id, label=None):
         if label != forum.getDetail("label"):
             return redirect(url_for("forum_new", id=id, label=forum.getDetail("label")))
         else:
-            if request.form == {}:
+            if request.method == "GET":
                 return render_template("forum/new.html", forum=forum, thispage="course" if id != 0 else "forum", title=forum.getDetail("name"))
-            else:
-                form = dict(request.form)
-                title = u"[Kein Titel gesetzt]"
-                content = u"[Kein Inhalt gesetzt]"
-                tags = u"[kein-tag]"
-                comment = u"Ursprüngliche Version"
-                if "content" in form.keys():
-                    content = request.form["content"]
-                if "title" in form.keys():
-                    title = request.form["title"]
-                if "tags" in form.keys():
-                    tags = "|".join(["["+i+"]" for i in request.form["tags"].split(",")])
-                article = mforum.Article.createNew(id, title, content, tags, cuser)
-                article.addRevision(title, content, tags, cuser, comment)
-                return redirect("/f/"+str(id)+"/"+str(article.id))
+            elif request.method == "POST":
+
+                data = request.json
+
+                title = data["title"].strip()
+                body = data["body"].strip()
+                tags = data["tags"]
+
+                errors = []
+
+                if not cuser.isLoggedIn():
+                    errors.append(u"Du musst dich anmelden, bevor du eine Frage stellen kannst.")
+                elif cuser.isDisabled():
+                    errors.append(u"Du bist gesperrt und darfst keine Fragen stellen.")
+
+                if len(title) > 100:
+                    errors.append(u"Der Titel ist zu lang. Höchstens 100 Zeichen möglich. (aktuell: %i)" % len(title))
+                elif len(title) < 10:
+                    errors.append(u"Der Titel ist zu kurz. Versuche das Problem ausführlich zu beschreiben. Mindestens zehn Zeichen erforderlich. (aktuell: %i)" % len(title))
+
+                title = title.replace("<", "&lt;")
+                title = title.replace("\"", "&quot;")
+                title = title.replace(">", "&gt;")
+
+
+                if len(body) > 5000:
+                    errors.append(u"Der Inhalt ist zu lang. Höchstens 5000 Zeichen möglich. (aktuell: %i)" % len(body))
+                elif len(body) < 20:
+                    errors.append(u"Der Inhalt ist zu kurz. Versuche das Problem ausführlich zu beschreiben. Mindestens zwanzig Zeichen erforderlich. (aktuell: %i)" % len(body))
+
+                if len(tags) > 5:
+                    errors.append(u"Du hast zu viel Schlagwörter verwendet. Maximal 5 möglich. (aktuell: %i)" % len(tags))
+                elif len(tags) < 1:
+                    errors.append(u"Füge mindestens ein Schlagwort hinzu. (aktuell: %i)" % len(tags))
+
+                for t in tags:
+                    if t in mtags.moderator_only and not (cuser.isMod() or cuser.isTeam()):
+                        errors.append(u"Das Schlagwort " + t + u" kann nur von ♦-Moderatoren hinzugefügt werden.")
+                    elif t in mtags.banned and not (cuser.isDev()):
+                        errors.append(u"Das Schlagwort " + t + u" darf nicht verwendet werden.")
+                    elif len(t) == 0:
+                        errors.append(u"Ein Schlagwort darf nicht leer sein.")
+                    elif len(t) > 25:
+                        errors.append(u"Ein Schlagwort darf nicht mehr als 25 Zeichen lang sein. ("+t+" hat %i)" % len(t))
+
+                if len(errors):
+                    return jsonify({
+                        "result": "error",
+                        "errors": errors
+                    })
+                else:
+                    article = mforum.Article.createNew(id, title, body, "|".join(["["+t+"]" for t in tags]), cuser)
+                    article.addRevision(title, body, "|".join(["["+t+"]" for t in tags]), cuser, u"Ursprüngliche Version")
+                    return jsonify({
+                        "result": "ok",
+                        "url": "/f/"+str(id)+"/"+str(article.id)
+                    })
     else:
         abort(404)
 
@@ -868,9 +910,7 @@ def apply(app):
     )
     app.route('/f/<id>')(
         app.route('/forum/<id>')(
-            app.route('/forum/<id>/<label>')(
-                app.route('/forum/<id>/<label>/list')(forum_list)
-            )
+            app.route('/forum/<id>/<label>')(forum_list)
         )
     )
     app.route('/f/<forum_id>/post/<post_id>/answer', methods=["POST"])(app.route('/forum/<forum_id>/<forum_label>/post/<post_id>/answer', methods=["POST"])(forum_post_answer))
