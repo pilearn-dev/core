@@ -2,7 +2,7 @@
 {% block body %}
 {% from "_course-header.html" import forum_header %}
 {{ forum_header(forum, "forum") }}
-{% set articles = forum.getArticles(search, request.values.get("sort", "active")) %}
+{% set articles = forum.getArticles(search, request.values.get("sort", "active"), tagged=tagged) %}
 <div class="grid">
   <div class="column9__lg column12">
     {% if articles|length != 0 %}
@@ -12,11 +12,18 @@
       <a href="/f/{{ forum.id }}/new" class="_btn _btn--primary push-right">Frage stellen</a>
       </div>
     {% endif %}
-
-    {% if request.values.get("query", "") %}
-    <h1 class="ml2 fs-heading">{{ articles|length }} Ergebnis{{ "se" if articles|length != 1 }} für "{{ request.values.get("query", "") }}"</h1>
+    {% if tagged %}
+      {% if request.values.get("query", "") %}
+      <h1 class="ml2 fs-heading">{{ articles|length }} Ergebnis{{ "se" if articles|length != 1 }} für "{{ request.values.get("query", "") }}" mit <span class="_badge _badge-tag{% if tagged.isModOnly() %} _badge-tag-modonly{% endif %}">{{ tagged.getName() }}</span></h1>
+      {% else %}
+      <h1 class="ml2 fs-heading">{{ articles|length }} Frage{{ "n" if articles|length != 1 }} mit <span class="_badge _badge-tag{% if tagged.isModOnly() %} _badge-tag-modonly{% endif %}">{{ tagged.getName() }}</span></h1>
+      {% endif %}
     {% else %}
-    <h1 class="ml2 fs-heading">{{ articles|length }} Frage{{ "n" if articles|length != 1 }}</h1>
+      {% if request.values.get("query", "") %}
+      <h1 class="ml2 fs-heading">{{ articles|length }} Ergebnis{{ "se" if articles|length != 1 }} für "{{ request.values.get("query", "") }}"</h1>
+      {% else %}
+      <h1 class="ml2 fs-heading">{{ articles|length }} Frage{{ "n" if articles|length != 1 }}</h1>
+      {% endif %}
     {% endif %}
 
     <div class="_btnlist colbox p1 column12__sm _btnlist-close">
@@ -24,6 +31,11 @@
       <a class="_btn _btn-outline{% if request.values.get("sort", "active") == "active" %} -active{% endif %}" href="?sort=active">Aktivität</a>
       <a class="_btn _btn-outline{% if request.values.get("sort", "active") == "score" %} -active{% endif %}" href="?sort=score">Bewertung</a>
     </div>
+    {% if tagged and tagged.getExcerpt() %}
+    <div class="content-box">
+      {{ tagged.getExcerpt() }}
+    </div>
+    {% endif %}
 
     <div class="_list anchor-black">
       {% for article in articles if article.mayBeSeen(user) %}
@@ -44,11 +56,11 @@
           <div class="column12__sm colbox-fill p2 ml2 p0__sm ml0__sm">
             <div class="_list-heading"><a href="/forum/{{ forum.id }}/{{ forum.getDetail("label") }}/article/{{ article.id }}/{{ article.getLabel() }}">{{ article.getHTMLTitle()|safe }}</a></div>
             <p>{{ article.getTeaser()|markdown|striptags }}</p>
-            {% for tag in article.getTags() %}
-                {% if tag in moderator_tags %}
-                    <a href="/f/{{ forum.id }}/tagged/{{ tag }}" class='_badge _badge-tag _badge-tag-modonly'>{{ tag }}</a>
+            {% for tag in article.getTagObjects() %}
+                {% if tag.isModOnly() %}
+                    <a href="/f/{{ forum.id }}/tagged/{{ tag.getName() }}" class='_badge _badge-tag _badge-tag-modonly'>{{ tag.getName() }}</a>
                 {% else %}
-                    <a href="/f/{{ forum.id }}/tagged/{{ tag }}" class='_badge _badge-tag'>{{ tag }}</a>
+                    <a href="/f/{{ forum.id }}/tagged/{{ tag.getName() }}" class='_badge _badge-tag'>{{ tag.getName() }}</a>
                 {% endif %}
             {% endfor %}
           </div>
@@ -56,14 +68,27 @@
       </div>
     {% endfor %}
     </div>
+    {% if tagged %}
+    <p class="fs-base3">Du hast die Auswahl auf ein Schlagwort beschränkt. Willst du <a href="/f/{{ forum.id }}">alle Fragen anzeigen</a>?</p>
+    {% endif %}
     {% else %}
     <div class="p4 ta-c">
-      {% if request.values.get("query", "") %}
-        <p class="fs-heading">Diese Suche liefert keine Ergebnisse</p>
-        <p class="fs-base3">"{{ request.values.get("query", "") }}" ist uns nicht bekannt. Du kannst versuchen, andere Suchbegriffe zu verwenden oder <a href="?sort={{ request.values.get("sort", "active") }}">die Suche zurücksetzen</a>.</p>
+      {% if tagged %}
+        {% if request.values.get("query", "") %}
+          <p class="fs-heading">Diese Suche liefert keine Ergebnisse</p>
+          <p class="fs-base3">"{{ request.values.get("query", "") }}" mit <span class="_badge _badge-tag{% if tagged.isModOnly() %} _badge-tag-modonly{% endif %}">{{ tagged.getName() }}</span> ist uns nicht bekannt. Du kannst versuchen, andere Suchbegriffe zu verwenden, <a href="?sort={{ request.values.get("sort", "active") }}">die Suche zurücksetzen</a> oder <a href="/forum/{{ forum.id }}/{{ forum.getLabel() }}?query={{ request.values.get("query", "active") }}&sort={{ request.values.get("sort", "active") }}">den Schlagwort-Filter entfernen</a>.</p>
+        {% else %}
+          <p class="fs-heading">Hier gibt es (noch) nichts zu sehen</p>
+          <p class="fs-base3">Es wurden bisher noch keine Beiträge mit <span class="_badge _badge-tag{% if tagged.isModOnly() %} _badge-tag-modonly{% endif %}">{{ tagged.getName() }}</span> in diesem Forum geschrieben. Du kannst <a href="/f/{{ forum.id }}">den Schlagwort-Filter entfernen</a>.</p>
+        {% endif %}
       {% else %}
-        <p class="fs-heading">Hier gibt es (noch) nichts zu sehen</p>
-        <p class="fs-base3">Es wurden bisher noch keine Beiträge in diesem Forum geschrieben.</p>
+        {% if request.values.get("query", "") %}
+          <p class="fs-heading">Diese Suche liefert keine Ergebnisse</p>
+          <p class="fs-base3">"{{ request.values.get("query", "") }}" ist uns nicht bekannt. Du kannst versuchen, andere Suchbegriffe zu verwenden oder <a href="?sort={{ request.values.get("sort", "active") }}">die Suche zurücksetzen</a>.</p>
+        {% else %}
+          <p class="fs-heading">Hier gibt es (noch) nichts zu sehen</p>
+          <p class="fs-base3">Es wurden bisher noch keine Beiträge in diesem Forum geschrieben.</p>
+        {% endif %}
       {% endif %}
       {% if user.isLoggedIn() and user.isEnabled() %}
         <a href="/f/{{ forum.id }}/new" class="_btn _btn--primary _btn-lighter _btn-xl">Frage stellen</a>
@@ -89,7 +114,11 @@
             <a href="?sort={{ request.values.get("sort", "active") }}" class="_btn _btn-dark _btn-on-light">Zurücksetzen</a>
           {% endif %}
         </form>
+      </div>
     </div>
+    {% if tagged and user.isMod() %}
+    <a class="_btn _btn-sm _btn-on-light" href="/forum/{{ forum.id }}/{{ forum.getLabel() }}/tag/{{ tagged.getName() }}/options">Einstellungen für <span class="_badge _badge-tag{% if tagged.isModOnly() %} _badge-tag-modonly{% endif %}">{{ tagged.getName() }}</span></a>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

@@ -33,7 +33,6 @@ def prepare_template_context():
         user = muser.User.blank()
 
     notifications = user.getNotifications()
-    moderator_tags = mtags.moderator_only
 
     g.random_number = random.randint
     g.num2suff = cnum.num2suff
@@ -50,7 +49,6 @@ def prepare_template_context():
         "user": user,
         "review": mreviews,
         "user_messages": notifications,
-        "moderator_tags": moderator_tags,
         "privileges": mprivileges,
         "global_notification": "",
         "in_beta": False,

@@ -35,6 +35,8 @@
       <div class="fs-caption">Tipp: Nutze eines der Schlagwörter <em>diskussion</em>, <em>support</em>, <em>fehler</em> oder <em>verbesserungsidee</em>, damit deine Frage besser beantwortet werden kann.</div>
       <input class="form" name="tags" id="tags" placeholder="1 - 5 Schlagwörter, durch Leerzeichen getrennt (fehler quiz woche2)">
 
+      <div class="_warnbox p-s _warnbox-warning hide" id="save_warnings"></div>
+
       <button class="_btn _btn--primary js--submit" type="submit">Absenden</button>
       <a href="/f/{{ forum.id }}" class="_btn _btn--primary _btn-on-light">Abbrechen</a>
 
@@ -60,7 +62,8 @@
       PiJS.editor.init();
 
       $(".js--submit").click(function() {
-        $("#save_errors").addClass("hide");
+        $("#save_errors, #save_warnings").addClass("hide");
+        ignore_warnings = $("#save_warnings .js--ignore-warnings").is(":checked");
         $(this).attr("disabled", true);
         tags = $("#tags").val();
         if(!tags)
@@ -69,7 +72,7 @@
           tags = tags.trim().split(" ")
         $.ajax({
           method: "POST",
-          url: "/forum/{{ forum.id }}/{{ forum.getLabel() }}/new",
+          url: "/forum/{{ forum.id }}/{{ forum.getLabel() }}/new" + (ignore_warnings ? "?ignore-warnings=yes" : ""),
           contentType: "application/json; charset=utf-8",
           data: JSON.stringify({
             title: $("#title").val(),
@@ -89,6 +92,25 @@
                 l.append($("<li>").text(r.errors[i]));
               }
               wb.append(l);
+              if(r.warnings.length) {
+                wb.append($("<p>Weiterhin wurden folgende Warnungen zurückgegeben, die du ignorieren kannst.</p>"))
+                l = $("<ul></ul>");
+                for (var i = 0; i < r.warnings.length; i++) {
+                  l.append($("<li>").text(r.warnings[i]));
+                }
+                wb.append(l);
+              }
+              wb.removeClass("hide");
+            } else if (r.result == "warnings") {
+              wb = $("#save_warnings");
+              wb.html("");
+              wb.append($("<p>Es wurden folgende Warnungen zurückgegeben, die du ignorieren kannst, indem du die Box unten auswählst und den Beitrag erneut absendest:</p>"))
+              l = $("<ul></ul>");
+              for (var i = 0; i < r.warnings.length; i++) {
+                l.append($("<li>").text(r.warnings[i]));
+              }
+              wb.append(l);
+              wb.append($("<label for='warning_ignorance'><input type='checkbox' class='js--ignore-warnings' id='warning_ignorance'> Danke für diese Warnungen, ich entscheide mich dafür, diese zu ignorieren.</p>"))
               wb.removeClass("hide");
             }
           },

@@ -4,7 +4,7 @@ import secrets
 import sqlite3 as lite
 from flask import request, session, url_for
 from sha1 import sha1
-from model import privileges as mprivileges, tags as mtags, user as muser
+from model import privileges as mprivileges, user as muser
 
 class Courses:
 

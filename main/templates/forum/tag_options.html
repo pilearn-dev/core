@@ -1,0 +1,68 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% from "_course-header.html" import forum_header %}
+{{ forum_header(forum, "forum") }}
+
+<div class="p4">
+  <h1 class="fs-heading">Einstellungen für das Schlagwort <span class="_badge _badge-tag{% if tag.isModOnly() %} _badge-tag-modonly{% endif %}">{{ tag.getName() }}</span></h1>
+
+  <label for="excerpt" class="form">Kurzbeschreibung</label>
+  <textarea id="excerpt" class="form form-small">{{ tag.getExcerpt() }}</textarea>
+
+  <label for="deprecation_notice" class="form">Warnung (nur angezeigt, wenn Tag verboten)</label>
+  <textarea id="deprecation_notice" class="form form-small">{{ tag.getDeprecationWarning() }}</textarea>
+
+  <input type="checkbox" id="applicable" class="push-left form-checkbox"{{ " checked" if not tag.isApplicable() }}>
+  <label for="applicable" class="push-left form">Tag verboten (kann nicht zu Beiträgen hinzugefügt werden; muss von bearbeiteten Beiträgen entfernt werden)</label>
+  <div class="push-reset"></div>
+  {% if user.isDev() %}
+  <input type="checkbox" id="mod_only" class="push-left form-checkbox"{{ " checked" if tag.isModOnly() }}>
+  <label for="mod_only" class="push-left form">kann nur von Moderatoren verwendet werden?</label>
+  <div class="push-reset"></div>
+  {% endif %}
+  <button class="_btn _btn--primary" id="submit_btn">Speichern</button>
+  <div class="_warnbox p-s _warnbox-success hide" id="save_success"><p>Das Schlagwort {{ tag.getName() }} wurde erfolgreich gespeichert.</p></div>
+  <div class="_warnbox p-s _warnbox-danger hide" id="save_errors"></div>
+</div>
+
+
+<script>
+  $("#submit_btn").on("click", function() {
+    $("#save_success, #save_errors").addClass("hide");
+    $(this).attr("disabled", true);
+    $.ajax({
+      method: "POST",
+      url: location.href,
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        excerpt: $("#excerpt").val(),
+        deprecation_notice: $("#deprecation_notice").val(),
+        applicable: !$("#applicable").is(":checked"){% if user.isDev() %},
+        mod_only: $("#mod_only").is(":checked"){% endif %}
+      }),
+      success: function(r) {
+        $("#submit_btn").removeAttr("disabled");
+        if(r.result=="ok") {
+          $("#save_success").removeClass("hide");
+        } else if (r.result == "error") {
+          wb = $("#save_errors");
+          wb.html("");
+          wb.append($("<p>Das Schlagwort konnte nicht vollständig gespeichert werden. Es sind Fehler aufgetreten:</p>"))
+          l = $("<ul></ul>");
+          for (var i = 0; i < r.errors.length; i++) {
+            l.append($("<li>").text(r.errors[i]));
+          }
+          wb.append(l);
+          wb.removeClass("hide");
+        }
+      },
+      error: function() {
+        $("#submit_btn").attr("disabled", true);
+        wb = $("#save_errors");
+        wb.text("Die Verbindung zum Server konnte nicht hergestellt werden.")
+        wb.removeClass("hide");
+      }
+    })
+  })
+</script>
+{% endblock %}

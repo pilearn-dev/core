@@ -1,11 +1,9 @@
 # coding: utf-8
-import os, json, re, time, math
-import secrets
+import re, time
 import sqlite3 as lite
-from flask import request, session, url_for
-from sha1 import sha1
-from model import privileges as mprivileges, tags as mtags, user as muser, courses as mcourses
+from model import user as muser, courses as mcourses
 from controller import times as ctimes
+import tags as mtags
 
 class Answer:
 
@@ -805,6 +803,15 @@ class Article:
         tags = tags.split("|")
         return [t[1:-1] for t in tags]
 
+    def getTagObjects(self):
+        for t in self.getTags():
+            tagged = mtags.ForumTag.byName(t)
+            if not tagged:
+                tagged = mtags.ForumTag.byName(t, self.getDetail("forumID"))
+            if not tagged:
+                continue
+            yield tagged
+
     def isDeleted(self):
         return self.getDetail("deleted") == 1 or self.isDestroyed()
 
@@ -1270,17 +1277,23 @@ class Forum:
 
         return mcourses.Courses(self.id).getTopic()
 
-    def getArticles(self, q=False, sort=False):
+    def getArticles(self, q=False, sort=False, tagged=None):
         try:
             con = lite.connect('databases/forum.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            # TODO: apply activity search
-            if q:
-                q = "%"+q+"%"
-                cur.execute("SELECT id FROM articles WHERE forumID=? AND (content LIKE ? OR title LIKE ?) ORDER BY pinned DESC, score DESC, id DESC", (self.id, q, q))
+            if tagged:
+                if q:
+                    q = "%"+q+"%"
+                    cur.execute("SELECT articles.id FROM articles, forum_tag_associations WHERE articles.id=forum_tag_associations.post_id AND forum_tag_associations.tag_id=? AND forumID=? AND (content LIKE ? OR title LIKE ?) AND  ORDER BY pinned DESC, score DESC, id DESC", (tagged.id, self.id, q, q))
+                else:
+                    cur.execute("SELECT articles.id FROM articles, forum_tag_associations WHERE articles.id=forum_tag_associations.post_id AND forum_tag_associations.tag_id=? AND forumID=? ORDER BY pinned DESC, score DESC, id DESC", (tagged.id,self.id))
             else:
-                cur.execute("SELECT id FROM articles WHERE forumID=? ORDER BY pinned DESC, score DESC, id DESC", (self.id, ))
+                if q:
+                    q = "%"+q+"%"
+                    cur.execute("SELECT id FROM articles WHERE forumID=? AND (content LIKE ? OR title LIKE ?) ORDER BY pinned DESC, score DESC, id DESC", (self.id, q, q))
+                else:
+                    cur.execute("SELECT id FROM articles WHERE forumID=? ORDER BY pinned DESC, score DESC, id DESC", (self.id, ))
             data = cur.fetchall()
             l = list(map(lambda x:Article(x[0]), data))
             if sort != False:
@@ -1293,6 +1306,7 @@ class Forum:
                 l = sorted(l, key=lambda x: x.getDetail("deleted"))
             return l
         except lite.Error as e:
+            print e
             return []
         finally:
             if con:

@@ -15,7 +15,91 @@ def forum_list(id, label=None):
         if label != forum.getDetail("label"):
             return redirect(url_for("forum_list", id=id, label=forum.getDetail("label")))
         else:
-            return render_template("forum/list.html", forum=forum, thispage="course" if id != 0 else "forum", title=forum.getDetail("name"), search=request.values.get("query", False))
+            return render_template("forum/list.html", tagged=None, forum=forum, thispage="course" if id != 0 else "forum", title=forum.getDetail("name"), search=request.values.get("query", False))
+    else:
+        abort(404)
+
+def forum_tag_view(id, tag, label=None):
+    try:
+        id = int(id)
+    except:
+        abort(404)
+    if mforum.Forum.exists(id):
+        forum = mforum.Forum.from_id(id)
+        cuser = muser.getCurrentUser()
+        if label != forum.getDetail("label"):
+            return redirect(url_for("forum_tag_view", id=id, tag=tag, label=forum.getDetail("label")))
+        else:
+            tagged = mtags.ForumTag.byName(tag)
+            if not tagged:
+                tagged = mtags.ForumTag.byName(tag, id)
+            if not tagged:
+                tagged = mtags.blankTag(tag)
+            return render_template("forum/list.html", tagged=tagged, forum=forum, thispage="course" if id != 0 else "forum", title=forum.getDetail("name"), search=request.values.get("query", False))
+    else:
+        abort(404)
+
+def forum_tag_options(id, tag, label=None):
+    try:
+        id = int(id)
+    except:
+        abort(404)
+    if mforum.Forum.exists(id):
+        forum = mforum.Forum.from_id(id)
+        cuser = muser.getCurrentUser()
+        if label != forum.getDetail("label"):
+            return redirect(url_for("forum_tag_options", id=id, tag=tag, label=forum.getDetail("label")))
+        else:
+            if not cuser.isMod():
+                abort(404)
+            tagged = mtags.ForumTag.byName(tag)
+            if not tagged:
+                tagged = mtags.ForumTag.byName(tag, id)
+            if not tagged:
+                abort(404)
+            if request.method == "POST":
+
+
+                data = request.json
+
+                excerpt = data["excerpt"].strip()
+                deprecation_notice = data["deprecation_notice"].strip()
+                applicable = data["applicable"]
+
+                if cuser.isDev():
+                    mod_only = data["mod_only"]
+
+                errors = []
+
+                if len(excerpt) > 300:
+                    errors.append(u"Die Kurzbeschreibung ist zu lang. Maximal 300 Zeichen möglich. (aktuell: %i)" % len(excerpt))
+                else:
+                    tagged.setDetail("excerpt", excerpt)
+
+                if len(deprecation_notice) > 150:
+                    errors.append(u"Die Kurzbeschreibung ist zu lang. Maximal 150 Zeichen möglich. (aktuell: %i)" % len(deprecation_notice))
+                else:
+                    tagged.setDetail("deprecation_notice", deprecation_notice)
+
+
+                tagged.setDetail("applicable", applicable)
+
+                if cuser.isDev():
+                    tagged.setDetail("mod_only", mod_only)
+
+                if len(errors):
+                    return jsonify({
+                        "result": "error",
+                        "errors": errors
+                    })
+                else:
+                    return jsonify({
+                        "result": "ok"
+                    })
+
+
+            else:
+                return render_template("forum/tag_options.html", tag=tagged, forum=forum, thispage="course" if id != 0 else "forum", title=forum.getDetail("name"))
     else:
         abort(404)
 
@@ -41,6 +125,7 @@ def forum_new(id, label=None):
                 tags = data["tags"]
 
                 errors = []
+                warnings = []
 
                 if not cuser.isLoggedIn():
                     errors.append(u"Du musst dich anmelden, bevor du eine Frage stellen kannst.")
@@ -61,30 +146,71 @@ def forum_new(id, label=None):
                     errors.append(u"Der Inhalt ist zu lang. Höchstens 5000 Zeichen möglich. (aktuell: %i)" % len(body))
                 elif len(body) < 20:
                     errors.append(u"Der Inhalt ist zu kurz. Versuche das Problem ausführlich zu beschreiben. Mindestens zwanzig Zeichen erforderlich. (aktuell: %i)" % len(body))
+                elif len(body) < 50:
+                    warnings.append(u"Der Inhalt ist etwas kurz. Versuche das Problem ausführlich zu beschreiben. Mindestens fünfzig Zeichen empfohlen. (aktuell: %i)" % len(body))
+
+                elif len(body) > 500 and body.count("\n\n") < 2:
+                    warnings.append(u"Bitte gliedere deinen Text in Abschnitte. Das ermöglicht es potentiellen Antwortenden deinen Text einfacher zu lesen.")
 
                 if len(tags) > 5:
                     errors.append(u"Du hast zu viel Schlagwörter verwendet. Maximal 5 möglich. (aktuell: %i)" % len(tags))
                 elif len(tags) < 1:
                     errors.append(u"Füge mindestens ein Schlagwort hinzu. (aktuell: %i)" % len(tags))
+                elif len(tags) < 2:
+                    warnings.append(u"Du hast nur ein Schlagwort verwendet. Wir empfehlen mindestens ein kategorisierendes Schlagwort (diskussion, support, fehler oder verbesserungsidee) und ein thematisches Schlagwort (z.B. forum oder polynomdivision).")
 
                 for t in tags:
-                    if t in mtags.moderator_only and not (cuser.isMod() or cuser.isTeam()):
-                        errors.append(u"Das Schlagwort " + t + u" kann nur von ♦-Moderatoren hinzugefügt werden.")
-                    elif t in mtags.banned and not (cuser.isDev()):
-                        errors.append(u"Das Schlagwort " + t + u" darf nicht verwendet werden.")
-                    elif len(t) == 0:
+
+                    if len(t) == 0:
                         errors.append(u"Ein Schlagwort darf nicht leer sein.")
                     elif len(t) > 25:
                         errors.append(u"Ein Schlagwort darf nicht mehr als 25 Zeichen lang sein. ("+t+" hat %i)" % len(t))
 
+                    tagged = mtags.ForumTag.byName(t)
+                    if not tagged:
+                        tagged = mtags.ForumTag.byName(t, id)
+                    if not tagged:
+                        continue
+                    if tagged.isModOnly() and not (cuser.isMod() or cuser.isTeam()):
+                        errors.append(u"Das Schlagwort " + t + u" kann nur von ♦-Moderatoren hinzugefügt werden.")
+                    if not tagged.isApplicable():
+                        if tagged.getDeprecationWarning():
+                            errors.append(u"Das Schlagwort " + t + u" darf nicht verwendet werden: " + tagged.getDeprecationWarning())
+                        else:
+                            errors.append(u"Das Schlagwort " + t + u" darf nicht verwendet werden.")
+                    elif tagged.getDeprecationWarning():
+                        warnings.append(tagged.getDeprecationWarning())
+
                 if len(errors):
                     return jsonify({
                         "result": "error",
-                        "errors": errors
+                        "errors": errors,
+                        "warnings": warnings
+                    })
+                elif len(warnings) and request.values.get("ignore-warnings", 0) != "yes":
+                    return jsonify({
+                        "result": "warnings",
+                        "warnings": warnings
                     })
                 else:
                     article = mforum.Article.createNew(id, title, body, "|".join(["["+t+"]" for t in tags]), cuser)
+
                     article.addRevision(title, body, "|".join(["["+t+"]" for t in tags]), cuser, u"Ursprüngliche Version")
+
+                    for t in tags:
+
+                        tagged = mtags.ForumTag.byName(t)
+                        if not tagged:
+                            tagged = mtags.ForumTag.byName(t, id)
+                        if not tagged:
+                            tagged = mtags.ForumTag.byName(t, "any")
+                            if tagged:
+                                tagged.setDetail("forum_id", None)
+                        if not tagged:
+                            tagged = mtags.ForumTag.createNew(t, id)
+
+                        tagged.addAssoc(article.id)
+
                     return jsonify({
                         "result": "ok",
                         "url": "/f/"+str(id)+"/"+str(article.id)
@@ -911,6 +1037,16 @@ def apply(app):
     app.route('/f/<id>')(
         app.route('/forum/<id>')(
             app.route('/forum/<id>/<label>')(forum_list)
+        )
+    )
+    app.route('/f/<id>/tagged/<tag>')(
+        app.route('/forum/<id>/tagged/<tag>')(
+            app.route('/forum/<id>/<label>/tagged/<tag>')(forum_tag_view)
+        )
+    )
+    app.route('/f/<id>/tag/<tag>/options', methods=["GET", "POST"])(
+        app.route('/forum/<id>/tag/<tag>/options', methods=["GET", "POST"])(
+            app.route('/forum/<id>/<label>/tag/<tag>/options', methods=["GET", "POST"])(forum_tag_options)
         )
     )
     app.route('/f/<forum_id>/post/<post_id>/answer', methods=["POST"])(app.route('/forum/<forum_id>/<forum_label>/post/<post_id>/answer', methods=["POST"])(forum_post_answer))
