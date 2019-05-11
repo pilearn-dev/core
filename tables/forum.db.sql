@@ -131,4 +131,21 @@ timestamp INT)
   end_date INT,
   show_from INT,
   show_until INT
+);
+CREATE TABLE forum_tags (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    forum_id INTEGER NULL,
+
+    name VARCHAR(30),
+    excerpt TEXT(300),
+    deprecation_notice TEXT(150),
+
+    redirects_to INTEGER,
+    applicable BOOLEAN,
+    mod_only BOOLEAN
+);
+INSERT INTO forum_tags (forum_id, name, excerpt, deprecation_notice, redirects_to, applicable, mod_only) VALUES (NULL, "fehler", "Verwende dieses Schlagwort, um Beiträge zu markieren, in denen du auf einen Fehler im Kurs/in der Seite hinweist.", "", 0, 1, 0), (NULL, "support", "Verwende dieses Schlagwort, wenn du fragen willst, wie diese Seite zu bedienen ist.", "", 0, 1, 0), (NULL, "verbesserungsidee", "Verwende dieses Schlagwort, um Beiträge zu markieren, in denen du Ideen vorbringst, wie dieser Kurs/diese Seite verbessert werden könnte.", "", 0, 1, 0), (NULL, "ankündigung", "Verwende dieses Schlagwort für Ankündigungen zum Kurs/zu π-Learn", "", 0, 1, 0), (NULL, "status:erledigt", "Das Problem/Die Idee wurde behoben/umgesetzt.", "", 0, 1, 1), (NULL, "status:in-arbeit", "Das Problem/Die Idee wird behoben/umgesetzt werden; wir arbeiten gerade dran.", "", 0, 1, 1), (NULL, "status:abgelehnt", "Die Idee wird nicht umgesetzt./Es handelt sich nicht um ein Problem sondern um ein absichtlich so entworfenes Feature.", "", 0, 1, 1), (NULL, "faq", "Dieser Beitrag stellt den offizielle *acquis* der Community dar und gilt as Richtlinie für die Webseite.", "", 0, 1, 1);
+CREATE TABLE forum_tag_associations (
+  post_id INTEGER,
+  tag_id INTEGER
 )
