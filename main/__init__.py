@@ -14,7 +14,12 @@ import traceback as tb
 
 import sqlite3 as lite
 import re, json, time
+
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
+
 app = Flask(__name__)
+
 app.config.update(dict(
     SECRET_KEY='S6b9ySuzI2Uv55aY3To8',
     MAX_CONTENT_LENGTH = 4 * 1024 * 1024
@@ -32,6 +37,12 @@ SITE_LABEL = pidata["label"]
 BETA_TOKEN = pidata["beta_token"]
 BETA_AUTH_KEY = pidata["register_key"]
 HAS_MATHJAX = pidata["mathjax"]
+SENTRY_ERROR_LOGGING = pidata["sentry_error_logging"]
+if SENTRY_ERROR_LOGGING:
+    sentry_sdk.init(
+        dsn=pidata["sentry_logging_key"],
+        integrations=[FlaskIntegration()]
+    )
 
 f = open("version.json", "r")
 pivers = json.loads(f.read())
@@ -54,6 +65,13 @@ def prepare_template_context():
         return count
 
     g.countNotifications = countNotifications
+
+    if SENTRY_ERROR_LOGGING:
+        with sentry_sdk.configure_scope() as scope:
+            scope.user = {
+                "id": user.id,
+                "username": user.getHTMLName(False)
+            }
 
     return {
         "user": user,
