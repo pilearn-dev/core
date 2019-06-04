@@ -59,6 +59,20 @@ class ForumTag:
             if con:
                 con.close()
 
+    def removeAssoc(self, article_id):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("DELETE FROM forum_tag_associations WHERE post_id=? AND tag_id=?;", (article_id, self.id))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
     def getInfo(self):
         try:
             con = lite.connect('databases/forum.db')

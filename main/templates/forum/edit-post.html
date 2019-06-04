@@ -1,99 +1,138 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-    <link rel="stylesheet" href="/static/css/simplemde.min.css">
-    <script src="/static/js/simplemde.min.js"></script>
-    <script src="/static/js/_tags.js"></script>
+  <script src="/static/new_js/pilearn.markdown.js" charset="utf-8"></script>
+  <script src="/static/new_js/pilearn.editor.js" charset="utf-8"></script>
+{% from "_course-header.html" import forum_header %}
+{{ forum_header(forum, "forum") }}
 
-    <nav class="coursenav">
-      {% if forum.id == 0 %}
-          <h2>globales Forum</h2>
-          <p>für alle Fragen zu &pi;-Learn selber und für Fehlermeldungen oder Verbesserungsideen</p>
-      {% else %}
-        {% set topic = forum.getTopic() %}
-        <h2>{{ forum.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
-        {{ forum.getByLine()|markdown }}
-        <ul>
-          <li><a href="/c/{{ forum.id }}/info">Informationen</a></li>
-          <li><a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/start">Kursinhalte</a></li>
-          <li class="active"><a href="/f/{{ forum.id }}">Kursforum</a></li>
-        </ul>
-      {% endif %}
-    </nav>
+<div class="p2">
+  <h1 class="fs-subtitle">Beitrag
+  {% if forum.id == 0 %}
+    zu &pi;-Learn
+  {% else %}
+    zum Kurs {{ forum.getTitle() }}
+  {% endif %}
+  bearbeiten</h1>
 
-    <h2>Beitrag bearbeiten</h2>
+  {% if not user.isLoggedIn() %}
+    <p>Du musst dich <a href="/login">anmelden</a> oder <a href="/register">registrieren</a>, um eine Frage in diesem Forum zu stellen.</p>
+  {% elif user.isDisabled() %}
+    <p>Gesperrte Benutzer können keine Fragen stellen.</p>
+  {% else %}
+  <div class="grid">
+    <div action="" method="POST" class="column8__lg column12">
+      <label for="title" class="form">Überschrift deiner Frage</label>
+      <div class="fs-caption">Fasse deine Frage in einem Fragesatz zusammen</div>
+      <input class="form" id="title" name="title" value="{{ article.getTitle() }}">
 
-    <p>Hier noch einmal die Kriterien für einen guten Forumsartikel:</p>
-    <ul>
-        <li>Prüfe, ob es noch keinen Artikel gibt, der mit diesem übereinstimmt (Duplikat)</li>
-        <li>Prüfe, ob dies das richtige Forum ist.</li>
-        <li>Deine eingegebenen Inhalte müssen mit dem <a href="/help/legal/coc">Code of Conduct</a> kompatibel sein.</li>
-        <li>Deine eingegebenen Inhalte sollten keine groben Rechtschreibfehler aufweisen</li>
-        <li>Versuche die eingegebenen Inhalte möglichst verständlich zu formulieren.</li>
-        <li>Werbe in den Inhalten nicht übermäßig für ein bestimmtes Produkt oder eine Marke.</li>
-        <li>Versuche die eingegebenen Inhalte möglichst verständlich zu formulieren. Wenn niemand deinen Post versteht, wird dir auch niemand antworten.</li>
-    </ul>
-
-    {% if not user.may("forum_reviewEdits") and not article.getAuthor().id == user.id %}
-      <div class="warning">
-        <h3>Volle Bearbeitungsrechte noch nicht erreicht</h3>
-        <p>Du hast noch nicht die vollen Bearbeitungsrechte für diesen Beitrag erhalten. Darum muss dein Bearbeitungsvorschlag erst von anderen Benutzern geprüft werden, bis er durchgesetzt wird.</p>
-        <p><b>Vermeide unwichtige, zu geringe Veränderungen. Korrigiere möglichst <i>alle Probleme</i> eines Beitrags.</b></p>
+      <label for="body" class="form">Ausformulierung deiner Frage</label>
+      <div class="js--editor p2 js--editor:preview">
+        <textarea name="body" id="body" class="form form-large js--editor-textarea">{{ article.getContent() }}</textarea>
+        <div class="p2 js--editor-preview hr-original"></div>
       </div>
-    {% endif %}
 
-    <form action="" method="post">
-        <label for="qtitle">
-            Überschrift des Forumposts
-        </label>
-        <input id="qtitle" name="title" value="{{ article.getTitle() }}">
-        <label for="qcontent">
-            Inhalt des Forumposts
-        </label>
-        <textarea id="qcontent" name="content">{{ article.getContent() }}</textarea>
-        <label for="qtags">
-            Tags des Forumposts
-        </label>
-        <div id="qtags" style="border: 1px solid #ddd; padding: 10px; display: flex; flex-direction: column; flex-wrap: wrap;">
-            <div class="tag-holder" style="display: inline-flex; align-items: center;" data-id="tag-holder"></div>
-            <input style="flex-grow:1" data-id="tag-input" placeholder="Neues Tag hinzufügen (min. 1, max. 5)">
+      <label for="tags" class="form">Schlagwörter zu deiner Frage</label>
+      <div class="fs-caption">Füge 1-5 leerzeichengetrennte Schlagwörter zu deiner Frage hinzu.</div>
+      <div class="fs-caption">Tipp: Nutze eines der Schlagwörter <em>diskussion</em>, <em>support</em>, <em>fehler</em> oder <em>verbesserungsidee</em>, damit deine Frage besser beantwortet werden kann.</div>
+      <input class="form" name="tags" id="tags" placeholder="1 - 5 Schlagwörter, durch Leerzeichen getrennt (fehler quiz woche2)" value="{{ ' '.join(article.getTags()) }}">
+
+      <label for="comment" class="form">Kommentar zur Bearbeitung</label>
+      <input class="form" id="comment" name="comment">
+
+      <div class="_warnbox p-s _warnbox-warning hide" id="save_warnings"></div>
+
+      <button class="_btn _btn--primary js--submit" type="submit">Absenden</button>
+      <a href="/f/{{ forum.id }}" class="_btn _btn--primary _btn-on-light">Abbrechen</a>
+
+      <div class="_warnbox p-s _warnbox-danger hide" id="save_errors"></div>
+    </div>
+    <div class="column4__lg column12 p2">
+      <div class="_card _card-warning">
+        <div class="_card-title">Informationen</div>
+        <div class="_card-content">
+          <p>Bearbeite Beiträge, um ...</p>
+          <ul>
+            <li>Schreibfehler zu korrigieren.</li>
+            <li>die Aussage verständlicher zu machen.</li>
+            <li>Belege hinzuzufügen.</li>
+            <li>die Formattierung zu verbessern.</li>
+          </ul>
+          <p>Beachte dabei, ...</p>
+          <ul>
+            <li>die Intentionen des Autors zu beachten.</li>
+            <li>möglichst alle Probleme zu beheben.</li>
+            <li>keinen <a href="/help/faq/edit-war">Edit-War</a> zu beginnen.</li>
+          </ul>
         </div>
-        <label for="qcomment">Kommentar zu den Änderungen:</label>
-        <input id="qcomment" name="comment"></input>
-        &nbsp;<br>
-        <input type="hidden" name="tags" id="qtags_syncwith">
-        <button type="submit" id="sbmbtn">Speichern</button>&nbsp;<a href="/f/{{ forum.id }}/{{ article.id }}">Abbrechen</a>
-    </form>
-
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
     <script>
-        var simplemde = new SimpleMDE({ element: document.getElementById("qcontent"), forceSync:true, parsingConfig: {strikethrough: false}, promptURLs:true, spellChecker:false });
-        tagmgr = addTagInput("#qtags");
-        tagmgr.tagInput.addEventListener("keydown", function() {
-            document.getElementById("sbmbtn").setAttribute("disabled", true);
-        })
-        tagmgr.tagInput.addEventListener("keyup", function() {
-            document.getElementById("sbmbtn").removeAttribute("disabled");
-        })
-        tagmgr.sync = function(tags) {
-            document.getElementById("qtags_syncwith").value = tags.join(",");
-        }
-        tagmgr.requirementMet = function(tag) {
-            return tag.match(/^[a-zA-Z:0-9äöüß-]{2,20}$/);
-        }
-        tagmgr.getExtraClass = function(tag) {
-            if({{ moderator_tags|tojson }}.indexOf(tag) != -1) {
-                return "moderator-tag";
-            }
-            return null;
-        }
-        tagmgr.mayBeSet = function(tag) {
-            {% if not user.isMod() %}
-                return {{ moderator_tags|tojson }}.indexOf(tag) == -1;
-            {% else %}
-                return true;
-            {% endif %}
-        }
-        tagmgr.tags = JSON.parse('{{ article.getTags()|tojson }}');
-        tagmgr._update();
-    </script>
+      PiJS.editor.init();
 
+      $(".js--submit").click(function() {
+        $("#save_errors, #save_warnings").addClass("hide");
+        ignore_warnings = $("#save_warnings .js--ignore-warnings").is(":checked");
+        $(this).attr("disabled", true);
+        tags = $("#tags").val();
+        if(!tags)
+          tags = [];
+        else
+          tags = tags.trim().split(" ")
+        $.ajax({
+          method: "POST",
+          url: "/forum/{{ forum.id }}/{{ forum.getLabel() }}/post/{{ article.id }}/edit" + (ignore_warnings ? "?ignore-warnings=yes" : ""),
+          contentType: "application/json; charset=utf-8",
+          data: JSON.stringify({
+            title: $("#title").val(),
+            body: $("#body").val(),
+            tags: tags,
+            comment: $("#comment").val()
+          }),
+          success: function(r) {
+            $(".js--submit").removeAttr("disabled");
+            if(r.result=="ok") {
+              window.location.href = r.url;
+            } else if (r.result == "error") {
+              wb = $("#save_errors");
+              wb.html("");
+              wb.append($("<p>Die Frage konnte nicht gestellt werden. Es sind Fehler aufgetreten:</p>"))
+              l = $("<ul></ul>");
+              for (var i = 0; i < r.errors.length; i++) {
+                l.append($("<li>").text(r.errors[i]));
+              }
+              wb.append(l);
+              if(r.warnings.length) {
+                wb.append($("<p>Weiterhin wurden folgende Warnungen zurückgegeben, die du ignorieren kannst.</p>"))
+                l = $("<ul></ul>");
+                for (var i = 0; i < r.warnings.length; i++) {
+                  l.append($("<li>").text(r.warnings[i]));
+                }
+                wb.append(l);
+              }
+              wb.removeClass("hide");
+            } else if (r.result == "warnings") {
+              wb = $("#save_warnings");
+              wb.html("");
+              wb.append($("<p>Es wurden folgende Warnungen zurückgegeben, die du ignorieren kannst, indem du die Box unten auswählst und den Beitrag erneut absendest:</p>"))
+              l = $("<ul></ul>");
+              for (var i = 0; i < r.warnings.length; i++) {
+                l.append($("<li>").text(r.warnings[i]));
+              }
+              wb.append(l);
+              wb.append($("<label for='warning_ignorance'><input type='checkbox' class='js--ignore-warnings' id='warning_ignorance'> Danke für diese Warnungen, ich entscheide mich dafür, diese zu ignorieren.</p>"))
+              wb.removeClass("hide");
+            }
+          },
+          error: function() {
+            $("#submit_btn").attr("disabled", true);
+            wb = $("#save_errors");
+            wb.text("Die Verbindung zum Server konnte nicht hergestellt werden.")
+            wb.removeClass("hide");
+          }
+        });
+      })
+    </script>
 {% endblock %}
