@@ -19,7 +19,7 @@ def msg_new_thread(user):
     elif request.method == "POST":
         try:
             template, message, suspend, suspension_reason, suspension_length = \
-            request.json["template"], request.json["message"], request.json["suspend"], \
+            int(request.json["template"]), request.json["message"], request.json["suspend"], \
             request.json["suspension_reason"], request.json["suspension_length"]
 
             if suspend:
