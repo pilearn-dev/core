@@ -89,16 +89,18 @@
       </nav>
     </div>
   </header>
-  <div class="col-white bg--primary p3 bb3s bb--primary-dd" id="site-bar">
-    <div class="grid single-fluid -full-center">
-      <div class="column6__lg"><h1 class="m0 fs-subtitle f-brand">{{ (site_label|markdown)[3:-4] }}</h1></div>
-      <nav class="_nav _nav-h hide__sm hide__md _nav-right column6 col-white">
-        <a href="/"{% if thispage == "index" %} class="-active"{% endif %}>Startseite</a>
-        <a href="/f/0"{% if thispage == "forum" %} class="-active"{% endif %}>Forum</a>
-        <a href="/courses"{% if thispage == "courses" %} class="-active"{% endif %}>Kurse</a>
-      </nav>
+  <div class="_headbar-site" id="site-bar">
+      <div class="single-fluid _headbar-fluid">
+        <div class="_headbar-site-brand">
+          {{ (site_label|markdown)[3:-4] }}
+        </div>
+        <div class="_headbar-site-nav">
+            <a href="/"{% if thispage == "index" %} class="-active"{% endif %}>Startseite</a>
+            <a href="/f/0"{% if thispage == "forum" %} class="-active"{% endif %}>Forum</a>
+            <a href="/courses"{% if thispage == "courses" %} class="-active"{% endif %}>Kurse</a>
+        </div>
+      </div>
     </div>
-  </div>
  {% if global_notification != "" %}
     {% for subnote in global_notification.split("\n_____\n") %}
         <div class="_banner _banner-warning">

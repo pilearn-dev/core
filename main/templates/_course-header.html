@@ -1,24 +1,26 @@
 {% macro forum_header (forum, current_page) %}
-<div class="p3 s1 bg--primary-ll" id="course-bar">
+<div class="_headbar-course" id="course-bar">
   {% if forum.id == 0 %}
-      <h1 class="f-brand">globales Forum</h1>
-      <p>für alle Fragen zu &pi;-Learn selber und für Fehlermeldungen oder Verbesserungsideen</p>
+    <div class="_headbar-course-name">globales Forum</div>
+    <div class="_headbar-course-byline">
+      für alle Fragen zu &pi;-Learn selber und für Fehlermeldungen oder Verbesserungsideen
+    </div>
   {% else %}
-
-  <div class="grid">
-    <div class="column6__lg column12">
-      {% set topic = forum.getTopic() %}
-      <h1 class="f-brand">{{ forum.getTitle() }} <a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="_badge _badge-unit">{{ topic.getTitle() }}</a></h1>
+    {% set topic = forum.getTopic() %}
+    <div class="_headbar-course-name">{{ forum.getTitle() }}</div>
+    <div class="_headbar-course-unit">
+      <a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="_badge _badge-unit">{{ topic.getTitle() }}</a>
     </div>
-    <div class="column6__lg column12 ta-r col-al-bottom f-bold lnk-dark">
-      {{ forum.getByLine()|markdown }}
+    <div class="_headbar-course-byline">
+      {{ (forum.getByLine()|markdown)[3:-4] }}
     </div>
-  </div>
-  <nav class="_nav _nav-t">
-    <a href="/c/{{ forum.id }}/info"{% if current_page == "info" %} class="-active"{% endif %}>Infos</a>
-    <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/start"{% if current_page == "contents" %} class="-active"{% endif %}>Inhalte</a>
-    <a href="/f/{{ forum.id }}"{% if current_page == "forum" %} class="-active"{% endif %}>Forum</a>
-  </nav>
+    <div class="_headbar-course-navigation">
+      <nav class="_nav _nav-t">
+        <a href="/c/{{ forum.id }}/info"{% if current_page == "info" %} class="-active"{% endif %}>Infos</a>
+        <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/start"{% if current_page == "contents" %} class="-active"{% endif %}>Inhalte</a>
+        <a href="/f/{{ forum.id }}"{% if current_page == "forum" %} class="-active"{% endif %}>Forum</a>
+      </nav>
+    </div>
   {% endif %}
 </div>
 {% endmacro %}
