@@ -58,6 +58,9 @@ def user_edit_page(id, name=None):
             elif request.values.get("page", "profile") == "login":
                 return render_template("user/edit/login.html", data=user, thispage="user", title=u"Anmeldedaten für " + user.getHTMLName(False), current_time=time.time())
 
+            elif request.values.get("page", "profile") == "preferences":
+                return render_template("user/edit/preferences.html", data=user, thispage="user", title=u"Einstellungen für " + user.getHTMLName(False))
+
             elif request.values.get("page", "profile") == "dev" and cuser.isDev():
                 return render_template("user/edit/dev.html", data=user, thispage="user", title=u"Entwickleroptionen für " + user.getHTMLName(False), roles=muser.getRoles())
 
@@ -393,6 +396,35 @@ def edit_user(id):
         })
 
 
+def preferences_for_user(id):
+    if not muser.User.exists(id):
+        abort(404)
+    cuser = muser.getCurrentUser()
+    id = int(id)
+    if id < 0 and not cuser.isMod():
+        abort(403)
+    if not (cuser.isMod() or id == cuser.id):
+        abort(403)
+
+    user = muser.User(id)
+
+    data = request.json
+
+    VALID_PREFERENCES = ["darkTheme"]
+
+    if data["key"] not in VALID_PREFERENCES:
+        return jsonify({
+            "result": "error",
+            "error": "Ungültige Einstellung"
+        })
+
+    user.setPref(data["key"], data["value"])
+
+    return jsonify({
+        "result": "ok"
+    })
+
+
 def devtools_for_user(id):
     if not muser.User.exists(id):
         abort(404)
@@ -473,6 +505,7 @@ def apply(app):
     app.route('/user/<id>/delete', methods=["POST"])(delete_user)
     app.route('/user/<id>/edit', methods=["POST"])(edit_user)
     app.route('/user/<id>/dev-tools', methods=["POST"])(devtools_for_user)
+    app.route('/user/<id>/preferences', methods=["POST"])(preferences_for_user)
     app.route('/u/<id>/edit', methods=["GET","POST"])(app.route('/user/<id>/<name>/edit', methods=["GET","POST"])(user_edit_page))
     app.route('/u/<id>/activity', methods=["GET","POST"])(app.route('/user/<id>/<name>/activity', methods=["GET","POST"])(user_activity_page))
     app.route('/user/<id>/flag', methods=["GET", "POST"])(flag_user)

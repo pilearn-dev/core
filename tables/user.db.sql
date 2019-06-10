@@ -124,3 +124,8 @@ insert into badges (name, class, description, internal_id) values ("Beta", "gold
   is_team TINYINT
 );
 INSERT INTO user_roles (name, is_mod, is_dev, is_team) VALUES ("Normaler Benutzer", 0,0,0), ("Moderator (ernannt)", 1,0,0), ("Moderator (gewählt)", 1,0,0), ("Team (ohne Moderatorenrechte)", 0,0,1), ("Team (mit Moderatorenrechten)", 1,0,1), ("Team (Entwicklerrechte)", 1,1,1)
+;CREATE TABLE user_preference_overrides (
+  user_id INT,
+  pref_key VARCHAR(50),
+  value TEXT
+)

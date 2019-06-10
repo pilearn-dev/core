@@ -166,5 +166,8 @@
     {% if user.isMod() %}
     <script src="/static/new_js/moderator.js" charset="utf-8"></script>
     {% endif %}
+    {% if user.getPref("darkTheme", False) == "1" %}
+    <style>._headbar-site,.container, footer, ._dialog{filter:invert(100%)}._headbar-site img,.container img{filter:invert(100%)}html{background-color:#000 !important}</style>
+    {% endif %}
 </body>
 </html>

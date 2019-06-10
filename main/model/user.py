@@ -110,6 +110,52 @@ class User:
 
         return text.strip()
 
+    def getPref(self, key, default):
+        if self.id == -3: return default
+        if session.get("login") == self.id and session.get("preference:"+key, False):
+            return session["preference:"+key]
+
+        try:
+            con = lite.connect('databases/user.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT value FROM user_preference_overrides WHERE user_id = ? AND pref_key=?", (self.id,key))
+            d = cur.fetchone()
+            if d is None:
+                return default
+            if session.get("login") == self.id:
+                session["preference:"+key] = d["value"]
+            return d["value"]
+        except lite.Error as e:
+            print e
+            return default
+        finally:
+            if con:
+                con.close()
+
+    def setPref(self, key, value):
+        if self.id == -3: return False
+        try:
+            con = lite.connect('databases/user.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT value FROM user_preference_overrides WHERE user_id = ? AND pref_key=?", (self.id,key))
+            d = cur.fetchone()
+            if d is None:
+                cur.execute("INSERT INTO user_preference_overrides VALUES (?, ?, ?)", (self.id,key,value))
+            else:
+                cur.execute("UPDATE user_preference_overrides SET value=? WHERE user_id = ? AND pref_key=?", (value,self.id,key))
+            con.commit()
+            if session.get("login") == self.id:
+                session["preference:"+key] = value
+            return True
+        except lite.Error as e:
+            print e
+            return False
+        finally:
+            if con:
+                con.close()
+
     def getRepDelta(self):
         if self.id == -3: return
         try:
@@ -804,6 +850,29 @@ class User:
 
     @classmethod
     def safe(cls, id):
+        if not cls.exists(id):
+            u = cls.blank()
+            u.id = id
+            u._User__data = {
+                "id": id,
+                "name": "benutzer-" + str(id),
+                "realname": "benutzer-" + str(id),
+                "email": "",
+                "deleted": 1,
+                "banned": 0,
+                "role": "user",
+                "reputation": 0,
+                "profile_image": "",
+                "password":"",
+                "aboutme":"",
+                "suspension": [],
+                "labels": [],
+                "login_provider": "none",
+                "is_mod": False,
+                "is_dev": False,
+                "is_team": False
+            }
+            return u
         u = cls(id)
         if u.getDetail("mergeto"):
             u = cls(u.getDetail("mergeto"))

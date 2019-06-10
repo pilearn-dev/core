@@ -63,7 +63,7 @@ def reset_password():
 
 def logout():
     user = muser.getCurrentUser()
-    session.pop('login', None)
+    session.clear()
     return redirect(url_for('index'))
 
 def oauth_authorize(provider):
