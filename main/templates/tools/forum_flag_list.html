@@ -15,7 +15,7 @@
           {% endif %}
       {% else %}
           <i class="fa fa-comment fa-2x fa-fw" aria-hidden="true"></i>
-          <a href="/f/{{ f.post.getDetail('parentID') }}">Antwort</a>
+          <a href="/f/{{ f.post.getDetail('articleID') }}">Antwort</a>
           {% if f.state == 0 %}
           <button onclick="location.href='/tools/forum/flags/{{ f.id }}';" class="primary-btn"><i class="fa fa-arrow-right fa-fw"></i></button>
           {% else %}

@@ -2,8 +2,9 @@
 import re, time
 import sqlite3 as lite
 from model import user as muser, courses as mcourses
-from controller import times as ctimes
+from controller import times as ctimes, placeholder as cplaceholder
 import tags as mtags
+import markdown
 
 class Answer:
 
@@ -26,7 +27,7 @@ class Answer:
             con = lite.connect('databases/forum.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("INSERT INTO answer_revisions (forumID, answerID, articleID, editor, new_content, review_id, comment, type) VALUES (?, ?, ?, ?, ?, ?, ?, 'edit')", (self.getDetail("forumID"), self.id, self.getDetail("articleID"), user.id, content, review, comment))
+            cur.execute("INSERT INTO answer_revisions (forumID, answerID, articleID, editor, new_content, review_id, comment, type, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, 'edit', ?)", (self.getDetail("forumID"), self.id, self.getDetail("articleID"), user.id, content, review, comment, time.time()))
             con.commit()
             return True
         except lite.Error as e:
@@ -41,10 +42,11 @@ class Answer:
             con = lite.connect('databases/forum.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("INSERT INTO answer_revisions (forumID, answerID, articleID, editor, new_content, review_id, comment, type) VALUES (?, ?, ?, ?, ?, ?, ?, ?)", (self.getDetail("forumID"), self.id, self.getDetail("articleID"), user.id, self.getContent(), -1, comment, tp))
+            cur.execute("INSERT INTO answer_revisions (forumID, answerID, articleID, editor, new_content, review_id, comment, type, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (self.getDetail("forumID"), self.id, self.getDetail("articleID"), user.id, self.getContent(), -1, comment, tp, time.time()))
             con.commit()
             return True
         except lite.Error as e:
+            print(e)
             return False
         finally:
             if con:
@@ -86,7 +88,10 @@ class Answer:
                 "type": data["type"],
                 "editor": muser.User.safe(data["editor"]),
                 "content": data["new_content"],
-                "comment": data["comment"]
+                "comment": data["comment"],
+                "timestamp": data["timestamp"],
+                "relative_time": ctimes.stamp2shortrelative(data["timestamp"]),
+                "absolute_time": ctimes.stamp2german(data["timestamp"])
             }
             return data
         except lite.Error as e:
@@ -111,9 +116,9 @@ class Answer:
                 "content": data["new_content"],
                 "tags": data["new_tags"],
                 "comment": data["comment"],
-            #    "timestamp": data["timestamp"],
-            #    "relative_time": ctimes.stamp2relative(data["timestamp"]),
-            #    "absolute_time": ctimes.stamp2german(data["timestamp"])
+                "timestamp": data["timestamp"],
+                "relative_time": ctimes.stamp2shortrelative(data["timestamp"]),
+                "absolute_time": ctimes.stamp2german(data["timestamp"])
             }
             return data
         except lite.Error as e:
@@ -147,6 +152,18 @@ class Answer:
         finally:
             if con:
                 con.close()
+
+    def getCreationTime(self):
+        t = self.getDetail("creation_date")
+        return [t, ctimes.stamp2german(t), ctimes.stamp2shortrelative(t)]
+
+    def getLastEditTime(self):
+        t = self.getDetail("last_edit_date")
+        return [t, ctimes.stamp2german(t), ctimes.stamp2shortrelative(t)]
+
+    def getLastEditor(self):
+        e = self.getDetail("last_editor")
+        return muser.User.safe(e)
 
     def getComments(self, is_mod=False):
         return ForumComment.byPost("answer", self.id, is_mod)
@@ -228,6 +245,118 @@ class Answer:
                     if con:
                         con.close()
 
+    def delvote(self, who, in_review_final=False):
+        try:
+          con = lite.connect('databases/forum.db')
+          con.row_factory = lite.Row
+          cur = con.cursor()
+          cur.execute("INSERT INTO deletion_votes (postType, postId, voteOwner, voteCastDate, active) VALUES ('answer', ?, ?, ?, 1)", (self.id, who.id, time.time()))
+          con.commit()
+          cur.execute("SELECT Count(*) FROM deletion_votes WHERE postType='answer' AND postId=? AND active=1", (self.id, ))
+          con.commit()
+          num = cur.fetchone()[0]
+          if num == 3 + min(5,int(self.getScore()/5)) or who.isMod():
+              self.setDetail("deleted", 1)
+              self.setDetail("deletionReason", "vote")
+              self.__data = self.getInfo()
+              self.addRevComm("deleted", muser.User.from_id(-1), self.getDeleteMessage())
+          return True
+        except lite.Error as e:
+          print(e)
+          return False
+        finally:
+          if con:
+              con.close()
+
+    def getDelVotes(self):
+        try:
+          con = lite.connect('databases/forum.db')
+          con.row_factory = lite.Row
+          cur = con.cursor()
+          cur.execute("SELECT Count(*) FROM deletion_votes WHERE postType='answer' AND postId=? AND active=1", (self.id, ))
+          con.commit()
+          return cur.fetchone()[0]
+        except lite.Error as e:
+          return 0
+        finally:
+          if con:
+              con.close()
+
+    def undelvote(self, who, in_review_final=False):
+          try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            qid = None
+            cur.execute("INSERT INTO undeletion_votes (postType, postId, voteOwner, voteCastDate, active) VALUES ('answer', ?, ?, ?, 1)", (self.id, who.id, time.time()))
+            con.commit()
+            cur.execute("SELECT * FROM undeletion_votes WHERE postType='answer' AND postId=? AND active=1", (self.id, ))
+            con.commit()
+            all = cur.fetchall()
+            num = len(all)
+            if num == 3 + min(5,int(self.getScore()/5)) or who.isMod():
+                cur.execute("UPDATE deletion_votes SET active=0 WHERE postType='answer' AND postId=? AND active=1", (self.id,))
+                cur.execute("UPDATE undeletion_votes SET active=0 WHERE postType='answer' AND postId=? AND active=1", (self.id,))
+                con.commit()
+                self.setDetail("deleted", 0)
+
+                voter_html = ""
+                index = 0
+                for flag in all:
+                    flagger = muser.User.safe(flag[2])
+                    if 0 < index < len(all)-1:
+                        voter_html += ", "
+                    elif index == len(all)-1 and index != 0:
+                        voter_html += " und "
+                    index += 1
+                    voter_html += "<a href='/u/" + str(flagger.id) + "'>" + flagger.getHTMLName(False) + "</a>"
+
+                self.addRevComm("undeleted", muser.User.from_id(-1), voter_html)
+            return True
+          except lite.Error as e:
+            print(e)
+            return False
+          finally:
+            if con:
+                con.close()
+
+    def getUndelVotes(self):
+        try:
+          con = lite.connect('databases/forum.db')
+          con.row_factory = lite.Row
+          cur = con.cursor()
+          cur.execute("SELECT Count(*) FROM undeletion_votes WHERE postType='answer' AND postId=? AND active=1", (self.id, ))
+          con.commit()
+          return cur.fetchone()[0]
+        except lite.Error as e:
+          return 0
+        finally:
+          if con:
+              con.close()
+
+    def customflag(self, msg, who):
+        try:
+          con = lite.connect('databases/user.db')
+          con.row_factory = lite.Row
+          cur = con.cursor()
+          qid = None
+          cur.execute("SELECT * FROM custom_flaglist WHERE item_id=? AND item_type='forum.answer' AND state=0", (self.id,))
+          qid = cur.fetchone()
+          if qid is None:
+              cur.execute("INSERT INTO custom_flaglist (item_id, item_type, state) VALUES (?, 'forum.answer', 0)", (self.id,))
+              qid = cur.lastrowid
+          else:
+              qid = qid["id"]
+          cur.execute("INSERT INTO custom_flag (item_id, item_type, queue_id, state, flagger_id, comment) VALUES (?, 'forum.answer', ?, 0, ?, ?)", (self.id, qid, who.id, msg))
+          con.commit()
+          return True
+        except SyntaxError as e:#lite.Error as e:
+          print(e)
+          return False
+        finally:
+          if con:
+              con.close()
+
     def setDetail(self, d, v):
         try:
             con = lite.connect('databases/forum.db')
@@ -275,16 +404,72 @@ class Answer:
         return self.getDetail("content")
 
     def getModNotice(self):
-        return self.getDetail("moderatorNotice")
+        notice = self.getDetail("moderatorNotice")
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM post_notices WHERE id=?", (notice, ))
+        except lite.Error as e:
+            return notice
+        finally:
+            if con:
+                con.close()
 
     def getAuthor(self):
         return muser.User.safe(self.getDetail("author"))
+
+    def getArticle(self):
+        return Article(self.getDetail("articleID"))
 
     def isDeleted(self):
         return self.getDetail("deleted") == 1 or self.isDestroyed()
 
     def getDeleteMessage(self):
-        return u"Der Beitrag wurde **" + (u"zerstört" if self.isDestroyed() else u"gelöscht") + u"**"
+        del_reason = self.getDetail("deletionReason")
+        if del_reason == "owner":
+            return u"<strong>gelöscht</strong> von seinem Urheber"
+        elif del_reason == "spam":
+            return u"<strong>gelöscht</strong> als Werbung/beleidigender/missbräuchlicher Inhalt"
+        elif del_reason == "offensive":
+            return u"<strong>gelöscht</strong> als Werbung/beleidigender/missbräuchlicher Inhalt"
+        elif del_reason == "dangerous":
+            return u"<strong>gelöscht</strong> als Werbung/beleidigender/missbräuchlicher Inhalt"
+        elif del_reason == "queue":
+            return u"<strong>gelöscht</strong> aufgrund des Votums in einer Moderationsliste"
+        elif del_reason == "vote":
+            try:
+                con = lite.connect('databases/forum.db')
+                con.row_factory = lite.Row
+                cur = con.cursor()
+                cur.execute("SELECT * FROM deletion_votes WHERE postId=? AND postType='answer' AND active=1 ORDER BY voteCastDate", (self.id, ))
+                con.commit()
+                flags = cur.fetchall()
+                voters = ""
+                voter_html = ""
+                index = 0
+                maxtime = 0
+                for flag in flags:
+                    if flag[3] > maxtime: maxtime = flag[3]
+                    flagger = muser.User.safe(flag[2])
+                    if 0 < index < len(flags)-1:
+                        voter_html += ", "
+                    elif index == len(flags)-1 and index != 0:
+                        voter_html += " und "
+                    index += 1
+                    if flagger.isDeleted():
+                        voter_html += flagger.getHTMLName(False)
+                    else:
+                        voter_html += "<a href='/u/" + str(flagger.id) + "'>" + flagger.getHTMLName(False) + "</a>"
+
+                return u"<strong>gelöscht</strong> von " + voter_html + " " + ctimes.stamp2shortrelative(maxtime)
+            except lite.Error as e:
+                return u"<strong>gelöscht</strong>"
+            finally:
+                if con:
+                    con.close()
+        else:
+            return u"<strong>gelöscht</strong>"
 
     def isDestroyed(self):
         return self.getDetail("deleted") == 2
@@ -314,8 +499,12 @@ class Answer:
                 "frozenBy": data['frozenBy'],
                 "frozenMessage": data['frozenMessage'],
                 "deleted": data['deleted'],
+                "deletionReason": data['deletionReason'],
 
-                "moderatorNotice": data['moderatorNotice']
+                "moderatorNotice": data['moderatorNotice'],
+                "creation_date": data['creation_date'],
+                "last_edit_date": data['last_edit_date'],
+                "last_editor": data['last_editor']
             }
         except lite.Error as e:
             #raise lite.Error from e
@@ -325,12 +514,15 @@ class Answer:
                 con.close()
 
     @classmethod
-    def exists(cls, forum_id, id):
+    def exists(cls, forum_id, id=None):
         try:
             con = lite.connect('databases/forum.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT * FROM answers WHERE id=? AND forumID=?", (id,forum_id))
+            if id is not None:
+                cur.execute("SELECT * FROM answers WHERE id=? AND forumID=?", (id,forum_id))
+            else:
+                cur.execute("SELECT * FROM answers WHERE id=?", (forum_id,))
             data = cur.fetchone()
             return data is not None
         except lite.Error as e:
@@ -505,7 +697,7 @@ class Article:
                 "tags": data["new_tags"],
                 "comment": data["comment"],
                 "timestamp": data["timestamp"],
-                "relative_time": ctimes.stamp2relative(data["timestamp"]),
+                "relative_time": ctimes.stamp2shortrelative(data["timestamp"]),
                 "absolute_time": ctimes.stamp2german(data["timestamp"])
             }
             return data
@@ -532,7 +724,7 @@ class Article:
                 "tags": data["new_tags"],
                 "comment": data["comment"],
                 "timestamp": data["timestamp"],
-                "relative_time": ctimes.stamp2relative(data["timestamp"]),
+                "relative_time": ctimes.stamp2shortrelative(data["timestamp"]),
                 "absolute_time": ctimes.stamp2german(data["timestamp"])
             }
             return data
@@ -566,6 +758,18 @@ class Article:
         finally:
             if con:
                 con.close()
+
+    def getCreationTime(self):
+        t = self.getDetail("creation_date")
+        return [t, ctimes.stamp2german(t), ctimes.stamp2shortrelative(t)]
+
+    def getLastEditTime(self):
+        t = self.getDetail("last_edit_date")
+        return [t, ctimes.stamp2german(t), ctimes.stamp2shortrelative(t)]
+
+    def getLastEditor(self):
+        e = self.getDetail("last_editor")
+        return muser.User.safe(e)
 
     def getComments(self, is_mod=False):
         return ForumComment.byPost("post", self.id, is_mod)
@@ -713,20 +917,22 @@ class Article:
     def isClosed(self):
         return self.getDetail("closed")
 
-    def getClosureWarning(self):
+    def getClosureWarning(self, html=False):
         con = lite.connect('databases/forum.db')
         con.row_factory = lite.Row
         cur = con.cursor()
         cur.execute("SELECT * FROM closure_flags WHERE state=1 AND type='vote' AND item_id=?", (self.id,))
         flags = cur.fetchall()
         majority_reason = self.getDetail("closureReason")
-        voters = ""
+        cur.execute("SELECT * FROM closure_reasons WHERE id=?", (majority_reason,))
+        majority_reason = cur.fetchone()
+        voters = []
         reasons = []
         links = []
         for flag in flags:
-            if flag[6] == "duplicate" and majority_reason == "duplicate":
+            if flag[6] == 1 and majority_reason["id"] == 1:
                 links.append(flag[7])
-            elif flag[6] == "off-topic" and majority_reason == "off-topic":
+            elif flag[6] == 2 and majority_reason["id"] == 2:
                 for r in reasons:
                     if r["text"] == flag[7]:
                         r["voters"].append(flag[4])
@@ -734,10 +940,40 @@ class Article:
                 else:
                     reasons.append({"text":flag[7], "voters":[flag[4]]})
             flagger = muser.User.safe(flag[4])
-            voters += ", ["+flagger.getHTMLName()+"](/u/"+str(flagger.id)+")"
-        voters = voters[2:]
+            voters.append(flagger)
+        if html:
+            response = ""
+            flagger_html = ""
+            index = 0
+            for f in voters:
+                if 0 < index < len(flagger)-1:
+                    flagger_html += ", "
+                elif index == len(flagger)-1 and index != 0:
+                    flagger_html += " und "
+                index += 1
+                if f.isDeleted():
+                    flagger_html += f.getHTMLName(False)
+                else:
+                    flagger_html += "<a href='/u/" + str(f.id) + "'>" + f.getHTMLName(False) + "</a>"
+
+            if majority_reason["id"] == 1:
+                response += "<h3 class=\"m0 f-sans fs-subheading\">als <strong>bereits gefragt und beantwortet</strong> markiert von " + flagger_html + "</h3>"
+            else:
+                response += "<h3 class=\"m0 f-sans fs-subheading\">als <strong>" + majority_reason["ui_name"] + "</strong> geschlossen von " + flagger_html + "</h3>"
+            response += markdown.markdown(cplaceholder.parseForForum(majority_reason["description"], self.getForum()))
+        else:
+            response = {
+                "reason_id": majority_reason["id"],
+                "reason_label": majority_reason["ui_name"],
+                "reason_text": cplaceholder.parseForForum(majority_reason["description"], self.getForum()),
+                "voters": voters,
+                "links": links,
+                "subreasons": subreasons
+            }
+
+        return response
         text = "### "
-        if majority_reason == "duplicate":
+        if majority_reason["id"] == 1:
             links_ = []
             for link in links:
                 links_.append(u"["+Article(link).getTitle()+u"](/f/"+str(self.getDetail("forumID"))+u"/"+link+u")")
@@ -791,7 +1027,21 @@ class Article:
         return self.getDetail("content")
 
     def getModNotice(self):
-        return self.getDetail("moderatorNotice")
+        notice = self.getDetail("moderatorNotice")
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM post_notices WHERE id=?", (notice, ))
+            n = cur.fetchone()
+            if n:
+                return n["body"]
+            return notice
+        except lite.Error as e:
+            return notice
+        finally:
+            if con:
+                con.close()
 
     def getAuthor(self):
         return muser.User.safe(self.getDetail("author"))
@@ -860,39 +1110,50 @@ class Article:
     def getDeleteMessage(self):
         del_reason = self.getDetail("deletionReason")
         if del_reason == "owner":
-            return u"### Dieser Beitrag wurde **gelöscht**\n\nDer Beitrag wurde **von seinem Autor** gelöscht."
+            return u"<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong> von seinem Urheber</h3>"
         elif del_reason == "spam":
-            return u"### Dieser Beitrag wurde **gelöscht**\n\nDer Beitrag wurde **als SPAM (*gefährlich*)** gelöscht."
+            return u"<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong> als Werbung/beleidigender/missbräuchlicher Inhalt</h3>"
         elif del_reason == "offensive":
-            return u"### Dieser Beitrag wurde **gelöscht**\n\nDer Beitrag wurde **als beleidigend (*gefährlich*)** gelöscht."
+            return u"<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong> als Werbung/beleidigender/missbräuchlicher Inhalt</h3>"
         elif del_reason == "dangerous":
-            return u"### Dieser Beitrag wurde **gelöscht**\n\nDer Beitrag wurde **als SPAM oder beleidigend (*gefährlich*)** gelöscht."
+            return u"<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong> als Werbung/beleidigender/missbräuchlicher Inhalt</h3>"
         elif del_reason == "queue":
-            return u"### Dieser Beitrag wurde **gelöscht**\n\nDer Beitrag wurde **aus einer Moderationsliste** gelöscht."
+            return u"<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong> aufgrund des Votums in einer Moderationsliste</h3>"
         elif del_reason == "auto:closed":
-            return u"### Dieser Beitrag wurde **gelöscht**\n\nDieser Beitrag wurde automatisch gelöscht, da er geschlossen wurde. (Prozess: <code>delete\\auto:closed</code>)"
+            return u"<h3 class=\"m0 f-sans fs-subheading\">automatisch <strong>gelöscht</strong> wegen Inaktivität (DeleteInactiveClosed)</h3>"
         elif del_reason == "vote":
             try:
                 con = lite.connect('databases/forum.db')
                 con.row_factory = lite.Row
                 cur = con.cursor()
-                cur.execute("SELECT * FROM post_deletion_flags WHERE item_id=? AND type='vote' AND state=1", (self.id, ))
+                cur.execute("SELECT * FROM deletion_votes WHERE postId=? AND postType='post' AND active=1 ORDER BY voteCastDate", (self.id, ))
                 con.commit()
                 flags = cur.fetchall()
                 voters = ""
+                voter_html = ""
+                index = 0
+                maxtime = 0
                 for flag in flags:
-                    flagger = muser.User.safe(flag[4])
-                    voters += u", ["+flagger.getHTMLName()+u"](/u/"+str(flagger.id)+u")"
-                voters = voters[2:]
-                return u"### Dieser Beitrag wurde **gelöscht**\n\nDer Beitrag wurde von " + voters + u" gelöscht."
+                    if flag[3] > maxtime: maxtime = flag[3]
+                    flagger = muser.User.safe(flag[2])
+                    if 0 < index < len(flags)-1:
+                        voter_html += ", "
+                    elif index == len(flags)-1 and index != 0:
+                        voter_html += " und "
+                    index += 1
+                    if flagger.isDeleted():
+                        voter_html += flagger.getHTMLName(False)
+                    else:
+                        voter_html += "<a href='/u/" + str(flagger.id) + "'>" + flagger.getHTMLName(False) + "</a>"
+
+                return u"<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong> von " + voter_html + " " + ctimes.stamp2shortrelative(maxtime) + "</h3>"
             except lite.Error as e:
-              print(e)
-              return u"### Dieser Beitrag wurde **gelöscht**\n\nDer Beitrag wurde gelöscht."
+                return u"<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong></h3>"
             finally:
-              if con:
-                  con.close()
+                if con:
+                    con.close()
         else:
-            return u"### Dieser Beitrag wurde **gelöscht**\n\nDer Beitrag wurde gelöscht."
+            return u"<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong></h3>"
 
     def isDestroyed(self):
         return self.getDetail("deleted") == 2
@@ -906,11 +1167,6 @@ class Article:
             data = cur.fetchone()
             if data is None:
                 raise ValueError("Article not found with id " + str(self.id))
-            cur.execute("SELECT id FROM article_revisions WHERE (type='edit' OR type='undeleted' OR type='restored') AND articleID=? GROUP BY articleID ORDER BY id DESC", (self.id, ))
-            order = cur.fetchone()
-            if order is None:
-                order = {"id":0}
-            order = order["id"]
             return {
                 "id": data['id'],
                 "forumID": data['forumID'],
@@ -941,7 +1197,10 @@ class Article:
 
                 "moderatorNotice": data['moderatorNotice'],
 
-                "order":order
+                "creation_date": data['creation_date'],
+                "last_edit_date": data['last_edit_date'],
+                "last_activity_date": data['last_edit_date'],
+                "last_editor": data['last_editor']
             }
         except lite.Error as e:
             #raise lite.Error from e
@@ -1042,38 +1301,34 @@ class Article:
           con = lite.connect('databases/forum.db')
           con.row_factory = lite.Row
           cur = con.cursor()
-          qid = None
-          cur.execute("SELECT * FROM post_deletion_queue WHERE item_id=? AND state=0", (self.id,))
-          qid = cur.fetchone()
-          if qid is None:
-              cur.execute("INSERT INTO post_deletion_queue (item_id, state, result) VALUES (?, 0, 0)", (self.id,))
-              qid = cur.lastrowid
-          else:
-              qid = qid["id"]
-          cur.execute("INSERT INTO post_deletion_flags (item_id, queue_id, state, flagger_id, type, reason, comment) VALUES (?, ?, 0, ?, ?, ?, ?)", (self.id, qid, who.id, "vote", "delvote", ""))
+          cur.execute("INSERT INTO deletion_votes (postType, postId, voteOwner, voteCastDate, active) VALUES ('post', ?, ?, ?, 1)", (self.id, who.id, time.time()))
           con.commit()
-          cur.execute("SELECT * FROM post_deletion_flags WHERE item_id=? AND type='vote' AND state=0", (self.id, ))
+          cur.execute("SELECT Count(*) FROM deletion_votes WHERE postType='post' AND postId=? AND active=1", (self.id, ))
           con.commit()
-          flags = cur.fetchall()
-          num = len(flags)
-          if num == 3 or who.isMod() or in_review_final:
-              cur.execute("UPDATE post_deletion_flags SET state=1 WHERE (reason!='custom' OR type='vote') AND item_id=? AND state=0", (self.id,))
-              cur.execute("UPDATE post_deletion_queue SET state=2, result=5 WHERE item_id=? AND state=0", (self.id, ))
-              con.commit()
+          num = cur.fetchone()[0]
+          if num == 3 + min(5,int(self.getScore()/5)) or who.isMod():
               self.setDetail("deleted", 1)
               self.setDetail("deletionReason", "vote")
               self.__data = self.getInfo()
               self.addRevComm("deleted", muser.User.from_id(-1), self.getDeleteMessage())
-              revcount = self.getRevisionCount()
-              maxDeletionThreshold = 2+int(revcount/2)
-              cur.execute("SELECT * FROM article_revisions WHERE articleID=? AND type='deletion'", (self.id,))
-              deletionEventCount = len(cur.fetchall())
-              if deletionEventCount >= maxDeletionThreshold:
-                  self.customflag(u"**[automatisch]**: *Umstrittene Löschung* - Dieser Beitrag wurde mehrfach gelöscht und un-gelöscht.", muser.User.from_id(-2))
           return True
-        except SyntaxError as e:#lite.Error as e:
+        except lite.Error as e:
           print(e)
           return False
+        finally:
+          if con:
+              con.close()
+
+    def getDelVotes(self):
+        try:
+          con = lite.connect('databases/forum.db')
+          con.row_factory = lite.Row
+          cur = con.cursor()
+          cur.execute("SELECT Count(*) FROM deletion_votes WHERE postType='post' AND postId=? AND active=1", (self.id, ))
+          con.commit()
+          return cur.fetchone()[0]
+        except lite.Error as e:
+          return 0
         finally:
           if con:
               con.close()
@@ -1084,32 +1339,30 @@ class Article:
             con.row_factory = lite.Row
             cur = con.cursor()
             qid = None
-            cur.execute("SELECT * FROM post_undeletion_queue WHERE item_id=? AND state=0", (self.id,))
-            qid = cur.fetchone()
-            if qid is None:
-                cur.execute("INSERT INTO post_undeletion_queue (item_id, state, result) VALUES (?, 0, 0)", (self.id,))
-                qid = cur.lastrowid
-            else:
-                qid = qid["id"]
-            cur.execute("INSERT INTO post_undeletion_flags (item_id, queue_id, state, flagger_id, type, reason, comment) VALUES (?, ?, 0, ?, ?, ?, ?)", (self.id, qid, who.id, "vote", "voted", ""))
+            cur.execute("INSERT INTO undeletion_votes (postType, postId, voteOwner, voteCastDate, active) VALUES ('post', ?, ?, ?, 1)", (self.id, who.id, time.time()))
             con.commit()
-            cur.execute("SELECT * FROM post_undeletion_flags WHERE item_id=? AND type='vote' AND state=0", (self.id, ))
+            cur.execute("SELECT * FROM undeletion_votes WHERE postType='post' AND postId=? AND active=1", (self.id, ))
             con.commit()
             all = cur.fetchall()
             num = len(all)
-            if num == 3 or who.isMod() or in_review_final:
-                cur.execute("UPDATE post_undeletion_flags SET state=1 WHERE item_id=? AND state=0", (self.id,))
-                cur.execute("UPDATE post_deletion_flags SET state=2 WHERE item_id=? AND state=1", (self.id,))
-                cur.execute("UPDATE post_undeletion_queue SET state=2, result=6 WHERE item_id=? AND state=0", (self.id, ))
+            if num == 3 + min(5,int(self.getScore()/5)) or who.isMod():
+                cur.execute("UPDATE deletion_votes SET active=0 WHERE postType='post' AND postId=? AND active=1", (self.id,))
+                cur.execute("UPDATE undeletion_votes SET active=0 WHERE postType='post' AND postId=? AND active=1", (self.id,))
                 con.commit()
                 self.setDetail("deleted", 0)
-                voters = ""
+
+                voter_html = ""
+                index = 0
                 for flag in all:
-                    if flag["type"] != "vote":
-                        continue
-                    flagger = muser.User.safe(flag["flagger_id"])
-                    voters += ", ["+flagger.getHTMLName()+"](/u/"+str(flagger.id)+")"
-                self.addRevComm("undeleted", muser.User.from_id(-1), voters[2:])
+                    flagger = muser.User.safe(flag[2])
+                    if 0 < index < len(all)-1:
+                        voter_html += ", "
+                    elif index == len(all)-1 and index != 0:
+                        voter_html += " und "
+                    index += 1
+                    voter_html += "<a href='/u/" + str(flagger.id) + "'>" + flagger.getHTMLName(False) + "</a>"
+
+                self.addRevComm("undeleted", muser.User.from_id(-1), voter_html)
             return True
           except lite.Error as e:
             print(e)
@@ -1117,6 +1370,20 @@ class Article:
           finally:
             if con:
                 con.close()
+
+    def getUndelVotes(self):
+        try:
+          con = lite.connect('databases/forum.db')
+          con.row_factory = lite.Row
+          cur = con.cursor()
+          cur.execute("SELECT Count(*) FROM undeletion_votes WHERE postType='post' AND postId=? AND active=1", (self.id, ))
+          con.commit()
+          return cur.fetchone()[0]
+        except lite.Error as e:
+          return 0
+        finally:
+          if con:
+              con.close()
 
     def customflag(self, msg, who):
         try:
@@ -1262,6 +1529,10 @@ class Forum:
     def getDetail(self, d):
         return self.__data[d]
 
+    def getCourse(self):
+        if self.id != 0:
+            return mcourses.Courses(self.id)
+
     def getTitle(self):
         return self.getDetail("name")
 
@@ -1282,29 +1553,27 @@ class Forum:
             con = lite.connect('databases/forum.db')
             con.row_factory = lite.Row
             cur = con.cursor()
+
+            sort_sql = "ORDER BY deleted ASC, last_activity_date DESC, creation_date DESC, id DESC"
+            if sort == "latest":
+                sort_sql = "ORDER BY deleted ASC, creation_date DESC, id DESC"
+            elif sort == "score":
+                sort_sql = "ORDER BY deleted ASC, score DESC, id DESC"
+
             if tagged:
                 if q:
                     q = "%"+q+"%"
-                    cur.execute("SELECT articles.id FROM articles, forum_tag_associations WHERE articles.id=forum_tag_associations.post_id AND forum_tag_associations.tag_id=? AND forumID=? AND (content LIKE ? OR title LIKE ?) AND  ORDER BY pinned DESC, score DESC, id DESC", (tagged.id, self.id, q, q))
+                    cur.execute("SELECT articles.id FROM articles, forum_tag_associations WHERE articles.id=forum_tag_associations.post_id AND forum_tag_associations.tag_id=? AND forumID=? AND (content LIKE ? OR title LIKE ?) " + sort_sql, (tagged.id, self.id, q, q))
                 else:
-                    cur.execute("SELECT articles.id FROM articles, forum_tag_associations WHERE articles.id=forum_tag_associations.post_id AND forum_tag_associations.tag_id=? AND forumID=? ORDER BY pinned DESC, score DESC, id DESC", (tagged.id,self.id))
+                    cur.execute("SELECT articles.id FROM articles, forum_tag_associations WHERE articles.id=forum_tag_associations.post_id AND forum_tag_associations.tag_id=? AND forumID=? " + sort_sql, (tagged.id,self.id))
             else:
                 if q:
                     q = "%"+q+"%"
-                    cur.execute("SELECT id FROM articles WHERE forumID=? AND (content LIKE ? OR title LIKE ?) ORDER BY pinned DESC, score DESC, id DESC", (self.id, q, q))
+                    cur.execute("SELECT id FROM articles WHERE forumID=? AND (content LIKE ? OR title LIKE ?) " + sort_sql, (self.id, q, q))
                 else:
-                    cur.execute("SELECT id FROM articles WHERE forumID=? ORDER BY pinned DESC, score DESC, id DESC", (self.id, ))
+                    cur.execute("SELECT id FROM articles WHERE forumID=? " + sort_sql, (self.id, ))
             data = cur.fetchall()
-            l = list(map(lambda x:Article(x[0]), data))
-            if sort != False:
-                if sort == "active":
-                    l = sorted(l, key=lambda x: x.getDetail("order"), reverse=True)
-                elif sort == "latest":
-                    l = sorted(l, key=lambda x: x.id, reverse=True)
-                elif sort == "score":
-                    l = sorted(l, key=lambda x: x.getDetail("score"), reverse=True)
-                l = sorted(l, key=lambda x: x.getDetail("deleted"))
-            return l
+            return list(map(lambda x:Article(x[0]), data))
         except lite.Error as e:
             print e
             return []
@@ -1330,6 +1599,30 @@ class Forum:
             announcements += ForumAnnouncement.byForum(d[0])
 
         return announcements
+
+    def getClosureReasons(self, level=None):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+
+            cur.execute("SELECT * FROM closure_reasons WHERE active=1 AND parent IS ?", (level, ))
+            data = cur.fetchall()
+            data = map(lambda x:dict(x), data)
+            final_data = []
+            for d in data:
+                if d["not_in_global_forum"]==1 and self.id == 0:
+                    continue
+                elif d["not_in_course_forum"]==1 and self.id != 0:
+                    continue
+                d["description"] = cplaceholder.parseForForum(d["description"], self)
+                final_data.append(d)
+            return final_data
+        except lite.Error as e:
+            return []
+        finally:
+            if con:
+                con.close()
 
     def getInfo(self):
         if self.id != 0:
@@ -1412,7 +1705,7 @@ class ForumComment:
 
     def getCreationTime(self):
         t = self.getDetail("creation_time")
-        return [t, ctimes.stamp2german(t), ctimes.stamp2relative(t)]
+        return [t, ctimes.stamp2german(t), ctimes.stamp2shortrelative(t)]
 
     def getAuthor(self):
         return muser.User.safe(self.getDetail("comment_author"))
@@ -1422,6 +1715,43 @@ class ForumComment:
 
     def getDeletedBy(self):
         return muser.User.safe(self.getDetail("deletedby"))
+
+    def hasVote(self, user, type=None, validated_only=True):
+        try:
+            con = lite.connect('databases/forum.db')
+            cur = con.cursor()
+            if not type:
+                if validated_only:
+                    cur.execute("SELECT Count(*) FROM comment_action WHERE comment_id=? AND user_id=?", (self.id, user))
+                else:
+                    cur.execute("SELECT Count(*) FROM comment_action WHERE comment_id=? AND user_id=? AND validated = 1", (self.id, user))
+            else:
+                if validated_only:
+                    cur.execute("SELECT Count(*) FROM comment_action WHERE comment_id=? AND user_id=? AND action=?", (self.id, user, type))
+                else:
+                    cur.execute("SELECT Count(*) FROM comment_action WHERE comment_id=? AND user_id=? AND validated = 1 AND action=?", (self.id, user, type))
+
+            data = cur.fetchone()
+            return data[0] != 0
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def addVote(self, user, type, comment=None):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("INSERT INTO comment_action (comment_id, user_id, action, comment, validated) VALUES (?, ?, ?, ?, 0)", (self.id, user, type, comment))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
 
     def getInfo(self):
         try:

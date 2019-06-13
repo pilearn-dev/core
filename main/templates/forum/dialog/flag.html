@@ -1,0 +1,115 @@
+<div class="js--flag-home">
+  <h3>{{ "Frage" if type == "post" else "Antwort" }} melden</h3>
+  <p class="p-lead">Welches Problem hast du mit dieser {{ "Frage" if type == "post" else "Antwort" }} festgestellt, dass du melden möchtest?</p>
+  <div class="_toollist">
+    {% if not post.isDeleted() and not post.isFrozen() %}
+    <label class="_toollist-item" for="flag_dialog-spam">
+      <input type="radio" class="form-radio" id="flag_dialog-spam" name="flag_dialog" value="spam">
+      <div class="_toollist-data">
+        <h4>Werbung</h4>
+        <p class="fs-base1">Dieser Beitrag dient nur der Bewerbung eines Produkts/einer Firma/einer Webseite o.ä. oder es wird nicht im Beitrag darauf hingewiesen, dass ein Produkt/eine Firma/eine Webseite o.ä. vom Autor dieses Beitrags ist.</p>
+      </div>
+    </label>
+    <label class="_toollist-item" for="flag_dialog-abuse">
+      <input type="radio" class="form-radio" id="flag_dialog-abuse" name="flag_dialog" value="abuse">
+      <div class="_toollist-data">
+        <h4>Beleidigende/Missbräuchliche Inhalte</h4>
+        <p class="fs-base1">Dieser Beitrag enthält Beleidigungen, ruft zu Gewalt oder Hass auf, verletzt auf eine sonstige Art und Weise unseren Code of Conduct oder wird zum Missbrauch des &pi;-Learn Systems verwendet.</p>
+      </div>
+    </label>
+    {% if type == "post" and not post.isClosed() %}
+    <label class="_toollist-item" for="flag_dialog-close">
+      <input type="radio" class="form-radio" id="flag_dialog-close" name="flag_dialog" value="close">
+      <div class="_toollist-data">
+        <h4>Frage soll geschlossen werden</h4>
+        <p class="fs-base1">Diese Frage wurde bereits beantwortet, ist off-topic, zu allgemein, unklar oder nicht konstruktiv und soll geschlossen werden.</p>
+      </div>
+    </label>
+    {% endif %}
+    {% if type == "answer" %}
+    <label class="_toollist-item" for="flag_dialog-naa">
+      <input type="radio" class="form-radio" id="flag_dialog-naa" name="flag_dialog" value="naa">
+      <div class="_toollist-data">
+        <h4>Beitrag beantwortet Frage nicht</h4>
+        <p class="fs-base1">Dieser Beitrag versucht nicht einmal die Frage zu beantworten. Er sollte in einen Kommentar oder eine Bearbeitung umgewandelt oder ganz gelöscht werden.</p>
+      </div>
+    </label>
+    {% endif %}
+    {% endif %}
+    <label class="_toollist-item" for="flag_dialog-custom">
+      <input type="radio" class="form-radio" id="flag_dialog-custom" name="flag_dialog" value="custom">
+      <div class="_toollist-data">
+        <h4>Anderes</h4>
+        <p class="fs-base1">Du hast ein Problem mit diesem Beitrag festgestellt, das nicht durch die anderen Meldungstypen gedeckt wird.</p>
+      </div>
+    </label>
+  </div>
+  <button class="push-right _btn _btn--primary js--flagsubmit-home">Auswählen</
+  button>
+</div>
+<div class="js--flag-custom d-n">
+  <h3>{{ "Frage" if type == "post" else "Antwort" }} melden</h3>
+  <p class="p-lead">Du hast ein Problem mit diesem Beitrag festgestellt, das nicht durch die anderen Meldungstypen gedeckt wird.</p>
+  <p>Tipp: Füge Beispiele (durch Links) hinzu, so dass die Moderatoren deine Erläuterungen nachvollziehen können.</p>
+  <textarea class="form js--flag-comment"></textarea>
+  <button class="push-right _btn _btn--primary js--flagsubmit-custom">Melden</
+  button>
+  <button class="push-right _btn _btn--primary _btn-on-light js--flagreturn-custom">Zurück</
+  button>
+</div>
+
+<script>
+  $(".js--flagsubmit-home").click(function() {
+  decision = $("[name='flag_dialog']:checked").val();
+
+   if(decision == "custom") {
+      $(".js--flag-home").addClass("d-n");
+      $(".js--flag-custom").removeClass("d-n");
+    } else if (!decision) {
+      PiJS.warnbox.error("Bitte wähle einen Grund für deine Meldung aus.", $(".js--flagsubmit-home").parent());
+    } else if(decision == "close") {
+      $(".js--flagsubmit-home").parent().parent().remove();
+      PiJS.dialog.fromURL("/forum/{{ type }}-{{ post.id }}/dialog?type=close", false)
+    } else {
+      $.ajax({
+        method: "POST",
+        url: "/forum/{{ post.getDetail('forumID') }}/{{ type }}-{{ post.id }}/flag",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({
+          "flag-type": decision,
+          "comment": ""
+        }),
+        success: function( result ) {
+          $(".js--flagsubmit-home").parent().parent().remove();
+          PiJS.warnbox.success("Deine Meldung wurde entgegengenommen.", $("[data-dialog='flag' data-dialog-post='{{ type }}-{{ post.id }}'").parent());
+        },
+        error: function() {
+          PiJS.warnbox.error("Ein Fehler ist aufgetreten.", $(".js--flagsubmit-home").parent());
+        }
+      });
+    }
+  })
+
+  $(".js--flagreturn-custom").click(function() {
+    $(".js--flag-custom").addClass("d-n");
+    $(".js--flag-home").removeClass("d-n");
+  })
+  $(".js--flagsubmit-custom").click(function() {
+    $.ajax({
+      method: "POST",
+      url: "/forum/{{ post.getDetail('forumID') }}/{{ type }}-{{ post.id }}/flag",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        "flag-type": "custom",
+        "comment": $(".js--flag-comment").val()
+      }),
+      success: function( result ) {
+        $(".js--flagsubmit-home").parent().parent().remove();
+        PiJS.warnbox.success("Deine Meldung wurde entgegengenommen.", $("[data-dialog='flag' data-dialog-post='{{ type }}-{{ post.id }}'").parent());
+      },
+      error: function() {
+        PiJS.warnbox.error("Ein Fehler ist aufgetreten.", $(".js--flagsubmit-home").parent());
+      }
+    });
+  })
+</script>

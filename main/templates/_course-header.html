@@ -1,7 +1,7 @@
 {% macro forum_header (forum, current_page) %}
-<div class="_headbar-course" id="course-bar">
+<div class="_headbar-course{% if forum.id != 0 and forum.getCourse().getDetail("state") == 0 %} -under-development{% endif %}" id="course-bar">
   {% if forum.id == 0 %}
-    <div class="_headbar-course-name">globales Forum</div>
+    <div class="_headbar-course-name anchor-black"><a href="/f/0">globales Forum</a></div>
     <div class="_headbar-course-byline">
       für alle Fragen zu &pi;-Learn selber und für Fehlermeldungen oder Verbesserungsideen
     </div>

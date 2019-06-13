@@ -4,7 +4,7 @@
 {{ forum_header(forum, "forum") }}
 {% set articles = forum.getArticles(search, request.values.get("sort", "active"), tagged=tagged) %}
 <div class="grid">
-  <div class="column9__lg column12">
+  <div class="column8__lg column12">
     {% if articles|length != 0 %}
 
     {% if user.isLoggedIn() and user.isEnabled() %}
@@ -97,10 +97,31 @@
     {% endif %}
 
   </div>
-  <div class="column3__lg column12 p2">
+  <div class="column4__lg column12 p2">
     {% if user.isLoggedIn() and user.isEnabled() and articles|length != 0 %}
     <a href="/f/{{ forum.id }}/new" class="hide__md hide__sm _btn _btn--primary _btn-lg push-right">Frage stellen</a>
     <div class="push-reset"></div>
+    {% endif %}
+
+    {% set announcements = ForumAnnouncement.byForum(forum.id) %}
+    {% if announcements|length > 0 %}
+    <div class="_card">
+      <div class="_card-title _card-subtitle">Ankündigungen</div>
+      <div class="_card-content _card-content-direct">
+      <div class="_list _list-unbordered">
+      {% for a in announcements %}
+      <a class="_list-item fs-base1 _list-item-keepcolor" href="{{ a.getLink() }}">
+          {% if a.getEnd() %}
+            <span class="d-b col-dark-dd">{{ a.getStart()[1] }} - {{ a.getEnd()[1] }}</span>
+          {% else %}
+            <span class="d-b col-dark-d">{{ a.getStart()[1] }}</span>
+          {% endif %}
+          <span class="d-b mb1 fs-base2">{{ a.getTitle() }}</span>
+      </a>
+      {% endfor %}
+      </div>
+      </div>
+      </div>
     {% endif %}
 
     <div class="_card">

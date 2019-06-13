@@ -29,6 +29,7 @@ var PiJS = {
       if(bd) dialog.addClass("_dialog-backdrop");
       dialog.append($("<a href='#!' class='_xbtn _dialog-xbtn'>&times</a>").click(function() { dialog.remove() }));
       dialog.append($(html));
+      dialog.css("top", (3*15 + window.scrollY)+"px");
       $("body").append(dialog);
     },
     fromURL: function(url, bd) {
@@ -39,6 +40,28 @@ var PiJS = {
           PiJS.dialog._generate(result, bd);
         }
       });
+    }
+  },
+  warnbox: {
+    _generate: function(cls, msg, parent) {
+      parent = parent || false;
+      dialog = $("<div class='_warnbox _warnbox-"+cls+" _warnbox-xed'>");
+      if(parent) dialog.addClass("mt2 ml2");
+      dialog.append($("<p>").text(msg));
+      dialog.append($("<button class='_warnbox-xed'>&times;</button>").click(function() { dialog.remove() }));
+      (parent || $("body")).append(dialog);
+    },
+    error: function(msg, parent) {
+      PiJS.warnbox._generate("danger", msg, parent)
+    },
+    warning: function(msg, parent) {
+      PiJS.warnbox._generate("warning", msg, parent)
+    },
+    success: function(msg, parent) {
+      PiJS.warnbox._generate("success", msg, parent)
+    },
+    info: function(msg, parent) {
+      PiJS.warnbox._generate("info", msg, parent)
     }
   }
 }
