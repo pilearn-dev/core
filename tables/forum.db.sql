@@ -15,8 +15,13 @@ CREATE TABLE answers (
     frozenMessage,
 
     deleted TINYINT,
+    deletionReason VARCHAR(15),
 
-    moderatorNotice TEXT
+    moderatorNotice TEXT,
+
+    creation_date INT,
+    last_edit_date INT,
+    last_editor INT
 )
 ;CREATE TABLE answer_revisions (
     id INTEGER PRIMARY KEY,
@@ -27,7 +32,8 @@ CREATE TABLE answers (
     new_content TEXT,
     review_id INT,
     comment VARCHAR(250),
-    type VARCHAR(20)
+    type VARCHAR(20),
+    timestamp INT
 )
 ;CREATE TABLE closure_queue (id INTEGER PRIMARY KEY, item_id INT, state TINYINT, result INT)
 
@@ -83,7 +89,12 @@ timestamp INT)
     protected TINYINT,
     protectionBy INT,
 
-    moderatorNotice TEXT
+    moderatorNotice TEXT,
+
+    creation_date INT,
+    last_edit_date INT,
+    last_activity_date INT,
+    last_editor INT
 )
 
 ;CREATE TABLE score_votes (id INTEGER PRIMARY KEY, user_id INT, direction TINYINT, reputation TINYINT, target_type VARCHAR(20), target_id INT, nullified TINYINT)
@@ -148,4 +159,37 @@ INSERT INTO forum_tags (forum_id, name, excerpt, deprecation_notice, redirects_t
 CREATE TABLE forum_tag_associations (
   post_id INTEGER,
   tag_id INTEGER
-)
+);
+CREATE TABLE closure_reasons (id INTEGER PRIMARY KEY, name VARCHAR(40), ui_name VARCHAR(40), description TEXT(300), requires_post TINYINT, requires_subreason TINYINT, active TINYINT, not_in_global_forum TINYINT, not_in_course_forum TINYINT, parent INT);
+INSERT INTO closure_reasons VALUES
+(1, "Duplikat", "bereits gefragt und beantwortet", "Andere hatten dieses Problem auch und fanden bereits eine Antwort", 1, 0, 1, 0, 0, NULL),
+(2, "Off Topic", "off-topic", "Dieser Beitrag passt nicht in das ${forum_name}, da ...", 0, 1, 1, 0, 0, NULL),
+(3, "Unklar", "unklar", "Es ist nicht klar, was in diesem Beitrag gefragt wird, wie eine Antwort auszusehen hat oder es fehlen kritische Details, die diese Frage nicht beantwortbar machen.", 0, 0, 1, 0, 0, NULL),
+(4, "Zu Allgemein", "zu allgemein", "Dieser Beitrag besteht aus mehreren Fragen, hat zu viele mögliche, ununterscheidbar korrekte Antworten oder fordert übertrieben lange Antworten.", 0, 0, 1, 0, 0, NULL),
+(5, "Nicht Konstruktiv", "nicht konstruktiv", "Diese Frage kann nur in einer Weise beantwortet werden, die für niemanden wirklich vorteilhaft ist. Es ist nicht möglich, durch eine Antwort auf diese Frage etwas neues zu lernen, außer die Lösung für das spezifische Problem des Fragestellenden", 0, 0, 1, 0, 0, NULL),
+(101, "", "off-topic", "Fragen zu Inhalten aus Kursen, Meldungen zu Fehlern in Kursen und Verbesserungsideen zu Kursen gehören nicht in das globale Forum, sondern in das jeweilige Kursforum.", 0, 0, 1, 1, 0, 2),
+(102, "", "off-topic", "Support-Fragen, Fehlermeldungen oder Verbesserungsideen zur π-Learn-Software sowie Diskussionen zu Community-Richtlinien gehören nicht in ein Kursforum, sondern in das globale Forum.", 0, 0, 1, 0, 1, 2),
+(103, "", "off-topic", "Diese Frage passt nicht in das ${forum_name}, in dem Rahmen, der im Hilfezentrum beschrieben wird.", 0, 0, 0, 0, 1, 2);
+CREATE TABLE deletion_votes (
+  postType VARCHAR(20),
+  postId INT,
+  voteOwner INT,
+  voteCastDate INT,
+  active TINYINT
+);
+
+CREATE TABLE post_notices (
+  id INTEGER PRIMARY KEY,
+  name VARCHAR(50),
+  body TEXT(500),
+  active TINYINT,
+  use_for_lock TINYINT,
+  use_for_general TINYINT
+);
+INSERT INTO post_notices VALUES
+(1, "Konflikte über Inhalt", "<p>Dieser Beitrag wurde eingefroren, bis alle Streitigkeiten über den Inhalt beendet sind. Nutze das <a href='/f/0'>globale Forum</a> für alle Diskussionen.</p>", 1, 1, 0),
+(2, "Zu viele Kommentare", "<p>Dieser Beitrag wurde eingefroren, da er eine hohe Anzahl an Kommentaren angezogen hat, die entfernt werden mussten. Nutze das <a href='/f/0'>globale Forum</a> für Diskussionen über den Inhalt eines Beitrags.</p>", 1, 1, 0),
+(3, "Historische Relevanz", "<p>Dieser Beitrag hat historische Bedeutung aufgrund seines Alters und seiner Verbreitung, stellt aber <strong>kein gutes Beispiel für einen Beitrag in diesem Forum</strong> mehr dar und sollte keinenfalls als Anlass genommen werden, einen ähnlichen Beitrag zu posten.</p><p>Dieser Beitrag und seine Antworten wurden in der Zeit stehen gelassen und können nicht beeinflusst werden.</p>", 1, 1, 0),
+(11, "Keine Antwort", "<p>Wir erwarten, dass Antworten bestmöglich versuchen, das konkrete Problem des Fragestellers zu lösen.</p><p><strong>Antworten, bei denen <em>kein Lösungsansatz erkennbar</em> ist, werden gelöscht.</strong></p>", 1, 0, 1),
+(12, "Belege erforderlich", "<p>Bitte belege deine Antwort <strong>mit Zitaten, Quellen und anderen, anerkannten und nachvollziehbaren Materialien</strong>.</p><p>Antworten, die nicht hinreichend belegt werden, sind nicht hilfreich für andere Benutzer und können entfernt werden.</p>", 1, 0, 1),
+(13, "Aktuelles Ereignis", "<p><strong>Dieser Beitrag betrifft ein aktuelles Ereignis, zu dem sich die Kenntnislage <em>schnell und häufig ändern</em> kann.</strong></p><p>Daher ist es von besonderer Bedeutung, sowohl Verweise zu <em>offizielle Quellen</em> anzugeben, als auch <em>die aktuelle Fassung</em> mit hinreichend genauen Zeitangaben zu zitieren.</p>", 1, 0, 1)
