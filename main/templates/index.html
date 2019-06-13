@@ -17,7 +17,7 @@
     {% else %}
       <h1>Willkommen {{ user.getHTMLName()|safe }}!</h1>
       {% if delta > 0 or notificationCount != 0 %}
-      <p>Du hast {% if notificationCount!=0 %}<span class="_badge _badge-s-danger">{{ notificationCount }}</span> neue Nachricht{{ "en" if notificationCount != 1 }}{% endif %}{% if delta > 0 and notificationCount != 0 %} und {% endif %}{% if delta != 0 %}<span class="_badge _badge-s-success">+{{ delta }}</span> neue Reputation.{% endif %}.</p>
+      <p>Du hast {% if notificationCount!=0 %}<span class="_badge _badge-s-danger">{{ notificationCount }}</span> neue Nachricht{{ "en" if notificationCount != 1 }}{% endif %}{% if delta > 0 and notificationCount != 0 %} und {% endif %}{% if delta > 0 %}<span class="_badge _badge-s-success">+{{ delta }}</span> neue Reputation.{% endif %}.</p>
       {% endif %}
       <p>Diese Kurse könnten dich vielleicht interessieren:</p>
       <div class="_list">
