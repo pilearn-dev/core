@@ -410,6 +410,10 @@ class Answer:
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM post_notices WHERE id=?", (notice, ))
+            n = cur.fetchone()
+            if n:
+                return n["body"]
+            return notice
         except lite.Error as e:
             return notice
         finally:
