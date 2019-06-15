@@ -576,23 +576,45 @@ def forum_answer_edit(forum_id, answer_id, forum_label=None):
         if mforum.Answer.exists(forum_id, answer_id):
             cuser = muser.getCurrentUser()
             answer = mforum.Answer(answer_id)
+            article = answer.getArticle()
             forum = mforum.Forum.from_id(forum_id)
             if not answer.mayBeSeen(cuser):
                 abort(404)
-            form = dict(request.form)
-            if form == {}:
-                return render_template("forum/edit-answer.html", title="Beitrag bearbeiten", thispage="courses" if forum_id != 0 else "forum", forum=forum, answer=answer)
-            else:
-                if cuser.may("forum_reviewEdits") or cuser.id == answer.getAuthor().id:
-                    content = answer.getContent()
-                    comment = "Beitrag wurde von **[" + cuser.getDetail("name") + "](" + str(cuser.id) + ")** bearbeitet."
-                    if "comment" in form.keys():
-                        comment = request.form["comment"]
-                    if "content" in form.keys():
-                        content = request.form["content"]
-                        answer.setDetail("content", request.form["content"])
-                    answer.addRevision(content, cuser, comment)
-                return redirect(url_for("forum_view", id=answer.getDetail("articleID"), forum_id=forum_id))
+            if request.method == "GET":
+                return render_template("forum/edit-answer.html", title="Antwort bearbeiten", thispage="courses" if forum_id != 0 else "forum", forum=forum, art=article, answer=answer)
+            elif request.method == "POST":
+                data = request.json
+                body = data["body"].strip()
+                comment = data["comment"].strip()
+                errors, warnings = _validateBody(body, cuser, forum.id)
+
+                if len(errors):
+                    return jsonify({
+                        "result": "error",
+                        "errors": errors,
+                        "warnings": warnings
+                    })
+                elif len(warnings) and request.values.get("ignore-warnings", 0) != "yes":
+                    return jsonify({
+                        "result": "warnings",
+                        "warnings": warnings
+                    })
+                else:
+
+                    if cuser.may("forum_reviewEdits") or cuser.id == article.getAuthor().id:
+
+                        answer.setDetail("content", body)
+
+                        answer.setDetail("last_edit_date", time.time())
+                        answer.setDetail("last_activity_date", time.time())
+                        article.setDetail("last_activity_date", time.time())
+
+                        answer.addRevision(body, cuser, comment or "Beitrag bearbeitet")
+
+                        return jsonify({
+                            "result": "ok",
+                            "url": "/f/"+str(forum.id)+"/"+str(article.id)+"#answer-" + str(answer.id)
+                        })
     abort(404)
 
 def forum_answer_revision(forum_id, answer_id, forum_label=None):
@@ -1283,10 +1305,9 @@ def apply(app):
         )
     )
     app.route('/forum/<forum_id>/<forum_label>/answer/<answer_id>/mod', methods=["POST"])(forum_answer_mod)
-    app.route('/forum/<forum_id>/<forum_label>/answer/<answer_id>/edit', methods=["GET", "POST"])(forum_answer_edit)
+    app.route('/forum/<forum_id>/<forum_label>/answer/<answer_id>/edit', methods=["GET", "POST"])(app.route('/f/<forum_id>/answer/<answer_id>/edit', methods=["GET", "POST"])(forum_answer_edit))
     app.route('/forum/<forum_id>/<forum_label>/answer/<answer_id>/rollback/<rev>', methods=["GET", "POST"])(forum_answer_rollback)
     app.route('/forum/<forum_id>/<forum_label>/answer/<answer_id>/revisions', methods=["GET", "POST"])(forum_answer_revision)
-    app.route('/forum/<forum_id>/answer/<id>/accept', methods=["POST"])(forum_answer_accept)
     app.route('/forum/<post_id>/comments', methods=["GET"])(forum_view_comments)
     app.route('/forum/comments/<post_id>/add', methods=["POST"])(forum_comment)
     app.route('/forum/comments/<post_id>/purge', methods=["POST"])(forum_purge_comments)
