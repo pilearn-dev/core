@@ -1,139 +1,276 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
 
   {% if data.isDeleted() %}
-  <div class="deleted-section" style="padding: 3px;">
+  <div class="bg-danger-lll p1">
   {% endif %}
-  <nav class="coursenav">{% set ct=data.getCreationTime() %}
-    {% set topic = data.getTopic() %}
-    <h2><i>Vorschlag:</i> {{ data.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
-    <p><b>Kursidee vorgeschlagen <span title="{{ ct[1] }}">{{ ct[2] }}</span> von <a href="/u/{{ data.getDetail('proposer') }}">{{ data.getProposer().getDetail("realname") }}</a></b></p>
-  </nav>
-  <div class="post-warning">
+  <div class="_headbar-course" id="course-bar">{% set ct=data.getCreationTime() %}
+      {% set topic = data.getTopic() %}
+      <div class="_headbar-course-unit">
+        <a href="/topic/{{ topic.getName() }}" class="_badge _badge-unit">{{ topic.getTitle() }}</a>
+      </div>
+      <div class="_headbar-course-name">Vorschlag: {{ data.getTitle() }}</div>
+      <div class="_headbar-course-byline">
+        <p>Kursidee vorgeschlagen <span title="{{ ct[1] }}">{{ ct[2] }}</span> von <a href="/u/{{ data.getDetail('proposer') }}">{{ data.getProposer().getDetail("realname") }}</a></p>
+      </div>
+  </div>
+  <div class="mt1 _alert _alert--primary">
     {% if data.getDetail("courseid") != 0 %}{% set dc=data.getCourse() %}
     {% if dc.getDetail("state") == 1 %}
-    <p>Dieser Kursvorschlag war <span class="highlight-bold">erfolgreich</span> und führte zu einem entsprechenden Kurs:</p>
-    <a href="/c/{{ dc.id }}/info" style="font-size: 1.125em">{{ dc.getTitle() }}</a>
+    <p>Dieser Kursvorschlag war <strong>erfolgreich</strong> und führte zu einem entsprechenden Kurs:</p>
+    <a href="/c/{{ dc.id }}/info" class="fs-subheading">{{ dc.getTitle() }}</a>
     {% else %}
-    <p>Dieser Kursvorschlag war <span class="highlight-bold">erfolgreich</span> und <a href="/c/{{ dc.id }}/info" style="font-size: 1.125em">der entsprechende Kurs</a> befindet sich in der Entwicklung.</p>
+    <p>Dieser Kursvorschlag war <strong>erfolgreich</strong> und <a href="/c/{{ dc.id }}/info">der entsprechende Kurs</a> befindet sich in der Entwicklung.</p>
     {% endif %}
     {% endif %}
     {% if data.isDeleted() or data.isDeclined() %}
       {% if data.getDetail("delete_reason") == "spam" %}
-        <p>Dieser Kursvorschlag wurde <span class="highlight-bold">gelöscht</span>, da er nur zur Bewerbung eines Produkts angelegt wurde.</p>
+        <p>Dieser Kursvorschlag wurde <strong>gelöscht</strong>, da er nur zur Bewerbung eines Produkts angelegt wurde.</p>
       {% elif data.getDetail("delete_reason") == "offensive" %}
-        <p>Dieser Kursvorschlag wurde <span class="highlight-bold">gelöscht</span>, da er beleidigende Inhalt enthält.</p>
+        <p>Dieser Kursvorschlag wurde <strong>gelöscht</strong>, da er beleidigende Inhalt enthält.</p>
       {% elif data.getDetail("delete_reason") == "no-example" %}
-        <p>Dieser Kursvorschlag wurde <span class="highlight-bold">gelöscht</span>, da der erstellte Kurs kein gutes Beispiel für einen Kurs darstellt.</p>
+        <p>Dieser Kursvorschlag wurde <strong>gelöscht</strong>, da der erstellte Kurs kein gutes Beispiel für einen Kurs darstellt.</p>
       {% elif data.getDetail("delete_reason") == "freeze" %}
-        <p>Dieser Kursvorschlag wurde <span class="highlight-bold">gelöscht</span>, um Konflikte aufzulösen.</p>
+        <p>Dieser Kursvorschlag wurde <strong>gelöscht</strong>, um Konflikte aufzulösen.</p>
       {% elif data.getDetail("delete_reason") == "rule-violation" %}
-        <p>Dieser Kursvorschlag wurde aufgrund von Regelverletzungen <span class="highlight-bold">gelöscht</span>.</p>
+        <p>Dieser Kursvorschlag wurde aufgrund von Regelverletzungen <strong>gelöscht</strong>.</p>
       {% endif %}
       {% if data.getDetail("decline_reason") == "not-supported" %}
-        <p>Dieser Kursvorschlag wurde <span class="highlight-bold">abgelehnt</span>, da er innerhalb von des von uns vorgesehenen Zeitraums nicht genug Unterstützung erhalten hat.</p>
+        <p>Dieser Kursvorschlag wurde <strong>abgelehnt</strong>, da er innerhalb von des von uns vorgesehenen Zeitraums nicht genug Unterstützung erhalten hat.</p>
       {% elif data.getDetail("decline_reason") == "too-complex" %}
-        <p>Dieser Kursvorschlag wurde <span class="highlight-bold">abgelehnt</span>, da das behandelte Thema zu komplex ist und nicht in einem einzelnen Kurs angesprochen werden kann.</p>
+        <p>Dieser Kursvorschlag wurde <strong>abgelehnt</strong>, da das behandelte Thema zu komplex ist und nicht in einem einzelnen Kurs angesprochen werden kann.</p>
       {% elif data.getDetail("decline_reason") == "duplicate-proposal" %}
-        <p>Dieser Kursvorschlag wurde <span class="highlight-bold">abgelehnt</span>, da es zu diesem Thema bereits einen Kursvorschlag gibt.</p>
+        <p>Dieser Kursvorschlag wurde <strong>abgelehnt</strong>, da es zu diesem Thema bereits einen Kursvorschlag gibt.</p>
       {% elif data.getDetail("decline_reason") == "duplicate-course" %}
-        <p>Dieser Kursvorschlag wurde <span class="highlight-bold">abgelehnt</span>, da es zu diesem Thema bereits einen Kurs gibt und eine Neuauflage nicht notwendig erscheint.</p>
+        <p>Dieser Kursvorschlag wurde <strong>abgelehnt</strong>, da es zu diesem Thema bereits einen Kurs gibt und eine Neuauflage nicht notwendig erscheint.</p>
       {% elif data.getDetail("decline_reason") == "wrong-topic" %}
-        <p>Dieser Kursvorschlag wurde <span class="highlight-bold">abgelehnt</span>, da der Vorschlag in das falsche Themengebiet eingereicht wurde. Da sich diese Information nicht ändern lässt, muss der Vorschlag erneut eingereicht werden.</p>
+        <p>Dieser Kursvorschlag wurde <strong>abgelehnt</strong>, da der Vorschlag in das falsche Themengebiet eingereicht wurde. Da sich diese Information nicht ändern lässt, muss der Vorschlag erneut eingereicht werden.</p>
       {% elif data.getDetail("decline_reason") == "rule-violation" %}
-        <p>Aufgrund wiederholter und/oder gravierender Regelverstöße im Umgang mit diesem Vorschlag sind wir nicht mehr daran interessiert diesen Kurs anzubieten und haben diesen Kursvorschlag <span class="highlight-bold">abgelehnt</span>.</p>
+        <p>Aufgrund wiederholter und/oder gravierender Regelverstöße im Umgang mit diesem Vorschlag sind wir nicht mehr daran interessiert diesen Kurs anzubieten und haben diesen Kursvorschlag <strong>abgelehnt</strong>.</p>
       {% endif %}
     {% elif data.getDetail("courseid") == 0 %}
     <p>Du hast eine Frage zu diesem Kursvorschlag? Nutze dafür das <a href="/f/0/new"><strong>globale Forum</strong></a>.</p>
     {% endif %}
   </div>
-  <div class="split-screen big">
-  <main>
+  <div class="grid">
+  <div class="column9 column12__sm">
    <p>{{ data.getShortdesc() }}</p>
-   <hr>
-   <h3>Wovon handelt der Kurs?</h3>
-   <div class="text">
+   <hr class="hr-original">
+   <h2>Wovon handelt der Kurs?</h2>
      {{ data.getDescription()|markdown }}
-   </div>
-   <h3>Was benötigt man zur Teilnahme?</h3>
-   <div class="text">
+   <h2>Was benötigt man zur Teilnahme?</h2>
      {{ data.getRequirements()|markdown }}
-   </div>
-  </main>
-  <aside style="padding: 4px;">
+  </div>
+  <div class="column3 column12__sm p2">
     {% if data.getDetail("courseid") == 0 %}
     {% if not data.isDeleted() and not data.isDeclined() %}
-    <progress max="100" min="0" value="{{ data.getPercScore() }}" class="big-sidebar-meter"></progress>
-    <div class="big-sidebar-num">{{ data.getPercScore() }}<span class="big-sidebar-num-max">%</span></div>
-    <div class="big-sidebar-num-label">an Teilnehmern gefunden</div>
+
     {% if not data.hasUserCommitment(user) %}
-    <h3>Würdest du an diesem Kurs teilnehmen?</h3>
+    <div class="_card">
+      <div class="_card-title">Würdest du an diesem Kurs teilnehmen?</div>
     {% if user.isEnabled() and user.isLoggedIn() %}
-    <p style="font-size: 0.8em;">Drücke auf "Ich werde teilnehmen", um zu versprechen, dass du später an diesem Kurs teilnehmen wirst. Um zu verhindern, dass Kurse vergeblich erstellt werden, muss eine bestimmte Anzahl von Benutzern versprechen, dass sie an diesem Kurs teilnehmen werden.</p>
-    <button class="warn-btn" onclick="$post('course/proposal/{{ data.id }}/commit', {}, function(){window.location.reload()})">Ich werde teilnehmen</button>
+      <div class="_card-content">
+        <p class="fs-caption">Drücke auf "Ich werde teilnehmen", um zu versprechen, dass du später an diesem Kurs teilnehmen wirst.</p>
+      </div>
+      <div class="_card-footer">
+        <button class="_btn _btn--primary _btn-lg" onclick="commit();">Ich werde teilnehmen</button>
+      </div>
+      <script>
+        function commit() {
+          $.ajax({
+            method: "POST",
+            url: "/course/proposal/{{ data.id }}/commit",
+            contentType: "application/json; charset=utf-8",
+            success: function( result ) {
+              window.location.reload();
+            },
+            error: function() {
+              alert("Ein Fehler ist aufgetreten. Bitte wende dich an den Support.");
+            }
+          });
+        }
+      </script>
     {% else %}
-    <p><a href="/login">Melde dich an</a>, um Kursvorschläge zu unterstützen.</p>
+      <div class="_card-content">
+        <p><a href="/login">Melde dich an</a>, um Kursvorschläge zu unterstützen.</p>
+      </div>
     {% endif %}
+    </div>
     {% else %}
-    <p>Vielen Dank, dass du diesen Kurs unterstützst.</p>
-    <button class="warn-btn" disabled>Ich werde teilnehmen</button>
+    <div class="_card">
+      <div class="_card-title _card-subtitle">Würdest du an diesem Kurs teilnehmen?</div>
+      <div class="_card-content">
+        <p>Vielen Dank, dass du diesen Kurs unterstützst.</p>
+      </div>
+      <div class="_card-footer">
+        <button class="_btn _btn--primary _btn-lg -active">Ich werde teilnehmen</button>
+      </div>
+    </div>
     {% endif %}
+
+    <div class="_progress">
+      <div class="_progress-card">
+        <div class="_progress-card-label">
+            <div class="_progress-card-heading">Teilnehmer gesucht</div>
+            Damit nur Kurse erstellt werden, für die auch Intersse vorhanden ist, erfordern wir, dass einige Benutzer ihre Teilnahme am Kurs versprechen, bevor er eingestellt wird.
+            <div class="_progress-bar _progress-bar-success _progress-bar-sm">
+                <div class="_progress-bar-slot" style="width: {{ data.getPercScore() }}%"></div>
+                <div class="_progress-bar-label">{{ data.getPercScore() }}%</div>
+            </div>
+        </div>
+    </div>
+    </div>
     {% else %}
     {% if data.isDeleted() %}
-    <div class="big-sidebar-num"><i class="fa fa-trash"></i></div>
-    <div class="big-sidebar-num-label">Kursvorschlag wurde gelöscht</div>
+    <div class="_card">
+      <div class="_card-title">Kurs nicht erfolgreich</div>
+      <div class="_card-content">
+        <p>Dieser Vorschlag war nicht erfolgreich und wurde gelöscht</p>
+      </div>
+    </div>
     {% else %}
-    <div class="big-sidebar-num"><i class="fa fa-times"></i></div>
-    <div class="big-sidebar-num-label">Kursvorschlag war leider nicht erfolgreich</div>
+    <div class="_card">
+      <div class="_card-title">Kurs nicht erfolgreich</div>
+      <div class="_card-content">
+        <p>Dieser Vorschlag war nicht erfolgreich und abgelehnt</p>
+      </div>
+    </div>
     {% endif %}
     {% endif %}
     {% else %}
-    <div class="big-sidebar-num"><i class="fa fa-check"></i></div>
-    <div class="big-sidebar-num-label">Kursvorschlag war erfolgreich</div>
+    <div class="_card">
+      <div class="_card-title">Kurs erfolgreich</div>
+      <div class="_card-content">
+        <p>Dieser Vorschlag war erfolgreich und resultiert in einem Kurs</p>
+      </div>
+    </div>
     {% endif %}
     {% if user.isMod() %}
-    <hr>
-    <div class="user-warning" style="font-size: 0.9em;">
-      <ul style="margin: 4px; padding-left: 15px;">
+    <div class="_card">
+      <div class="_card-title">&diams; Tools</div>
+      <div class="_card-content">
+        <ul>
         {% if not data.isDeleted() and data.getDetail("courseid") == 0 %}
         <li>Diesen Vorschlag <strong>ablehnen</strong>
           <ul>
-            <li><a href="#!" onclick="$post('course/proposal/{{ data.id }}/close', {'reason': 'not-supported'}, function(){window.location.reload()})">zu wenig Unterstützung</a></li>
-            <li><a href="#!" onclick="$post('course/proposal/{{ data.id }}/close', {'reason': 'too-complex'}, function(){window.location.reload()})">zu komplex</a></li>
-            <li><a href="#!" onclick="$post('course/proposal/{{ data.id }}/close', {'reason': 'duplicate-proposal'}, function(){window.location.reload()})">Duplikat (Vorschlag)</a></li>
-            <li><a href="#!" onclick="$post('course/proposal/{{ data.id }}/close', {'reason': 'duplicate-course'}, function(){window.location.reload()})">Duplikat (Kurs)</a></li>
-            <li><a href="#!" onclick="$post('course/proposal/{{ data.id }}/close', {'reason': 'wrong-topic'}, function(){window.location.reload()})">im falschen Thema</a></li>
-            <li><a href="#!" onclick="$post('course/proposal/{{ data.id }}/close', {'reason': 'rule-violation'}, function(){window.location.reload()})">regelwidrig</a></li>
+            <li><a href="#!" onclick="rejectForReason('not-supported')">zu wenig Unterstützung</a></li>
+            <li><a href="#!" onclick="rejectForReason('too-complex')">zu komplex</a></li>
+            <li><a href="#!" onclick="rejectForReason('duplicate-proposal')">Duplikat (Vorschlag)</a></li>
+            <li><a href="#!" onclick="rejectForReason('duplicate-course')">Duplikat (Kurs)</a></li>
+            <li><a href="#!" onclick="rejectForReason('wrong-topic')">im falschen Thema</a></li>
+            <li><a href="#!" onclick="rejectForReason('rule-violation')">regelwidrig</a></li>
           </ul>
         </li>
         {% endif %}
         {% if not data.isDeleted() and data.isDeclined() and data.getDetail("courseid") == 0 %}
-        <li>Diesen Vorschlag <a href="#!" onclick="$post('course/proposal/{{ data.id }}/unclose', {}, function(){window.location.reload()})"><strong>un-ablehnen</strong></a></li>
+        <li>Diesen Vorschlag <a href="#!" onclick="unreject();"><strong>un-ablehnen</strong></a></li>
         {% endif %}
         {% if not data.isDeleted() and not data.isDeclined() and data.getDetail('courseid') == 0 %}
         {% if user.isDev() or data.getPercScore() >= 95 %}
-        <li>Diesen Vorschlag annehmen und den Kurs <a href="#!" onclick="$post('course/proposal/{{ data.id }}/accept', {}, function(){window.location.reload()})"><strong>erstellen</strong></a></li>
+        <li>Diesen Vorschlag annehmen und den Kurs <a href="#!" onclick="approve()"><strong>erstellen</strong></a></li>
         {% endif %}
         {% endif %}
         <li>Diesen Vorschlag <strong>löschen</strong>
           <ul>
-            <li><a href="#!" onclick="$post('course/proposal/{{ data.id }}/delete', {'reason': 'spam'}, function(){window.location.reload()})">SPAM</a></li>
-            <li><a href="#!" onclick="$post('course/proposal/{{ data.id }}/delete', {'reason': 'offensive'}, function(){window.location.reload()})">Beleidigung</a></li>
-            <li><a href="#!" onclick="$post('course/proposal/{{ data.id }}/delete', {'reason': 'rule-violation'}, function(){window.location.reload()})">regelwidrig</a></li>
-            <li><a href="#!" onclick="$post('course/proposal/{{ data.id }}/delete', {'reason': 'no-example'}, function(){window.location.reload()})">kein gutes Beispiel</a></li>
-            <li><a href="#!" onclick="$post('course/proposal/{{ data.id }}/delete', {'reason': 'freeze'}, function(){window.location.reload()})">Konfliktauflösung</a></li>
+            <li><a href="#!" onclick="deleteForReason('spam');">SPAM</a></li>
+            <li><a href="#!" onclick="deleteForReason('offensive');">Beleidigung</a></li>
+            <li><a href="#!" onclick="deleteForReason('rule-violation');">regelwidrig</a></li>
+            <li><a href="#!" onclick="deleteForReason('no-example');">kein gutes Beispiel</a></li>
+            <li><a href="#!" onclick="deleteForReason('freeze');">Konfliktauflösung</a></li>
           </ul>
         </li>
         {% if data.isDeleted() %}
-        <li>Diesen Vorschlag <a href="#!" onclick="$post('course/proposal/{{ data.id }}/undelete', {}, function(){window.location.reload()})"><strong>un-löschen</strong></a></li>
+        <li>Diesen Vorschlag <a href="#!" onclick="undelete();"><strong>un-löschen</strong></a></li>
         {% endif %}
       </ul>
     </div>
+    </div>
     {% endif %}
-  </aside>
+  </div>
 </div>
 
 {% if data.isDeleted() %}
 </div>
 {% endif %}
+
+{% if user.isMod() %}
+<script>
+  function deleteForReason(r) {
+    $.ajax({
+      method: "POST",
+      url: "/course/proposal/{{ data.id }}/delete",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        "reason": r
+      }),
+      success: function( result ) {
+        window.location.reload();
+      },
+      error: function() {
+        alert("Ein Fehler ist aufgetreten. Bitte wende dich an den Support.");
+      }
+    });
+  }
+
+  function undelete() {
+    $.ajax({
+      method: "POST",
+      url: "/course/proposal/{{ data.id }}/undelete",
+      contentType: "application/json; charset=utf-8",
+      success: function( result ) {
+        window.location.reload();
+      },
+      error: function() {
+        alert("Ein Fehler ist aufgetreten. Bitte wende dich an den Support.");
+      }
+    });
+  }
+
+  function rejectForReason(r) {
+    $.ajax({
+      method: "POST",
+      url: "/course/proposal/{{ data.id }}/close",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        "reason": r
+      }),
+      success: function( result ) {
+        window.location.reload();
+      },
+      error: function() {
+        alert("Ein Fehler ist aufgetreten. Bitte wende dich an den Support.");
+      }
+    });
+  }
+
+  function unreject() {
+    $.ajax({
+      method: "POST",
+      url: "/course/proposal/{{ data.id }}/unclose",
+      contentType: "application/json; charset=utf-8",
+      success: function( result ) {
+        window.location.reload();
+      },
+      error: function() {
+        alert("Ein Fehler ist aufgetreten. Bitte wende dich an den Support.");
+      }
+    });
+  }
+
+  function approve() {
+    $.ajax({
+      method: "POST",
+      url: "/course/proposal/{{ data.id }}/accept",
+      contentType: "application/json; charset=utf-8",
+      success: function( result ) {
+        window.location.reload();
+      },
+      error: function() {
+        alert("Ein Fehler ist aufgetreten. Bitte wende dich an den Support.");
+      }
+    });
+  }
+</script>
+{% endif %}
+
 {% endblock %}
