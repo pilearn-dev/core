@@ -1,35 +1,25 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
- <nav class="coursenav">
-   <h2><i>Thema:</i> {{data.getTitle()}}</h2>
-   <p>{{ data.getExcerpt() }}</p>
-   <ul class="subnav">
-     <li class=""><a href="./info">Informationen</a></li>
-     <li class="active"><a href="#!">Kurse</a></li>
-     {% if user.isMod() %}
-       <li class=""><a href="./edit">Bearbeiten</a></li>
-     {% endif %}
-     <form action="/course/search" method="get"><li class="input"><input class="inline" placeholder="Kurse durchsuchen" name="title"><input name="topic" type="hidden" value="{{ data.id }}"><button><span class="fa fa-search"></span></button></li></form>
-   </ul>
- </nav>
- <h3>Kurse mit dem Thema <a href="#!" class="topic">{{data.getTitle()}}</a></h3>
- <div class="course-list">
-   {% for course in courses %}
-    <div class="course-list-item">
-       <div class="headline"><a href="/c/{{ course.id }}/info">{{ course.getTitle() }}</a></div>
-       <div class="shortdesc">
-          <p>{{ course.getShortdesc() }}</p>
-       </div>
-       <div class="action">
-         {% if course.getDetail("state") != 0 or course.getCourseRole(user) >=2 or user.isMod() %}
-           {% if user.isLoggedIn() and not course.isEnrolled(user) %}
-             <a href="/c/{{ course.id }}/enroll">Einschreiben</a>
-           {% else %}
-             <a href="/c/{{ course.id }}/start">Zum Kurs</a>
-           {% endif %}
-         {% endif %}
-       </div>
+<div class="_headbar-course{% if not data.isGiveable() %} -with-warnbar{% endif %}" id="course-bar">
+    <div class="_headbar-course-name">Thema: {{ data.getTitle() }}</div>
+    <div class="_headbar-course-byline">
+      {{ data.getExcerpt() }}
     </div>
+    {% if user.isMod() %}
+    <div class="_headbar-course-navigation">
+      <a href="/t/{{ data.getName() }}/edit" class="_btn">Thema bearbeiten</a>
+    </div>
+    {% endif %}
+</div>
+<div class="p2">
+  <h1 class="fs-subtitle">Kurse mit dem Thema {{data.getTitle()}}</h1>
+  <div class="_list">
+   {% for c in courses %}
+   <a class="_list-item fs-base1 _list-item-keepcolor" href="/c/{{ c.id }}">
+       <span class="d-b mb1 fs-base3">{{ c.getTitle() }}</span>
+       <span class="d-b col-black">{{ c.getShortdesc() }}</span>
+   </a>
    {% endfor %}
- </div>
+  </div>
+</div>
 {% endblock %}

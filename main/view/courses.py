@@ -321,30 +321,17 @@ def unit_new(course_id):
 def topic_index():
     return render_template('topic/index.html', title=u"Themen", thispage="course", topic=mcourses.Topic)
 
-def topic_info(name, id=None):
-    if not mcourses.Topic.exists(name):
-        abort(404)
-    topic = mcourses.Topic.from_name(name)
-    if topic.id != id:
-        return redirect(url_for("topic_info", name=name, id=topic.id))
-    return render_template('topic/info.html', title=topic.getTitle(), thispage="course", data=topic)
-
-def topic_courses(name, id=None):
+def topic_view(name):
     if not mcourses.Topic.exists(name):
         abort(404)
     topicCourseList=mcourses.Topic.getCourseList(name)
-    print(topicCourseList)
     topic = mcourses.Topic.from_name(name)
-    if topic.id != id:
-        return redirect(url_for("topic_courses", name=name, id=topic.id))
     return render_template('topic/courses.html', title=topic.getTitle()+u" – Kurse", thispage="course", courses=topicCourseList, data=topic)
 
-def topic_edit(name, id=None):
+def topic_edit(name):
     if not mcourses.Topic.exists(name):
         abort(404)
     topic = mcourses.Topic.from_name(name)
-    if topic.id != id:
-        return redirect(url_for("topic_edit", name=name, id=topic.id))
     cuser = muser.getCurrentUser()
     if not cuser.isMod():
         abort(404)
@@ -352,7 +339,6 @@ def topic_edit(name, id=None):
         return render_template('topic/edit.html', title=topic.getTitle()+u" – Bearbeiten", thispage="course", data=topic)
     else:
         data = request.json
-        print(data)
         topic.setDetail("title", data["title"])
         topic.setDetail("excerpt", data["excerpt"])
         topic.setDetail("description", data["description"])
@@ -403,7 +389,6 @@ def apply(app):
     app.route("/c/<int:course_id>/u/<int:unit_id>/submit", methods=["POST"])(app.route("/course/<int:course_id>/<course_label>/unit/<int:unit_id>/<unit_label>/submit", methods=["POST"])(unit_submit))
     app.route("/c/<int:course_id>/u/new", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/unit/new", methods=["GET", "POST"])(unit_new))
     app.route("/topics")(topic_index)
-    app.route("/t/<name>")(app.route("/t/<name>/info")(app.route("/topic/<int:id>/<name>/info")(topic_info)))
-    app.route("/t/<name>/c")(app.route("/t/<name>/courses")(app.route("/topic/<int:id>/<name>/courses")(topic_courses)))
-    app.route("/t/<name>/e", methods=["GET", "POST"])(app.route("/topic/<int:id>/<name>/edit", methods=["GET", "POST"])(topic_edit))
+    app.route("/t/<name>")(app.route("/topic/<name>")(topic_view))
+    app.route("/t/<name>/edit", methods=["GET", "POST"])(app.route("/topic/<name>/edit", methods=["GET", "POST"])(topic_edit))
     app.route("/c/<int:id>/unit_reorder", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/unit_reorder", methods=["GET", "POST"])(course_unit_reorder))
