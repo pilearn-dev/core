@@ -460,7 +460,7 @@ def forum_post_rollback(forum_id, post_id, rev, forum_label=None):
                 article.setDetail("title", rev["title"])
                 article.setDetail("tags", rev["tags"])
                 print(rev)
-                article.addRevision(rev["title"], rev["content"], rev["tags"], cuser, u"**Wiederherstellung einer früheren Version**: " + comment)
+                article.addRevision(rev["title"], rev["content"], rev["tags"], cuser, u"Wiederherstellung einer früheren Version: " + comment)
             return redirect(url_for("forum_view", id=post_id, forum_id=forum_id))
     abort(404)
 
@@ -663,7 +663,7 @@ def forum_answer_rollback(forum_id, answer_id, rev, forum_label=None):
                 abort(404)
             form = dict(request.form)
             try:
-                rev = answer.getRevision(rev)
+                rev = answer.getRevisionById(rev)
             except:
                 abort(404)
             if form == {}:
@@ -671,8 +671,8 @@ def forum_answer_rollback(forum_id, answer_id, rev, forum_label=None):
             else:
                 comment = request.form["comment"]
                 answer.setDetail("content", rev["content"])
-                answer.addRevision(rev["content"], cuser, "### Wiederherstellung von Version " + str(rev["revid"]) + ":\n\n" + comment)
-            return redirect(url_for("forum_view", id=article.id, forum_id=forum_id))
+                answer.addRevision(rev["content"], cuser, u"Wiederherstellung einer früheren Version: " + comment)
+            return redirect(url_for("forum_view", id=article.id, forum_id=forum_id) + "#answer-" + str(answer.id))
     abort(404)
 
 

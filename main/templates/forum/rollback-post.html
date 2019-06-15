@@ -1,56 +1,32 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-    <link rel="stylesheet" href="/static/css/simplemde.min.css">
-    <script src="/static/js/simplemde.min.js"></script>
-    <script src="/static/js/_tags.js"></script>
+{% from "_course-header.html" import forum_header %}
+{{ forum_header(forum, "forum") }}
 
-    <nav class="coursenav">
-      {% if forum.id == 0 %}
-          <h2>globales Forum</h2>
-          <p>für alle Fragen zu &pi;-Learn selber und für Fehlermeldungen oder Verbesserungsideen</p>
-      {% else %}
-        {% set topic = forum.getTopic() %}
-        <h2>{{ forum.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
-        {{ forum.getByLine()|markdown }}
-        <ul>
-          <li><a href="/c/{{ forum.id }}/info">Informationen</a></li>
-          <li><a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/start">Kursinhalte</a></li>
-          <li class="active"><a href="/f/{{ forum.id }}">Kursforum</a></li>
-        </ul>
-      {% endif %}
-    </nav>
+    <h1 class="ml2 fs-heading">Beitragsversion wiederherstellen</h1>
 
-    <h2>Beitragsversion wiederherstellen</h2>
-
-    <p>Du bist gerade dabei, diesen Beitrag auf eine vorherige Version zurückzusetzen.</p>
+    <p class="p-lead">Du bist gerade dabei, diesen Beitrag auf eine vorherige Version zurückzusetzen.</p>
 
     <form action="" method="post">
-        <label for="qtitle">
+        <label for="qtitle" class="form">
             Überschrift des Forumposts
         </label>
-        <input id="qtitle" value="{{ rev.title }}" disabled>
-        <label for>
+        <input id="qtitle" value="{{ rev.title }}" readonly class="form">
+        <label class="form">
             Inhalt des Forumposts
         </label>
-        <blockquote>
-          {{ rev.content|markdown }}
-        </blockquote>
-        <label for>
+        <div class="b1s b-dark-ll p2 f-mono" style="white-space: pre; overflow: auto; max-height: 600px;">{{ rev.content }}</div>
+        <label class="form">
             Tags des Forumposts
         </label>
         <div>
-            Tags:
             {% for tag in rev.tags %}
-                {% if tag in moderator_tags %}
-                    <span class='tag moderator-tag'>{{ tag }}</span>
-                {% else %}
-                    <span class='tag'>{{ tag }}</span>
-                {% endif %}
+              <span class='_badge _badge-tag'>{{ tag }}</span>
             {% endfor %}
         </div>
-        <label for="qcomment">Kommentar zur Wiederherstellung:</label>
-        <input id="qcomment" name="comment"></input>
-        <button type="submit" id="sbmbtn" class="warn-btn">Wiederherstellen</button>&nbsp;<a href="/f/{{ forum.id }}/{{ article.id }}">Abbrechen</a>
+        <label for="qcomment" class="form">Kommentar zur Wiederherstellung:</label>
+        <input id="qcomment" name="comment" class="form"></input>
+        <button type="submit" id="sbmbtn" class="_btn _btn--primary">Wiederherstellen</button>&nbsp;<a href="/f/{{ forum.id }}/{{ article.id }}" class="_btn _btn--primary _btn-on-light">Abbrechen</a>
     </form>
 
 

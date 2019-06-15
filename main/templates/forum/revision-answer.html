@@ -28,7 +28,7 @@
             <div class="_link-list">
               <a href="#revision-{{ rev.id }}">link</a>
               {% if rev.type != "static" %}
-              <a href="/forum/{{ forum.id }}/{{ forum.getLabel() }}/post/{{ post.id }}/rollback/{{ rev.id }}">wiederherstellen</a>
+              <a href="/forum/{{ forum.id }}/{{ forum.getLabel() }}/answer/{{ post.id }}/rollback/{{ rev.id }}">wiederherstellen</a>
               {% endif %}
             </div>
             <div class="push-reset"></div>
@@ -54,10 +54,10 @@
   <div class="_card-content hide" id="{{ rev.type }}-{{ rev.id }}">
     <div class="p3">
     {% if rev.revid == 1 %}
-      <div class="b1s b-dark-ll p2 f-mono" style="white-space: pre; overflow: auto; max-height: 600px;">{{ rev.content }}</div>
+      <div class="b1s b-dark-ll p2 f-mono" style="white-space: pre-wrap; overflow: auto; max-height: 600px;">{{ rev.content }}</div>
     {% else %}
       {% set diff = generate_diff(post.getRevision(rev.revid-1).content, rev.content) %}
-      <div class="b1s b-dark-ll p2 f-mono" style="white-space: pre; overflow: auto; max-height: 600px;">
+      <div class="b1s b-dark-ll p2 f-mono" style="white-space: pre-wrap; overflow: auto; max-height: 600px;">
         {%- for line in diff -%}{{ generate_diff_line(line) }}{{ line[1] }}</div>{%- endfor -%}
       </div>
     {% endif %}

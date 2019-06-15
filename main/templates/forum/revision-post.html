@@ -63,7 +63,7 @@
     <div class="p3">
     {% if rev.revid == 1 %}
       <div class="fs-title mb3">{{ rev.title }}</div>
-      <div class="b1s b-dark-ll p2 f-mono" style="white-space: pre; overflow: auto; max-height: 600px;">{{ rev.content }}</div>
+      <div class="b1s b-dark-ll p2 f-mono" style="white-space: pre-wrap; overflow: auto; max-height: 600px;">{{ rev.content }}</div>
       <div class="horizontal-list p1">
         {%- for line in rev.tags.split("|") -%}
         <div class="p1">
@@ -78,7 +78,7 @@
         <div class="fs-title mb3">{{ rev.title }}</div>
       {% endif %}
       {% set diff = generate_diff(post.getRevision(rev.revid-1).content, rev.content) %}
-      <div class="b1s b-dark-ll p2 f-mono" style="white-space: pre; overflow: auto; max-height: 600px;">
+      <div class="b1s b-dark-ll p2 f-mono" style="white-space: pre-wrap; overflow: auto; max-height: 600px;">
         {%- for line in diff -%}{{ generate_diff_line(line) }}{{ line[1] }}</div>{%- endfor -%}
       </div>
       {% set diff = generate_diff("\n".join(post.getRevision(rev.revid-1).tags.split("|")), "\n".join(rev.tags.split("|"))) %}

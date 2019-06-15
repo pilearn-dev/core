@@ -106,15 +106,13 @@ class Answer:
             con = lite.connect('databases/forum.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT * FROM answer_revisions WHERE forumID=? AND answerID=? AND id=?", (self.getDetail("forumID"), self.id, id))
+            cur.execute("SELECT * FROM answer_revisions WHERE answerID=? AND id=?", (self.id, id))
             data = cur.fetchone()
             data = {
                 "id": data["id"],
                 "type": data["type"],
                 "editor": muser.User.safe(data["editor"]),
-                "title": data["new_title"],
                 "content": data["new_content"],
-                "tags": data["new_tags"],
                 "comment": data["comment"],
                 "timestamp": data["timestamp"],
                 "relative_time": ctimes.stamp2shortrelative(data["timestamp"]),
