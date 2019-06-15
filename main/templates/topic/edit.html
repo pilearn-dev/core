@@ -22,7 +22,7 @@
 
 <script>
 document.getElementById("save").addEventListener("click", function() {
-    $post("topic/{{ data.id }}/{{ data.getName() }}/edit", {
+    $post("topic/{{ data.getName() }}/edit", {
         "title": document.getElementById("title").value,
         "excerpt": document.getElementById("excerpt").value,
         "description": document.getElementById("description").value,

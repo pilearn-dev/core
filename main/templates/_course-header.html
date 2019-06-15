@@ -9,7 +9,7 @@
     {% set topic = forum.getTopic() %}
     <div class="_headbar-course-name">{{ forum.getTitle() }}</div>
     <div class="_headbar-course-unit">
-      <a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="_badge _badge-unit">{{ topic.getTitle() }}</a>
+      <a href="/topic/{{ topic.getName() }}" class="_badge _badge-unit">{{ topic.getTitle() }}</a>
     </div>
     <div class="_headbar-course-byline">
       {{ (forum.getByLine()|markdown)[3:-4] }}
