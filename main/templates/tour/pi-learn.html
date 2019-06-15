@@ -1,290 +1,127 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-  <link rel="stylesheet" href="/static/css/tour.css?v={{ cssid }}">
-  <h1>Willkommen bei &pi;-Learn!</h1>
-  <p>Herzlich Willkommen bei &pi;-Learn. &pi;-Learn ist eine <em>Community-gesteuerte Open-Learning-Plattform</em>. Das bedeutet, dass &pi;-Learn eine Webseite ist, auf der die Communitymitglieder ihr Wissen in Form von Videos, Texten, Quizzen und Foren, strukturiert in <strong>Kurse</strong> und <strong>Themen</strong>, teilen können.</p>
-  <p>Dabei gibt es einige Kleinigkeiten zu beachten:</p>
-  <h2>Themen</h2>
-  <p><strong>Themen</strong> sind Kategorien für Kurse. Es gibt auf dieser Webseite verschiedene Themen:</p>
-  <ul>
-    {% for t in topic.getAll() %}
-    <li><a class="topic" href="/t/{{ t.getName() }}">{{ t.getTitle() }}</a> &ndash; {{ t.getExcerpt() }}</li>
-    {% endfor %}
-  </ul>
-  <h2>Kurse</h2>
-  <p><strong>Kurse</strong> werden von anderen Benutzern angeboten. Kurse bestehen aus Infotexten, Videos, Umfragen und Quizzen.</p>
-  <p>Eine Kursseite sieht zum Beispiel so aus:</p>
-  <div class="example hidden" onmouseover="this.classList.remove('hidden');">
-    <div class="element">
-      <nav class="coursenav">
-        <h2>Aufbau von Zellen <i><a href="#!" class="topic">Naturwissenschaften</a></i></h2>
-        <p>angeboten von <a href="#!">Wissen42</a></p>
-        <ul>
-          <li><a href="#!">Informationen</a></li>
-          <li class="active"><a href="#!">Kursinhalte</a></li>
-          <li><a href="#!">Kursforum</a></li>
-        </ul>
-      </nav>
-       <div class="split-screen">
-         <aside>
-           <h3>Alle Inhalte</h3>
-           <ol>
-             <li><a href="#!">Alle Zelltypen</a>
-               <ol>
-                 <li><a href="#!">Zellplasma</a></li>
-                 <li><a href="#!">Mitochondrien</a></li>
-                 <li><a href="#!">Zellkern</a></li>
-                 <li><a href="#!">Quiz</a></li>
-               </ol>
-             </li>
-             <li><a href="#!">Pflanzliche Zellen</a>
-               <ol>
-                 <li><a href="#!">Zellwand</a></li>
-                 <li><a href="#!">Chloroplasten</a></li>
-               </ol>
-             </li>
-           </ol>
-         </aside>
-         <main style="min-height: 0;">
-           <h2>Quiz: Alle Zelltypen</h2>
-           <p>Welche der folgenden Zelltypen enthält die DNA (Desoxyribonucleinsäure)?</p>
-           <label for="tour-qq-1-1"><input type="radio" id="tour-qq-1-1" value="1" name="tour-qq-1"> Zellplasma</label>
-           <label for="tour-qq-1-2"><input type="radio" id="tour-qq-1-2" value="2" name="tour-qq-1"> Mitochondrien</label>
-           <label for="tour-qq-1-3"><input type="radio" id="tour-qq-1-3" value="3" name="tour-qq-1"> Zellkern</label>
-           <p>Wie nennt man die RNA, die den Zellkern verlässt?</p>
-           <input id="tour-qq-2" placeholder="Bitte Antwort eingeben">
-           <button class="primary-btn big-btn">Absenden</button>
-         </main>
-       </div>
-     </div>
-  </div>
-  <p>Alle Kurse sind kostenlos, die meisten können sogar von unangemeldeten Benutzern besucht werden. Diese können dann allerdings nicht an Quizzen und anderen interaktiven Inhalten teilnehmen.</p>
-  <h2>Foren</h2>
-  <p>Zu jedem Kurs gibt es ein <strong>Kursforum</strong>. In diesem werden Fragen zu den Kursinhalten beantwortet und Feedback gegeben:</p>
-  <ul class="block a-go">
-    <li><em>Nachfragen</em> zu Kursinhalten</li>
-    <li><em>(Konstruktive) Kritik</em> am Kurs</li>
-    <li><em>Fehler</em> in den Kursseiten</li>
-  </ul>
-  <p>Weiterhin gibt es ein <strong>globales Forum</strong>. Dieses ist für Fragen zum &pi;-Learn System und zur Community:</p>
-  <ul class="block a-go">
-    <li><em>Fehlermeldungen</em> für das &pi;-Learn-System</li>
-    <li><em>Erweiterungs/<wbr>Verbesserungsideen</em> für das &pi;-Learn-System</li>
-    <li><em>Support-Fragen</em> für das &pi;-Learn-System</li>
-    <li><em>Richtlinien</em> für die Community</li>
-  </ul>
-  <p>Auf dieser Webseite sind die Foren besonders aufgebaut. So dienen die unterschiedlichen Beitragstypen jeweils einem bestimmten Ziel:</p>
-  <ul class="block">
-    <li>Bei <strong>Fragen</strong> sollte eine beantwortbare Problem-/Fragestellung erkennbar sein, die auch anderen weiterhelfen kann.</li>
-    <li><strong>Antworten</strong> sollen bestmöglich versuchen, das konkrete Problem der Frage zu lösen.</li>
-    <li><strong>Kommentare</strong> sind für Rückfragen und/oder Verbesserungsideen dar.</li>
-  </ul>
-  <p>Durch diese Reduktion auf das Wesentliche und durch die Tatsache, dass alle Forenbeiträge <strong>bewertet</strong> werden können, werden die relevanten Inhalte ganz oben angezeigt. Das sieht dann ungefähr so aus:</p>
-  <div class="example hidden" onmouseover="this.classList.remove('hidden');">
-    <div class="element">
-      <nav class="coursenav">
-        <h2>Aufbau von Zellen <i><a href="#!" class="topic">Naturwissenschaften</a></i></h2>
-        <p>angeboten von <a href="#!">Wissen42</a></p>
-        <ul>
-          <li><a href="#!">Informationen</a></li>
-          <li><a href="#!">Kursinhalte</a></li>
-          <li class="active"><a href="#!">Kursforum</a></li>
-        </ul>
-      </nav>
-      <h2>Was ist der Unterschied zwischen einer DNA und einer RNA?</h2>
-      <div class="forum-article-item">
-          <div class="left-area">
-              <div class='rate'>
-                  <a href='#!' class="active up-vote">&#9651;</a>
-                  <span>12</span>
-                  <a href='#!' class="down-vote">&#9661;</a>
-              </div>
-          </div>
-          <div class="right-area">
-              <p>Hallo, im Abschnitt <em>"Mitochondrien"</em> taucht der Begriff RNA auf. Davor wurde jedoch immer nur der Begriff DNA erwähnt. Eine kurze Google-Suche ergibt, das sich diese beiden Substanzen durch den Zucker unterscheiden. Gibt es noch andere Unterschiede (z.B. Funktion)?</p>
-          </div>
-          <div class="down-area">
-              <div class="alignment-right">
-                {{ user_card(user.from_id(1)) }}
-                <p class="tiny padded-text"><a href="#!">bearbeitet von <b>paul&pi;dev ⬢</b></a><br><span style="color: #666; font-style: italic;">bearbeitet gestern</span><br><span style="color: #666; font-style: italic;">erstellt heute</span></p>
-                <div style="flex-grow: 1; margin-top: 10px;">
-                  Tags: <span class='tag'>DNA</span> <span class='tag'>RNA</span> <span class='tag'>Proteinbiosynthese</span>
+<h1 class="ta-c fs-display2">Willkommen zu &pi;-Learn</h1>
+<p class="fs-subheading ta-c mt3 mb3">&pi;-Learn ist eine Community-gesteuerte Open Learning Plattform. Was bedeutet das? Finde es heraus!</p>
+<div class="mt8">
+    <h2><span class="i">Kurse &ndash; zu verschiedenen Themen</span></h2>
+    <div class="grid">
+        <div class="column12 column4__lg p3">
+            <img src="/static/img/tour/courses.svg" alt="">
+        </div>
+        <div class="column12 column8__lg p3">
+            <p>Jeder kann an kostenlosen Online-Kursen teilnehmen. Alle Kurse auf &pi;-Learn sind unter einer freien Lizenz verfügbar und können ohne Einschränkungen weiterverwendet werden.</p>
+            <p>Es gibt Kurse zu diesen Themengebieten auf &pi;-Learn:</p>
+            <ul>
+                {% for t in topic.getAll() %}
+                <li><a class="_badge _badge-unit" href="/t/{{ t.getName() }}">{{ t.getTitle() }}</a> &ndash; {{ t.getExcerpt() }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    <h2><span class="i">Jeder kann Inhalte einbringen</span></h2>
+    <div class="grid">
+        <div class="column12 column4__lg p3">
+            <img src="/static/img/tour/contents.svg" alt="">
+        </div>
+        <div class="column12 column8__lg p3">
+            <p>Jeder Benutzerin und jeder Benutzer kann Kurse vorschlage, erarbeiten und anbieten.</p>
+            <p>In den Kursforen kann man über Kursinhalte diskutieren.</p>
+            <p>Deine Inhalte können von anderen bearbeitet werden.</p>
+        </div>
+    </div>
+    <h2><span class="i">Die Community kontrolliert die Inhalte</span></h2>
+    <div class="grid">
+        <div class="column12 column4__lg p3">
+            <img src="/static/img/tour/community-review.svg" alt="">
+        </div>
+        <div class="column12 column8__lg p3">
+            <p>Alle Benutzer können die Inhalte auf &pi;-Learn bewerten und schädliche Inhalte melden oder zur Löschung vorschlagen.</p>
+            <p>So wird eine durchgängig hohe Qualität durchgesetzt.</p>
+            <p>Richtlinien dafür werden in einem <a href="#!">globalen Forum</a> entwickelt und dokumentiert.</p>
+        </div>
+    </div>
+    <h2><span class="i">Reputation &ndash; Vertrauen von der Community</span></h2>
+    <div class="grid">
+        <div class="column12 column4__lg p3">
+            <img src="/static/img/tour/reputation.svg" alt="">
+        </div>
+        <div class="column12 column8__lg p3">
+            <p>Durch die Bewertung der Inhalte zeigt die Community, wie sehr sie dir vertraut. Daraus errechnet sich eine Punktzahk &ndash; deine Reputation</p>
+            <p>Du erhältst Reputation, wenn ...</p>
+            <div class="_pin-group">
+                <div class="_pin-group-item _pin-group-centered">
+                    <span class="_pin _pin-green">+3</span>
+                    <p class="fs-caption col-dark-dd">dein Beitrag einen Upvote erhält</p>
                 </div>
-              </div>
-              <p class="tiny action-bar">
-                <a href="#!">Bearbeiten</a>
-                <a href="#!">Schließen</a>
-                <a href="#!">Melden</a>
-              </p>
-              <div class="comment-section">
-                <div class="comment" id="tour-com-1">
-                  <div class="comment-voting">
-                    <span class="comment-score">3</span>
-                    <a href="#!"><i class="fa fa-caret-up fa-lg"></i><!--&#9651;--></a><!-- .comment-vote-active -->
-                    <a href="#!" class="comment-flag"><i class="fa fa-flag"></i></a>
-                  </div>
-                  <div class="comment-entry">
-                    Es gibt zwei Arten von RNA (t-RNA und m-RNA), welche davon meinst du?
-                    <span class="comment-meta">
-                      <span>&mdash;</span>
-                      <a href="#tour-com-1" class="comment-date">vor drei Minuten</a>
-                      <span>von</span>
-                      <a href="#!" class="comment-owner">9hax ⬢</a>
-                    </span>
-                  </div>
+                <div class="_pin-group-item _pin-group-centered">
+                    <span class="_pin _pin-green">+1</span>
+                    <p class="fs-caption col-dark-dd">ein Benutzer deinem Kurs beitritt</p>
                 </div>
-                <div class="comment" id="tour-com-2">
-                  <div class="comment-voting">
-                    <span class="comment-score">1</span>
-                    <a href="#!"><i class="fa fa-caret-up fa-lg"></i><!--&#9651;--></a><!-- .comment-vote-active -->
-                    <a href="#!" class="comment-flag"><i class="fa fa-flag"></i></a>
-                  </div>
-                  <div class="comment-entry">
-                    @9hax: Ich weiß nicht was der Unterschied zwischen beiden Arten ist.
-                    <span class="comment-meta">
-                      <span>&mdash;</span>
-                      <a href="#tour-com-2" class="comment-date">vor einer Minute</a>
-                      <span>von</span>
-                      <a href="#!" class="comment-owner">paul&pi;dev ⬢</a>
-                    </span>
-                  </div>
+                <div class="_pin-group-item _pin-group-centered">
+                    <span class="_pin _pin-green">+5</span>
+                    <p class="fs-caption col-dark-dd">dein Kurs einen Upvote erhält</p>
                 </div>
-                <div class="comment" id="tour-com-3">
-                  <div class="comment-voting">
-                    <span class="comment-score">2</span>
-                    <a href="#!"><i class="fa fa-caret-up fa-lg"></i><!--&#9651;--></a><!-- .comment-vote-active -->
-                    <a href="#!" class="comment-flag"><i class="fa fa-flag"></i></a>
-                  </div>
-                  <div class="comment-entry">
-                    @paul O.k., siehe meine Antwort. Ich habe den Unterschied auch erklärt...
-                    <span class="comment-meta">
-                      <span>&mdash;</span>
-                      <a href="#tour-com-1" class="comment-date">vor wenigen Sekunden</a>
-                      <span>von</span>
-                      <a href="#!" class="comment-owner">9hax ⬢</a>
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <a class="comment-button" href="#!">Kommentieren</a>
-          </div>
-      </div>
-      <div class="forum-article-item">
-          <div class="left-area">
-            <div class='rate'>
-                <a href='#!' class="up-vote">&#9651;</a>
-                <span>42</span>
-                <a href='#!' class="down-vote">&#9661;</a>
+                <!--<div class="_pin-group-item _pin-group-centered">
+                    <span class="_pin _pin-green">+2</span>
+                    <p class="fs-caption col-dark-dd">ein Pull Request angenommen wird</p>
+                </div>-->
             </div>
-            <span class="accept-mark active"><i class="fa fa-check"></i></a>
-          </div>
-          <div class="right-area">
-              <p>Ja, es gibt noch weitere Unterschiede:</p>
-              <ul>
-                <li><p>Die DNS verlässt den Zellkern bei der Proteinbiosynthese nicht, die RNS schon.</p></li>
-                <li><p>Bei der RNS wird statt Thymin Uracyl verwendet.</p></li>
-              </ul>
-              <p>Beachte, dass dies nur die <code>m-RNA</code> betrifft, es gibt noch eine kleeblattförmige <code>t-RNA</code>, die die m-RNA abließt und nach der Abfolge der Basen der m-RNA bei der Proteinbiosynthese die Aminosäuren verkettet.
-          </div>
-          <div class="down-area">
-              <div class="alignment-right">
-                {{ user_card(user.from_id(2)) }}
-                <p class="tiny padded-text"><a href="#!">beantwortet von <b>9hax ⬢</b></a><br><span style="color: #666; font-style: italic;">beantwortet morgen</span></p>
-              </div>
-              <p class="tiny action-bar">
-                <a href="#!">Bearbeiten</a>
-                <a href="#!">Melden</a>
-              </p>
-              <div class="comment-section"></div>
-              <a class="comment-button" href="#!">Kommentieren</a>
-          </div>
-      </div>
+            <p>Dir wird Reputation abgezogen, wenn ...</p>
+            <div class="_pin-group">
+                <div class="_pin-group-item _pin-group-centered">
+                    <span class="_pin _pin-red">&ndash;3</span>
+                    <p class="fs-caption col-dark-dd">dein Beitrag einen Downvote erhält</p>
+                </div>
+                <div class="_pin-group-item _pin-group-centered">
+                    <span class="_pin _pin-red">&ndash;5</span>
+                    <p class="fs-caption col-dark-dd">dein Kurs einen Downvote erhält</p>
+                </div>
+                <!--<div class="_pin-group-item _pin-group-centered">
+                    <span class="_pin _pin-red">&ndash;20</span>
+                    <p class="fs-caption col-dark-dd">du um einen Kurs bittest</p>
+                </div>-->
+            </div>
+            <p>Mit steigender Reputation erhältst du Privilegien zur Moderation der Inhalte ...</p>
+            <table>
+                <tr>
+                    <td class="p1"><span class="_badge _badge-vote _badge-vote--primary _badge-vote-fw">1</span></td>
+                    <th class="ta-l p2">Beiträge bewerten</th>
+                </tr>
+                <tr>
+                    <td class="p1"><span class="_badge _badge-vote _badge-vote--primary _badge-vote-fw">100</span></td>
+                    <th class="ta-l p2">Kurse bewerten</th>
+                </tr>
+                <tr>
+                    <td class="p1"><span class="_badge _badge-vote _badge-vote--primary _badge-vote-fw">1</span></td>
+                    <th class="ta-l p2">Überall kommentieren</th>
+                </tr>
+                <tr>
+                    <td class="p1"><span class="_badge _badge-vote _badge-vote--primary _badge-vote-fw">1</span></td>
+                    <th class="ta-l p2">Beiträge bearbeiten</th>
+                </tr>
+                <!--<tr>
+                    <td class="p1"><span class="_badge _badge-vote _badge-vote--primary _badge-vote-fw">200</span></td>
+                    <th class="ta-l p2">Pull Requests annehmen/ablehnen</th>
+                </tr>-->
+                <tr>
+                    <td class="p1"><span class="_badge _badge-vote _badge-vote--primary _badge-vote-fw">100</span></td>
+                    <th class="ta-l p2">Beiträge löschen</th>
+                </tr>
+                <tr>
+                    <td class="p1"><span class="_badge _badge-vote _badge-vote--primary _badge-vote-fw">200</span></td>
+                    <th class="ta-l p2">Kurse sperren</th>
+                </tr>
+            </table>
+            <p>... und kannst so zusammen mit den Moderierenden zum Erfolg von &pi;-Learn beitragen.</p>
+        </div>
     </div>
-  </div>
-  <p>Folglich können aber auch Beiträge, die nicht für unser Format geeignet sind, gelöscht oder geschlossen werden:</p>
-  <ul class="block no-go">
-    <li>Vormals <em>bereits gefragt und beantwortete</em> Fragen</li>
-    <li>Fragen, die <em>nicht zum Thema des Forums</em> passen</li>
-    <li><em>Unklare</em>, <em>zu komplexe</em> oder <em>subjektive</em> Fragen</li>
-    <li>Fragen, die <em>niemandem helfen können</em></li>
-    <li>Antworten, die die Frage <em>nicht beantworten</em></li>
-    <li>Kommentare, die <em>veraltet</em> oder <em>unnötig</em> sind</li>
-  </ul>
-  <h2>Reputation</h2>
-  <p>Eine weitere Besonderheit dieser Seite ist die <strong>Reputation</strong>. Diese entspricht dem Vertrauen, das einem die Community entgegenbringt.</p>
-  <p>Reputation wird immer dann erworben, wenn andere Benutzer meinen, dass Inhalte eines Benutzers gut sind. Andersherum verliert man Reputation für schlechte Inhalte.</p>
-  <div class="reputation-bubbles">
-    <div class="column">
-      <div class="bubble positive">+5</div>
-      <div class="bubble-text">Antwort im Forum akzeptiert</div>
+
+</div>
+<hr>
+<div class="grid p2">
+    <div>
+        <a href="/courses" class="_btn _btn-xl _btn--primary">Kurse ansehen</a>
+        <a href="/help" class="_btn _btn-xl _btn--primary _btn-outline">Hilfezentrum</a>
     </div>
-    <div class="column">
-      <div class="bubble positive">+3</div>
-      <div class="bubble-text">Beitrag im Forum positiv bewertet</div>
-    </div>
-    <div class="column">
-      <div class="bubble positive">+1</div>
-      <div class="bubble-text">Benutzer schreibt sich in Kurs ein (bis +50/Kurs)</div>
-    </div>
-    <div class="column">
-      <div class="bubble negative">&ndash;3</div>
-      <div class="bubble-text">Beitrag im Forum negativ bewertet</div>
-    </div>
-  </div>
-  <p>Weiterhin gibt es für einige Errungenschaften (z.B. erster angenommener Kursvorschlag) ein wenig Reputation von uns geschenkt.</p>
-  <hr>
-  <p><strong>Reputation</strong> ist, wie bereits oben erwähnt, das Maß an Vertrauen, das einem die Community entgegenbringt. Darum erhalten Benutzer mit hoher Reputation sogenannte <strong>Privilegien</strong>:</p>
-  <table style="max-width: 500px;">
-    <tr>
-      <th>Beiträge melden</th>
-      <td>{{ privileges.getOne("forum_flag") }}</td>
-    </tr>
-    <tr>
-      <th>Beiträge im Forum als positiv bewerten</th>
-      <td>{{ privileges.getOne("forum_voteUp") }}</td>
-    </tr>
-    <tr>
-      <th>Beiträge im Forum als negativ bewerten</th>
-      <td>{{ privileges.getOne("forum_voteDown") }}</td>
-    </tr>
-    <tr>
-      <th>Kurse vorschlagen</th>
-      <td>{{ privileges.getOne("course_propose") }}</td>
-    </tr>
-    <tr>
-      <th>Fragen schließen</th>
-      <td>{{ privileges.getOne("forum_closeQuestion") }}</td>
-    </tr>
-    <tr>
-      <th>Beiträge bearbeiten</th>
-      <td>{{ privileges.getOne("forum_reviewEdits") }}</td>
-    </tr>
-    <tr>
-      <th>Beiträge löschen</th>
-      <td>{{ privileges.getOne("general_autoMod") }}</td>
-    </tr>
-  </table>
-  <p>Damit erhältst du am Ende Zugriff auf Werkzeuge, um den gewählten <a href="/help/users/moderator">Moderatoren</a> zu helfen, diese Seite für alle so angenehm wie möglich zu gestalten.</p>
-  <h2>Sei nett!</h2>
-  <p>Auf dieser Seite legen wir einen besonderen Wert darauf, dass sich alle Benutzer wohlfühlen. Dafür gibt es unseren <a href="/help/legal/coc">Code of Conduct</a>, der die folgenden Werte als Basis der Community festschreibt:</p>
-  <div class="value-bubble-list">
-    <div class="value-bubble shade-1">
-      <h4>Sei konstruktiv!</h4>
-      <div class="extended-explanation">Versuche die Seite zu verbessern.</div>
-    </div>
-    <div class="value-bubble shade-2">
-      <h4>Sei höflich!</h4>
-      <div class="extended-explanation">Gehe höflich mit anderen Benutzer um.</div>
-    </div>
-    <div class="value-bubble shade-3">
-      <h4>Sei anerkennend!</h4>
-      <div class="extended-explanation">Erkenne die Leistungen von anderen Benutzern an.</div>
-    </div>
-  </div>
-  <hr class="big">
-  <p class="big-and-center">Was willst du jetzt tun?</p>
-  <div class="button-selection">
-    <a href="/courses"><button class="primary-btn">Zur Kursübersicht</button></a>
-    <a href="/help"><button class="primary-btn">Zum Hilfezentrum</button></a>
-  </div>
+</div>
 {% endblock %}
