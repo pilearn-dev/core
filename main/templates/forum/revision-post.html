@@ -1,149 +1,110 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% macro generate_diff_line(line) %}
-{%- if line[0] == 1 -%}<div class="diff-added">{%- elif line[0] == 0 -%}<div class="diff-neutral">{%- elif line[0] == -1 -%}<div class="diff-removed">{%- endif -%}
+{%- if line[0] == 1 -%}<div class="p1 bg-success-lll col-success-ddd">{%- elif line[0] == 0 -%}<div class="p1">{%- elif line[0] == -1 -%}<div class="p1 bg-danger-lll col-danger-ddd">{%- endif -%}
 {% endmacro %}
 {% block body %}
+{% from "_course-header.html" import forum_header %}
+{{ forum_header(forum, "forum") }}
 
-<nav class="coursenav">
-  {% if forum.id == 0 %}
-      <h2>globales Forum</h2>
-      <p>für alle Fragen zu &pi;-Learn selber und für Fehlermeldungen oder Verbesserungsideen</p>
-  {% else %}
-    {% set topic = forum.getTopic() %}
-    <h2>{{ forum.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
-    {{ forum.getByLine()|markdown }}
-    <ul>
-      <li><a href="/c/{{ forum.id }}/info">Informationen</a></li>
-      <li><a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/start">Kursinhalte</a></li>
-      <li class="active"><a href="/f/{{ forum.id }}">Kursforum</a></li>
-    </ul>
-  {% endif %}
-</nav>
-
-<h2>Versionen von {% if post.isDeleted() %}<span class="deleted-line">{% endif %}<a href="/f/{{ forum.id }}/{{ post.id }}">{{ post.getTitle() }}</a>{% if post.isDeleted() %}</span>{% endif %}</h2>
-{% if user.isDev() %}{% if not request.values.get("show-revision-ids", "0") == "1" %}
-<p><a href="?show-revision-ids=1">Versions-IDs anzeigen</a></p>
-{% else %}
-<p><a href="?show-revision-ids=0">Versions-IDs ausblenden</a></p>
-{% endif %}{% endif %}
-<div class="revision-list">
-  {% for rev in post.getAllRevisions() %}
-    {% if rev.type == "edit" or rev.type == "static" %}
-      <div class="revision">
-        <h3 class="primary">Version {{ rev.revid }} / {{ post.getRevisionCount() }} &dash; <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span> von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a></h3>
-        {% if not post.isDestroyed() or user.isMod() %}
-        <div class="no-p comment">
-          <p><b>Kommentar:</b></p>
-          {{ rev.comment|markdown }}
+<h1 class="ml2 fs-heading">Versionen von {% if post.isDeleted() %}<span class="bg-danger-lll">{% endif %}<a href="/f/{{ forum.id }}/{{ post.id }}">{{ post.getTitle() }}</a>{% if post.isDeleted() %}</span>{% endif %}</h1>
+{% for rev in post.getAllRevisions() %}
+<div class="_card {% if rev.type != "edit" and rev.type != "static" %}_card-dark{% endif %}" id="revision-{{ rev.id }}">
+  <div class="_card-header">
+    <div class="horizontal-list">
+      <div class="p1">
+        {% if rev.type == "edit" or rev.type == "static" or rev.type == "closure" or rev.type == "protected" %}
+          <a href="#!" class="_card-expander" data-toggle="#{{ rev.type }}-{{ rev.id }}" data-toggle-class="hide" data-toggle-self-class="-open"></a>
+        {% else %}
+          <div style="width: 22.5px;"></div>
+        {% endif %}
+      </div>
+      <div class="p1" style="flex-grow: 1">
+          {% if rev.type == "edit" or rev.type == "static" %}
+            <div class="push-right">
+              <span class="d-b col-dark-dd"><span class="f-bold">bearbeitet</span> {{ rev.relative_time }}</a>
+              {{ user_card(rev.editor, level="in", pad=0) }}
+            </div>
+            <div class="fs-subheading">{{ rev.comment }}</div>
+            <div class="_link-list">
+              <a href="#revision-{{ rev.id }}">link</a>
+              {% if rev.type != "static" %}
+              <a href="/forum/{{ forum.id }}/{{ forum.getLabel() }}/post/{{ post.id }}/rollback/{{ rev.id }}">wiederherstellen</a>
+              {% endif %}
+            </div>
+            <div class="push-reset"></div>
+          {% elif rev.type == "deleted" %}
+            <div class="fs-subheading">
+              <strong>gelöscht</strong> von {{ rev.comment|safe }} {{ rev.relative_time }}
+            </div>
+          {% elif rev.type == "undeleted" %}
+            <div class="fs-subheading">
+              <strong>ungelöscht</strong> von {{ rev.comment|safe }} {{ rev.relative_time }}
+            </div>
+          {% elif rev.type == "anonymized" %}
+            <div class="fs-subheading"><strong>in Wiki umgewandelt</strong> von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a> <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span></div>
+          {% elif rev.type == "reopened" %}
+            <div class="fs-subheading"><strong>wieder geöffnet</strong> von {{ (rev.comment|markdown)[3:-4] }} <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span></div>
+          {% elif rev.type == "closure" %}
+            <div class="fs-subheading"><strong>geschlossen</strong> <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span></div>
+          {% elif rev.type == "frozen" %}
+            <div class="fs-subheading"><strong>gesperrt</strong> von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a> <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span></div>
+          {% elif rev.type == "unfrozen" %}
+            <div class="fs-subheading"><strong>entsperrt</strong> von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a> <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span></div>
+          {% elif rev.type == "protected" %}
+            <div class="fs-subheading"><strong>geschützt</strong> von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a> <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span></div>
+          {% elif rev.type == "unprotected" %}
+            <div class="fs-subheading"><strong>Schutz aufgehoben</strong> von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a> <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span></div>
+          {% endif %}
+      </div>
+    </div>
+  </div>
+  {% if rev.type == "edit" or rev.type == "static" %}
+  <div class="_card-content hide" id="{{ rev.type }}-{{ rev.id }}">
+    <div class="p3">
+    {% if rev.revid == 1 %}
+      <div class="fs-title mb3">{{ rev.title }}</div>
+      <div class="b1s b-dark-ll p2 f-mono" style="white-space: pre; overflow: auto; max-height: 600px;">{{ rev.content }}</div>
+      <div class="horizontal-list p1">
+        {%- for line in rev.tags.split("|") -%}
+        <div class="p1">
+          <span class="_badge _badge-tag">{{ line[1:-1] }}</span>
         </div>
-        {% if rev.revid == 1 %}
-          <div class="title">{{ rev.title }}</div>
-          <pre class="content">{{ rev.content }}</pre>
-        {% else %}
-          {% if rev.title != post.getRevision(rev.revid-1).title %}
-            <div class="title"><span class="diff-removed">{{ post.getRevision(rev.revid-1).title }}</span><span class="diff-added">{{ rev.title }}</span></div>
-          {% else %}
-            <div class="title">{{ rev.title }}</div>
-          {% endif %}
-          {% set diff = generate_diff(post.getRevision(rev.revid-1).content, rev.content) %}
-          <pre class="content">
-          {%- for line in diff -%}{{ generate_diff_line(line) }}{{ line[1] }}</div>{%- endfor -%}
-        </pre>
-        {% endif %}
-        <p class="tiny action-bar">
-          {% if (not post.isFrozen() or user.isMod()) and (user.may("forum_reviewEdits") or user.id == post.getAuthor().id) and rev.revid != post.getRevisionCount() and rev.type != "static" %}
-          <a href="/forum/{{ forum.id }}/{{ forum.getDetail("label") }}/post/{{ post.id }}/rollback/{{ rev.id }}">Wiederherstellen</a>
-          {% endif %}
-        </p>
-        {% else %}
-        <b>Beitrag wurde zerstört, Version wird nicht angezeigt.</b>
-        {% endif %}
-    {% elif rev.type == "notice" %}
-      {% if rev.comment != "" %}
-        <div class="revision no-edit">
-          <h3 class="primary">Moderatorennachricht <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span> von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a> gesetzt</h3>
-          <div class="no-p action-forbidden">
-            {{ rev.comment|markdown }}
-          </div>
+        {%- endfor -%}
+      </div>
+    {% else %}
+      {% if rev.title != post.getRevision(rev.revid-1).title %}
+        <div class="fs-title mb3"><span class="bg-danger-ll">{{ post.getRevision(rev.revid-1).title }}</span><span class="bg-success-ll">{{ rev.title }}</span></div>
       {% else %}
-        <div class="revision no-edit no-padbot">
-          <h3 class="primary">Moderatorennachricht <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span> von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a> entfernt</span></h3>
+        <div class="fs-title mb3">{{ rev.title }}</div>
       {% endif %}
-    {% elif rev.type == "deleted" %}
-      <div class="revision no-edit">
-        <h3 class="primary">Beitrag <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span> gelöscht</h3>
-        <div class="post-warning">
-          {% if rev.comment != "" %}
-            {{ rev.comment|markdown }}
-          {% endif %}
+      {% set diff = generate_diff(post.getRevision(rev.revid-1).content, rev.content) %}
+      <div class="b1s b-dark-ll p2 f-mono" style="white-space: pre; overflow: auto; max-height: 600px;">
+        {%- for line in diff -%}{{ generate_diff_line(line) }}{{ line[1] }}</div>{%- endfor -%}
+      </div>
+      {% set diff = generate_diff("\n".join(post.getRevision(rev.revid-1).tags.split("|")), "\n".join(rev.tags.split("|"))) %}
+      <div class="horizontal-list p1">
+        {%- for line in diff -%}
+        <div class="p1{% if line[0] == 1 %} bg-success-lll{% elif line[0] == -1 %} bg-danger-lll{% endif %}">
+          <span class="_badge _badge-tag">{{ line[1][1:-1] }}</span>
         </div>
-    {% elif rev.type == "undeleted" %}
-      <div class="revision no-edit no-padbot">
-        <h3 class="primary">Beitrag <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span> von {{ (rev.comment|markdown)[3:-4] }} un-gelöscht</h3>
-    {% elif rev.type == "frozen" %}
-      <div class="revision no-edit">
-        <h3 class="primary">Beitrag <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span> von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a> eingefroren</h3>
-        <div class="action-forbidden red-style">
-          <h4>Grund:</h4>
-          {% if rev.comment != "" %}
-            {{ rev.comment|markdown }}
-          {% endif %}
-        </div>
-    {% elif rev.type == "locked" %}
-      <div class="revision no-edit">
-        <h3 class="primary">Beitrag und alle Antworten <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span> eingefroren</h3>
-        <div class="post-warning">
-          <h3>Dieser Beitrag wurde von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a> <strong>eingefroren</strong>.</h3>
-          {% if rev.comment != "" %}
-            {{ rev.comment|markdown }}
-          {% endif %}
-        </div>
-    {% elif rev.type == "unfrozen" %}
-      <div class="revision no-edit no-padbot">
-        <h3 class="primary">Beitrag <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span> von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a> aufgetaut</h3>
-    {% elif rev.type == "unlocked" %}
-      <div class="revision no-edit no-padbot">
-        <h3 class="primary">Beitrag und alle Antworten <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span> von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a> aufgetaut</h3>
-    {% elif rev.type == "transferred" %}
-      <div class="revision mark no-padbot">
-        {% set new_user = user.from_id(rev.comment) %}
-        <h3 class="primary">Beitrag <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span> von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a> an <a href="/u/{{ new_user.id }}">{{ new_user.getHTMLName()|safe }}</a> übergeben</h3>
-    {% elif rev.type == "anonymized" %}
-      <div class="revision mark no-padbot">
-        <h3 class="primary">Beitrag <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span> von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a> in Wiki umgewandelt</h3>
-    {% elif rev.type == "destroyed" %}
-      <div class="revision mark no-padbot">
-        <h3 class="primary">Beitrag <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span> von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a> zerstört</h3>
-    {% elif rev.type == "restored" %}
-      <div class="revision mark no-padbot">
-        <h3 class="primary">Beitrag <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span> von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a> wiederhergestellt</h3>
-    {% elif rev.type == "comment" %}
-      <div class="revision no-edit no-padbot">
-        {{ rev.comment|markdown }}
-        <hr>
-        <p><i>von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a> <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span></i></p>
-    {% elif rev.type == "closure" %}
-      <div class="revision no-edit">
-        <h3 class="primary">Beitrag <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span> geschlossen</h3>
-        <div class="post-warning">{{ rev.comment|markdown }}</div>
-    {% elif rev.type == "reopened" %}
-      <div class="revision no-edit no-padbot">
-        <h3 class="primary">Beitrag <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span> wieder geöffnet von {{ (rev.comment|markdown)[3:-4] }}</h3>
-    {% elif rev.type == "protected" %}
-      <div class="revision no-edit">
-        <h3 class="primary">Beitrag <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span> geschützt von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a></h3>
-        <div class="post-warning">
-          <h3>Dieser Beitrag wurde von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a> <strong>geschützt</strong>.</h3>
-          {{ post.PROTECTION_MESSAGE[rev.comment]|markdown }}
-        </div>
-    {% elif rev.type == "unprotected" %}
-      <div class="revision no-edit no-padbot">
-        <h3 class="primary">Beitragsschutz <span title="{{ rev.absolute_time }}">{{ rev.relative_time }}</span> aufgehoben von <a href="/u/{{ rev.editor.id }}">{{ rev.editor.getHTMLName()|safe }}</a></h3>
-    {% endif %}
-    {% if user.isDev() and request.values.get("show-revision-ids", "0") == "1" %}
-      <p class="tiny">ID: <code>{{ rev.id }}</code></p>
+        {%- endfor -%}
+      </div>
     {% endif %}
     </div>
-  {% endfor %}
+  </div>
+  {% elif rev.type == "closure" %}
+  <div class="_card-content hide" id="{{ rev.type }}-{{ rev.id }}">
+    <div class="content-warning">
+      {{ (rev.comment|markdown) }}
+    </div>
+  </div>
+  {% elif rev.type == "protected" %}
+  <div class="_card-content hide" id="{{ rev.type }}-{{ rev.id }}">
+    <div class="content-warning">
+      {{ post.PROTECTION_MESSAGE[rev.comment]|markdown }}
+    </div>
+  </div>
+  {% endif %}
 </div>
+{% endfor %}
 {% endblock %}

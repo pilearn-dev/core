@@ -252,14 +252,27 @@ class Answer:
           cur = con.cursor()
           cur.execute("INSERT INTO deletion_votes (postType, postId, voteOwner, voteCastDate, active) VALUES ('answer', ?, ?, ?, 1)", (self.id, who.id, time.time()))
           con.commit()
-          cur.execute("SELECT Count(*) FROM deletion_votes WHERE postType='answer' AND postId=? AND active=1", (self.id, ))
+          cur.execute("SELECT * FROM deletion_votes WHERE postType='answer' AND postId=? AND active=1", (self.id, ))
           con.commit()
-          num = cur.fetchone()[0]
+          all = cur.fetchall()
+          num = len(all)
           if num == 3 + min(5,int(self.getScore()/5)) or who.isMod():
               self.setDetail("deleted", 1)
               self.setDetail("deletionReason", "vote")
               self.__data = self.getInfo()
-              self.addRevComm("deleted", muser.User.from_id(-1), self.getDeleteMessage())
+
+              voter_html = ""
+              index = 0
+              for flag in all:
+                  flagger = muser.User.safe(flag[2])
+                  if 0 < index < len(all)-1:
+                      voter_html += ", "
+                  elif index == len(all)-1 and index != 0:
+                      voter_html += " und "
+                  index += 1
+                  voter_html += "<a href='/u/" + str(flagger.id) + "'>" + flagger.getHTMLName(False) + "</a>"
+
+              self.addRevComm("deleted", muser.User.from_id(-1), voter_html)
           return True
         except lite.Error as e:
           print(e)
@@ -1307,14 +1320,26 @@ class Article:
           cur = con.cursor()
           cur.execute("INSERT INTO deletion_votes (postType, postId, voteOwner, voteCastDate, active) VALUES ('post', ?, ?, ?, 1)", (self.id, who.id, time.time()))
           con.commit()
-          cur.execute("SELECT Count(*) FROM deletion_votes WHERE postType='post' AND postId=? AND active=1", (self.id, ))
+          cur.execute("SELECT * FROM deletion_votes WHERE postType='post' AND postId=? AND active=1", (self.id, ))
           con.commit()
-          num = cur.fetchone()[0]
+          all = cur.fetchall()
+          num = len(all)
           if num == 3 + min(5,int(self.getScore()/5)) or who.isMod():
               self.setDetail("deleted", 1)
               self.setDetail("deletionReason", "vote")
               self.__data = self.getInfo()
-              self.addRevComm("deleted", muser.User.from_id(-1), self.getDeleteMessage())
+              voter_html = ""
+              index = 0
+              for flag in all:
+               flagger = muser.User.safe(flag[2])
+               if 0 < index < len(all)-1:
+                   voter_html += ", "
+               elif index == len(all)-1 and index != 0:
+                   voter_html += " und "
+               index += 1
+               voter_html += "<a href='/u/" + str(flagger.id) + "'>" + flagger.getHTMLName(False) + "</a>"
+
+              self.addRevComm("deleted", muser.User.from_id(-1), voter_html)
           return True
         except lite.Error as e:
           print(e)

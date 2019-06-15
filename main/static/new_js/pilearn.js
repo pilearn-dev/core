@@ -65,3 +65,19 @@ var PiJS = {
     }
   }
 }
+
+// STANDARD LIBRARY
+$(window).on("load", function() {
+  $("[data-toggle]").on("click", function() {
+    $this = $(this);
+    $el = $($this.attr("data-toggle"));
+
+    if($this.attr("data-toggle-class"))
+      $el.toggleClass($this.attr("data-toggle-class"));
+    else
+      $el.toggle();
+
+    if($this.attr("data-toggle-self-class"))
+      $this.toggleClass($this.attr("data-toggle-self-class"));
+  })
+});

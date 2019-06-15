@@ -767,7 +767,7 @@ def forum_post_vote(post_id):
                     if cuser.id == E.getAuthor().id:
                         E.setDetail("deleted", 1)
                         E.setDetail("deletionReason", "owner")
-                        E.addRevComm("deleted", muser.User.from_id(-1), E.getDeleteMessage())
+                        E.addRevComm("deleted", muser.User.from_id(-1), "seinem Urheber")
                         return jsonify({
                             "result": "success",
                             "update": { "deleted": True }
@@ -791,7 +791,7 @@ def forum_post_vote(post_id):
                     })
 
             elif type == "undelete":
-                if not cuser.may("general_autoMod") and not cuser.isMod() and cuser.id != article.getAuthor().id:
+                if not cuser.may("general_autoMod") and not cuser.isMod() and cuser.id != E.getAuthor().id:
                     return jsonify({
                         "result": "error",
                         "error": "Du kannst keine Beiträge löschen."
@@ -800,7 +800,7 @@ def forum_post_vote(post_id):
                     if cuser.id == E.getAuthor().id:
                         E.setDetail("deleted", 0)
                         E.setDetail("deletionReason", "")
-                        article.addRevComm("undeleted", cuser, "seinem Besitzer")
+                        E.addRevComm("undeleted", cuser, "seinem Besitzer")
                         return jsonify({
                             "result": "success",
                             "update": { "deleted": False }
