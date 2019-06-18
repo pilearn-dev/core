@@ -2,7 +2,7 @@
 from flask import render_template, redirect, abort, url_for, request
 from model import privileges as mprivileges, courses as mcourses, user as muser, survey as msurvey, proposal as mproposal, forum as mforum
 from controller import query as cquery
-import json
+import json, time
 def courses_index():
     cuser = muser.getCurrentUser()
     course_list=mcourses.Courses.getCourseList()
@@ -14,12 +14,12 @@ def courses_index():
             now_courses.append(c)
             if len(now_courses) == 5:
                 break
-    return render_template('courses/index.html', title=u"Kursüberblick", thispage="course", my_courses=my_courses, now_courses=now_courses)
+    return render_template('courses/index.html', title=u"Kursüberblick", thispage="courses", my_courses=my_courses, now_courses=now_courses)
 
 def courses_propose():
     cuser = muser.getCurrentUser()
     if request.method == "GET":
-        return render_template('courses/propose.html', title=u"Kurs vorschlagen", thispage="course", topic=mcourses.Topic)
+        return render_template('courses/propose.html', title=u"Kurs vorschlagen", thispage="courses", topic=mcourses.Topic)
     elif request.method == "POST":
         if cuser.may("course_propose"):
             data = request.json
@@ -73,7 +73,7 @@ def courses_search():
         cnum = mcourses.Courses.queryNum(q, add)
         courses = mcourses.Courses.query(q, add, 0, 30)
     #print(cquery.buildSFTextQuery("text", s))
-    return render_template('courses/search.html', title=u"Kurse durchsuchen", thispage="course", topic=mcourses.Topic, courses=courses, cnum=cnum)
+    return render_template('courses/search.html', title=u"Kurse durchsuchen", thispage="courses", topic=mcourses.Topic, courses=courses, cnum=cnum)
 
 def course_info(id,label=None):
     if not mcourses.Courses.exists(id):
@@ -81,7 +81,7 @@ def course_info(id,label=None):
     course = mcourses.Courses(id)
     if course.getLabel() != label:
         return redirect(url_for("course_info", id=id, label=course.getLabel()))
-    return render_template('courses/info.html', title=course.getTitle(), thispage="course", data=course)
+    return render_template('courses/info.html', title=course.getTitle(), thispage="courses", data=course)
 
 def course_related_proposal(id,label=None):
     if not mcourses.Courses.exists(id):
@@ -109,7 +109,7 @@ def course_edit(id,label=None):
         course.setDetail("requirements", data["requirements"])
         return "ok"
     else:
-        return render_template('courses/edit.html', title=course.getTitle(), thispage="course", data=course)
+        return render_template('courses/edit.html', title=course.getTitle(), thispage="courses", data=course)
 
 def course_permissions(id,label=None):
     if not mcourses.Courses.exists(id):
@@ -123,7 +123,7 @@ def course_permissions(id,label=None):
     if request.method == "POST":
         return "ok"
     else:
-        return render_template('courses/permissions.html', title=course.getTitle(), thispage="course", data=course)
+        return render_template('courses/permissions.html', title=course.getTitle(), thispage="courses", data=course)
 
 def course_publish(id,label=None):
     if not mcourses.Courses.exists(id):
@@ -191,16 +191,17 @@ def unit_show(unit_id,course_id,unit_label=None,course_label=None):
         abort(403)
     course.setLastVisitedUnitId(cuser, unit.id)
     if unit.getType() == "info":
-        return render_template('courses/unit_info.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
+        return render_template('courses/unit_info.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
     elif unit.getType() == "extvideo":
-        return render_template('courses/unit_extvideo.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
+        return render_template('courses/unit_extvideo.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
     elif unit.getType() == "survey":
         s = msurvey.Survey(unit.getJSON()["survey"])
-        return render_template('courses/unit_survey.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit, survey=s)
+        return render_template('courses/unit_survey.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit, survey=s)
     elif unit.getType() == "quiz":
         try:
-            return render_template('courses/unit_quiz.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
-        except:
+            return render_template('courses/unit_quiz.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit, int=int)
+        except Exception as e:
+            print e
             if request.values.get("re-submit", 0)=="true":
                 abort(500)
             data = {"re-submit":"true", "submission-error": "incomplete"}
@@ -211,7 +212,7 @@ def unit_show(unit_id,course_id,unit_label=None,course_label=None):
             a = None
         else:
             a = mforum.Article(aid)
-        return render_template('courses/unit_pinboard.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit, post=a)
+        return render_template('courses/unit_pinboard.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit, post=a)
     abort(500)
 
 def unit_edit(unit_id,course_id,unit_label=None,course_label=None):
@@ -234,15 +235,15 @@ def unit_edit(unit_id,course_id,unit_label=None,course_label=None):
         if unit.getLabel() != unit_label:
             return redirect(url_for("unit_edit", course_id=course_id, course_label=course_label, unit_id=unit_id, unit_label=unit.getLabel()))
         if unit.getType() == "info":
-            return render_template('courses/edit_unit_info.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
+            return render_template('courses/edit_unit_info.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
         elif unit.getType() == "extvideo":
-            return render_template('courses/edit_unit_extvideo.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
+            return render_template('courses/edit_unit_extvideo.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
         elif unit.getType() == "survey":
-            return render_template('courses/edit_unit_survey.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
+            return render_template('courses/edit_unit_survey.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
         elif unit.getType() == "quiz":
-            return render_template('courses/edit_unit_quiz.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
+            return render_template('courses/edit_unit_quiz.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
         elif unit.getType() == "pinboard":
-            return render_template('courses/edit_unit_pinboard.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
+            return render_template('courses/edit_unit_pinboard.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
         abort(500)
 
 
@@ -295,7 +296,23 @@ def unit_submit(unit_id,course_id,unit_label=None,course_label=None):
                     TOTAL_SCORE += pts
                     RESULT_DATA[k] = ({"max":i["data"]["points"], "sum":pts, "selection":_, "correct":i["data"]["choices"]})
 
+
         unit.addViewData(cuser, json.dumps({"result":RESULT_DATA, "max": MAX_SCORE, "sum": TOTAL_SCORE}))
+        return "{ok}"
+    elif unit.getType() == "pinboard":
+        aid = int(unit.getJSON())
+        if aid == 0:
+            abort(500)
+        else:
+            a = mforum.Article(aid)
+
+        data = request.json
+        answer = mforum.Answer.createNew(a.getDetail("forumID"), aid, data["comment"], muser.User(-1))
+        answer.addRevision(data["comment"], cuser, u"Ursprüngliche Version")
+
+        a.setDetail("last_activity_date", time.time())
+        answer.setDetail("last_activity_date", time.time())
+        answer.setDetail("creation_date", time.time())
         return "{ok}"
     abort(500)
 
@@ -319,14 +336,14 @@ def unit_new(course_id):
     return url_for("unit_show", unit_id=x, course_id=course_id)
 
 def topic_index():
-    return render_template('topic/index.html', title=u"Themen", thispage="course", topic=mcourses.Topic)
+    return render_template('topic/index.html', title=u"Themen", thispage="courses", topic=mcourses.Topic)
 
 def topic_view(name):
     if not mcourses.Topic.exists(name):
         abort(404)
     topicCourseList=mcourses.Topic.getCourseList(name)
     topic = mcourses.Topic.from_name(name)
-    return render_template('topic/courses.html', title=topic.getTitle()+u" – Kurse", thispage="course", courses=topicCourseList, data=topic)
+    return render_template('topic/courses.html', title=topic.getTitle()+u" – Kurse", thispage="courses", courses=topicCourseList, data=topic)
 
 def topic_edit(name):
     if not mcourses.Topic.exists(name):
@@ -336,7 +353,7 @@ def topic_edit(name):
     if not cuser.isMod():
         abort(404)
     if request.method == "GET":
-        return render_template('topic/edit.html', title=topic.getTitle()+u" – Bearbeiten", thispage="course", data=topic)
+        return render_template('topic/edit.html', title=topic.getTitle()+u" – Bearbeiten", thispage="courses", data=topic)
     else:
         data = request.json
         topic.setDetail("title", data["title"])
@@ -371,7 +388,7 @@ def course_unit_reorder(id,label=None):
     else:
         if course.getLabel() != label:
             return redirect(url_for("course_unit_reorder", id=id, label=course.getLabel()))
-        return render_template('courses/unit_reorder.html', title="Kursmodule neu anordnen: " + course.getTitle(), thispage="course", data=course)
+        return render_template('courses/unit_reorder.html', title="Kursmodule neu anordnen: " + course.getTitle(), thispage="courses", data=course)
 
 def apply(app):
     app.route("/courses")(courses_index)

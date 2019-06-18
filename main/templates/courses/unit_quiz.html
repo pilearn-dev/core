@@ -1,228 +1,240 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-  <nav class="coursenav">
-    {% set topic = course.getTopic() %}
-    <h2>{{ course.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
-    {{ course.getByLine()|markdown }}
-    <ul>
-      <li><a href="/course/{{ course.id }}/{{ course.getLabel() }}/details">Informationen</a></li>
-      <li class="active"><a href="#!">Kursinhalte</a></li>
-      <li><a href="/forum/{{ course.id }}/{{ course.getLabel() }}/list">Kursforum</a></li>
-    </ul>
-  </nav>
- <div class="split-screen">
-   <aside>
-     <h3>Alle Inhalte</h3>
-     <ol>
-       {% for element in course.getMenu() %}
-        {% if element.availible %}
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "contents") }}
+
+<div class="grid -equal-columns">
+  <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
+    <div class="p3">
+      <h2>Menü</h2>
+      <nav class="_nav _nav-v">
+        {% for element in course.getMenu() if element.availible %}
         {% if element.id == data.id %}
-        <li><a href="/c/{{ course.id }}/u/{{ element.id }}" class="current">{{ element.title }}</a>
+        <a href="/c/{{ course.id }}/u/{{ element.id }}" class="-active">{{ element.title }}</a>
         {% else %}
-        <li><a href="/c/{{ course.id }}/u/{{ element.id }}">{{ element.title }}</a>
+        <a href="/c/{{ course.id }}/u/{{ element.id }}">{{ element.title }}</a>
         {% endif %}
-        {% elif user.isMod() or course.getCourseRole(user) >= 3 %}
-        <li class="current visited"><a style="opacity: 0.4" href="/c/{{ course.id }}/u/{{ element.id }}">{{ element.title }}</a>
+        {% if element.children %}
+        <nav class="_nav _nav-v">
+          {% for child in element.children if child.availible %}
+           {% if child.id == data.id %}
+           <a href="/c/{{ course.id }}/u/{{ child.id }}" class="-active">{{ child.title }}</a>
+           {% else %}
+           <a href="/c/{{ course.id }}/u/{{ child.id }}">{{ child.title }}</a>
+           {% endif %}
+          {% endfor %}
+        </nav>
         {% endif %}
-          {% if element.children %}
-          <ol>
-            {% for child in element.children %}
-             {% if child.availible %}
-             {% if child.id == data.id %}
-             <li><a href="/c/{{ course.id }}/u/{{ child.id }}" class="current">{{ child.title }}</a>
-             {% else %}
-             <li><a href="/c/{{ course.id }}/u/{{ child.id }}">{{ child.title }}</a>
-             {% endif %}
-             {% elif user.isMod() or course.getCourseRole(user) >= 3 %}
-             <li><a style="opacity: 0.4" href="/c/{{ course.id }}/u/{{ child.id }}">{{ child.title }}</a>
+        {% endfor %}
+      </nav>
+    </div>
+   </div>
+   <div class="column9__lg column12 bs2-light">
+    <div class="_headbar-item">
+      <div class="_headbar-item-name">{{ data.getTitle() }}</div>
+      <div class="_headbar-item-type">Quiz</div>
+      <div class="_headbar-item-status">
+        {% if data.isDisabled() %}
+          <span class="_badge _badge-s-danger">unveröffentlicht</span>
+        {% else %}
+          <span class="_badge _badge-s-success">live</span>
+        {% endif %}
+      </div>
+      <div class="_headbar-item-sep"></div>
+      <div class="_headbar-item-action">
+        {% if user.isMod() or course.getCourseRole(user) >= 3 %}
+        <a href="/c/{{ course.id }}/u/{{ data.id }}/edit" class="_btn _btn-xs _btn--primary">Bearbeiten</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="{% if data.isDisabled() %}bg-danger-lll{% endif %}">
+      <div class="grid -equal-columns">
+        <div class="column8 column12__sm p2">
+          {% if request.values.get("submission-error") == "incomplete" %}
+            <div class="content-warning">
+              <h3>Dieses Quiz muss erneut abgeschickt werden</h3>
+              <p>Ein Fehler ist aufgetreten (wahrscheinlich wurde das Quiz geändert) und daher muss das Quiz erneut abgeschickt werden.</p>
+            </div>
+            {% endif %}
+           {% if data.hasViewData(user) and not request.values.get("re-submit", "false") == "true" %}
+             {% set eval_data = data.getViewData(user, as_json=True) %}
+             {% for i in data.getJSON() %}
+              {% if i.type == "heading" %}
+                <h1>{{ i.data.text }}</h1>
+              {% elif i.type == "info-text" %}
+                {{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
+              {% elif i.type == "separator" %}
+                <hr>
+              {% elif i.type == "warnbox" %}
+                <div class="warning">{{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}</div>
+              {% elif i.type == "quote" %}
+                <blockquote>{{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}</blockquote>
+              {% elif i.type == "image" %}
+                <a href="{{ i.data.source }}"><img src="{{ i.data.source }}"></a>
+              {% elif i.type == "multiple-choice" %}{% set sum = eval_data.result[""~loop.index].sum %}{% set max = int(i.data.points) %}{% if (""~sum).endswith(".0") %}{% set sum=int(sum) %}{% endif %}
+              <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
+                 <div class="push-right"><span class="_badge _badge-s-black">{{ (""~sum).replace(".",",") }} / {{ max }} Pkt.</span></div>
+                 <div class="fs-subheading">
+                   {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
+                 </div>
+                 {% set masterloop = loop %}
+                 {% for c in i.data.choices %}
+                   <div class="p1">
+                     <input type="radio" disabled name="quiz-question-{{ masterloop.index }}" id="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" value="{{ loop.index-1 }}" class="form-radio" {% if (""~(loop.index-1)) in eval_data.result[""~masterloop.index].selection %} checked{% endif %}>
+                     <label for="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" class="form form-inline">
+                       {% if (""~(loop.index-1)) not in eval_data.result[""~masterloop.index].selection and c.startswith("*") %} <span class="_badge _badge-s-dark push-right">wäre richtig gewesen</span>{% elif not c.startswith("*") and (""~(loop.index-1)) in eval_data.result[""~masterloop.index].selection %} <span class="_badge _badge-s-danger push-right">falsch</span>{% endif %}
+                        {%if c.startswith("*")%}{%set c=c[1:]%}{%endif%}
+                       {{ c }}
+                     </label>
+                   </div>
+                 {% endfor %}
+               </div>
+              {% elif i.type == "multiple-answer" %}{% set sum = eval_data.result[""~loop.index].sum %}{% set max = int(i.data.points) %}{% if (""~sum).endswith(".0") %}{% set sum=int(sum) %}{% endif %}
+              <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
+                 <div class="push-right"><span class="_badge _badge-s-black">{{ (""~sum).replace(".",",") }} / {{ max }} Pkt.</span></div>
+                 <div class="fs-subheading">
+                   {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
+                 </div>
+                 {% set masterloop = loop %}
+                 {% for c in i.data.choices %}
+                   <div class="p1">
+                     <input type="checkbox" disabled name="quiz-question-{{ masterloop.index }}" id="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" value="{{ loop.index-1 }}" class="form-checkbox" {% if (""~(loop.index-1)) in eval_data.result[""~masterloop.index].selection %} checked{% endif %}>
+                     <label for="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" class="form form-inline">
+                       {% if (""~(loop.index-1)) not in eval_data.result[""~masterloop.index].selection and c.startswith("*") %} <span class="_badge _badge-s-dark push-right">wäre richtig gewesen</span>{% elif c.startswith("*") %}{% elif not c.startswith("*") and (""~(loop.index-1)) in eval_data.result[""~masterloop.index].selection %} <span class="_badge _badge-s-danger push-right">falsch</span>{% endif %}
+                        {%if c.startswith("*")%}{%set c=c[1:]%}{%endif%}
+                       {{ c }}
+                     </label>
+                   </div>
+                 {% endfor %}
+               </div>
+              {% elif i.type == "text-answer" %}{% set sum = eval_data.result[""~loop.index].sum %}{% set max = i.data.points %}
+              <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
+                 <div class="push-right"><span class="_badge _badge-s-black">{{ sum }} / {{ max }} Pkt.</span></div>
+                 <div class="fs-subheading">
+                   {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
+                 </div>
+                 <div class="p1">
+                   <input class="form" id="quiz-question-{{ loop.index }}-answer" disabled value="{{ eval_data.result[""~loop.index].selection }}">
+                   <p class="form-validation"><strong>akzeptiert werden:</strong> {% for _ in eval_data.result[""~loop.index].correct %}{% if not loop.index == 1 %}, {% endif %}{{ _ }}{% endfor %}
+                 </div>
+               </div>
+              {% endif %}
+             {% endfor %}
+           {% else %}
+            {% for i in data.getJSON() %}
+             {% if i.type == "heading" %}
+               <h1>{{ i.data.text }}</h1>
+             {% elif i.type == "info-text" %}
+               {{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
+             {% elif i.type == "separator" %}
+               <hr>
+             {% elif i.type == "warnbox" %}
+               <div class="warning">{{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}</div>
+             {% elif i.type == "quote" %}
+               <blockquote>{{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}</blockquote>
+             {% elif i.type == "image" %}
+               <a href="{{ i.data.source }}"><img src="{{ i.data.source }}"></a>
+             {% elif i.type == "multiple-choice" %}
+             <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
+              <div class="push-right"><span class="_badge _badge-s-info">{{ i.data.points }} Pkt.</span></div>
+              <div class="fs-subheading">
+                {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
+              </div>
+              {% set masterloop = loop %}
+              {% for c in i.data.choices %}{%if c.startswith("*")%}{%set c=c[1:]%}{%endif%}
+                <div class="p1">
+                  <input type="radio" name="quiz-question-{{ masterloop.index }}" id="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" value="{{ loop.index-1 }}" class="form-radio">
+                  <label for="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" class="form form-inline">{{ c }}</label>
+                </div>
+              {% endfor %}
+            </div>
+             {% elif i.type == "multiple-answer" %}
+             <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
+                <div class="push-right"><span class="_badge _badge-s-info">{{ i.data.points }} Pkt.</span></div>
+                <div class="fs-subheading">
+                  {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
+                </div>
+                {% set masterloop = loop %}
+                {% for c in i.data.choices %}{%if c.startswith("*")%}{%set c=c[1:]%}{%endif%}
+                  <div class="p1">
+                    <input type="checkbox" name="quiz-question-{{ masterloop.index }}" id="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" value="{{ loop.index-1 }}" class="form-checkbox">
+                    <label for="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" class="form form-inline">{{ c }}</label>
+                  </div>
+                {% endfor %}
+              </div>
+             {% elif i.type == "text-answer" %}
+             <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
+                <div class="push-right"><span class="_badge _badge-s-info">{{ i.data.points }} Pkt.</span></div>
+                <div class="fs-subheading">
+                  {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
+                </div>
+                <div class="p1">
+                  <input class="form" id="quiz-question-{{ loop.index }}-answer" placeholder="Bitte Antwort eingeben">
+                </div>
+              </div>
              {% endif %}
             {% endfor %}
-          </ol>
+            <button class="_btn _btn-lg _btn--primary" onclick="send();">Absenden</button>
           {% endif %}
-        </li>
-       {% endfor %}
-       {% if course.getCourseRole(user) >= 3 %}
-       <a href="#!" onclick="document.getElementById('unit-type-dialog-parent').value=0;document.getElementById('unit-type-dialog').classList.add('open')">Neue Seite</a>|<a href="/c/{{ course.id }}/unit_reorder">Neu anordnen</a>
-       {% endif %}
-     </ol>
-   </aside>
-   <main>
-     {% if user.isMod() or course.getCourseRole(user) >= 3 %}
-     <p style="margin: 0; font-size: 0.8em;"><strong>{{ data.getTitle() }}</strong> &ndash; {% if data.isDisabled() %}<span style="color: #d00;">Unveröffentlichte Seite</span>{% else %}Öffentliche Seite{% endif %} &ndash; <a href="/c/{{ course.id }}/u/{{ data.id }}/edit"><i class="fa fa-pencil"></i> Bearbeiten</a>{% if data.getDetail("parent") == 0 and course.getCourseRole(user) >= 3 %} &ndash; <a href="#!" onclick="document.getElementById('unit-type-dialog-parent').value={{ data.id }};document.getElementById('unit-type-dialog').classList.add('open')">Neue Unterseite</a>{% endif %}</p>
-     <hr>
-     {% endif %}
-     {% if data.isDisabled() %}<div class="deleted-section" style="padding: 10px;">{% endif %}
-       {% if request.values.get("submission-error") == "incomplete" %}
-       <div class="error">
-         <h3>Dieses Quiz muss erneut abgeschickt werden</h3>
-         <p>Ein Fehler ist aufgetreten (wahrscheinlich wurde das Quiz geändert) und daher muss das Quiz erneut abgeschickt werden.</p>
-       </div>
-       {% endif %}
-      {% if data.hasViewData(user) and not request.values.get("re-submit", "false") == "true" %}
-        {% set eval_data = data.getViewData(user, as_json=True) %}
-        <div class="info">Du hast an diesem Quiz bereits teilgenommen und <big>{{ (""~eval_data.sum).replace(".",",") }}</big> von {{ eval_data.max }} Punkten erreicht. <strong><a href="?re-submit=true">Erneut teilnehmen.</a></strong></div>
-        {% for i in data.getJSON() %}
-         {% if i.type == "heading" %}
-           <h1>{{ i.data.text }}</h1>
-         {% elif i.type == "info-text" %}
-           {{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
-         {% elif i.type == "separator" %}
-           <hr>
-         {% elif i.type == "warnbox" %}
-           <div class="warning">{{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}</div>
-         {% elif i.type == "quote" %}
-           <blockquote>{{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}</blockquote>
-         {% elif i.type == "image" %}
-           <a href="{{ i.data.source }}"><img src="{{ i.data.source }}"></a>
-         {% elif i.type == "multiple-choice" %}
-           <div class="no-p question" data-score="{{ i.data.points }}" data-eval="{{ eval_data.result[""~loop.index].sum }}">
-             {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
-           {% set masterloop = loop %}
-           {% for c in i.data.choices %}
-            {%if c.startswith("*")%}{%set c_=c[1:]%}{%else%}{%set c_=c%}{%endif%}
-            <label class="with-em {% if (""~(loop.index-1)) in eval_data.result[""~masterloop.index].selection %}{%if c.startswith("*") %}correct{%else%}wrong{%endif%}{%endif%}" for="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}"><input type="radio" id="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" value="{{ loop.index-1 }}" name="quiz-question-{{ masterloop.index }}" disabled{% if (""~(loop.index-1)) in eval_data.result[""~masterloop.index].selection %} checked{% endif %}> {{ c_ }}{% if (""~(loop.index-1)) not in eval_data.result[""~masterloop.index].selection and c.startswith("*") %} <em>wäre richtig gewesen</em>{% elif c.startswith("*") %} <em>richtig</em>{% elif (""~(loop.index-1)) in eval_data.result[""~masterloop.index].selection %} <em>falsch</em>{% endif %}</label>
-           {% endfor %}
-           </div>
-         {% elif i.type == "multiple-answer" %}
-           <div class="no-p question" data-score="{{ i.data.points }}" data-eval="{{ (""~(eval_data.result[""~loop.index].sum)).replace(".",",") }}">
-             {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
-           {% set masterloop = loop %}
-           {% for c in i.data.choices %}
-            {%if c.startswith("*")%}{%set c_=c[1:]%}{%else%}{%set c_=c%}{%endif%}
-            <label class="with-em {% if (""~(loop.index-1)) in eval_data.result[""~masterloop.index].selection %}{%if c.startswith("*") %}correct{%else%}wrong{%endif%}{%endif%}" for="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}"><input type="checkbox" id="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" value="{{ loop.index-1 }}" name="quiz-question-{{ masterloop.index }}" disabled{% if (""~(loop.index-1)) in eval_data.result[""~masterloop.index].selection %} checked{% endif %}> {{ c_ }}{% if (""~(loop.index-1)) not in eval_data.result[""~masterloop.index].selection and c.startswith("*") %} <em>wäre richtig gewesen</em>{% elif c.startswith("*") %} <em>richtig</em>{% elif (""~(loop.index-1)) in eval_data.result[""~masterloop.index].selection %} <em>falsch</em>{% endif %}</label>
-           {% endfor %}
-           </div>
-         {% elif i.type == "text-answer" %}
-           <div class="no-p question" data-score="{{ i.data.points }}" data-eval="{{ eval_data.result[""~loop.index].sum }}">
-             {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
-            <input id="quiz-question-{{ loop.index }}-answer" disabled value="{{ eval_data.result[""~loop.index].selection }}">
-            <p style="font-size: 0.8em"><strong>Korrekt:</strong> {% for _ in eval_data.result[""~loop.index].correct %}{% if not loop.index == 1 %}, {% endif %}{{ _ }}{% endfor %}
-           </div>
-         {% endif %}
-        {% endfor %}
-      {% else %}
-       {% for i in data.getJSON() %}
-        {% if i.type == "heading" %}
-          <h1>{{ i.data.text }}</h1>
-        {% elif i.type == "info-text" %}
-          {{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
-        {% elif i.type == "separator" %}
-          <hr>
-        {% elif i.type == "warnbox" %}
-          <div class="warning">{{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}</div>
-        {% elif i.type == "quote" %}
-          <blockquote>{{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}</blockquote>
-        {% elif i.type == "image" %}
-          <a href="{{ i.data.source }}"><img src="{{ i.data.source }}"></a>
-        {% elif i.type == "multiple-choice" %}
-          <div class="no-p question" data-score="{{ i.data.points }}">
-            {{ i.data.question|markdown }}
-          {% set masterloop = loop %}
-          {% for c in i.data.choices %}{%if c.startswith("*")%}{%set c=c[1:]%}{%endif%}
-           <label for="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}"><input type="radio" id="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" value="{{ loop.index-1 }}" name="quiz-question-{{ masterloop.index }}"> {{ c }}</label>
-          {% endfor %}
+        </div>
+        <div class="column4 column12__sm p2">
+          {% if data.hasViewData(user) and not request.values.get("re-submit", "false") == "true" %}
+            {% set eval_data = data.getViewData(user, as_json=True) %}
+            {% set sum = eval_data.sum %}
+            <div class="_card">
+              <div class="_card-title">Ergebnis</div>
+              <div class="_card-content">
+                {% if (""~sum).endswith(".0") %}{% set sum=int(sum) %}{% endif %}
+                Du hast an diesem Quiz teilgenommen und <div class="fs-heading f-strong ta-c">
+                  {{ (""~sum).replace(".",",") }} / {{ eval_data.max }}
+                </div>
+                Punkte erreicht.
+                <div class="_progress-bar _progress-bar-success _progress-bar-sm">
+                    <div class="_progress-bar-slot" style="width: {{ 100 * eval_data.sum / eval_data.max }}%"></div>
+                    <div class="_progress-bar-label">{{ (""~(int(1000 * eval_data.sum / eval_data.max)/10)).replace(".",",") }}%</div>
+                </div>
+              </div>
+              <div class="_card-footer">
+                <a class="_btn _btn--primary _btn-sm" href="?re-submit=true">Erneut teilnehmen</a>
+              </div>
+            </div>
+          {% endif %}
+          <div class="_alert _alert-info">
+            <h3>Hinweis</h3>
+            <p>Dies ist ein Quiz und kann beliebig oft wiederholt werden.</p>
           </div>
-        {% elif i.type == "multiple-answer" %}
-          <div class="no-p question" data-score="{{ i.data.points }}">
-            {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
-          {% set masterloop = loop %}
-          {% for c in i.data.choices %}{%if c.startswith("*")%}{%set c=c[1:]%}{%endif%}
-           <label for="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}"><input type="checkbox" id="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" value="{{ loop.index-1 }}" name="quiz-question-{{ masterloop.index }}"> {{ c }}</label>
-          {% endfor %}
-          </div>
-        {% elif i.type == "text-answer" %}
-          <div class="no-p question" data-score="{{ i.data.points }}">
-            {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
-           <input id="quiz-question-{{ loop.index }}-answer" placeholder="Bitte Antwort eingeben">
-          </div>
-        {% endif %}
-       {% endfor %}
-       <button class="primary-btn big-btn block-btn" onclick="send();">Absenden</button>
-     {% endif %}
-     {% if data.isDisabled() %}</div>{% endif %}
-   </main>
-
-   <script>
-   function send() {
-     var data = {};
-     {%- for i in data.getJSON() %}
-       {%- if i.type == "multiple-choice" %}
-       x = document.querySelector("[name='quiz-question-{{ loop.index }}']:checked");
-       if(!x) {data[{{ loop.index }}]=0;} else {data[{{ loop.index }}] = x.value;}
-       {%- elif i.type == "multiple-answer" %}
-       x = document.querySelectorAll("[name='quiz-question-{{ loop.index }}']:checked");
-       if(!x) {data[{{ loop.index }}]=[];} else {z=[];for (var i = 0; i < x.length; i++) {z.push(x[i].value)}data[{{ loop.index }}]=z}
-       {%- elif i.type == "text-answer" %}
-           data[{{ loop.index }}] = document.querySelector("#quiz-question-{{ loop.index }}-answer").value;
-       {%- endif %}
-     {%- endfor %}
-     $post("c/{{ course.id }}/u/{{ data.id }}/submit", data, function () {
-       if(window.location.href.endsWith("?re-submit=true")) {
-         window.location.replace("?re-submit=false");
-       } else {
-         window.location.reload();
-       }
-     })
-   }
-   </script>
-
-   {% if course.getCourseRole(user) >= 3 %}
-   {% include "courses/_create_unit.html" %}
-   {% endif %}
-
-   <style>
-   .question {
-     border-top: 1px solid #ccc;
-     margin: 5px 0;
-     margin-top: 35px;
-     padding: 10px;
-     position: relative;
-   }
-   .question::after {
-     content: attr(data-score) " Pkt.";
-     position: absolute;
-     top: 0;
-     right: 0;
-     transform: translateY(-100%);
-     padding: 2px 5px;
-     background-color: #efefef;
-     font-size: 0.9em;
-     font-weight: bold;
-   }
-   .question[data-eval]::after {
-     content: attr(data-eval) " / "attr(data-score) " Pkt.";
-     color: white;
-     background-color: #555;
-   }
-   .question label.with-em {
-     border-bottom: 1px solid #ddd;
-     margin: 10px 0;
-   }
-   .question label.with-em em {
-     display: inline-block;
-     float: right;
-     padding: 2px 10px;
-     background-color: #ddd;
-     clear: both;
-     font-style: normal;
-     border-top-right-radius: 5px;
-     border-top-left-radius: 5px;
-     border-bottom-right-radius: 5px;
-   }
-   .question label.with-em.correct {
-     border-bottom-color: #3d3;
-   }
-   .question label.with-em.correct em {
-     background-color: #3d3;
-     color: white;
-   }
-   .question label.with-em.wrong {
-     border-bottom-color: #d33;
-   }
-   .question label.with-em.wrong em {
-     background-color: #d33;
-     color: white;
-   }
-   </style>
- </div>
+        </div>
+      </div>
+   </div>
+  </div>
+</div>
+<script>
+function send() {
+  var data = {};
+  {%- for i in data.getJSON() %}
+    {%- if i.type == "multiple-choice" %}
+    x = document.querySelector("[name='quiz-question-{{ loop.index }}']:checked");
+    if(!x) {data[{{ loop.index }}]=0;} else {data[{{ loop.index }}] = x.value;}
+    {%- elif i.type == "multiple-answer" %}
+    x = document.querySelectorAll("[name='quiz-question-{{ loop.index }}']:checked");
+    if(!x) {data[{{ loop.index }}]=[];} else {z=[];for (var i = 0; i < x.length; i++) {z.push(x[i].value)}data[{{ loop.index }}]=z}
+    {%- elif i.type == "text-answer" %}
+        data[{{ loop.index }}] = document.querySelector("#quiz-question-{{ loop.index }}-answer").value;
+    {%- endif %}
+  {%- endfor %}
+  $.ajax({
+    url: "/c/{{ course.id }}/u/{{ data.id }}/submit",
+    method: "POST",
+    contentType: "application/json; charset=utf-8",
+    data: JSON.stringify(data),
+    success: function( r ) {
+      if(window.location.href.endsWith("?re-submit=true")) {
+        window.location.replace("?re-submit=false");
+      } else {
+        window.location.reload();
+      }
+    }
+  });
+}
+</script>
 {% endblock %}

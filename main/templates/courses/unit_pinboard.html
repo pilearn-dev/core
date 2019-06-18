@@ -1,86 +1,141 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-  <nav class="coursenav">
-    {% set topic = course.getTopic() %}
-    <h2>{{ course.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
-    {{ course.getByLine()|markdown }}
-    <ul>
-      <li><a href="/course/{{ course.id }}/{{ course.getLabel() }}/details">Informationen</a></li>
-      <li class="active"><a href="#!">Kursinhalte</a></li>
-      <li><a href="/forum/{{ course.id }}/{{ course.getLabel() }}/list">Kursforum</a></li>
-    </ul>
-  </nav>
- <div class="split-screen">
-   <aside>
-     <h3>Alle Inhalte</h3>
-     <ol>
-       {% for element in course.getMenu() %}
-        {% if element.availible %}
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "contents") }}
+
+<div class="grid -equal-columns">
+  <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
+    <div class="p3">
+      <h2>Menü</h2>
+      <nav class="_nav _nav-v">
+        {% for element in course.getMenu() if element.availible %}
         {% if element.id == data.id %}
-        <li><a href="/c/{{ course.id }}/u/{{ element.id }}" class="current">{{ element.title }}</a>
+        <a href="/c/{{ course.id }}/u/{{ element.id }}" class="-active">{{ element.title }}</a>
         {% else %}
-        <li><a href="/c/{{ course.id }}/u/{{ element.id }}">{{ element.title }}</a>
+        <a href="/c/{{ course.id }}/u/{{ element.id }}">{{ element.title }}</a>
         {% endif %}
-        {% elif user.isMod() or course.getCourseRole(user) >=3 %}
-        <li class="current visited"><a style="opacity: 0.4" href="/c/{{ course.id }}/u/{{ element.id }}">{{ element.title }}</a>
+        {% if element.children %}
+        <nav class="_nav _nav-v">
+          {% for child in element.children if child.availible %}
+           {% if child.id == data.id %}
+           <a href="/c/{{ course.id }}/u/{{ child.id }}" class="-active">{{ child.title }}</a>
+           {% else %}
+           <a href="/c/{{ course.id }}/u/{{ child.id }}">{{ child.title }}</a>
+           {% endif %}
+          {% endfor %}
+        </nav>
         {% endif %}
-          {% if element.children %}
-          <ol>
-            {% for child in element.children %}
-             {% if child.availible %}
-             {% if child.id == data.id %}
-             <li><a href="/c/{{ course.id }}/u/{{ child.id }}" class="current">{{ child.title }}</a>
-             {% else %}
-             <li><a href="/c/{{ course.id }}/u/{{ child.id }}">{{ child.title }}</a>
-             {% endif %}
-             {% elif user.isMod() or course.getCourseRole(user) >=3 %}
-             <li><a style="opacity: 0.4" href="/c/{{ course.id }}/u/{{ child.id }}">{{ child.title }}</a>
-             {% endif %}
-            {% endfor %}
-          </ol>
-          {% endif %}
-        </li>
-       {% endfor %}
-       {% if course.getCourseRole(user) >=3 %}
-       <a href="#!" onclick="document.getElementById('unit-type-dialog-parent').value=0;document.getElementById('unit-type-dialog').classList.add('open')">Neue Seite</a>|<a href="/c/{{ course.id }}/unit_reorder">Neu anordnen</a>
-       {% endif %}
-     </ol>
-   </aside>
-   <main>
-     {% if user.isMod() or course.getCourseRole(user) >= 3 %}
-     <p style="margin: 0; font-size: 0.8em;"><strong>{{ data.getTitle() }}</strong> &ndash; {% if data.isDisabled() %}<span style="color: #d00;">Unveröffentlichte Seite</span>{% else %}Öffentliche Seite{% endif %} &ndash; <a href="/c/{{ course.id }}/u/{{ data.id }}/edit"><i class="fa fa-pencil"></i> Bearbeiten</a>{% if data.getDetail("parent") == 0 and course.getCourseRole(user) >= 3 %} &ndash; <a href="#!" onclick="document.getElementById('unit-type-dialog-parent').value={{ data.id }};document.getElementById('unit-type-dialog').classList.add('open')">Neue Unterseite</a>{% endif %}</p>
-     <hr>
-     {% endif %}
-     {% if data.isDisabled() %}<div class="deleted-section" style="padding: 10px;">{% endif %}
+        {% endfor %}
+      </nav>
+    </div>
+   </div>
+   <div class="column9__lg column12 bs2-light">
+    <div class="_headbar-item">
+      <div class="_headbar-item-name">{{ data.getTitle() }}</div>
+      <div class="_headbar-item-type">Pinwand</div>
+      <div class="_headbar-item-status">
+        {% if data.isDisabled() %}
+          <span class="_badge _badge-s-danger">unveröffentlicht</span>
+        {% else %}
+          <span class="_badge _badge-s-success">live</span>
+        {% endif %}
+      </div>
+      <div class="_headbar-item-sep"></div>
+      <div class="_headbar-item-action">
+        {% if user.isMod() or course.getCourseRole(user) >= 3 %}
+        <a href="/c/{{ course.id }}/u/{{ data.id }}/edit" class="_btn _btn-xs _btn--primary">Bearbeiten</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="{% if data.isDisabled() %}bg-danger-lll{% endif %} p3">
+
        {% if not post %}
         <p>Es wurde noch kein Beitrag für dieses Pinboard ausgewählt.</p>
        {% else %}
-         <div style="padding: 5px 10px; background-color: #eee; border: 1px solid #ddd; font-size: 1.25em; margin: 5px; box-shadow: 0 0 8px -5px #666;">
-           {{ post.getContent()|markdown }}
+         <div class="m1 p5 fs-subheading b1s b-dark-ll b-r2">
+           {{ post.getContent() }}
          </div>
          {% if post.isClosed() %}
-           <div class="warning">
-             {{ post.getClosureWarning()|markdown }}
+           <div class="_alert _alert-warning">
+             {{ post.getClosureWarning()|safe }}
            </div>
          {% endif %}
          {% set aw = post.getAnswers() %}
-         <h2>Antworten</h2>
+         <h2>Rückmeldungen</h2>
+         <div class="grid">
          {% for answer in aw if answer.mayBeSeen(user) %}
-         <div style="padding: 2px 10px; max-width: 600px; background-color: #eee; border: 1px solid #ddd; font-size: 1.125em; margin: 5px; {% if answer.getScore() > 5 %}box-shadow: 0 0 8px -5px #666;{% elif answer.getScore() < -2 %}opacity: 0.7;{% endif %}{% if post.isDeleted() or answer.isDeleted() %} background-color: #fee;{% endif %}">
-           {{ answer.getContent()|markdown }}
-           <p id="rate-{{ answer.id }}" style="font-size: 1rem;"><button onclick="$post('forum/{{ post.getDetail("forumID") }}/answer/{{ answer.id }}/vote', {'direction':1}, function(e){e=JSON.parse(e);document.querySelector('#rate-{{answer.id}} span').innerText=e.score;})"><i class="fa fa-thumbs-up"></i></button> <span style="margin: 0 5px; font-size: 1.1em;">{{ answer.getScore() }}</span> <button onclick="$post('forum/{{ post.getDetail("forumID") }}/answer/{{ answer.id }}/vote', {'direction':-1}, function(e){e=JSON.parse(e);document.querySelector('#rate-{{answer.id}} span').innerText=e.score;})"><i class="fa fa-thumbs-down"></i></button></p>
+         <div class="column6 column12__sm">
+           <div class="_card{% if answer.getScore() > 5 %} s3{% elif answer.getScore() < -2 %} o5{% endif %}{% if post.isDeleted() or answer.isDeleted() %} _card-danger o3{% endif %}">
+             <div class="_card-content">
+               <div class="p3 fs-base3">
+                 {{ answer.getContent() }}
+               </div>
+             </div>
+             <div class="_card-footer">
+               {% if course.getCourseRole(user) >= 3 %}
+                 <div class="p2">Zustimmung: {{ answer.getScore() }}</div>
+               {% else %}
+               <div class="horizontal-list">
+                 {% set the_vote = answer.getUserVote(user) %}
+                 <button class="_btn _btn--primary {{ '-active' if the_vote == 1 }}" onclick="vote({{ answer.id }}, 1);" data-vote="{{ answer.id }}:1"><i class="fa fa-thumbs-up"></i></button>
+                 <button class="_btn _btn--primary {{ '-active' if the_vote == -1 }}" onclick="vote({{ answer.id }}, -1);" data-vote="{{ answer.id }}:-1"><i class="fa fa-thumbs-down"></i></button>
+               </div>
+               {% endif %}
+             </div>
+           </div>
          </div>
          {% endfor %}
+         </div>
+         {% if not course.getCourseRole(user) >= 3 %}
          <h2>Kommentar hinzufügen</h2>
-         <form action="/f/{{ post.getDetail('forumID') }}/post/{{ post.id }}/answer" method="post">
-             <input name="answer" maxlength="280">
-             <button type="submit">Absenden</button>
-         </form>
+         <p>Die bisherigen Antworten drücken nicht deine Meinung aus? Du möchtest noch etwas hinzufügen?</p>
+         <p>Schreibe selber einen Kommentar:</p>
+         <input id="answer" class="form" maxlength="280">
+         <button class="js--submit _btn _btn--primary">Absenden</button>
+         {% endif %}
        {% endif %}
-     {% if data.isDisabled() %}</div>{% endif %}
-   </main>
-   {% if course.getCourseRole(user) >= 3 %}
-   {% include "courses/_create_unit.html" %}
-   {% endif %}
+   </div>
  </div>
+
+<script>
+
+    $(".js--submit").on("click", function() {
+      $.ajax({
+        url: "/c/{{ course.id }}/u/{{ data.id }}/submit",
+        method: "POST",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({ "comment": $("#answer").val() }),
+        success: function( r ) {
+          $("#answer").val("");
+          window.location.reload();
+        }
+      });
+  })
+
+  function vote(post, type) {
+    type = type == 1 ? "up" : "down";
+    $.ajax({
+      url: "/forum/answer-"+post+"/vote",
+      method: "POST",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({"type": type}),
+      success: function( r ) {
+        if(r.result == "success") {
+          if(r.update.vote == 1) {
+            $("[data-vote='" + post + ":1']").addClass("-active");
+            $("[data-vote='" + post + ":-1']").removeClass("-active");
+          } else if (r.update.vote == 0) {
+            $("[data-vote='" + post + ":1']").removeClass("-active");
+            $("[data-vote='" + post + ":-1']").removeClass("-active");
+          } else if (r.update.vote == -1) {
+            $("[data-vote='" + post + ":1']").removeClass("-active");
+            $("[data-vote='" + post + ":-1']").addClass("-active");
+          }
+        } else {
+          PiJS.warnbox.error(r.error, $this.parent());
+        }
+      }
+    });
+  }
+</script>
 {% endblock %}

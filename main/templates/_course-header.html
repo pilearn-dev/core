@@ -24,3 +24,23 @@
   {% endif %}
 </div>
 {% endmacro %}
+
+{% macro course_header (course, current_page) %}
+<div class="_headbar-course{% if course.id != 0 and course.getDetail("state") == 0 %} -under-development{% endif %}" id="course-bar">
+  {% set topic = course.getTopic() %}
+  <div class="_headbar-course-name">{{ course.getTitle() }}</div>
+  <div class="_headbar-course-unit">
+    <a href="/topic/{{ topic.getName() }}" class="_badge _badge-unit">{{ topic.getTitle() }}</a>
+  </div>
+  <div class="_headbar-course-byline">
+    {{ (course.getByLine()|markdown)[3:-4] }}
+  </div>
+  <div class="_headbar-course-navigation">
+    <nav class="_nav _nav-t">
+      <a href="/c/{{ course.id }}/info"{% if current_page == "info" %} class="-active"{% endif %}>Infos</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/start"{% if current_page == "contents" %} class="-active"{% endif %}>Inhalte</a>
+      <a href="/f/{{ course.id }}"{% if current_page == "forum" %} class="-active"{% endif %}>Forum</a>
+    </nav>
+  </div>
+</div>
+{% endmacro %}
