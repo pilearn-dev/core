@@ -191,15 +191,15 @@ def unit_show(unit_id,course_id,unit_label=None,course_label=None):
         abort(403)
     course.setLastVisitedUnitId(cuser, unit.id)
     if unit.getType() == "info":
-        return render_template('courses/unit_info.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
+        return render_template('courses/units/info.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
     elif unit.getType() == "extvideo":
-        return render_template('courses/unit_extvideo.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
+        return render_template('courses/units/extvideo.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
     elif unit.getType() == "survey":
         s = msurvey.Survey(unit.getJSON()["survey"])
-        return render_template('courses/unit_survey.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit, survey=s)
+        return render_template('courses/units/survey.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit, survey=s)
     elif unit.getType() == "quiz":
         try:
-            return render_template('courses/unit_quiz.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit, int=int)
+            return render_template('courses/units/quiz.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit, int=int)
         except Exception as e:
             print e
             if request.values.get("re-submit", 0)=="true":
@@ -212,7 +212,7 @@ def unit_show(unit_id,course_id,unit_label=None,course_label=None):
             a = None
         else:
             a = mforum.Article(aid)
-        return render_template('courses/unit_pinboard.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit, post=a)
+        return render_template('courses/units/pinboard.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit, post=a)
     abort(500)
 
 def unit_edit(unit_id,course_id,unit_label=None,course_label=None):
