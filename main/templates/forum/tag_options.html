@@ -1,7 +1,7 @@
 {% extends "layout_new.html" %}
 {% block body %}
 {% from "_course-header.html" import forum_header %}
-{{ forum_header(forum, "forum") }}
+{{ forum_header(forum, "forum", user) }}
 
 <div class="p4">
   <h1 class="fs-heading">Einstellungen für das Schlagwort <span class="_badge _badge-tag{% if tag.isModOnly() %} _badge-tag-modonly{% endif %}">{{ tag.getName() }}</span></h1>

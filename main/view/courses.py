@@ -1,5 +1,5 @@
 # coding: utf-8
-from flask import render_template, redirect, abort, url_for, request
+from flask import render_template, redirect, abort, url_for, request, jsonify
 from model import privileges as mprivileges, courses as mcourses, user as muser, survey as msurvey, proposal as mproposal, forum as mforum
 from controller import query as cquery
 import json, time
@@ -91,51 +91,111 @@ def course_related_proposal(id,label=None):
         return redirect(url_for("course_related_proposal", id=id, label=course.getLabel()))
     return redirect(url_for("proposal_show", id=mproposal.Proposal.byCourse(id).id))
 
-def course_edit(id,label=None):
+def course_admin(id,label=None, page="identity"):
     if not mcourses.Courses.exists(id):
         abort(404)
     course = mcourses.Courses(id)
     cuser = muser.getCurrentUser()
-    if course.getLabel() != label:
-        return redirect(url_for("course_edit", id=id, label=course.getLabel()))
-    if not(cuser.may("course_reviewEdits") or cuser.isMod() or course.getCourseRole(cuser) == 4):
+    if course.getLabel() != label and request.method != "POST":
+        return redirect(url_for("course_admin", id=id, label=course.getLabel()))
+    if not(cuser.isMod() or course.getCourseRole(cuser) == 4):
         abort(404)
-    if request.method == "POST":
-        data = request.json
-        print(data)
-        course.setDetail("title", data["title"])
-        course.setDetail("shortdesc", data["shortdesc"])
-        course.setDetail("longdesc", data["longdesc"])
-        course.setDetail("requirements", data["requirements"])
-        return "ok"
-    else:
-        return render_template('courses/edit.html', title=course.getTitle(), thispage="courses", data=course)
+    if page == "identity":
+        if request.method == "POST":
 
-def course_permissions(id,label=None):
-    if not mcourses.Courses.exists(id):
-        abort(404)
-    course = mcourses.Courses(id)
-    cuser = muser.getCurrentUser()
-    if course.getLabel() != label:
-        return redirect(url_for("course_edit", id=id, label=course.getLabel()))
-    if not course.getCourseRole(cuser) >= 3:
-        abort(404)
-    if request.method == "POST":
-        return "ok"
-    else:
-        return render_template('courses/permissions.html', title=course.getTitle(), thispage="courses", data=course)
+            data = request.json
 
-def course_publish(id,label=None):
-    if not mcourses.Courses.exists(id):
+            title = data["title"].strip()
+            shortdesc = data["shortdesc"]
+            longdesc = data["longdesc"]
+            requirements = data["requirements"]
+
+            errors = []
+
+            if 5 <= len(title) <= 80:
+                course.setDetail("title", title)
+            else:
+                if 5 > len(title):
+                    errors.append(u"Der Titel des Kurses ist zu kurz. Mindestens 5 Zeichen erforderlich. (aktuell: %i)" % len(title))
+                if 80 < len(title):
+                    errors.append(u"Der Titel des Kurses ist zu lang. Höchstens 80 Zeichen möglich. (aktuell: %i)" % len(title))
+
+            if 15 <= len(shortdesc) <= 280:
+                course.setDetail("shortdesc", shortdesc)
+            else:
+                if 5 > len(shortdesc):
+                    errors.append(u"Die Kurzbeschreibung ist zu kurz. Mindestens 15 Zeichen erforderlich. (aktuell: %i)" % len(shortdesc))
+                if 280 < len(shortdesc):
+                    errors.append(u"Die Kurzbeschreibung ist zu lang. Höchstens 280 Zeichen möglich. (aktuell: %i)" % len(shortdesc))
+
+            if 50 <= len(longdesc) <= 15000:
+                course.setDetail("longdesc", longdesc)
+            else:
+                if 5 > len(longdesc):
+                    errors.append(u"Die Kurzbeschreibung ist zu kurz. Mindestens 50 Zeichen erforderlich. (aktuell: %i)" % len(longdesc))
+                if 15000 < len(longdesc):
+                    errors.append(u"Die Kurzbeschreibung ist zu lang. Höchstens 15000 Zeichen möglich. (aktuell: %i)" % len(longdesc))
+
+            if 10 <= len(requirements) <= 7500:
+                course.setDetail("requirements", requirements)
+            else:
+                if 5 > len(requirements):
+                    errors.append(u"Die Kurzbeschreibung ist zu kurz. Mindestens 10 Zeichen erforderlich. (aktuell: %i)" % len(requirements))
+                if 7500 < len(requirements):
+                    errors.append(u"Die Kurzbeschreibung ist zu lang. Höchstens 7500 Zeichen möglich. (aktuell: %i)" % len(requirements))
+
+            if len(errors):
+                return jsonify({
+                    "result": "error",
+                    "errors": errors
+                })
+            else:
+                return jsonify({
+                    "result": "ok"
+                })
+
+        else:
+            return render_template('courses/admin/identity.html', title=course.getTitle(), thispage="courses", course=course)
+    elif page == "announcements":
+        return render_template("announcements/list.html", title=course.getTitle(), forum=mforum.Forum(course.id), announcements=mforum.ForumAnnouncement.byForum(course.id, True), thispage="courses")
+    elif page == "publish":
+        if request.method == "POST":
+            course.setDetail("state", 1)
+            return "{ok}"
+        else:
+            return render_template('courses/admin/publish.html', title=course.getTitle(), thispage="courses", course=course)
+    elif page == "membership":
+        if request.method == "POST":
+            if request.json["action"] == "give-role":
+                user_to_receive = muser.User(request.json["user"])
+                role_to_receive = request.json["role"]
+                if not role_to_receive in range(1, 5):
+                    return jsonify({ "result": "error", "error": u"Ungültige Ziel-Rolle" })
+                if course.isEnrolled(user_to_receive):
+                    course.setCourseRole(user_to_receive, role_to_receive)
+                    return jsonify({ "result": "success"})
+                else:
+                    return jsonify({ "result": "error", "error": u"Nur möglich für Benutzer, die im Kurs eingeschrieben sind." })
+            elif request.json["action"] == "revoke-role":
+                user_to_receive = muser.User(request.json["user"])
+                if course.isEnrolled(user_to_receive) and course.getCourseRole(user_to_receive) != 1:
+                    course.setCourseRole(user_to_receive, 1)
+                    return jsonify({ "result": "success"})
+            elif request.json["action"] == "kick-remove":
+                user_to_receive = muser.User(request.json["user"])
+                if course.isEnrolled(user_to_receive) and course.getCourseRole(user_to_receive) == 1:
+                    course.unenroll(user_to_receive)
+                    user_to_receive.customflag(u"Benutzer von " + cuser.getHTMLName(False) + u" (#" + str(cuser.id) + u") aus dem Kurs " + course.getTitle() + u" (#" + str(course.id) + ") geworfen.", muser.User.from_id(-1))
+                    return jsonify({ "result": "success"})
+                else:
+                    return jsonify({ "result": "error", "error": u"Nicht möglich: Benutzer nicht eingeschrieben oder Benutzer hat Rolle." })
+
+            return jsonify({ "result": "error", "error": u"Ungültige Anfrage" })
+        else:
+            return render_template('courses/admin/membership.html', title=course.getTitle(), thispage="courses", course=course)
+    else:
         abort(404)
-    course = mcourses.Courses(id)
-    cuser = muser.getCurrentUser()
-    if course.getLabel() != label:
-        return redirect(url_for("course_publish", id=id, label=course.getLabel()))
-    if not course.getCourseRole(cuser) == 4:
-        abort(404)
-    course.setDetail("state", 1)
-    return "ok"
+
 
 def course_enroll(id,label=None):
     if not mcourses.Courses.exists(id):
@@ -201,9 +261,8 @@ def unit_show(unit_id,course_id,unit_label=None,course_label=None):
         try:
             return render_template('courses/units/quiz.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit, int=int)
         except Exception as e:
-            print e
             if request.values.get("re-submit", 0)=="true":
-                abort(500)
+                raise e
             data = {"re-submit":"true", "submission-error": "incomplete"}
             return redirect(url_for("unit_show", course_id=course_id, course_label=course_label, unit_id=unit_id, unit_label=unit.getLabel(), **data))
     elif unit.getType() == "pinboard":
@@ -396,9 +455,7 @@ def apply(app):
     app.route("/c/search")(app.route("/course/search")(courses_search))
     app.route("/c/<int:id>")(app.route("/c/<int:id>/info")(app.route("/course/<int:id>/<label>/details")(app.route("/course/<int:id>/<label>")(course_info))))
     app.route("/c/<int:id>/proposal")(app.route("/course/<int:id>/<label>/proposal")(course_related_proposal))
-    app.route("/c/<int:id>/edit", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/edit", methods=["GET", "POST"])(course_edit))
-    app.route("/@/c/<int:id>/permissions", methods=["GET", "POST"])(app.route("/@/course/<int:id>/<label>/permissions", methods=["GET", "POST"])(course_permissions))
-    app.route("/c/<int:id>/publish", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/publish", methods=["GET", "POST"])(course_publish))
+    app.route("/c/<int:id>/admin", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/admin", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/admin/<page>", methods=["GET", "POST"])(course_admin)))
     app.route("/c/<int:id>/enroll")(app.route("/course/<int:id>/<label>/enroll")(course_enroll))
     app.route("/c/<int:id>/start")(app.route("/course/<int:id>/<label>/start")(course_start))
     app.route("/c/<int:course_id>/<int:unit_id>", methods=["GET", "POST"])(app.route("/c/<int:course_id>/u/<int:unit_id>", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/unit/<int:unit_id>/<unit_label>/show", methods=["GET", "POST"])(unit_show)))

@@ -1,5 +1,5 @@
-{% macro forum_header (forum, current_page) %}
-<div class="_headbar-course{% if forum.id != 0 and forum.getCourse().getDetail("state") == 0 %} -under-development{% endif %}" id="course-bar">
+{% macro forum_header (forum, current_page, user) %}{% set course = forum.getCourse() %}
+<div class="_headbar-course{% if forum.id != 0 and course.getDetail("state") == 0 %} -under-development{% endif %}" id="course-bar">
   {% if forum.id == 0 %}
     <div class="_headbar-course-name anchor-black"><a href="/f/0">globales Forum</a></div>
     <div class="_headbar-course-byline">
@@ -19,13 +19,16 @@
         <a href="/c/{{ forum.id }}/info"{% if current_page == "info" %} class="-active"{% endif %}>Infos</a>
         <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/start"{% if current_page == "contents" %} class="-active"{% endif %}>Inhalte</a>
         <a href="/f/{{ forum.id }}"{% if current_page == "forum" %} class="-active"{% endif %}>Forum</a>
+        {% if course.getCourseRole(user) == 4 or user.isMod() %}
+        <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/admin"{% if current_page == "admin" %} class="-active"{% endif %}>Verwaltung</a>
+        {% endif %}
       </nav>
     </div>
   {% endif %}
 </div>
 {% endmacro %}
 
-{% macro course_header (course, current_page) %}
+{% macro course_header (course, current_page, user) %}
 <div class="_headbar-course{% if course.id != 0 and course.getDetail("state") == 0 %} -under-development{% endif %}" id="course-bar">
   {% set topic = course.getTopic() %}
   <div class="_headbar-course-name">{{ course.getTitle() }}</div>
@@ -39,7 +42,10 @@
     <nav class="_nav _nav-t">
       <a href="/c/{{ course.id }}/info"{% if current_page == "info" %} class="-active"{% endif %}>Infos</a>
       <a href="/course/{{ course.id }}/{{ course.getLabel() }}/start"{% if current_page == "contents" %} class="-active"{% endif %}>Inhalte</a>
-      <a href="/f/{{ course.id }}"{% if current_page == "forum" %} class="-active"{% endif %}>Forum</a>
+      <a href="/forum/{{ course.id }}/{{ course.getLabel() }}"{% if current_page == "forum" %} class="-active"{% endif %}>Forum</a>
+      {% if course.getCourseRole(user) == 4 or user.isMod() %}
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin"{% if current_page == "admin" %} class="-active"{% endif %}>Verwaltung</a>
+      {% endif %}
     </nav>
   </div>
 </div>

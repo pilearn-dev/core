@@ -1,6 +1,22 @@
 {% extends "layout_new.html" %}
 {% block body %}
-<h1>Ankündigungen: {{ forum.getTitle() }}</h1>
+{% from "_course-header.html" import forum_header %}
+{{ forum_header(forum, "admin", user) }}
+{% if forum.id != 0 %}
+<div class="grid">
+  <div class="column3 column12__sm p2">
+    <div class="_nav _nav-v">
+      <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/admin/identity">Identität</a>
+      <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/admin/announcements" class="-active">Ankündigungen</a>
+      <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/admin/membership">Benutzer</a>
+      {% if forum.getCourse().getDetail("state") == 0 %}
+      <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/admin/publish">Veröffentlichen</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="column9 column12__sm p3">
+{% endif %}
+<h1>Ankündigungen</h1>
 <p>Ankündigungen werden auf der Startseite für alle Benutzer angezeigt, die Zugriff auf dieses Forum haben.</p>
 <p>Wähle eine Ankündigung zum Bearbeiten:</p>
 <div class="_list">
@@ -22,4 +38,5 @@
   {% endfor %}
 </div>
 <a class="_btn" href="/announcements/{{ forum.id }}/add">Ankündigung hinzufügen</a>
+{% if forum.id != 0 %}</div></div>{% endif %}
 {% endblock %}

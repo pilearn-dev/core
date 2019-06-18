@@ -4,7 +4,7 @@
 {% endmacro %}
 {% block body %}
 {% from "_course-header.html" import forum_header %}
-{{ forum_header(forum, "forum") }}
+{{ forum_header(forum, "forum", user) }}
 
 <h1 class="ml2 fs-heading">Versionen von {% if post.isDeleted() %}<span class="bg-danger-lll">{% endif %}<a href="/f/{{ forum.id }}/{{ post.id }}">{{ post.getTitle() }}</a>{% if post.isDeleted() %}</span>{% endif %}</h1>
 {% for rev in post.getAllRevisions() %}

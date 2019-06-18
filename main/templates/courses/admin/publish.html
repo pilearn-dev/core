@@ -1,0 +1,65 @@
+{% extends "layout_new.html" %}
+{% block body %}
+<script src="/static/new_js/pilearn.markdown.js"></script>
+<script src="/static/new_js/pilearn.editor.js"></script>
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "admin", user) }}
+<div class="grid">
+  <div class="column3 column12__sm p2">
+    <div class="_nav _nav-v">
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/identity">Identität</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/announcements">Ankündigungen</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/membership">Benutzer</a>
+      {% if course.getDetail("state") == 0 %}
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/publish" class="-active">Veröffentlichen</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="column9 column12__sm p3">
+    <h1>Kurs veröffentlichen</h1>
+    {% if course.getDetail("state") == 0 %}
+    <p class="p-lead">Die Veröffentlichung des Kurses ist <span class="mark">ein notwendiger Schritt</span>, damit andere ihn ohne Einladung besuchen können. Allerdings ist sie nicht umkehrbar. Bevor du den Kurs veröffentlichst, bitten wir dich daher zu prüfen, was dann passiert und ob der Kurs wirklich bereit dafür ist.</p>
+    <h4>Empfohlene Voraussetzungen</h4>
+    <ul>
+      <li>Es wurde ein Konzept ausgearbeitet.</li>
+      <li>Es wurden alle Erklärseiten, Quizze und Videos hinzugefügt.</li>
+      <li>Umfragen befinden sich in der Planung (oder wurden verworfen)</li>
+      <li>Der Kurs wurde von mindestens zwei anderen Benutzern getestet.</li>
+      <li>Alle Quizze wurden noch einmal auf Korrektheit geprüft.</li>
+    </ul>
+    <h4>Konsequenzen</h4>
+    <ul>
+      <li>Alle angemeldeten Benutzer können sich für den Kurs einschreiben.</li>
+      <li>Eingeschriebene und nicht angemeldete Benutzer können den Kurs einsehen.</li>
+      <li>Eingeschriebene Benutzer können Quizze absenden.</li>
+      <li>Das Kursforum kann verwendet werden.</li>
+      <li>Feedback kann für den Kurs gegeben werden.</li>
+    </ul>
+    <label for="publish_confirm"><input type="checkbox" id="publish_confirm" onchange="if(this.checked){$('#publish_btn').removeAttr('disabled')}else{$('#publish_btn').attr('disabled',true)}"> Ich bestätige, dass ich diesen Text sorgfältig gelesen habe und ich möchte mit der Veröffentlichung dieses Kurses fortfahren.</label>
+    <button class="d-b _btn _btn-danger" id="publish_btn" disabled>Veröffentlichen</button>
+
+    <script>
+      $("#publish_btn").on("click", function () {
+        if(!$("#publish_confirm")[0].checked) {
+          PiJS.warnbox.error("Sicherheitsabfrage bestätigen!", $("#publish_btn").parent());
+          return;
+        }
+        $.ajax({
+          method: "POST",
+          url: "/course/{{ course.id }}/{{ course.getLabel() }}/admin/publish",
+          success: function( result ) {
+            window.location.reload();
+          },
+          error: function() {
+            PiJS.warnbox.error("Ein Fehler ist aufgetreten. Bitte wende dich an den Support.", $("#publish_btn").parent());
+          }
+        });
+      });
+    </script>
+
+    {% else %}
+    <p>Dieser Kurs wurde bereits veröffentlicht. Hier gibt es nicht für dich zu tun. :)</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

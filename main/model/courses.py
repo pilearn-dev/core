@@ -239,6 +239,20 @@ class Courses:
             if con:
                 con.close()
 
+    def unenroll(self, u):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("DELETE FROM enrollments WHERE courseid=? AND userid=?", (self.id, u.id))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
     def isEnrolled(self, u):
         try:
             con = lite.connect('databases/courses.db')
@@ -325,6 +339,20 @@ class Courses:
             return d["permission"]
         except lite.Error as e:
             return 1
+        finally:
+            if con:
+                con.close()
+
+    def setCourseRole(self, u, role):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("UPDATE enrollments SET permission=? WHERE courseid=? AND userid=?", (role, self.id, u.id))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
         finally:
             if con:
                 con.close()

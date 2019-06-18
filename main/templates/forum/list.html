@@ -1,7 +1,7 @@
 {% extends "layout_new.html" %}
 {% block body %}
 {% from "_course-header.html" import forum_header %}
-{{ forum_header(forum, "forum") }}
+{{ forum_header(forum, "forum", user) }}
 {% set articles = forum.getArticles(search, request.values.get("sort", "active"), tagged=tagged) %}
 <div class="grid">
   <div class="column8__lg column12">

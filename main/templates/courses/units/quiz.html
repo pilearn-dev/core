@@ -1,7 +1,7 @@
 {% extends "layout_new.html" %}
 {% block body %}
 {% from "_course-header.html" import course_header %}
-{{ course_header(course, "contents") }}
+{{ course_header(course, "contents", user) }}
 
 <div class="grid -equal-columns">
   <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
