@@ -81,7 +81,7 @@ def course_info(id,label=None):
     course = mcourses.Courses(id)
     if course.getLabel() != label:
         return redirect(url_for("course_info", id=id, label=course.getLabel()))
-    return render_template('courses/info.html', title=course.getTitle(), thispage="courses", data=course)
+    return render_template('courses/info.html', title=course.getTitle(), thispage="courses", data=course, ForumAnnouncement=mforum.ForumAnnouncement)
 
 def course_related_proposal(id,label=None):
     if not mcourses.Courses.exists(id):
@@ -394,7 +394,7 @@ def apply(app):
     app.route("/courses")(courses_index)
     app.route("/course/propose", methods=["GET", "POST"])(courses_propose)
     app.route("/c/search")(app.route("/course/search")(courses_search))
-    app.route("/c/<int:id>")(app.route("/c/<int:id>/info")(app.route("/course/<int:id>/<label>/details")(course_info)))
+    app.route("/c/<int:id>")(app.route("/c/<int:id>/info")(app.route("/course/<int:id>/<label>/details")(app.route("/course/<int:id>/<label>")(course_info))))
     app.route("/c/<int:id>/proposal")(app.route("/course/<int:id>/<label>/proposal")(course_related_proposal))
     app.route("/c/<int:id>/edit", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/edit", methods=["GET", "POST"])(course_edit))
     app.route("/@/c/<int:id>/permissions", methods=["GET", "POST"])(app.route("/@/course/<int:id>/<label>/permissions", methods=["GET", "POST"])(course_permissions))

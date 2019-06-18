@@ -29,6 +29,25 @@ class Courses:
             if con:
                 con.close()
 
+    def getHash(self):
+        return sha1("[id:" + str(self.id) + ",name:" + self.getTitle()+"]")[:15]
+
+    def getPattern(self):
+        course_hash = self.getHash()
+        pattern = "background: linear-gradient("
+
+        is_letter=(lambda x: x.lower() in "abcdefghijklmnopqrstuvxyz")
+        get_direction=(lambda x: sum(map(ord, x)) % 360)
+
+        if is_letter(course_hash[0]):
+            pattern += str(get_direction(course_hash[:4])) + "deg, #" + course_hash[8:14] + ", #" +  course_hash[1:7]
+        else:
+            pattern += str(get_direction(course_hash[-4:])) + "deg, #" + course_hash[1:7] + ", #" +  course_hash[8:14]
+
+        pattern += ");"
+
+        return pattern
+
     def getForum(self):
         import forum as mforum
         return mforum.Forum(self.id)
