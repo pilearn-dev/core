@@ -196,6 +196,18 @@ def course_admin(id,label=None, page="identity"):
     else:
         abort(404)
 
+def course_edit_overview(id,label=None):
+    if not mcourses.Courses.exists(id):
+        abort(404)
+    course = mcourses.Courses(id)
+    cuser = muser.getCurrentUser()
+    if course.getLabel() != label and request.method != "POST":
+        return redirect(url_for("course_edit_overview", id=id, label=course.getLabel()))
+    if not(cuser.isMod() or course.getCourseRole(cuser) >= 3):
+        abort(404)
+
+    return render_template('courses/edit/index.html', title=course.getTitle(), thispage="courses", course=course)
+
 
 def course_enroll(id,label=None):
     if not mcourses.Courses.exists(id):
@@ -294,15 +306,15 @@ def unit_edit(unit_id,course_id,unit_label=None,course_label=None):
         if unit.getLabel() != unit_label:
             return redirect(url_for("unit_edit", course_id=course_id, course_label=course_label, unit_id=unit_id, unit_label=unit.getLabel()))
         if unit.getType() == "info":
-            return render_template('courses/edit_unit_info.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
+            return render_template('courses/edit/unit-info.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
         elif unit.getType() == "extvideo":
-            return render_template('courses/edit_unit_extvideo.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
+            return render_template('courses/edit/unit-extvideo.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
         elif unit.getType() == "survey":
-            return render_template('courses/edit_unit_survey.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
+            return render_template('courses/edit/unit-survey.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
         elif unit.getType() == "quiz":
-            return render_template('courses/edit_unit_quiz.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
+            return render_template('courses/edit/unit-quiz.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
         elif unit.getType() == "pinboard":
-            return render_template('courses/edit_unit_pinboard.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
+            return render_template('courses/edit/unit-pinboard.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
         abort(500)
 
 
@@ -447,7 +459,7 @@ def course_unit_reorder(id,label=None):
     else:
         if course.getLabel() != label:
             return redirect(url_for("course_unit_reorder", id=id, label=course.getLabel()))
-        return render_template('courses/unit_reorder.html', title="Kursmodule neu anordnen: " + course.getTitle(), thispage="courses", data=course)
+        return render_template('courses/edit/reorder.html', title="Kursmodule neu anordnen: " + course.getTitle(), thispage="courses", data=course)
 
 def apply(app):
     app.route("/courses")(courses_index)
@@ -459,10 +471,11 @@ def apply(app):
     app.route("/c/<int:id>/enroll")(app.route("/course/<int:id>/<label>/enroll")(course_enroll))
     app.route("/c/<int:id>/start")(app.route("/course/<int:id>/<label>/start")(course_start))
     app.route("/c/<int:course_id>/<int:unit_id>", methods=["GET", "POST"])(app.route("/c/<int:course_id>/u/<int:unit_id>", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/unit/<int:unit_id>/<unit_label>/show", methods=["GET", "POST"])(unit_show)))
-    app.route("/c/<int:course_id>/u/<int:unit_id>/edit", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/unit/<int:unit_id>/<unit_label>/edit", methods=["GET", "POST"])(unit_edit))
+    app.route("/c/<int:id>/edit", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/edit", methods=["GET", "POST"])(course_edit_overview))
+    app.route("/c/<int:course_id>/edit/unit/<int:unit_id>", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/edit/unit/<int:unit_id>/<unit_label>", methods=["GET", "POST"])(unit_edit))
     app.route("/c/<int:course_id>/u/<int:unit_id>/submit", methods=["POST"])(app.route("/course/<int:course_id>/<course_label>/unit/<int:unit_id>/<unit_label>/submit", methods=["POST"])(unit_submit))
-    app.route("/c/<int:course_id>/u/new", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/unit/new", methods=["GET", "POST"])(unit_new))
+    app.route("/c/<int:course_id>/edit/add", methods=["POST"])(app.route("/course/<int:course_id>/<course_label>/edit/add", methods=["POST"])(unit_new))
     app.route("/topics")(topic_index)
     app.route("/t/<name>")(app.route("/topic/<name>")(topic_view))
     app.route("/t/<name>/edit", methods=["GET", "POST"])(app.route("/topic/<name>/edit", methods=["GET", "POST"])(topic_edit))
-    app.route("/c/<int:id>/unit_reorder", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/unit_reorder", methods=["GET", "POST"])(course_unit_reorder))
+    app.route("/c/<int:id>/edit/reorder", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/edit/reorder", methods=["GET", "POST"])(course_unit_reorder))

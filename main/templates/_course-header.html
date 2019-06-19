@@ -18,6 +18,9 @@
       <nav class="_nav _nav-t">
         <a href="/c/{{ forum.id }}/info"{% if current_page == "info" %} class="-active"{% endif %}>Infos</a>
         <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/start"{% if current_page == "contents" %} class="-active"{% endif %}>Inhalte</a>
+        {% if course.getCourseRole(user) >= 3 %}
+        <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/edit"{% if current_page == "edit" %} class="-active"{% endif %}>Bearbeiten</a>
+        {% endif %}
         <a href="/f/{{ forum.id }}"{% if current_page == "forum" %} class="-active"{% endif %}>Forum</a>
         {% if course.getCourseRole(user) == 4 or user.isMod() %}
         <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/admin"{% if current_page == "admin" %} class="-active"{% endif %}>Verwaltung</a>
@@ -42,6 +45,9 @@
     <nav class="_nav _nav-t">
       <a href="/c/{{ course.id }}/info"{% if current_page == "info" %} class="-active"{% endif %}>Infos</a>
       <a href="/course/{{ course.id }}/{{ course.getLabel() }}/start"{% if current_page == "contents" %} class="-active"{% endif %}>Inhalte</a>
+      {% if course.getCourseRole(user) >= 3 %}
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/edit"{% if current_page == "edit" %} class="-active"{% endif %}>Bearbeiten</a>
+      {% endif %}
       <a href="/forum/{{ course.id }}/{{ course.getLabel() }}"{% if current_page == "forum" %} class="-active"{% endif %}>Forum</a>
       {% if course.getCourseRole(user) == 4 or user.isMod() %}
       <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin"{% if current_page == "admin" %} class="-active"{% endif %}>Verwaltung</a>

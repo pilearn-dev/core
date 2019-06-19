@@ -1,0 +1,219 @@
+{% set needs_mathjax=True %}
+{% extends "layout_new.html" %}
+{% block body %}
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "edit", user) }}
+
+<div class="grid -equal-columns">
+  <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
+    <div class="p3">
+      <h2>Menü</h2>
+      <nav class="_nav _nav-v">
+        <a href="/c/{{ course.id }}/edit" class="-active f-bold mb3">Übersicht</a>
+        {% for element in course.getMenu() %}
+        {% if element.availible %}
+        <a href="/c/{{ course.id }}/edit/unit/{{ element.id }}">{{ element.title }}</a>
+        {% else %}
+        <a href="/c/{{ course.id }}/edit/unit/{{ element.id }}" class="f-italic">[{{ element.title }}]</a>
+        {% endif %}
+        {% if element.children %}
+        <nav class="_nav _nav-v">
+          {% for child in element.children %}
+           {% if child.availible %}
+           <a href="/c/{{ course.id }}/edit/unit/{{ child.id }}">{{ child.title }}</a>
+           {% else %}
+           <a href="/c/{{ course.id }}/edit/unit/{{ child.id }}" class="f-italic">[{{ child.title }}]</a>
+           {% endif %}
+          {% endfor %}
+        </nav>
+        {% endif %}
+        {% endfor %}
+      </nav>
+    </div>
+   </div>
+   <div class="column9__lg column12 bs2-light">
+     <div class="grid -equal-columns">
+      <div class="column8 column12__sm p2">
+          <h1>Übersicht über die Kursmodule</h1>
+          <a href="/c/{{ course.id }}/edit/reorder" class="_btn push-right _btn--primary _btn-lighter">Anordnung ändern</a>
+          <button onclick="PiJS.dialog.resetposition($('#newitem_dialog').removeClass('hide'));" class="_btn push-right _btn--primary">Hinzufügen</button>
+          <div class="push-reset"></div>
+          <table class="table" style="width: 100%">
+              <tr>
+                  <th>Typ</th>
+                  <th>Modul</th>
+                  <th>sichtbar?</th>
+              </tr>
+              {% for element in course.getMenu() %}
+              <tr>
+                  {% if element.type == "info" %}
+                  <td>Info</td>
+                  {% elif element.type == "extvideo" %}
+                  <td>Video</td>
+                  {% elif element.type == "quiz" %}
+                  <td>Quiz</td>
+                  {% elif element.type == "survey" %}
+                  <td>Umfrage</td>
+                  {% elif element.type == "pinboard" %}
+                  <td>Pinwand</td>
+                  {% else %}
+                  <td></td>
+                  {% endif %}
+                  <td><a href="/c/{{ course.id }}/edit/unit/{{ element.id }}" class="f-bold">{{ element.title }}</a></td>
+                  <td>{% if element.availible %}&check;{% else %}&cross;{% endif %}</td>
+              </tr>
+              {% if element.children %}
+                {% for child in element.children %}
+                <tr>
+                    {% if child.type == "info" %}
+                    <td>Info</td>
+                    {% elif child.type == "extvideo" %}
+                    <td>Video</td>
+                    {% elif child.type == "quiz" %}
+                    <td>Quiz</td>
+                    {% elif child.type == "survey" %}
+                    <td>Umfrage</td>
+                    {% elif child.type == "pinboard" %}
+                    <td>Pinwand</td>
+                    {% else %}
+                    <td></td>
+                    {% endif %}
+                    <td>&mdash;<a href="/c/{{ course.id }}/edit/unit/{{ child.id }}">{{ child.title }}</a></td>
+                    <td>{% if child.availible %}&check;{% else %}&cross;{% endif %}</td>
+                </tr>
+                {% endfor %}
+              {% endif %}
+              {% endfor %}
+          </table>
+          <a href="/c/{{ course.id }}/edit/reorder" class="_btn push-right _btn--primary _btn-lighter">Anordnung ändern</a>
+          <button onclick="PiJS.dialog.resetposition($('#newitem_dialog').removeClass('hide'));" class="_btn push-right _btn--primary">Hinzufügen</button>
+          <div class="push-reset"></div>
+          <div class="push-reset"></div>
+      </div>
+      <div class="column4 p2 column12__sm">
+        <h2>Fortschritt</h2>
+        <div class="_progress">
+            {% set units = (course.getUnitsByType("info") + course.getUnitsByType("extvideo"))|length %}
+            <div class="_progress-card {% if units >= 3 %}-completed{% endif %}">
+                <div class="_progress-card-icon"></div>
+                <div class="_progress-card-label">
+                    <div class="_progress-card-heading">Füge drei Inhalte hinzu</div>
+                    {% if units < 3 %}
+                    Am Wichtigsten sind für den Kurs natürlich die Inhalte. Eine klare Gliederung in mittelgroße Abschnitte sorgt für optimale Verständlichkeit.
+                    <div class="_progress-bar _progress-bar-success _progress-bar-sm">
+                        <div class="_progress-bar-slot" style="width: {{ 100*units/3 }}%"></div>
+                        <div class="_progress-bar-label">{{ units }}/3</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% set tests = course.getUnitsByType("quiz")|length %}
+            <div class="_progress-card {% if tests >= 1 %}-completed{% endif %}">
+                <div class="_progress-card-icon"></div>
+                <div class="_progress-card-label">
+                    <div class="_progress-card-heading">Füge ein Quiz hinzu</div>
+                    {% if tests < 1 %}
+                    Ein Quiz dient als Auflockerung und ermöglicht die Wiederholung der gelernten Inhalte.
+                    <div class="_progress-bar _progress-bar-success _progress-bar-sm">
+                        <div class="_progress-bar-slot" style="width: {{ 100*tests/1 }}%"></div>
+                        <div class="_progress-bar-label">{{ tests }}/1</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% set testers = course.getEnrolledByPerm(2)|length %}
+            <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/membership" class="_progress-card {% if testers >= 2 %}-completed{% endif %}">
+                <div class="_progress-card-icon"></div>
+                <div class="_progress-card-label">
+                    <div class="_progress-card-heading">Füge zwei Tester hinzu</div>
+                    {% if testers < 2 %}
+                    Bitte zwei Freunde/Bekannte, deinen Kurs zu testen, damit er auch wirklich bereit zur Veröffentlichung ist.
+                    <div class="_progress-bar _progress-bar-success _progress-bar-sm">
+                        <div class="_progress-bar-slot" style="width: {{ 100*testers/2 }}%"></div>
+                        <div class="_progress-bar-label">{{ testers }}/2</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </a>
+        </div>
+        <h2>Tipps und Tricks</h2>
+        <div class="_card">
+            <div class="_card-title _card-subtitle"><a href="#!" data-toggle=".js--tips-structure" data-toggle-class="hide">Aufbau und Struktur</a></div>
+            <div class="_card-content hide js--tips-structure"></div>
+            <div class="_card-title _card-subtitle"><a href="#!" data-toggle=".js--tips-diverse" data-toggle-class="hide">Abwechslungsreich gestalten</a></div>
+            <div class="_card-content hide js--tips-diverse"></div>
+            <div class="_card-title _card-subtitle"><a href="#!" data-toggle=".js--tips-repeat" data-toggle-class="hide">Wiederholungen einbauen</a></div>
+            <div class="_card-content hide js--tips-repeat"></div>
+            <div class="_card-title _card-subtitle"><a href="#!" data-toggle=".js--tips-test" data-toggle-class="hide">Kurse testen</a></div>
+            <div class="_card-content hide js--tips-test"></div>
+        </div>
+    </div>
+   </div>
+ </div>
+
+ <div class="_dialog hide" id="newitem_dialog">
+  <a href="#!" onclick="$('#newitem_dialog').addClass('hide')" class="_xbtn _dialog-xbtn">&times;</a>
+  <h3>Neue Seite hinzufügen</h3>
+  <p class="p-lead">Was für eine Seite willst du hinzufügen?</p>
+  <p>Achtung: Eine einmal angelegte Seite kann nicht wieder entfernt, nur ausgeblendet werden.</p>
+  <div class="_toollist">
+    <label class="_toollist-item" for="newitem_dialog-1">
+      <input type="radio" value="info" class="form-radio" id="newitem_dialog-1" name="newitem_dialog">
+      <div class="_toollist-data">
+        <h4>Inhalte/Info</h4>
+        <p>Lerninhalte mit Text und Bildern, sowie Informationen zum Kurs.</p>
+      </div>
+    </label>
+    <label class="_toollist-item" for="newitem_dialog-2">
+      <input type="radio" class="form-radio" id="newitem_dialog-2" value="extvideo" name="newitem_dialog">
+      <div class="_toollist-data">
+        <h4>Video</h4>
+        <p>Lernvideo von Youtube, Vimeo oder von einem Link einbinden.</p>
+      </div>
+    </label>
+    <label class="_toollist-item" for="newitem_dialog-3">
+      <input type="radio" class="form-radio" id="newitem_dialog-3" value="quiz" name="newitem_dialog">
+      <div class="_toollist-data">
+        <h4>Quiz</h4>
+        <p>Wiederholung von gelernten Inhalten mit Multiple-Choice, Multiple-Answer und Textantwort-Fragen.</p>
+      </div>
+    </label>
+    <label class="_toollist-item" for="newitem_dialog-4">
+      <input type="radio" class="form-radio" id="newitem_dialog-4" value="survey" name="newitem_dialog">
+      <div class="_toollist-data">
+        <h4>Umfrage</h4>
+        <p>Eine Umfrage zu Demografie, Erfahrung und/oder Lernergebnis der Kursteilnehmenden.</p>
+      </div>
+    </label>
+    <label class="_toollist-item" for="newitem_dialog-5">
+      <input type="radio" class="form-radio" id="newitem_dialog-5" value="pinboard" name="newitem_dialog">
+      <div class="_toollist-data">
+        <h4>Pinwand</h4>
+        <p>Eine Forumsdiskussion in den Kurs einbetten, um jedem die Möglichkeit zu geben, mitzudiskutieren. (z.B. für Feedback)</p>
+      </div>
+    </label>
+  </div>
+  <button class="push-right _btn _btn--primary" onclick="newItem()">Auswählen</button>
+</div>
+<script>
+  function newItem() {
+    type = $("input[name='newitem_dialog']:checked").val()
+    if(!type) return;
+    $.ajax({
+      method: "POST",
+      url: "/c/{{ course.id }}/edit/add",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        "parent": 0,
+        "type": type
+      }),
+      success: function( result ) {
+        window.location.reload();
+      },
+      error: function() {
+        alert("Fehler beim Speichern");
+      }
+    });
+  }
+</script>
+{% endblock %}

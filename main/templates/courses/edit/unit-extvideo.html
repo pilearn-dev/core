@@ -1,0 +1,113 @@
+{% extends "layout_new.html" %}
+{% block body %}
+<link rel="stylesheet" href="/static/ps/polyskript.css">
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "edit", user) }}
+
+<div class="grid -equal-columns">
+  <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
+    <div class="p3">
+      <h2>Menü</h2>
+      <nav class="_nav _nav-v">
+        <a href="/c/{{ course.id }}/edit" class="f-bold mb3">Übersicht</a>
+        {% for element in course.getMenu() %}
+        {% if element.availible %}
+        <a href="/c/{{ course.id }}/edit/unit/{{ element.id }}" class="{{ '-active' if element.id == data.id }}">{{ element.title }}</a>
+        {% else %}
+        <a href="/c/{{ course.id }}/edit/unit/{{ element.id }}" class="f-italic {{ '-active' if element.id == data.id }}">[{{ element.title }}]</a>
+        {% endif %}
+        {% if element.children %}
+        <nav class="_nav _nav-v">
+          {% for child in element.children %}
+           {% if child.availible %}
+           <a href="/c/{{ course.id }}/edit/unit/{{ child.id }}" class="{{ '-active' if child.id == data.id }}">{{ child.title }}</a>
+           {% else %}
+           <a href="/c/{{ course.id }}/edit/unit/{{ child.id }}" class="f-italic {{ '-active' if child.id == data.id }}">[{{ child.title }}]</a>
+           {% endif %}
+          {% endfor %}
+        </nav>
+        {% endif %}
+        {% endfor %}
+      </nav>
+    </div>
+   </div>
+   <div class="column9__lg column12 bs2-light p3">
+      <a href="#!" class="_btn _btn-dark _btn-outline _btn-lg" onclick="prompt('Der Quelltext dieser Seite ist: ', JSON.stringify(ps.data));">Exportieren</a>
+      <a href="#!" class="_btn _btn-dark _btn-outline _btn-lg" onclick="x=JSON.parse(prompt('Bitte Quelltext einfügen: ', '{}'));if(x) {ps.data=x;ps._update()}">Importieren</a>
+
+      <button class="_btn _btn--primary push-right _btn-lg js--savebtn" onclick="save()">Speichern</button>
+
+      {% if data.isDisabled() %}
+      <button class="_btn _btn-outline _btn--primary push-right _btn-lg js--active" onclick="$(this).toggleClass('-active')">Verfügbar</button>
+      {% else %}
+      <button class="_btn _btn-outline -active _btn--primary push-right _btn-lg js--active" onclick="$(this).toggleClass('-active')">Verfügbar</button>
+      {% endif %}
+
+      <div class="push-reset"></div>
+      <input class="form ta-c" style="font-size: 2.5em; font-weight: bold;" id="title" value="{{ data.getTitle() }}">
+
+
+      <p>Videos von externen Plattformen (Youtube, Vimeo, ...) sind mit einer Datenschutzfunktion ausgestattet und werden erst nach Knopfdruck geladen.</p>
+      <p>Bitte beachten &ndash; Nur Videos verwenden, wenn die Weitergabe für kommerzielle Zwecke erlaubt ist.</p>
+      <label for="c_platform" class="form">Plattform:</label>
+      <select id="c_platform" class="form">
+        <option{% if data.getJSON().platform == "youtube" %} selected{% endif %} value="youtube">Youtube</option>
+        <option{% if data.getJSON().platform == "vimeo" %} selected{% endif %} value="vimeo">Vimeo</option>
+        <option{% if data.getJSON().platform == "_link" %} selected{% endif %} value="_link">Direktlink</option>
+      </select>
+      <label for="c_embed" class="form">Einbettcode</label>
+      <input type="text" class="form" id="c_embed" value="{{ data.getJSON().embedcode }}">
+      <div class="_card">
+        <div class="_card-title _card-subtitle"><a href="#!" data-toggle=".js--embedinfo" data-toggle-class="hide">Informationen zum Einbettcode</a></div>
+        <div class="_card-content js--embedinfo hide">
+          <p>Bei <strong>Youtube</strong> ist der Einbettcode derjenige Teil hinter dem <code>?v=</code>:</p>
+          <pre>https://www.youtube.com/watch?v=<span class="mark">abc123</span></pre>
+          <p>Bei <strong>Vimeo</strong> ist der Einbettcode derjenige Teil hinter dem Domainnamen:</p>
+          <pre>https://vimeo.com/<span class="mark">123</span></pre>
+          <p>Bei <strong>Direktlinks</strong> ist der Einbettcode der Direktlink</p>
+        </div>
+      </div>
+
+      <script>
+
+       function save() {
+         $(".js--savebtn").addClass("-loading").text("Speichere...");
+
+         platform = document.getElementById("c_platform").value;
+         embedcode = document.getElementById("c_embed").value;
+         YOUTUBE_REGEX = /^(?:https?:\/\/)?(?:www\.)?(?:(?:youtu\.be\/([a-zA-Z0-9_-]+?))|(?:youtube\.com\/watch\?v=([a-zA-Z0-9_-]+?)))$/;
+
+         if(platform=="youtube") {
+           if(embedcode.match(YOUTUBE_REGEX)) {
+             embedcode = embedcode.replace(YOUTUBE_REGEX, "$1$2");
+           }
+         }
+
+         $.ajax({
+           method: "POST",
+           url: "/c/{{ course.id }}/edit/unit/{{ data.id }}",
+           contentType: "application/json; charset=utf-8",
+           data: JSON.stringify({
+             "title": $("#title").val(),
+             "availible": $(".js--active").hasClass("-active"),
+             "content": {
+               "platform": platform,
+               "embedcode": embedcode
+              }
+           }),
+           success: function( result ) {
+             $(".js--savebtn").removeClass("-loading").text("Gespeichert.");
+             setTimeout(function() {
+               $(".js--savebtn").text("Speichern");
+             }, 1200);
+           },
+           error: function() {
+             $(".js--savebtn").removeClass("-loading").text("Fehler beim Speichern");
+           }
+         });
+       }
+
+     </script>
+   </div>
+   </div>
+{% endblock %}

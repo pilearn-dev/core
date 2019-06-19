@@ -371,6 +371,20 @@ class Courses:
             if con:
                 con.close()
 
+    def getUnitsByType(self, type):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM units WHERE courseid=? AND type=? AND availible=1", (self.id,type))
+            d =cur.fetchall()
+            return [Units(_["id"]) for _ in d]
+        except lite.Error as e:
+            return []
+        finally:
+            if con:
+                con.close()
+
     def getMenu(self):
         try:
             con = lite.connect('databases/courses.db')
@@ -384,7 +398,8 @@ class Courses:
                     "id": dd["id"],
                     "title": dd["title"],
                     "availible": bool(dd["availible"]),
-                    "children": []
+                    "children": [],
+                    "type": dd["type"]
                 }
                 cur.execute("SELECT * FROM units WHERE courseid=? AND parent=? ORDER BY unit_order, id", (self.id, dd["id"]))
                 ddd = cur.fetchall()
@@ -392,7 +407,8 @@ class Courses:
                     dx["children"].append({
                         "id": dy["id"],
                         "title": dy["title"],
-                        "availible": bool(dy["availible"])
+                        "availible": bool(dy["availible"]),
+                        "type": dy["type"]
                     })
                 d.append(dx)
             return d

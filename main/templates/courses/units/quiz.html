@@ -43,7 +43,7 @@
       <div class="_headbar-item-sep"></div>
       <div class="_headbar-item-action">
         {% if user.isMod() or course.getCourseRole(user) >= 3 %}
-        <a href="/c/{{ course.id }}/u/{{ data.id }}/edit" class="_btn _btn-xs _btn--primary">Bearbeiten</a>
+        <a href="/c/{{ course.id }}/edit/unit/{{ data.id }}" class="_btn _btn-xs _btn--primary">Bearbeiten</a>
         {% endif %}
       </div>
     </div>

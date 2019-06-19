@@ -40,6 +40,9 @@ var PiJS = {
           PiJS.dialog._generate(result, bd);
         }
       });
+    },
+    resetposition: function(dialog) {
+      dialog.css("top", (3*15 + window.scrollY)+"px");
     }
   },
   warnbox: {
