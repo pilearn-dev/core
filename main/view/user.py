@@ -410,7 +410,7 @@ def preferences_for_user(id):
 
     data = request.json
 
-    VALID_PREFERENCES = ["darkTheme"]
+    VALID_PREFERENCES = ["darkTheme", "autoSave"]
 
     if data["key"] not in VALID_PREFERENCES:
         return jsonify({

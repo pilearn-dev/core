@@ -1,4 +1,5 @@
 {% extends "layout_new.html" %}
+{% set autoSave = user.getPref("autoSave", False) == "1" %}
 {% block body %}
 <link rel="stylesheet" href="/static/ps/polyskript.css">
 {% from "_course-header.html" import course_header %}
@@ -42,7 +43,11 @@
       {% else %}
       <button class="_btn _btn-outline -active _btn--primary push-right _btn-lg js--active" onclick="$(this).toggleClass('-active')">Verfügbar</button>
       {% endif %}
-      <div class="fs-caption ta-r p1 col-dark-ddd">Automatisches Speichern ist <strong>an</strong>.<br><a href="/user/{{ user.id }}/{{ user.getDetail('name') }}/edit?page=preferences">Einstellungen</a></div>
+      {% if autoSave %}
+      <div class="fs-caption ta-r p1 col-dark-ddd">Automatisches Speichern ist <strong>aktiviert</strong>.<br><a href="/user/{{ user.id }}/{{ user.getDetail('name') }}/edit?page=preferences">Einstellungen</a></div>
+      {% else %}
+      <div class="fs-caption ta-r p1 col-dark-ddd">Automatisches Speichern ist <strong>aus</strong>.<br><a href="/user/{{ user.id }}/{{ user.getDetail('name') }}/edit?page=preferences">Einstellungen</a></div>
+      {% endif %}
       <div class="push-reset"></div>
       <input class="form ta-c" style="font-size: 2.5em; font-weight: bold;" id="title" value="{{ data.getTitle() }}">
       <div id="polyskript-master" class="polyskript">
@@ -77,6 +82,10 @@
            }
          });
        }
+
+       {% if autoSave %}
+       setInterval(function(){save();}, 30000);
+       {% endif %}
 
      </script>
    </div>
