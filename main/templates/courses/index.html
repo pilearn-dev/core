@@ -1,103 +1,89 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-<div class="tabination">
-  <ul>
-    <li class="active"><a href="/courses">Übersicht</a></li>
-    <li><a href="/course/search">Suchen</a></li>
-    <li><a href="/topics">Themen</a></li>
-    <li><a href="/course/propose">Vorschlagen</a></li>
-  </ul>
+<div class="_nav _nav-t _nav-right">
+  <a href="/courses" class="-active">Übersicht</a>
+  <a href="/course/search">Suchen</a>
+  <a href="/topics">Themen</a>
+  <a href="/course/propose">Vorschlagen</a>
 </div>
-    <h2 class="bigheading">Kurse</h2>
-    {#
-      Example code for ad:
-    <div class="iad-wrapper" id="iad-1">
-    <div class="iad-left-board">
-    <div class="iad-inner-board">
-    <div class="iad-heading"><a href="#!">Wie schreibe ich ein Betriebssystem?</a></div>
-    <div class="iad-topic">Thema: <a href='#!'>Computer</a></div>
-    <div class="iad-description">0xA84 0x39D</div>
-    <div class="iad-sponsorship">zertifiziert von <strong>Microsoft</strong></div>
-    </div>
-    </div>
-    <div class="iad-split"></div>
-    <div class="iad-action-board">
-    <a href="#!" class="iad-action">Klingt gut</a>
-    <a href="#!" class="iad-dismissal" onclick="dismiss_ad('iad-1');">irrelevant</a>
-    <div class="iad-spacer"></div>
-    <div class="iad-notice">Werbung</div>
-    </div>
-    </div>
-    #}
-    <script>
-    function dismiss_ad(elid) {
-    	document.getElementById(elid).classList.add("declined")
-    }
-    </script>
-    <h3 class="coursegrouptitle">Meine Kurse</h3>
-    {% if not user.isLoggedIn() %}
-    <p><a href="/login">Melde dich an!</a> um von dir besuchte Kurse extra zu sehen und auf alle Kurse und Inhalte zugreifen zu können</p>
-    {% elif my_courses|length != 0 %}
-      <div class="courses" id="my_course">
-        {% for course in my_courses %}
-            <div class="course-panel">
-                <a href="/course/{{ course.id }}/{{ course.getLabel() }}/details"><h4>{{ course.getTitle() }}</h4></a>
-                {{ course.getShortdesc()|markdown }}
-                {% set topic = course.getTopic() %}
-                <p><strong>Thema: </strong><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></p>
-                {% if user.isLoggedIn() %}
-                  <a href="/course/{{ course.id }}/{{ course.getLabel() }}/start"><button>Zum Kurs</button></a>
-                {% else %}
-                  <a href="/course/{{ course.id }}/{{ course.getLabel() }}/start"><button>Zum Kurs</button></a>
-                {% endif %}
-            </div>
-        {% endfor %}
+<h1 class="fs-display2 ta-c">Kurse</h1>
+<h2 class="fs-title">Meine Kurse</h2>
+{% if not user.isLoggedIn() %}
+<p><a href="/login">Melde dich an!</a> um von dir besuchte Kurse extra zu sehen und auf alle Kurse und Inhalte zugreifen zu können</p>
+{% elif my_courses|length != 0 %}
+<div class="grid -no-center">
+  {% for course in my_courses %}
+    <div class="colbox375 p2">
+      <div class="_card s2">
+        {% set topic = course.getTopic() %}
+        <a href="/topic/{{ topic.getName() }}" class="_badge _badge-unit m1 f-bold push-right m2">{{ topic.getTitle() }}</a>
+        <div class="_card-image">
+          <div style="height: 150px; width: 100%;  inset; {{ course.getPattern() }}">&nbsp;</div>
+        </div>
+        <div class="_card-header">
+          <a class="anchor-black fs-subheading" href="/course/{{ course.id }}/{{ course.getLabel() }}">{{ course.getTitle() }}</a>
+          <div class="fs-caption">{{ (course.getByLine()|markdown)[3:-4] }}</div>
+        </div>
+        <div class="_card-content">
+          <p>{{ course.getShortdesc() }}</p>
+        </div>
+        <div class="_card-footer">
+          {% if not user.isLoggedIn() or course.isEnrolled(user) %}
+            <a href="/course/{{ course.id }}/{{ course.getLabel() }}/start" class="_btn _btn--primary">Zum Kurs</a>
+          {% else %}
+            <a href="/course/{{ course.id }}/{{ course.getLabel() }}/enroll" class="_btn _btn--primary">Einschreiben</a>
+          {% endif %}
+            <a href="/course/{{ course.id }}/{{ course.getLabel() }}" class="_btn _btn--primary _btn-on-light">Informationen</a>
+        </div>
       </div>
-    {% else %}
-    <p>Du hast dich bisher noch für keine Kurse eingeschrieben.</p>
-    {% endif %}
-    <h3 class="coursegrouptitle">Aktuelle Kurse</h3>
-    <div class="courses" id="now_course">
-        {% for course in now_courses %}
+    </div>
+  {% endfor %}
+</div>
+{% else %}
+<p>Du hast dich bisher noch für keine Kurse eingeschrieben.</p>
+{% endif %}
+<h2 class="fs-title">Aktuelle Kurse</h2>
+<div class="grid -no-center">
+  {% for course in now_courses %}
+    <div class="colbox375 p2">
+      <div class="_card s2">
+        {% set topic = course.getTopic() %}
+        <a href="/topic/{{ topic.getName() }}" class="_badge _badge-unit m1 f-bold push-right m2">{{ topic.getTitle() }}</a>
+        <div class="_card-image">
+          <div style="height: 150px; width: 100%;  inset; {{ course.getPattern() }}">&nbsp;</div>
+        </div>
+        <div class="_card-header">
+          <a class="anchor-black fs-subheading" href="/course/{{ course.id }}/{{ course.getLabel() }}">{{ course.getTitle() }}</a>
+          <div class="fs-caption">{{ (course.getByLine()|markdown)[3:-4] }}</div>
+        </div>
+        <div class="_card-content">
+          <p>{{ course.getShortdesc() }}</p>
+        </div>
+        <div class="_card-footer">
+          {% if not user.isLoggedIn() or course.isEnrolled(user) %}
+            <a href="/course/{{ course.id }}/{{ course.getLabel() }}/start" class="_btn _btn--primary">Zum Kurs</a>
+          {% else %}
+            <a href="/course/{{ course.id }}/{{ course.getLabel() }}/enroll" class="_btn _btn--primary">Einschreiben</a>
+          {% endif %}
+            <a href="/course/{{ course.id }}/{{ course.getLabel() }}" class="_btn _btn--primary _btn-on-light">Informationen</a>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{#
+
+<div class="courseslide">
+    <h3>Zukünftige Kurse</h3>
+    <div class="courses" id="soon_course">
+        {% for course in soon_courses %}
             <div class="course-panel">
-                <a href="/course/{{ course.id }}/{{ course.getLabel() }}/details"><h4>{{ course.getTitle() }}</h4></a>
-                {{ course.getShortdesc()|markdown }}
-                {% set topic = course.getTopic() %}
-                <p><strong>Thema: </strong><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></p>
-                {% if user.isLoggedIn() %}
-                  <a href="/course/{{ course.id }}/{{ course.getLabel() }}/enroll"><button>Einschreiben</button></a>
-                {% else %}
-                  <a href="/course/{{ course.id }}/{{ course.getLabel() }}/start"><button>Zum Kurs</button></a>
-                {% endif %}
+                <a href="/course/details/id={{ course.id }}"><h4>{{ course.title }}</h4></a>
+                <p>{{ course.shortdesc }}</p>
+                <p><strong>Thema: </strong> <a href="/courses/topic/{{ course.topicUrl }}/info" class="topic">{{ course.topic }}</a></p>
+                <a href="#" disabled>kommt bald</a>
             </div>
         {% endfor %}
     </div>
-    {#
-    <div class="courseslide">
-        <h3>Aktuelle Kurse</h3>
-        <div class="courses" id="now_course">
-            {% for course in now_courses %}
-                <div class="course-panel">
-                    <a href="/course/details/id={{ course.id }}"><h4>{{ course.title }}</h4></a>
-                    <p>{{ course.shortdesc }}</p>
-                    <p><strong>Thema: </strong> <a href="/courses/topic/{{ course.topicUrl }}/info" class="topic">{{ course.topic }}</a></p>
-                    <a href="/course/enroll/id={{ course.id }}"><button>Einschreiben</button></a>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-    <div class="courseslide">
-        <h3>Zukünftige Kurse</h3>
-        <div class="courses" id="soon_course">
-            {% for course in soon_courses %}
-                <div class="course-panel">
-                    <a href="/course/details/id={{ course.id }}"><h4>{{ course.title }}</h4></a>
-                    <p>{{ course.shortdesc }}</p>
-                    <p><strong>Thema: </strong> <a href="/courses/topic/{{ course.topicUrl }}/info" class="topic">{{ course.topic }}</a></p>
-                    <a href="#" disabled>kommt bald</a>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-    #}
+</div>#}
 {% endblock %}
