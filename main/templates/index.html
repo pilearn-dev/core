@@ -39,7 +39,7 @@
       <p>Du kannst dir auch eins unserer Themen aussuchen, um in diesem nach interessanten Kursen zu suchen:</p>
       <div class="horizontal-list">
         {% for t in topics.getAll() %}
-        <a href="/t/{{ t.getName() }}/courses" class="_badge _badge-unit">{{ t.getTitle() }}</a>
+        <a href="/t/{{ t.getName() }}" class="_badge _badge-unit">{{ t.getTitle() }}</a>
         {% endfor %}
       </div>
       <h2>Kursvorschläge</h2>
