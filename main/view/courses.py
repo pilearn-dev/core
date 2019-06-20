@@ -48,11 +48,11 @@ def courses_search():
             add.extend(add_)
 
         if request.values.get("topic", ""):
-            t = request.values.get("topicid", "all")
+            t = request.values.get("topic", "all")
             if t != "all":
                 try:
                     t = int(t)
-                    q.append("topic = ?")
+                    q.append("topicid = ?")
                     add.append(t)
                 except:
                     pass
