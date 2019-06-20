@@ -1,32 +1,22 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-<link rel="stylesheet" href="/static/css/simplemde.min.css">
-<script src="/static/js/simplemde.min.js"></script>
-<div class="tabination">
-  <ul>
-    <li><a href="/courses">Übersicht</a></li>
-    <li><a href="/course/search">Suchen</a></li>
-    <li class="active"><a href="/topics">Themen</a></li>
-    <li><a href="/course/propose">Vorschlagen</a></li>
-  </ul>
+<div class="_nav _nav-t _nav-right">
+  <a href="/courses">Übersicht</a>
+  <a href="/course/search">Suchen</a>
+  <a href="/topics" class="-active">Themen</a>
+  <a href="/course/propose">Vorschlagen</a>
 </div>
-    <h2>Themen</h2>
+<h1>Themen</h1>
 
-    <p><strong>Themen</strong> sind Kategorien für Kurse. Jeder Kurs gehört in genau ein Thema.</p>
-      <div class="course-list">
-        {% for t in topic.getTrueAll() if (user.isMod() or t.isGiveable()) %}
-        {% if not t.isGiveable() %}<div class="deleted-section">{% endif %}
-        <div class="course-list-item">
-           <div class="headline">Thema: <a href="/t/{{ t.getName() }}">{{ t.getTitle() }}</a></div>
-           <div class="shortdesc">
-              <p>{{ t.getExcerpt() }}</p>
-           </div>
-           <div class="action">
-             <a href="/t/{{ t.getName() }}/c">Kurse anzeigen</a>
-           </div>
-        </div>
-        {% if not t.isGiveable() %}</div>{% endif %}
-        {% endfor %}
-      </div>
+<p><strong>Themen</strong> sind Kategorien für Kurse. Jeder Kurs gehört in genau ein Thema.</p>
 
+<div class="grid -no-center">
+  {% for t in topic.getTrueAll() if (user.isMod() or t.isGiveable()) %}
+  <div class="colbox275 p3{% if not t.isGiveable() %} bg-danger-lll{% endif %}">
+    <a href="/t/{{ t.getName() }}" class="_badge _badge-unit fs-base3">{{ t.getTitle() }}</a>
+    <div class="p1 fs-base2">{{ t.getExcerpt() }}</div>
+    <div class="fs-base1"><div class="_link-list"><a href="/t/{{ t.getName() }}">Kurse</a> <a href="/course/search?topic={{ t.id }}">Durchsuchen</a> {% if user.isMod() %}<a href="/t/{{ t.getName() }}/edit">Bearbeiten</a>{% endif %}</div></div>
+  </div>
+  {% endfor %}
+</div>
 {% endblock %}
