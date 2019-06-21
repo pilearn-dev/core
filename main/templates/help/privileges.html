@@ -1,6 +1,6 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-    <h2><a href="/help">Hilfethemen</a> / Reputation / <a style="color: black; text-decoration: none;" href="#overview">Privilegien</a></h2>
+    <h1 class="anchor-black"><a href="/help">Hilfethemen</a> / <a href="/help/category:gamification">Gamification</a> / Privilegien</h1>
     <section class="is-markable" id="overview">
         <p>Für gelungene Beiträge zu &pi;-Learn erhältst du Reputationspunkte. Ab gewissen Reputationsmengen erhältst du extra Berechtigungen (Privilegien):</p>
         {% if user.isLoggedIn() %}
@@ -24,15 +24,15 @@
             </tr>
         </table>
         <p>Bei &pi;-Learn kannst du diese Privilegien erhalten:</p>
-        <section class="is-markable" id="priv-table">
-            <table style="table-layout: fixed">
+        <section id="priv-table">
+            <table class="table" style="table-layout: fixed">
                 <tr>
                     <td style="width: 40px;"></td>
                     <th colspan="2">Privileg</th>
                     <th>nötige Reputation</th>
                     <th>Hast du es erreicht?</th>
                 </tr>
-                {% for priv in data if priv.showInHelp %}
+                {% for priv in privileges_data if priv.showInHelp %}
                 <tr id="priv-table-{{ priv.id }}" class="is-markable">
                     <td>
                         <a style="color: black;" href="#priv-table-{{ priv.id }}">
@@ -57,9 +57,13 @@
                         <p><i class="fa fa-check" aria-hidden="true"></i> Du hast dieses Privileg bereits erreicht</p>
                         {% elif user.may(priv.id, True) %}
                         <p style="color: #d00"><i class="fa fa-lock fa-lg" aria-hidden="true"></i> Dieses Privileg wurde dir entzogen.</p>
-                        {% else %}
-                        <p><i class="fa fa-times" aria-hidden="true"></i> Dir fehlen noch {{ privileges.getOne(priv.id) - user.getReputation() }} Reputationspunkte um dieses Privileg zu erreichen.</p>
-                        <meter min="0" max="{{ privileges.getOne(priv.id) }}" value="{{ user.getReputation() }}"></meter>
+                        {% else %}{% set yours= user.getReputation() %}
+                        {% set needed= privileges.getOne(priv.id) %}
+                        <p><i class="fa fa-times" aria-hidden="true"></i> Dir fehlen noch {{ needed - yours }} Reputationspunkte um dieses Privileg zu erreichen.</p>
+                        <div class="_progress-bar _progress-bar--primary _progress-bar-sm">
+                            <div class="_progress-bar-slot" style="width: {{ 100*yours/needed }}%"></div>
+                            <div class="_progress-bar-label">{{ yours }}/ {{ needed }}</div>
+                        </div>
                         {% endif %}
                     </td>
                 </tr>

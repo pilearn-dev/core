@@ -1,22 +1,42 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-    <h2 class="bigheading">Hilfethemen</h2>
-    <div class="pentagon">
+    <h2 class="fs-display1 ta-c">Hilfethemen</h2>
+    <div class="grid -no-center">
       {% for cat in help_cat.getAll() if cat.isActive() or user.isMod() %}
-      <div class="pent-item no-p {% if not cat.isActive() %} deleted-section {% endif %}">
-        <h2><i class="fa fa-fw {{ cat.getIcon() }}"></i> <a href="/help/category:{{ cat.getUrlPart() }}">{{ cat.getTitle() }}</a></h2>
-        <p>{{ cat.getExcerpt() }}</p>
-        <ul class="help-list">
-          {% for hdoc in cat.getHomepage() %}
-            {% if hdoc.isPinned() %}
-              <li class="pinned"><a href="/help/{{ hdoc.getUrl() }}">{{ hdoc.getTitle() }}</a></li>
-            {% else %}
-              <li><a href="/help/{{ hdoc.getUrl() }}">{{ hdoc.getTitle() }}</a></li>
-            {% endif %}
-          {% endfor %}
-        </ul>
+      <div class="column4 column6__md column12__sm">
+        <div class="_card {% if not cat.isActive() %}_card-danger{% endif %}">
+          <div class="_card-title"><i class="fa fa-fw {{ cat.getIcon() }}"></i> <a href="/help/category:{{ cat.getUrlPart() }}">{{ cat.getTitle() }}</a></div>
+          <div class="_card-content">
+            <p>{{ cat.getExcerpt() }}</p>
+            <div class="_option-list">
+              {% for hdoc in cat.getHomepage() %}
+              <a class="_option-list-item" href="/help/{{ hdoc.getUrl() }}">
+                {% if hdoc.isPinned() %}
+                    <div class="_option-list-prefix _option-list-prefix-withicon"><span class="_badge _badge-dot--primary" title="angeheftet"></span></div>
+                {% else %}
+                    <div class="_option-list-prefix"></div>
+                {% endif %}
+                    <div class="_option-list-label">
+                        {{ hdoc.getTitle() }}
+                    </div>
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
       </div>
       {% endfor %}
+      <div class="column4 column6__md column12__sm">
+        <div class="_card">
+          <div class="_card-title">Du findest keine Antwort auf deine Frage?</div>
+          <div class="_card-content">
+            <p>Wenn deine Frage bisher im Hilfezentrum noch nicht beantwortet wurde, kannst du sie entweder im globalen Forum öffentlich stellen oder das Helpdesk nutzen, um mit uns in Kontakt zu treten.</p>
+          </div>
+          <div class="_card-footer">
+            <a href="/f/0" class="_btn _btn--primary">Zum globalen Forum</a>
+            <a href="/helpdesk" class="_btn _btn--primary">Zum Helpdesk</a>
+          </div>
+        </div>
+      </div>
     </div>
-    <p>Wenn deine Frage bisher im Hilfezentrum noch nicht beantwortet wurde, kannst du sie entweder im <a href="/f/0">globalen Forum</a> stellen, auf <a href="/u/{{ user.id }}">deiner Benutzerprofilseite</a> einen Moderatoren kontaktieren oder das <a href="/helpdesk">Helpdesk</a> nutzen, um mit uns in Kontakt zu treten.</p>
 {% endblock %}

@@ -87,7 +87,7 @@ def help_any(fullurl):
                 #render_template('help/'+entry.getTemplate()+'--editor.html', title=u"Hilfe - " + entry.getTitle(), thispage="help", cat=cat, entry=entry, done=True)
             return render_template('help/'+entry.getTemplate()+'--editor.html', title=u"Hilfe - " + entry.getTitle(), thispage="help", cat=cat, entry=entry, done=False)
         else:
-            return render_template('help/'+entry.getTemplate()+'.html', title=u"Hilfe - " + entry.getTitle(), thispage="help", cat=cat, entry=entry)
+            return render_template('help/'+entry.getTemplate()+'.html', title=u"Hilfe - " + entry.getTitle(), thispage="help", cat=cat, entry=entry, privileges_data=sorted(mprivileges.getInformations(), key=lambda x:mprivileges.getOne(x["id"])))
     else:
         abort(404)
 
