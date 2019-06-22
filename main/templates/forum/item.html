@@ -7,30 +7,26 @@
       {% if not (type == "post" and post.isLocked()) and not (master and (master.isLocked() or master.isDeleted())) and not post.isDeleted() %}
         <button class="up-vote _btn _btn--primary _btn-icononly {{ '-active' if the_vote == 1 }}" data-vote="up" data-vote-post="{{ type }}-{{ post.id }}">
             <svg class="_btn-icon" width="3em" height="3em" viewbox="0 0 48 48">
-                <path d="M24,12 l16,24 l-32,0 z" fill="transparent" stroke-width="1" />
-                <path d="M7,38 h34" fill="transparent" stroke-width="4" />
+                <path d="M24,12 l16,24 l-32,0 z" />
             </svg>
         </button>
         <span class="score-vote fs-heading col-dark-ddd f-brand">{{ post.getScore() }}</span>
         <button class="down-vote _btn _btn--primary _btn-icononly {{ '-active' if the_vote == -1 }}" data-vote="down" data-vote-post="{{ type }}-{{ post.id }}">
             <svg class="_btn-icon" width="3em" height="3em" viewbox="0 0 48 48">
-                <path d="M8,12 l32,0 l-16,24 z" fill="transparent" stroke-width="1" />
-                <path d="M7,12 l17,24 l17,-24" fill="transparent" stroke-width="3" />
+                <path d="M8,12 l32,0 l-16,24 z" />
             </svg>
         </button>
         {% if type == "answer" %}{% set op = master.getDetail("author") %}{% if op == -1 %}{% set op = master.getRevision(1).editor.id %}{% endif %}{% endif %}
         {% if type == "answer" and (user.id == op) %}
         <button class="accept-vote _btn _btn-success _btn-icononly {{ '-active' if post.isAccepted() }}" data-vote="accept" data-vote-post="{{ type }}-{{ post.id }}">
           <svg class="_btn-icon" width="3em" height="3em" viewbox="0 0 48 48">
-              <path d="M6,32 l10,10 l26,-26 l-5,-5 l-21,21 l-5,-5 z" fill="transparent" stroke-width="1" />
-              <path d="M6,31 l10,10 l26,-26" fill="transparent" stroke-width="3" />
+              <path d="M6,32 l10,10 l26,-26 l-5,-5 l-21,21 l-5,-5 z" />
           </svg>
         </button>
         {% elif type == "answer" and post.isAccepted() %}
         <div class="p1 ta-c">
           <svg class="_btn-icon col-success-dd" width="2.5em" height="2.5em" viewbox="0 0 48 48">
-              <path d="M6,32 l10,10 l26,-26 l-5,-5 l-21,21 l-5,-5 z" fill="transparent" stroke-width="1" />
-              <path d="M6,31 l10,10 l26,-26" fill="transparent" stroke-width="3" />
+              <path d="M6,32 l10,10 l26,-26 l-5,-5 l-21,21 l-5,-5 z" />
           </svg>
         </div>
         {% endif %}
