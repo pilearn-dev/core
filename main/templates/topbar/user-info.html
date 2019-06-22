@@ -7,7 +7,14 @@
   <a class="_nav-t-btn _btn _btn-dark _btn-sm _btn-outline mr2 d-b" href="/auth/logout">Abmelden</a>
 </div>
 <div class="p3">
+  {% if user.getDetail("profile_image") %}
   <img src="{{ user.getDetail("profile_image") }}" class="thumbnail-l push-left mb2 mr2">
+  {% else %}
+  <svg class="thumbnail-l push-left mb2 mr2" viewBox="0 0 48 48" width="10em" height="10em">
+    <path d="M18,6 l16,0 l0,16 l-16,0 z M32,22 l10,20 l-32,0 l10,-20" fill="transparent" stroke-width="1" />
+    <path d="M18,22 l16,0 M10,42 l32,0" fill="transparent" stroke-width="3" />
+  </svg>
+  {% endif %}
   {% if user.isMod() %}<span class="col-dark fs-subheading d-b push-right f-brand pt2">Moderator</span>{% endif %}
   <span class="fs-heading d-b"><a href="/u/{{ user.id }}">{{ user.getHTMLName()|safe }}</a></span>
   <div class="-relative fs-base3">

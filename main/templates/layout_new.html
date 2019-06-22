@@ -27,8 +27,7 @@
       <nav class="_header-items hide__lg">
         <a class="_header-icon js--topbar-menu" href="#!">
           <svg width="3em" height="3em" viewbox="0 0 48 48">
-            <path d="M6,8 h36 v7 h-36 z M6,21 h36 v7 h-36 z M6,34 h36 v7 h-36 z" fill="transparent" stroke-width="1" />
-            <path d="M5.5,15 h37 M5.5,28 h37 M5.5,41 h37" fill="transparent" stroke-width="2.5" />
+            <path d="M6,8 h36 v7 h-36 z M6,21 h36 v7 h-36 z M6,34 h36 v7 h-36 z" />
           </svg>
         </a>
       </nav>
@@ -38,16 +37,14 @@
         {% if user.isMod() %}
         <a href="/tools" class="_header-icon hide__sm" title="Werkzeuge -- Besondere Funktionen und Bemerkenswerte Beiträge -- Nur für Moderatoren">
           <svg width="3em" height="3em" viewbox="0 0 48 48">
-            <path d="M24,8 l12,16 l-12,16 l-12-16 z" fill="transparent" stroke-width="1" />
-            <path d="M12,24 l12,16 l12,-16" fill="transparent" stroke-width="3" />
+            <path d="M24,8 l12,16 l-12,16 l-12-16 z" />
           </svg>
         </a>
         {% endif %}
         {% if user.may("forum_reviewEdits") or user.may("course_reviewEdits") %}{% set revC = review.getReviewCountState(user) %}
         <a href="/review" class="_header-icon hide__md hide__sm" title="Moderation -- Überprüfe Beiträge auf dieser Seite und entscheide, wie mit diesen weiter zu verfahren ist.">
           <svg width="3em" height="3em" viewbox="0 0 48 48">
-            <path d="M6,8 h16 v7 h-16 z M6,21 h16 v7 h-16 z M6,34 h16 v7 h-16 z" fill="transparent" stroke-width="1" />
-            <path d="M5.5,15 h17 M5.5,28 h17 M5.5,41 h17" fill="transparent" stroke-width="2.5" />
+            <path d="M6,8 h16 v7 h-16 z M6,21 h16 v7 h-16 z M6,34 h16 v7 h-16 z" />
             <g transform="scale(0.5) translate(50 0)">
               <path d="M6,32 l10,10 l26,-26 l-5,-5 l-21,21 l-5,-5 z" stroke-width="1" />
             </g>
@@ -62,6 +59,11 @@
           <a href="/u/{{ user.id }}" title="Eigenes Benutzerprofil" class="_header-mix  js--topbar-user">
             {% if user.getDetail("profile_image") %}
               <img src="{{ user.getDetail("profile_image") }}" class="_header-img mr2__lg mr0" aria-hidden="true">
+            {% else %}
+            <svg class="_header-img mr2__lg mr0" aria-hidden="true" viewBox="0 0 48 48" width="2em" height="2em">
+              <path d="M18,6 l16,0 l0,16 l-16,0 z M32,22 l10,20 l-32,0 l10,-20" fill="transparent" stroke-width="1" />
+              <path d="M18,22 l16,0 M10,42 l32,0" fill="transparent" stroke-width="3" />
+            </svg>
             {% endif %}
             <span class="_badge _badge-score hide__md hide__sm">{{ user.getReputation() }}</span>
             {% for type in user.getBadgeBreakdown() %}
@@ -73,9 +75,7 @@
           <a class="_header-icon p-r js--topbar-inbox" id="notification-trigger" href="#!" title="Posteingang: Du hast {% if notificationCount == 0 %}keine{% elif notificationCount == 1 %}eine{% else %}{{ notificationCount }}{%endif%} neue Nachrichten">
             {% if notificationCount != 0 %}<span class="_badge _badge-s-danger -wbd p-a xa-r__sp ya-t__sp">{{ notificationCount }}</span>{% endif %}
             <svg width="3em" height="3em" viewbox="3 3 45 45">
-              <path d="M6,12 h36 v24 h-36 z" fill="transparent" stroke-width="1" />
-              <path d="M6,36 h36" fill="transparent" stroke-width="4" />
-              <path d="M6,12 l18,12 l18,-12" fill="transparent" stroke-width="2" />
+              <path d="M6,12 l18,12 l18,-12 z M6,16 v20 h36 v-20 l-18,12 z" />
             </svg>
           </a>
 
@@ -85,8 +85,9 @@
             {% if delta > 0 %}<span class="_badge _badge-s-success -wbd p-a xa-r__sp ya-t__sp">+{{ num2suff(delta) }}</span>{% endif %}
             {% if unknow_badges %}<span class="_badge _badge-dot-success -wbd p-a xa-r__sp ya-b__sp">neue Abzeichen</span>{% endif %}
             <svg width="3em" height="3em" viewbox="3 3 45 45">
-              <path d="M14,10 q0,15 8,15 M34,10 q0,15 -8,15 M14,10 h20 M22,25 v10 M26,25 v10 M22,35 h-8 v4 h20 v-4 z" fill="transparent" stroke-width="1" />
-              <path d="M14,11 q0,15 8,15 M34,10 q0,15 -8,15 M13.5,40 h21" fill="transparent" stroke-width="2" />
+              <circle cx="24" cy="18" r="8" stroke-width="4" fill="transparent" />
+              <circle cx="24" cy="18" r="12" stroke-width="2" fill="transparent" />
+              <path d="M35,24 l8,15 l-8,0 l-5.6,6.6 l-8,-15" fill="transparent" stroke-width="2" />
             </svg>
           </a>
         {% else %}
@@ -99,7 +100,7 @@
   <div class="_headbar-site" id="site-bar">
       <div class="single-fluid _headbar-fluid">
         <div class="_headbar-site-brand">
-          {{ (site_label|markdown)[3:-4] }}
+          {{ site_label|safe }}
         </div>
         <div class="_headbar-site-nav">
             <a href="/"{% if thispage == "index" %} class="-active"{% endif %}>Startseite</a>

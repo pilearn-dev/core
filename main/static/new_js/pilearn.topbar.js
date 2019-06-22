@@ -46,8 +46,12 @@ PiJS.extend("topbar", {
       y = pos.bottom;
 
       var dialog = $("<div class='_floatbox _dialog-limited _dialog-largest p2 p-f -no-round js--topbar-dialog js--topbar-dialog-user'>");
-      dialog.css({right:x+"px", top:y+"px"});
       dialog.html("Lade <a href='" + $this.attr("href") + "'>Mein Profil</a> ...");
+      $(document.body).append(dialog);
+      if((pos.left - dialog.width()) >= 0)
+        dialog.css({right:x+"px", top:y+"px"});
+      else
+        dialog.css({left: "0", right:"0", top:y+"px"});
 
       $.ajax({
         url: "/topbar/user-info",
@@ -61,7 +65,6 @@ PiJS.extend("topbar", {
         }
       });
 
-      $(document.body).append(dialog);
       return false;
     })
 
@@ -75,8 +78,12 @@ PiJS.extend("topbar", {
       y = pos.bottom;
 
       var dialog = $("<div class='_floatbox _dialog-limited _dialog-large p-f -no-round js--topbar-dialog js--topbar-dialog-inbox'>");
-      dialog.css({right:x+"px", top:y+"px"});
       dialog.html("<div class='_floatbox-header bg-dark-ll'>Lade Posteingang ...</div>");
+      $(document.body).append(dialog);
+      if((pos.left - dialog.width()) >= 0)
+        dialog.css({right:x+"px", top:y+"px"});
+      else
+        dialog.css({left: "0", right:"0", top:y+"px"});
 
       $.ajax({
         url: "/topbar/inbox",
@@ -88,7 +95,6 @@ PiJS.extend("topbar", {
         }
       });
 
-      $(document.body).append(dialog);
       return false;
     })
 
@@ -102,8 +108,12 @@ PiJS.extend("topbar", {
       y = pos.bottom;
 
       var dialog = $("<div class='_floatbox _dialog-limited _dialog-large p-f -no-round js--topbar-dialog js--topbar-dialog-rep-audit'>");
-      dialog.css({right:x+"px", top:y+"px"});
       dialog.html("<div class='_floatbox-header bg-dark-ll'>Lade Reputation ...</div>");
+      $(document.body).append(dialog);
+      if((pos.left - dialog.width()) >= 0)
+        dialog.css({right:x+"px", top:y+"px"});
+      else
+        dialog.css({left: "0", right:"0", top:y+"px"});
 
       $.ajax({
         url: "/topbar/rep-audit",
@@ -115,7 +125,6 @@ PiJS.extend("topbar", {
         }
       });
 
-      $(document.body).append(dialog);
       return false;
     })
   },
