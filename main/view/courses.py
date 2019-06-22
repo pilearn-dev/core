@@ -202,8 +202,6 @@ def course_enroll(id,label=None):
     if course.getLabel() != label:
         return redirect(url_for("course_enroll", id=id, label=course.getLabel()))
     cuser = muser.getCurrentUser()
-    if course.getDetail("state") == 0 and not cuser.isMod():
-        abort(403)
     if not course.isEnrolled(cuser):
         course.enroll(cuser)
         enrolled_count = course.getEnrolledCount()
@@ -212,7 +210,9 @@ def course_enroll(id,label=None):
             for e in earners:
                 e.setDetail("reputation", 1+e.getInfo()["reputation"])
                 e.setReputationChange("enroll", "Kurs: ["+course.getTitle()+"](/c/"+str(course.id)+")", 1)
-    return redirect(url_for("course_start", label=course.getLabel(), id=course.id))
+    if course.getDetail("state") != 0:
+        return redirect(url_for("course_start", label=course.getLabel(), id=course.id))
+    return redirect(url_for("course_info", label=course.getLabel(), id=course.id))
 
 def course_start(id,label=None):
     if not mcourses.Courses.exists(id):
