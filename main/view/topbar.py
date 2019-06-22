@@ -1,5 +1,5 @@
 # coding: utf-8
-from flask import request, session, redirect, url_for, abort, render_template, jsonify
+from flask import request, session, redirect, url_for, abort, render_template, jsonify, g
 from model import privileges as mprivileges, tags as mtags, user as muser, reviews as mreviews, forum as mforum, post_templates as mposttemplates
 from controller import num as cnum, times as ctimes
 
@@ -42,7 +42,16 @@ def topbar_repaudit():
 def topbar_user_info():
     return render_template("topbar/user-info.html")
 
+def topbar_update():
+    cuser = muser.getCurrentUser()
+    return jsonify({
+        "badges": cuser.hasUnknownBadges(),
+        "reputation": cuser.getRepDelta(),
+        "messages": g.countNotifications(cuser.getNotifications())
+    })
+
 def apply(app):
     app.route('/topbar/inbox')(topbar_inbox)
     app.route('/topbar/user-info')(topbar_user_info)
     app.route('/topbar/rep-audit')(topbar_repaudit)
+    app.route('/topbar/Update')(topbar_update)

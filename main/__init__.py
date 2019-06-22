@@ -58,13 +58,6 @@ def prepare_template_context():
     g.random_number = random.randint
     g.num2suff = cnum.num2suff
 
-    def countNotifications(notif):
-        count = 0
-        for n in notif:
-            count += 1 if (n["visibility"] == 2) else 0
-        return count
-
-    g.countNotifications = countNotifications
 
     if SENTRY_ERROR_LOGGING:
         with sentry_sdk.configure_scope() as scope:
@@ -92,6 +85,14 @@ def prepare_template_context():
 @app.before_request
 def prepare_request():
     user = muser.getCurrentUser()
+
+    def countNotifications(notif):
+        count = 0
+        for n in notif:
+            count += 1 if (n["visibility"] == 2) else 0
+        return count
+
+    g.countNotifications = countNotifications
 
     if IS_OFFLINE and request.values.get("beta_auth") == BETA_TOKEN or request.values.get("beta_key")==BETA_AUTH_KEY:
         resp = redirect(url_for("index"))

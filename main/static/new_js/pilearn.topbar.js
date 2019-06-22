@@ -89,6 +89,7 @@ PiJS.extend("topbar", {
         url: "/topbar/inbox",
         success: function( result ) {
           dialog.html(result);
+          updateTopbar(true);
         },
         error: function() {
           PiJS.topbar.close_dialog("inbox")
@@ -108,7 +109,7 @@ PiJS.extend("topbar", {
       y = pos.bottom;
 
       var dialog = $("<div class='_floatbox _dialog-limited _dialog-large p-f -no-round js--topbar-dialog js--topbar-dialog-rep-audit'>");
-      dialog.html("<div class='_floatbox-header bg-dark-ll'>Lade Reputation ...</div>");
+      dialog.html("<div class='_floatbox-header bg-dark-ll'>Lade Auszeichnungen ...</div>");
       $(document.body).append(dialog);
       if((pos.left - dialog.width()) >= 0)
         dialog.css({right:x+"px", top:y+"px"});
@@ -119,6 +120,7 @@ PiJS.extend("topbar", {
         url: "/topbar/rep-audit",
         success: function( result ) {
           dialog.html(result);
+          updateTopbar(true);
         },
         error: function() {
           PiJS.topbar.close_dialog("rep-audit")
@@ -127,6 +129,12 @@ PiJS.extend("topbar", {
 
       return false;
     })
+
+    // Only start topbar update queue, if there is a
+    // achievements (rep&badges) item in the topbar,
+    // i.e. the user is logged in.
+    if($(PiJS.topbar.classes.repaudit).length != 0)
+      setInterval(function () {updateTopbar()}, 2000);
   },
   close_dialog: function (x) {
     d = $(".js--topbar-dialog");
@@ -135,3 +143,38 @@ PiJS.extend("topbar", {
     return val;
   }
 });
+
+function updateTopbar(force) {
+  if(((localStorage["pilearn-top:last_update"]||0) < Date.now() - 20000) || force) {
+    localStorage["pilearn-top:last_update"] = Date.now();
+    $.ajax({
+      url: "/topbar/Update",
+      success: function( result ) {
+        updateTopbarWithData(result);
+        localStorage["pilearn-top:restored"] = JSON.stringify(result);
+      },
+      error: function() {
+        PiJS.topbar.close_dialog("rep-audit")
+      }
+    });
+  } else {
+    updateTopbarWithData(JSON.parse(localStorage["pilearn-top:restored"]));
+  }
+}
+
+function updateTopbarWithData(result) {
+  $repaudit = $(PiJS.topbar.classes.repaudit);
+  $inbox = $(PiJS.topbar.classes.inbox);
+
+  $inbox.find("._badge").remove();
+  if(result.messages) {
+    $inbox.prepend($('<span class="_badge _badge-s-danger -wbd p-a xa-r__sp ya-t__sp">').text(result.messages));
+  }
+  $repaudit.find("._badge").remove();
+  if(result.reputation > 0) {
+    $repaudit.prepend($('<span class="_badge _badge-s-success -wbd p-a xa-r__sp ya-t__sp">').text("+"+result.reputation));
+  }
+  if(result.badges) {
+    $repaudit.prepend($('<span class="_badge _badge-dot-success -wbd p-a xa-r__sp ya-b__sp">neue Abzeichen</span>'));
+  }
+}
