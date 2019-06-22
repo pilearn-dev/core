@@ -23,11 +23,25 @@ def courses_propose():
     elif request.method == "POST":
         if cuser.may("course_propose"):
             data = request.json
-            print(data["topic"])
-            p = mproposal.Proposal.createNew(data["topic"], data["title"], data["shortdesc"], data["longdesc"], data["requirements"], cuser)
+            topic = data["topic"]
+            title = data["title"].strip()
+            shortdesc = data["shortdesc"].strip()
+            longdesc = data["longdesc"].strip()
+            requirements = data["requirements"].strip()
+
+            topic = mcourses.Topic(topic)
+            if not topic.isGiveable():
+                return jsonify({"result": "error", "error": "Das Thema " + topic.getTitle() + " kann nicht vergeben werden."})
+
+            errors = _validateCourse(title, shortdesc, longdesc, requirements)
+
+            if len(errors) != 0:
+                return jsonify({"result": "errors", "errors": errors})
+
+            p = mproposal.Proposal.createNew(topic.id, title, shortdesc, longdesc, requirements, cuser)
             if p:
-                return url_for("proposal_show", id=p.id)
-            return "javascript:issueSystemError('Ein Fehler ist aufgetreten.')"
+                return jsonify({"result": "success", "url":url_for("proposal_show", id=p.id)})
+            return jsonify({"result": "error", "error": "Ein Fehler ist aufgetreten."})
         else:
             abort(405)
 
@@ -106,43 +120,11 @@ def course_admin(id,label=None, page="identity"):
             data = request.json
 
             title = data["title"].strip()
-            shortdesc = data["shortdesc"]
-            longdesc = data["longdesc"]
-            requirements = data["requirements"]
+            shortdesc = data["shortdesc"].strip()
+            longdesc = data["longdesc"].strip()
+            requirements = data["requirements"].strip()
 
-            errors = []
-
-            if 5 <= len(title) <= 80:
-                course.setDetail("title", title)
-            else:
-                if 5 > len(title):
-                    errors.append(u"Der Titel des Kurses ist zu kurz. Mindestens 5 Zeichen erforderlich. (aktuell: %i)" % len(title))
-                if 80 < len(title):
-                    errors.append(u"Der Titel des Kurses ist zu lang. Höchstens 80 Zeichen möglich. (aktuell: %i)" % len(title))
-
-            if 15 <= len(shortdesc) <= 280:
-                course.setDetail("shortdesc", shortdesc)
-            else:
-                if 5 > len(shortdesc):
-                    errors.append(u"Die Kurzbeschreibung ist zu kurz. Mindestens 15 Zeichen erforderlich. (aktuell: %i)" % len(shortdesc))
-                if 280 < len(shortdesc):
-                    errors.append(u"Die Kurzbeschreibung ist zu lang. Höchstens 280 Zeichen möglich. (aktuell: %i)" % len(shortdesc))
-
-            if 50 <= len(longdesc) <= 15000:
-                course.setDetail("longdesc", longdesc)
-            else:
-                if 5 > len(longdesc):
-                    errors.append(u"Die Kurzbeschreibung ist zu kurz. Mindestens 50 Zeichen erforderlich. (aktuell: %i)" % len(longdesc))
-                if 15000 < len(longdesc):
-                    errors.append(u"Die Kurzbeschreibung ist zu lang. Höchstens 15000 Zeichen möglich. (aktuell: %i)" % len(longdesc))
-
-            if 10 <= len(requirements) <= 7500:
-                course.setDetail("requirements", requirements)
-            else:
-                if 5 > len(requirements):
-                    errors.append(u"Die Kurzbeschreibung ist zu kurz. Mindestens 10 Zeichen erforderlich. (aktuell: %i)" % len(requirements))
-                if 7500 < len(requirements):
-                    errors.append(u"Die Kurzbeschreibung ist zu lang. Höchstens 7500 Zeichen möglich. (aktuell: %i)" % len(requirements))
+            errors = _validateCourse(title, shortdesc, longdesc, requirements)
 
             if len(errors):
                 return jsonify({
@@ -150,6 +132,10 @@ def course_admin(id,label=None, page="identity"):
                     "errors": errors
                 })
             else:
+                course.setDetail("title", title)
+                course.setDetail("shortdesc", shortdesc)
+                course.setDetail("longdesc", longdesc)
+                course.setDetail("requirements", requirements)
                 return jsonify({
                     "result": "ok"
                 })
@@ -460,6 +446,31 @@ def course_unit_reorder(id,label=None):
         if course.getLabel() != label:
             return redirect(url_for("course_unit_reorder", id=id, label=course.getLabel()))
         return render_template('courses/edit/reorder.html', title="Kursmodule neu anordnen: " + course.getTitle(), thispage="courses", data=course)
+
+def _validateCourse(title, shortdesc, longdesc, requirements):
+    errors = []
+
+    if 5 > len(title):
+        errors.append(u"Der Titel des Kurses ist zu kurz. Mindestens 5 Zeichen erforderlich. (aktuell: %i)" % len(title))
+    if 80 < len(title):
+        errors.append(u"Der Titel des Kurses ist zu lang. Höchstens 80 Zeichen möglich. (aktuell: %i)" % len(title))
+
+    if 5 > len(shortdesc):
+        errors.append(u"Die Kurzbeschreibung ist zu kurz. Mindestens 15 Zeichen erforderlich. (aktuell: %i)" % len(shortdesc))
+    if 280 < len(shortdesc):
+        errors.append(u"Die Kurzbeschreibung ist zu lang. Höchstens 280 Zeichen möglich. (aktuell: %i)" % len(shortdesc))
+
+    if 5 > len(longdesc):
+        errors.append(u"Die Kurzbeschreibung ist zu kurz. Mindestens 50 Zeichen erforderlich. (aktuell: %i)" % len(longdesc))
+    if 15000 < len(longdesc):
+        errors.append(u"Die Kurzbeschreibung ist zu lang. Höchstens 15000 Zeichen möglich. (aktuell: %i)" % len(longdesc))
+
+    if 5 > len(requirements):
+        errors.append(u"Die Kurzbeschreibung ist zu kurz. Mindestens 10 Zeichen erforderlich. (aktuell: %i)" % len(requirements))
+    if 7500 < len(requirements):
+        errors.append(u"Die Kurzbeschreibung ist zu lang. Höchstens 7500 Zeichen möglich. (aktuell: %i)" % len(requirements))
+
+    return errors
 
 def apply(app):
     app.route("/courses")(courses_index)
