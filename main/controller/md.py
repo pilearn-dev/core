@@ -6,32 +6,6 @@ import re
 
 from model import tags as mtags
 
-class MDExtPreProcessor(Preprocessor):
-    def run(self, lines):
-        new_lines = []
-        for line in lines:
-            m = re.findall(ur"\[\#([a-zA-Z:0-9äöüß-]{2,20})\]", line)
-            for i in m:
-                if i in mtags.moderator_only:
-                    line = line.replace("[#"+i+"]", "<span class='tag moderator-tag'>"+i+"</span>")
-                else:
-                    line = line.replace("[#"+i+"]", "<span class='tag'>"+i+"</span>")
-            m = re.findall(ur"\[\[([a-zA-ZÄÖÜäöü -]+?)\|([a-z]+?)\]\]", line)
-            for i in m:
-                line = line.replace("[["+("|".join(i))+"]]", "<a href='/t/"+i[1]+"' class='topic'>"+i[0]+"</a>")
-            m = re.findall(r"\{\! application \"(.+?)\" ([a-zA-Z0-9]+?) \"(.+?)\" \!\}", line)
-            for i in m:
-                label, id_, url = i
-                types = {
-                    "election": u"π-learn wahl",
-                    "::404::": u"unbekannte app"
-                }
-                if id_ not in types.keys():
-                    id_ = "::404::"
-                line = line.replace("{! application \""+label+"\" "+id_+" \""+url+"\" !}", '<a href="'+url+'" data-type="'+types[id_]+'" class="app-btn">'+label+'</a>')
-            new_lines.append(line)
-        return new_lines
-
 class MDExtPostProcessor(Postprocessor):
     def run(self, lines):
         markable_count = 0
@@ -76,18 +50,6 @@ class MDExtPostProcessor(Postprocessor):
 
 def md_apply(app):
     md = Markdown(app, extensions=["iconfonts(prefix=fa-, base=fa)", "markdownnofollow"])
-    moderator_tags = mtags.moderator_only
-    banned_tags = mtags.banned
-
-    @md.extend()
-    class ExtensionPreRegisterer(Extension):
-        def extendMarkdown(self, md, md_globals):
-            md.preprocessors.add('pipreproc',
-                                MDExtPreProcessor(md),
-                                '_begin')
-            md.registerExtension(self)
-
-    md.register_extension(ExtensionPreRegisterer)
 
     @md.extend()
     class ExtensionPostRegisterer(Extension):

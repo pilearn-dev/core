@@ -14,7 +14,7 @@
         {% set order = request.values.get("order", "id") %}
         {% set filter = request.values.get("filter", False) %}
         {% set annot = data.getAnnotations(order) %}
-        <h3><a href="?">AdminOps für {{ data.getDetail("realname") }}</a> &ndash; Anmerkungsverlauf</h3>
+        <h3><a href="?">UserOps für {{ data.getDetail("realname") }}</a> &ndash; Anmerkungsverlauf</h3>
         {% if filter %}
         <a href="?action=lookup-annotations">Filter zurücksetzen</a>{% if user.isDev() and annot|length != 0 %} &ndash; {% endif %}
         {% endif %}
@@ -26,7 +26,7 @@
         <table class="annotation-table">
           <tr>
             <th class="annot-icon">Art <a href="?action=lookup-annotations&order=type{% if order=='type' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='type' %}-down{% elif order=='type_reverse' %}-up{% endif %}"></i></a></th>
-            <th>Admin <a href="?action=lookup-annotations&order=creator_id{% if order=='creator_id' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='creator_id' %}-down{% elif order=='creator_id_reverse' %}-up{% endif %}"></i></a></th>
+            <th>Von <a href="?action=lookup-annotations&order=creator_id{% if order=='creator_id' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='creator_id' %}-down{% elif order=='creator_id_reverse' %}-up{% endif %}"></i></a></th>
             <th colspan="4">Kommentar</th>
             <th>Zeit <a href="?action=lookup-annotations&order=time{% if order=='time' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='time' %}-down{% elif order=='time_reverse' %}-up{% endif %}"></i></a></th>
             {% if user.isDev() %}

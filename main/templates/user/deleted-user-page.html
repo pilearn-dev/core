@@ -1,14 +1,14 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-<div class="deleted-section" style="padding: 1.5em;">
-    <h2>Dieses Benutzerkonto wurde gelöscht.</h2>
-    {% if data.getDetail("mergeto") %}
-    <p>Dieses Benutzerkonto leitet jetzt automatisch zu <a href="/u/{{ data.getDetail("mergeto") }}">einem anderen Konto</a> weiter.</p>
-    {% else %}
-    <p>Dieses Benutzerkonto wurde auf Anfrage des Kontoinhabers oder durch einen Administrator gelöscht.</p>
-    {% endif %}
-    <h3>Benutzerkonten-Informationen</h3>
-<pre style="background: transparent;"><strong>Anzeigename:</strong> {{ data.getDetail("realname") }}
+<h1>Dieses Benutzerkonto wurde gelöscht.</h1>
+{% if data.getDetail("mergeto") %}
+<p><span class="mark">Dieses Benutzerkonto leitet jetzt automatisch zu <a href="/u/{{ data.getDetail("mergeto") }}">einem anderen Konto</a> weiter.</span></p>
+{% else %}
+<p><span class="mark">Dieses Benutzerkonto wird zur Löschung vorbereitet (Warteschleife).</span></p>
+<button class="_btn _btn-dark _btn-sm" onclick="prevent_deletion()">Abbrechen</button>
+{% endif %}
+<h3>Benutzerkonten-Informationen</h3>
+<pre><strong>Anzeigename:</strong> {{ data.getDetail("realname") }}
 <strong>Benutzername:</strong> {{ data.getDetail("name") }}
 <strong>E-Mail-Adresse:</strong> {{ data.getDetail("email") }}
 <strong>Anmelde-Service:</strong> {{ data.getDetail("login_provider") }}</pre>
@@ -24,10 +24,10 @@
 {% elif user.isDev() and request.values.get("show-deleted", 0)!=0 %}
 <a href="?">aktive anzeigen</a>
 {% endif %}
-<table class="annotation-table">
+<table class="table">
   <tr>
     <th class="annot-icon">Art <a href="?order=type{% if order=='type' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='type' %}-down{% elif order=='type_reverse' %}-up{% endif %}"></i></a></th>
-    <th>Admin <a href="?order=creator_id{% if order=='creator_id' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='creator_id' %}-down{% elif order=='creator_id_reverse' %}-up{% endif %}"></i></a></th>
+    <th>Von <a href="?order=creator_id{% if order=='creator_id' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='creator_id' %}-down{% elif order=='creator_id_reverse' %}-up{% endif %}"></i></a></th>
     <th colspan="4">Kommentar</th>
     <th>Zeit <a href="?order=time{% if order=='time' %}_reverse{% endif %}"><i class="fa fa-sort{% if order=='time' %}-down{% elif order=='time_reverse' %}-up{% endif %}"></i></a></th>
   </tr>
@@ -35,17 +35,17 @@
   <tr class="annotation{% if a.deleted %} deleted-section{% endif %}">
     <th class="annot-centered annot-icon"><a href="?filter={{ a.type }}">
     {% if a.type == "custom" %}
-      <i class="fa fa-commenting-o" title="Anmerkung"></i>
+      Anmerkung
     {% elif a.type == "ban" %}
-      <i class="fa fa-lock" title="Sperrung"></i>
+      Sperrung
     {% elif a.type == "unban" %}
-      <i class="fa fa-unlock" title="Entsperrung"></i>
+      Entsperrung
     {% elif a.type == "delete" %}
-      <i class="fa fa-user-times" title="Löschung"></i>
+      Löschung
     {% elif a.type == "accessdata" %}
-      <i class="fa fa-eye" title="Zugriff auf private Daten"></i>
+      PII-Zugriff
     {% elif a.type == "merge" %}
-      <i class="fa fa-exchange" title="Weiterleitung"></i>
+      Weiterleitung
     {% endif %}
     </a></th>
     <td class="annot-centered annot-small"><a href="/u/{{ a.creator.id }}">{{ a.creator.getHTMLName()|safe }}</a></td>
@@ -56,4 +56,19 @@
 {% endfor %}
 </table>
 </div>
+<script>
+    function prevent_deletion() {
+      $.ajax({
+        method: "POST",
+        url: "/user/{{ data.id }}/delete?action=prevent",
+        contentType: "application/json; charset=utf-8",
+        success: function( result ) {
+          window.location.reload();
+        },
+        error: function() {
+          alert("Ein Fehler ist aufgetreten. Bitte wende dich an den Support.");
+        }
+      });
+    }
+</script>
 {% endblock %}

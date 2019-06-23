@@ -1,0 +1,50 @@
+{% extends "layout_new.html" %}
+{% block body %}
+  {% set order = request.values.get("order", "id") %}
+  {% set filter = request.values.get("filter", False) %}
+  {% set annot = data.getAnnotations(order) %}
+  <h1>Anmerkungen zu {{ data.getHTMLName()|safe }}</h1>
+
+  <div class="horizontal-list">
+    <div class="_btnlist _btnlist-close">
+      <a class="_btn {% if not filter %}-active{% endif %} _btn-outline" href="?">alle</a>
+      <a class="_btn {% if filter=='message' %}-active{% endif %} _btn-outline" href="?filter=message">Nachrichten</a>
+      <a class="_btn {% if filter=='ban' %}-active{% endif %} _btn-outline" href="?filter=ban">Sperrungen</a>
+      <a class="_btn {% if filter=='custom' %}-active{% endif %} _btn-outline" href="?filter=custom">Anmerkungen</a>
+      <a class="_btn {% if filter=='accessdata' %}-active{% endif %} _btn-outline" href="?filter=accessdata">PII-Zugriff</a>
+    </div>
+  </div>
+  <table class="table">
+    <tr>
+      <th class="annot-icon">Art</th>
+      <th>Von</th>
+      <th>Kommentar</th>
+      <th>Zeit</th>
+    </tr>
+  {% for a in annot if (not a.deleted and (not filter or a.type==filter)) %}
+    <tr>
+      <th>
+        {% if a.type == "custom" %}
+          Anmerkung
+        {% elif a.type == "ban" %}
+          Sperrung
+        {% elif a.type == "unban" %}
+          Entsperrung
+        {% elif a.type == "delete" %}
+          Löschung
+        {% elif a.type == "accessdata" %}
+          PII-Zugriff
+        {% elif a.type == "merge" %}
+          Merge
+        {% elif a.type == "message" %}
+          &diams;-Nachricht
+        {% endif %}
+      </th>
+      <td><a href="/u/{{ a.creator.id }}">{{ a.creator.getHTMLName()|safe }}</a></td>
+      <td>{% if a.content=="auto" %}<span class="fs-base1 col-dark-d">(automatisch)</span>{% elif a.content=="manual" %}<span class="fs-base1 col-dark-d">(manuell)</span>{% else %}{{ a.content|markdown }}{% endif %}</td>
+      <td><span title="{{ a.absolute_date }}">{{ a.relative_date }}</span></td>
+    </tr>
+  {% else %}
+  {% endfor %}
+  </table>
+{% endblock %}

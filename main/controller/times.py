@@ -60,7 +60,7 @@ def duration2text(dur):
 
 def duration2shorttext(dur):
     if dur < 60:
-      return str(dur) + "s"
+      return str(int(dur)) + "s"
     else:
       dur = int(0.5+dur / 60.0)
       if dur < 60:
@@ -85,6 +85,13 @@ def duration2shorttext(dur):
                           dur = int(dur / 12.0)
                           return str(dur) +  "y"
 
+def dateforform(stamp):
+    loct = t.localtime(stamp)
+    date = str(loct.tm_year).zfill(2) + "-" + \
+            str(loct.tm_mon).zfill(2) + "-" + \
+            str(loct.tm_mday)
+    return date
+
 def stamp2german(stamp):
     loct = t.localtime(stamp)
     date = str(loct.tm_mday).zfill(2) + "." + \
@@ -93,6 +100,13 @@ def stamp2german(stamp):
             str(loct.tm_hour).zfill(2) + ":" + \
             str(loct.tm_min).zfill(2) + ":" + \
             str(loct.tm_sec).zfill(2)
+    return date
+
+def stamp2germandate(stamp):
+    loct = t.localtime(stamp)
+    date = str(loct.tm_mday).zfill(2) + "." + \
+            str(loct.tm_mon).zfill(2) + "." + \
+            str(loct.tm_year)
     return date
 
 def stamp2shortrelative(stamp, is_delta=False):
@@ -110,7 +124,7 @@ def stamp2shortrelative(stamp, is_delta=False):
             prefix = "vor "
     delta = abs(relta)
     if delta < 60:
-        suffix = str(delta) + "s"
+        suffix = str(int(delta)) + "s"
     else:
         delta = int(0.5+delta / 60.0)
         if delta < 60:

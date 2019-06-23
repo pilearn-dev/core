@@ -1,0 +1,51 @@
+<div class="js--close-home">
+  <h3>Frage schließen</h3>
+  <p class="p-lead">Warum soll diese Frage geschlossen werden?</p>
+  <div class="_toollist">
+    {% for reason in forum.getClosureReasons() %}
+    <label class="_toollist-item" for="close_dialog-{{ reason.id }}">
+      <input type="radio" class="form-radio" id="close_dialog-{{ reason.id }}" name="close_dialog" value="{{ reason.id }}">
+      <div class="_toollist-data">
+        <h4>{{ reason.name }}</h4>
+        <p class="fs-base1">{{ reason.description }}</p>
+      </div>
+    </label>
+    {% endfor %}
+  </div>
+  <button class="push-right _btn _btn--primary js--closesubmit-home">Auswählen</
+  button>
+</div>
+<div class="js--close-offtopic d-n">
+  <h3>Frage schließen</h3>
+  <p class="p-lead">Warum gehört diese Frage nicht in dieses Forum?</p>
+  <div class="_toollist">
+    {% for reason in forum.getClosureReasons(2) %}
+    <label class="_toollist-item" for="close_dialog-offtopic-{{ reason.id }}">
+      <input type="radio" class="form-radio" id="close_dialog-offtopic-{{ reason.id }}" name="close_dialog-offtopic" value="{{ reason.id }}">
+      <div class="_toollist-data">
+        <h4>{{ reason.name }}</h4>
+        <p class="fs-base1">{{ reason.description }}</p>
+      </div>
+    </label>
+    {% endfor %}
+  </div>
+  <button class="push-right _btn _btn--primary js--closesubmit-offtopic">Auswählen</
+  button>
+  <button class="push-right _btn _btn--primary _btn-on-light js--closereturn-offtopic">Zurück</
+  button>
+</div>
+
+<script>
+  $(".js--closesubmit-home").click(function() {
+    decision = $("[name='close_dialog']:checked").val();
+    if(decision == "2") {
+       $(".js--close-home").addClass("d-n");
+       $(".js--close-offtopic").removeClass("d-n");
+     }
+  })
+
+  $(".js--closereturn-offtopic").click(function() {
+    $(".js--close-offtopic").addClass("d-n");
+    $(".js--close-home").removeClass("d-n");
+  })
+</script>

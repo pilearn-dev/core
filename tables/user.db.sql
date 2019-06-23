@@ -24,7 +24,7 @@ visible TINYINT
 ;CREATE TABLE reviewbans (id INTEGER PRIMARY KEY, queue VARCHAR(25), user_id INT, given_by INT, cancelled_by INT, start_date INT, end_date INT, invalidated TINYINT, comment TEXT)
 
 ;CREATE TABLE user (
-id INTEGER PRIMARY KEY,
+id INTEGER PRIMARY KEY AUTOINCREMENT,
 name VARCHAR(50),
 realname VARCHAR(100),
 email VARCHAR(100),
@@ -43,7 +43,12 @@ labels TEXT,
 profile_image VARCHAR(100),
 last_login INT,
 last_email_change INT,
-last_password_reset INT
+last_password_reset INT,
+profile_place VARCHAR(100),
+profile_website VARCHAR(150),
+profile_twitter VARCHAR(150),
+profile_projects TEXT,
+member_since INT
 )
 ;INSERT INTO user (id, name, realname, email, login_provider, password, aboutme, deleted, banned, ban_reason, ban_end, frozen, role, reputation, suspension, labels, profile_image, last_login, last_email_change, last_password_reset) VALUES (-2,'system','𝕊𝕐𝕊𝕋𝔼𝕄','','none','','Hallo!\n\nIch führe alle automatisierten Aufgaben durch, die von unserem System erkannt werden.\n\n-----\n\nDein 𝕊𝕐𝕊𝕋𝔼𝕄-Benutzer',0,0,'',0,0,'user',0,'[]','[]','',0,0,0)
 ;INSERT INTO user (id, name, realname, email, login_provider, password, aboutme, deleted, banned, ban_reason, ban_end, frozen, role, reputation, suspension, labels, profile_image, last_login, last_email_change, last_password_reset) VALUES (-1,'admin','𝔸𝔻𝕄𝕀ℕ','','none','','Hallo!\n\nIch führe alle Aufgaben durch, die durch einen Community-Entscheid herbeigeführt wurden, für die also keine einzelnen Benutzer zuständig sind. Weiterhin besitze ich die Community-Beiträge, die jeder bearbeiten kann, der Bearbeitungsvorschläge einreichen kann.\n\n-----\n\nDein 𝔸𝔻𝕄𝕀ℕ-Benutzer',0,0,'',0,0,'user',0,'[]','[]','',0,0,0)
@@ -110,3 +115,17 @@ insert into badges (name, class, description, internal_id) values ("Gewusst!", "
 insert into badges (name, class, description, internal_id) values ("Moderator", "gold", "Diene als Community-gewählter Moderator für mindestens ein halbes Jahr (Dieses Abzeichen wird manuell verliehen)", "moderator"), ("Möchtegern-Moderator", "gold", "Nehme als Kandidat an einer Moderatoren-Wahl teil und erreiche die Endrunde", "election-finalist"), ("Wähler", "silver", "Stimme für einen Kandidaten in der Endrunde einer Moderatoren-Wahl", "election-voter")
 
 insert into badges (name, class, description, internal_id) values ("Beta", "gold", "Sei aktiv während der Beta von π-Learn und erhalte mindestens 10 Reputation", "beta"), ("Skimaske", "gold", "Finde eine Sicherheitslücke auf π-Learn und melde sie zuerst an das π-Learn-Team, um so für die Sicherheit der Webseite zu sorgen (Dieses Abzeichen wird manuell verliehen)", "hacker")
+
+;CREATE TABLE user_roles (
+  id INTEGER PRIMARY KEY,
+  name VARCHAR(50),
+  is_mod TINYINT,
+  is_dev TINYINT,
+  is_team TINYINT
+);
+INSERT INTO user_roles (name, is_mod, is_dev, is_team) VALUES ("Normaler Benutzer", 0,0,0), ("Moderator (ernannt)", 1,0,0), ("Moderator (gewählt)", 1,0,0), ("Team (ohne Moderatorenrechte)", 0,0,1), ("Team (mit Moderatorenrechten)", 1,0,1), ("Team (Entwicklerrechte)", 1,1,1)
+;CREATE TABLE user_preference_overrides (
+  user_id INT,
+  pref_key VARCHAR(50),
+  value TEXT
+)

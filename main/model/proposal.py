@@ -96,7 +96,7 @@ class Proposal:
 
     def getCreationTime(self):
         t = self.getDetail("proposal_time")
-        return [t, ctimes.stamp2german(t), ctimes.stamp2relative(t)]
+        return [t, ctimes.stamp2german(t), ctimes.stamp2relative(t), ctimes.stamp2shortrelative(t)]
 
     def getScore(self):
         return self.getDetail("score")
@@ -201,6 +201,24 @@ class Proposal:
             return Proposal(data["id"])
         except lite.Error as e:
             return None
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def byProposer(cls, proposer):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT id FROM proposals WHERE proposer=?", (proposer.id,))
+            data = cur.fetchall()
+            DATA =  []
+            for d in data:
+                DATA.append(Proposal(d["id"]))
+            return DATA
+        except lite.Error as e:
+            return []
         finally:
             if con:
                 con.close()

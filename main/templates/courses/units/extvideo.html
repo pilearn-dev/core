@@ -1,0 +1,65 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "contents", user) }}
+
+<div class="grid -equal-columns">
+  <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
+    <div class="p3">
+      <h2>Menü</h2>
+      <nav class="_nav _nav-v">
+        {% for element in course.getMenu() if element.availible %}
+        {% if element.id == data.id %}
+        <a href="/c/{{ course.id }}/u/{{ element.id }}" class="-active">{{ element.title }}</a>
+        {% else %}
+        <a href="/c/{{ course.id }}/u/{{ element.id }}">{{ element.title }}</a>
+        {% endif %}
+        {% if element.children %}
+        <nav class="_nav _nav-v">
+          {% for child in element.children if child.availible %}
+           {% if child.id == data.id %}
+           <a href="/c/{{ course.id }}/u/{{ child.id }}" class="-active">{{ child.title }}</a>
+           {% else %}
+           <a href="/c/{{ course.id }}/u/{{ child.id }}">{{ child.title }}</a>
+           {% endif %}
+          {% endfor %}
+        </nav>
+        {% endif %}
+        {% endfor %}
+      </nav>
+    </div>
+   </div>
+   <div class="column9__lg column12 bs2-light">
+    <div class="_headbar-item">
+      <div class="_headbar-item-name">{{ data.getTitle() }}</div>
+      <div class="_headbar-item-type">Video</div>
+      <div class="_headbar-item-status">
+        {% if data.isDisabled() %}
+          <span class="_badge _badge-s-danger">unveröffentlicht</span>
+        {% else %}
+          <span class="_badge _badge-s-success">live</span>
+        {% endif %}
+      </div>
+      <div class="_headbar-item-sep"></div>
+      <div class="_headbar-item-action">
+        {% if user.isMod() or course.getCourseRole(user) >= 3 %}
+        <a href="/c/{{ course.id }}/edit/unit/{{ data.id }}" class="_btn _btn-xs _btn--primary">Bearbeiten</a>
+        {% endif %}
+      </div>
+    </div>
+     <div class="{% if data.isDisabled() %}bg-danger-lll{% endif %} p3">
+     {% if data.getJSON().platform == "_link" %}
+     <video src="{{ data.getJSON().embedcode }}" controls></video>
+     {% else %}
+     <div data-delaydio data-delaydio-platform="{{ data.getJSON().platform }}" data-delaydio-embedcode="{{ data.getJSON().embedcode }}" data-delaydio-lang="de">
+     </div>
+     <script src="/static/js/delaydio.js" charset="utf-8"></script>
+     {% endif %}
+     <div class="_alert _alert-warning">
+       <p><strong>Disclaimer:</strong>
+       Dieses Video ist eventuell urheberrechtlich geschützt. &pi;-Learn übernimmt keine Verantwortung für unangemessene Inhalte. Melden Sie unangebrachte Inhalte oder Urheberrechtsverstöße im <a href="/helpdesk">Helpdesk</a> und wir werden uns darum kümmern.</p>
+     </div>
+   </div>
+ </div>
+</div>
+{% endblock %}

@@ -1,5 +1,5 @@
 # coding: utf-8
-from flask import request, session, redirect, url_for, abort, render_template, jsonify
+from flask import request, session, redirect, url_for, abort, render_template, jsonify, g
 from model import privileges as mprivileges, tags as mtags, user as muser, reviews as mreviews, forum as mforum, post_templates as mposttemplates
 from controller import num as cnum, times as ctimes
 
@@ -11,7 +11,7 @@ import json, time, pprint
 def topbar_inbox():
     TYPES = {
       "helpdesk": "Helpdesk",
-      "pm": "Admin-Nachricht",
+      "pm": "Moderatoren-Nachricht",
       "ping": "Benutzer-PING",
       "answered": "Neue Antwort",
       "commented": "Neuer Kommentar",
@@ -27,12 +27,7 @@ def topbar_repaudit():
     for x in cuser.getTopbarAwards():
         if x["type"] == "reputation":
             x["message_html"] = md.markdown(x["label"])
-            x["count"] = 1
-            if len(dat) >0 and dat[-1]["type"] == "reputation" and x["label"] == dat[-1]["label"] and x["given_date"] - dat[-1]["given_date"] < 24*3600:
-                dat[-1]["count"] += 1
-                dat[-1]["data"] += x["data"]
-            else:
-                dat.append(x)
+            dat.append(x)
         elif x["type"] == "badge":
             dat.append(x)
     cuser.knowReputationChanges()
@@ -47,7 +42,16 @@ def topbar_repaudit():
 def topbar_user_info():
     return render_template("topbar/user-info.html")
 
+def topbar_update():
+    cuser = muser.getCurrentUser()
+    return jsonify({
+        "badges": cuser.hasUnknownBadges(),
+        "reputation": cuser.getRepDelta(),
+        "messages": g.countNotifications(cuser.getNotifications())
+    })
+
 def apply(app):
     app.route('/topbar/inbox')(topbar_inbox)
     app.route('/topbar/user-info')(topbar_user_info)
     app.route('/topbar/rep-audit')(topbar_repaudit)
+    app.route('/topbar/Update')(topbar_update)

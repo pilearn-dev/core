@@ -1,261 +1,95 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-<link rel="stylesheet" href="/static/css/simplemde.min.css">
-<script src="/static/js/simplemde.min.js"></script>
-{% if data.isDeleted() %}
-<div class="deleted-section">
-    <div class="error">
-      <p>Dieser Benutzeraccount wurde gelöscht.</p>
-    </div>
-{% elif data.isDisabled() %}
-  <div class="user-warning">{% set end=data.getBanEnd() %}
-    <p>Dieser Benutzer wurde <strong>{{ data.getBanReason() }}</strong> <a href="/help/users/banned">gesperrt</a>. Die Sperrung endet <span title="{{ end[1] }}">{{ end[2] }}</span>.</p>
-  </div>
-{% endif %}
-  {% if user.isAdmin() or user.id == data.id %}
-    <div class="tabination">
-      <ul>
-        <li class="active"><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}">Profil</a></li>
-        <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/flags">Meldungen</a></li>
-        <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/reputation">Reputation</a></li>
-        {% if user.isAdmin() %}
-        <li><a href="/tools/user/ops/{{ data.id }}" target="_blank"><em>AdminOps</em></a></li>
-        {% else %}
-        <li><a href="/user/{{ data.id }}/{{ data.getDetail("name") }}/delete">Löschen</a></li>
-        {% endif %}
-      </ul>
-    </div>
-  {% endif %}
-    <h2>
-      <span id="realname">{{ data.getDetail("realname") }}</span>
-      {% if user.isAdmin() or (data.id == user.id and not data.getDetail("frozen")) %}
-        <a href="#!" onclick="edit('realname')"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-      {% endif %}
-    </h2>
-    {% if user.isAdmin() or user.id == data.id %}
-      <h3>
-        Benutzername: <i id="name">{{ data.getDetail("name") }}</i>
-        {% if user.isAdmin() %}
-          <a href="#!" onclick="edit('name')"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-        {% endif %}
-      </h3>
-    {% endif %}
-    {% if data.getDetail("labels")|length != 0 %}
-      <p>
-          <b>Dieser Benutzer ist ein(e) </b>
-          {% for label in data.getDetail("labels") %}
-            <span class="user-label">{{ data.labels[label] }}</span>{% if not loop.last %}, {% endif %}
-          {% endfor %}
-          {% if user.isAdmin() %}
-            <a href="#!" onclick="document.getElementById('labels-modal').classList.add('open');"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-          {% endif %}
-      </p>
-    {% elif user.isAdmin() %}
-      <p><a href="#!" onclick="document.getElementById('labels-modal').classList.add('open');"><i class="fa fa-pencil" aria-hidden="true"></i> Label hinzufügen</a></p>
-    {% endif %}
-    {% if data.getDetail("profile_image") %}
-        <div class="profile-split">
-            <div class="profile-image">
-                <img src="{{ data.getDetail("profile_image") }}" alt="Profilbild von {{ data.getDetail("name") }}">
-            </div>
-    {% endif %}
-    <div class="text" id="aboutme">
-        {% if data.getDetail("aboutme") != "" %}
-        {{ data.getDetail("aboutme")|markdown }}
-        {% else %}
-        <p>
-            <i>Dieser Benutzer hat noch nichts über sich geschrieben.</i>
-            {% if data.id == user.id and not data.getDetail("frozen") %}
-                <br><b>Drücke auf <code>Bearbeiten</code>, um deinen Profiltext zu bearbeiten.</b>
-            {% endif %}
-        </p>
-        {% endif %}
-    </div>
-    {% if data.getDetail("profile_image") %}
-        </div>
-    {% endif %}
-    {% if user.isAdmin() or (data.id == user.id and not data.getDetail("frozen")) %}
-        <button class="primary-btn" onclick="edit('aboutme', this)"><i class="fa fa-pencil" aria-hidden="true"></i> Bearbeiten</button><div style="display:none;" id="aboutme_content">{{ data.getDetail("aboutme") }}</div><br>&nbsp;
-    {% endif %}
-    {% if data.getDetail("frozen") and (user.id==data.id or user.isAdmin()) %}
-      <p class="tiny" style="color: #d00; font-weight:bold;">Dieser Account wurde aufgrund von Meinungsverschiedenheiten über Benutzerkonteneigenschaften (Anzeigename, Selbstbeschreibung, ...) eingefroren.</p>
-    {% endif %}
-    <div class="flexible-table">
-        <table border="1">
-          {% if data.id == user.id %}
-            {% if data.getDetail("login_provider") == "local_account" %}
-            <tr>
-                <th>Passwort</th>
-                {% if data.getDetail("password") == "" %}
-                    <td id="password" style="width:100%;"><div class="warning">Bitte neues Passwort setzen!</div></td>
-                {% else %}
-                    <td id="password" style="width:100%;">*****</td>
-                {% endif %}
-                <td class="edit-column"><a href="#!" onclick="edit('password')"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
-            </tr>
-            <tr>
-                <th>E-Mail-Adresse</th>
-                <td id="email" style="width:100%;">{{ data.getDetail("email") }}</td>
-                <td class="edit-column">
-                  {% if not data.getDetail("frozen") %}
-                    <a href="#!" onclick="edit('email')"><i class="fa fa-pencil" aria-hidden="true"></i></a>
-                  {% endif %}
-                </td>
-            </tr>
-            {% elif data.getDetail("login_provider") == "oauth:google" %}
-            <tr>
-                <th>E-Mail-Adresse</th>
-                <td id="email" style="width:100%;">{{ data.getDetail("email") }} <em>(verifiziert durch Google)</em></td>
-                <td class="edit-column"></td>
-            </tr>
-            {% endif %}
-          {% endif %}
-            <tr>
-                <th>Benutzerstatus</th>
-                {% if data.isDeleted() %}
-                    <td style="width:100%;">gelöscht</td>
-                {% elif data.isDisabled() %}
-                    <td style="width:100%;">gesperrt</td>
-                {% else %}
-                    <td style="width:100%;">aktiv</td>
-                {% endif %}
-                {% if data.id == user.id or user.isAdmin() %}
-                    <td class="edit-column"></td>
-                {% endif %}
-            </tr>
-            <tr>
-                <th>Benutzerrolle</th>
-                {% if data.isTeam() %}
-                <td style="font-style: italic; font-weight: bold; width: 100%;">&pi;-Learn Team {% if user.isTeam() %}<code>{{ data.getDetail("role") }}</code>{% endif %}</td>
-                {% else %}
-                    <td style="width:100%;">
-                        {% if data.isAdmin() %}
-                            Administrator
-                        {% elif data.isMod() %}
-                            Moderator
-                        {% else %}
-                            Standardbenutzer
-                        {% endif %}
-                        {% if user.isDev() and not data.isDev() and data.isEnabled() and data.id != user.id and not data.getDetail("frozen") %}
-                            <p class="tiny action-bar">
-                                <a href="#!" onclick="$post('user/set/role', {'new_value': 'administrator', 'userid': {{ data.id}} }, function(){window.location.reload();});">Administrator</a>
-                                <a href="#!" onclick="$post('user/set/role', {'new_value': 'moderator', 'userid': {{ data.id}} }, function(){window.location.reload();});">Moderator</a>
-                                <a href="#!" onclick="$post('user/set/role', {'new_value': 'user', 'userid': {{ data.id}} }, function(){window.location.reload();});">Standardbenutzer</a>
-                            </p>
-                        {% endif %}
-                    </td>
-                {% endif %}
-                {% if data.id == user.id or user.isAdmin() %}
-                    <td class="edit-column"></td>
-                {% endif %}
-            </tr>
-            <tr>
-                <th>Reputation</th>
-                <td style="width:100%;"><span class="badge" id="reputation">{{ data.getReputation() }}</span></td>
-                {% if user.isAdmin() or data.id == user.id %}
-                    <td class="edit-column"></td>
-                {% endif %}
-            </tr>
-        </table>
-        {% if user.isAdmin() and not data.isDev() and data.id != user.id %}
-            <p class="tiny action-bar">
-                {% if not data.isDeleted() %}
-                    <a href="#!" onclick="document.getElementById('privilege-modal').classList.add('open');">Privilegien entziehen</a>
-                    {% if not data.getDetail("frozen") %}
-                    <a href="#!" onclick="$post('user/set/frozen', {'new_value': '1', 'userid': {{ data.id}} }, function(){window.location.reload();});">Konto einfrieren</a>
-                    {% else %}
-                    <a href="#!" onclick="$post('user/set/frozen', {'new_value': '0', 'userid': {{ data.id}} }, function(){window.location.reload();});">Konto auftauen</a>
-                    {% endif %}
-                {% endif %}
-            </p>
-    </div>
-        {% else %}
-    </div>
-    &nbsp;
-        {% endif %}
-    {% if data.id == user.id or user.isAdmin() %}
-        <script src="/static/js/user_view.js"></script>
-    {% endif %}
-    {% if not data.isDeleted() and (not data.isDisabled() or user.id == data.id) %}
-        {% if data.id != user.id %}
-            {% if not user.may("general_reportUser") %}
-                <div><button disabled id="report-button">Melden</button></div>
-            {% else %}
-                <div><button id="report-button">Melden</button></div>
-            {% endif %}
-        {% else %}
-            <div><button id="report-button">Einen Administrator kontaktieren</button></div>
-        {% endif %}
-        {% set flagging_id = 'flag_user_' ~ data.id %}
-        {% set flagging_user = data.id %}
-        {% set flagging_user_role = data.getDetail("role") %}
-        {% include "flagging/user.html" %}
-        <script>
-            user_id = {{ data.id }};
-            dialogid = "{{ 'flag_user_' ~ data.id }}";
-            el = document.getElementById("report-button");
-            el.addEventListener("click", function() {
-                document.getElementById(dialogid).classList.toggle("open");
-            })
-        </script>
-    {% endif %}
-{% if data.isDeleted() %}
-</div>
-{% endif %}
 
-{% if user.isAdmin() and data.isEnabled() and not data.isDev() %}
-<div class="flagging-modal" id="privilege-modal">
-    <div class="flagging-dialog">
-        <div class="close-link"><a href="#!" onclick="document.getElementById('privilege-modal').classList.remove('open');">&times;</a></div>
-        <h3>Diesem Benutzer Privilegien entziehen</h3>
-        <p>Du kannst diesem Benutzer bestimmte Privilegien entziehen. Änderungen treten <b>sofort nach dem Umschalten der Checkbox</b> in Kraft.</p>
-        <div class="flagging-reason-list">
-        {% for priv in privileges.getAll() if data.may(priv, True) %}
-          {% if data.may(priv) %}
-          <label class="flagging-reason-item" id="toggle-privilege-{{ priv }}">
-              <input type="checkbox" checked onchange="self=this;$post('user/{{ data.id }}/toggle-privilege', {'privilege': '{{ priv }}'})" id="toggle-privilege-{{ priv }}">
-              <h4>{{ privileges.getSingleInformation(priv).name }}</h4>
-          </label>
-          {% else %}
-          <label class="flagging-reason-item" id="toggle-privilege-{{ priv }}">
-              <input type="checkbox" onchange="self=this;$post('user/{{ data.id }}/toggle-privilege', {'privilege': '{{ priv }}'})" id="toggle-privilege-{{ priv }}">
-              <h4>{{ privileges.getSingleInformation(priv).name }}</h4>
-          </label>
-          {% endif %}
+
+{% set user_site = "profile" %}
+{% include "user/_header.html" %}
+<div class="grid">
+  <div class="column3 column5__md column12__sm p2">
+    <div class="p4 bg-dark-llll ta-c bb3s bb--primary-dd">
+      {% if data.getDetail("profile_image") %}
+      <img src="{{ data.getDetail("profile_image") }}" alt="Profilbild von {{ data.getDetail("name") }}" class="thumbnail-xl d-ib">
+      {% else %}
+      <svg class="thumbnail-xl d-ib" viewBox="0 0 48 48" width="10em" height="10em">
+        <path d="M18,6 l16,0 l0,16 l-16,0 z M32,22 l10,20 l-32,0 l10,-20" fill="transparent" stroke-width="1" />
+        <path d="M18,22 l16,0 M10,42 l32,0" fill="transparent" stroke-width="3" />
+      </svg>
+      {% endif %}
+      <div class="p1 ta-c mt2 mb0">
+        <span class="_badge fs-heading _badge-score">{{ data.getReputation() }}</span>
+      </div>
+      <div class="p1 ta-c mt0 mb0">
+        {% for type in user.getBadgeBreakdown() %}
+        <span class="_badge fs-subheading _badge-score _badge-score-{{ type[1] }}"><span class="_badge-icon"></span>{{ type[0] }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    {% set pd = data.getProfileData() %}
+    <dl class="anchor-dark">
+      {% if pd.place %}
+      <dt>Wohnort</dt>
+      <dd>{{ pd.place }}</dd>
+      {% endif %}
+      {% if pd.website %}
+      <dt>Webseite</dt>
+      {% if data.getReputation() < 10 %}
+      <dd>{{ pd.website }}</dd>
+      {% else %}
+      <dd><a href="//{{ pd.website }}">{{ pd.website }}</a></dd>
+      {% endif %}
+      {% endif %}
+      {% if pd.twitter %}
+      <dt>Twitter</dt>
+      <dd><a href="https://twitter.com/{{ pd.twitter }}">{{ pd.twitter }}</a></dd>
+      {% endif %}
+    </dl>
+    {% if pd.projects %}
+    <h4>Projekte</h4>
+    {{ (pd.projects.replace("\n","\0")|striptags).replace("\0","\n")|markdown }}
+    {% endif %}
+  </div>
+  <div class="column9 p2 column7__md column12__sm">
+    <h1>
+      {{ data.getHTMLName(False) }}
+      {% if data.isMod() %}
+        <span class="col-dark fs-subheading f-brand pt2">(Moderator)</span>
+      {% endif %}
+    </h1>
+    <div class="p2">
+      {% if data.getDetail("aboutme") != "" %}
+      {{ data.getDetail("aboutme")|markdown }}
+      {% else %}
+      <p class="f-italic col-dark-ddd fs-base3">
+          Dieser Benutzer hat noch nichts über sich geschrieben.
+      </p>
+      {% endif %}
+    </div>
+    {% set topcourses=mcourses.getByUser(data, True) %}
+    {% if topcourses|length %}
+      <h2>Beliebteste Kurse</h2>
+      <div class="_list">
+      {% for c in topcourses %}
+      {% set t = c.getTopic() %}
+      {% set linked = c.getDetail("state") !=0 or c.isEnrolled(user) or user.isMod() %}
+        {% if linked %}
+        <a class="_list-item" href="/c/{{ c.id }}">
         {% else %}
-        <p>Dieser Benutzer hat noch keine Privilegien erhalten, die entzogen werden könnten. <i>Nutze im Notfall eine Sperrung</i></p>
-        {% endfor %}
-    </div>
-    <button onclick="document.getElementById('privilege-modal').classList.remove('open');">Fertig</button>
-    </div>
+        <span class="_list-item">
+        {% endif %}
+          <span class="push-right d-b">
+            <span class="_badge _badge-unit">{{ t.getTitle() }}</span>
+          </span>
+          <span class="fs-base3 d-b">{{ c.getTitle() }}</span>
+          <span class="fs-base2 col-dark-ddd d-b">{{ c.getShortdesc() }}</span>
+        {% if not linked %}
+        <span class="fs-base2 col-danger-ddd f-italic d-b">Dieser Kurs ist noch nicht verfügbar.</span>
+        </span>
+        {% else %}
+        </a>
+        {% endif %}
+      {% endfor %}
+      </div>
+    {% endif %}
+  </div>
 </div>
-{% endif %}
-{% if user.isDev() and not data.isDeleted() %}
-<div class="flagging-modal" id="labels-modal">
-    <div class="flagging-dialog">
-        <div class="close-link"><a href="#!" onclick="document.getElementById('labels-modal').classList.remove('open');">&times;</a></div>
-        <h3>Benutzer-Labels verwalten</h3>
-        <p>Benutzern können spezielle Label vergeben werden. Wähle aus, welche Labels für {{ data.getDetail("name") }} angezeigt werden sollen:</p>
-        <div class="flagging-reason-list">
-        {% for lab in data.possibleLabels %}
-          {% if lab in data.getDetail("labels") %}
-          <label class="flagging-reason-item" id="toggle-privilege-{{ lab }}">
-              <input type="checkbox" checked onchange="self=this;$post('user/{{ data.id }}/toggle-label', {'label': '{{ lab }}'})" id="toggle-label-{{ lab }}">
-              <h4>{{ data.labels[lab] }}</h4>
-          </label>
-          {% else %}
-          <label class="flagging-reason-item" id="toggle-privilege-{{ lab }}">
-            <input type="checkbox" onchange="self=this;$post('user/{{ data.id }}/toggle-label', {'label': '{{ lab }}'})" id="toggle-label-{{ lab }}">
-            <h4>{{ data.labels[lab] }}</h4>
-          </label>
-          {% endif %}
-        {% endfor %}
-    </div>
-    <p>
-        <button onclick="window.location.reload();" class="primary-btn">Fertig</button>
-        <button onclick="document.getElementById('labels-modal').classList.remove('open');">Keine Änderung</button>
-    </p>
-</div>
-</div>
-{% endif %}
 {% endblock %}

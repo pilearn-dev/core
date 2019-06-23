@@ -1,0 +1,42 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% from "_course-header.html" import forum_header %}
+{{ forum_header(forum, "admin", user) }}
+{% if forum.id != 0 %}
+<div class="grid">
+  <div class="column3 column12__sm p2">
+    <div class="_nav _nav-v">
+      <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/admin/identity">Identität</a>
+      <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/admin/announcements" class="-active">Ankündigungen</a>
+      <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/admin/membership">Benutzer</a>
+      {% if forum.getCourse().getDetail("state") == 0 %}
+      <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/admin/publish">Veröffentlichen</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="column9 column12__sm p3">
+{% endif %}
+<h1>Ankündigungen</h1>
+<p>Ankündigungen werden auf der Startseite für alle Benutzer angezeigt, die Zugriff auf dieses Forum haben.</p>
+<p>Wähle eine Ankündigung zum Bearbeiten:</p>
+<div class="_list">
+  {% for a in announcements %}
+    <a class="_list-item fs-base1 _list-item-keepcolor" href="/announcements/{{ forum.id }}/edit/{{ a.id }}">
+      {% if a.getEnd() %}
+        <span class="d-b col-dark-dd push-right">{{ a.getStart()[1] }} - {{ a.getEnd()[1] }}</span>
+      {% else %}
+        <span class="d-b col-dark-dd push-right">{{ a.getStart()[1] }}</span>
+      {% endif %}
+      {% if a.isShown() %}
+        <span class="d-b col-success-dd mb1">aktiv ({{ a.getShownFrom()[1] }} - {{ a.getShownUntil()[1] }})</span>
+      {% else %}
+        <span class="d-b col-danger-dd mb1">inaktiv ({{ a.getShownFrom()[1] }} - {{ a.getShownUntil()[1] }})</span>
+      {% endif %}
+        <span class="d-b mb1 fs-base2 col-black">{{ a.getTitle() }}</span>
+        <span class="d-b mb1">{{ a.getLink() }}</span>
+    </a>
+  {% endfor %}
+</div>
+<a class="_btn" href="/announcements/{{ forum.id }}/add">Ankündigung hinzufügen</a>
+{% if forum.id != 0 %}</div></div>{% endif %}
+{% endblock %}

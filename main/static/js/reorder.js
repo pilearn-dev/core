@@ -204,8 +204,14 @@ window.addEventListener("load", function() {
     var HTML5DnD = new objHTML5DnD;
 
     function submitOrder() {
-      $post("c/"+COURSE_ID+"/unit_reorder", getOrder('#reorder'), function (e) {
-        window.location.href = "./start";
+      $.ajax({
+        url: "/c/"+COURSE_ID+"/edit/reorder",
+        method: "POST",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(getOrder('#reorder')),
+        success: function( r ) {
+          window.location.href = "/c/"+COURSE_ID+"/edit"
+        }
       });
     }
     window.submitOrder = submitOrder;

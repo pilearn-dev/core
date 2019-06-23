@@ -1,0 +1,23 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% set user_site = "activity" %}
+{% set user_activity_site = "badges" %}
+{% include "user/_header.html" %}
+<div class="p2">
+  {% include "user/activity/_header.html" %}
+
+{% set badges = getCollectedBadges(data) %}
+{% if badges|length == 0 %}
+  <p class="mt3 p-lead">{{ data.getHTMLName()|safe }} hat bisher noch keine Abzeichen gesammelt.</p>
+{% else %}
+<div class="mt3 _datalist">
+  {% for b in badges %}
+  <div class="_datalist-item">
+    <a class="_badge _badge-award _badge-award-{{ b.class }}" href="/badges/{{ b.id }}" style="white-space: nowrap;"><span class="_badge-icon"></span>{{ b.name }}</a>
+    <span class="_datalist-field fs-base1">{{ b.description }}</span>
+    <span class="col-dark-dd" style="white-space: nowrap;" title="{{ b.given_date[1] }}">{{ b.given_date[2] }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

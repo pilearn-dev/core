@@ -9,25 +9,34 @@
    {% elif i.type == "separator" %}
      <hr>
    {% elif i.type == "warnbox" %}
-     <div class="warning">{{ i.data.text|markdown }}</div>
+     <div class="content-warning">{{ i.data.text|markdown }}</div>
    {% elif i.type == "quote" %}
      <blockquote>{{ i.data.text|markdown }}</blockquote>
    {% elif i.type == "image" %}
      <a href="{{ i.data.source }}"><img src="{{ i.data.source }}"></a>
-   {% elif i.type == "multiple-choice" %}
-     <div class="no-p question">
-       {{ i.data.question|markdown }}
-     {% set masterloop = loop %}
-     {% for c in i.data.choices %}
-      <label for="survey-question-{{ masterloop.index }}-answer-{{ loop.index }}"><input type="radio" id="survey-question-{{ masterloop.index }}-answer-{{ loop.index }}" value="{{ loop.index-1 }}" name="survey-question-{{ masterloop.index }}"> {{ c }}</label>
-     {% endfor %}
+     {% elif i.type == "multiple-choice" %}
+     <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
+      <div class="fs-subheading">
+        {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
+      </div>
+      {% set masterloop = loop %}
+      {% for c in i.data.choices %}
+        <div class="p1">
+          <input type="radio" name="survey-question-{{ masterloop.index }}" id="survey-question-{{ masterloop.index }}-answer-{{ loop.index }}" value="{{ loop.index-1 }}" class="form-radio">
+          <label for="survey-question-{{ masterloop.index }}-answer-{{ loop.index }}" class="form form-inline">{{ c }}</label>
+        </div>
+      {% endfor %}
      </div>
-   {% elif i.type == "text-answer" %}
-     <div class="no-p question">
-       {{ i.data.question|markdown }}
-      <input id="survey-question-{{ loop.index }}-answer" placeholder="Bitte Antwort eingeben">
-     </div>
-   {% endif %}
+     {% elif i.type == "text-answer" %}
+     <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
+        <div class="fs-subheading">
+          {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
+        </div>
+        <div class="p1">
+          <input class="form" id="survey-question-{{ loop.index }}-answer" placeholder="Bitte Antwort eingeben">
+        </div>
+      </div>
+     {% endif %}
   {% endfor %}
   <button class="primary-btn big-btn block-btn" onclick="send()">Umfrage absenden</button>
   <script>
@@ -59,7 +68,5 @@
  <p>Du hast an dieser Umfrage bereits teilgenommen. Danke.</p>
  {% endif %}
 {% else %}
-<div class="warning">
-  Diese Umfrage wurde noch nicht zur Beantwortung freigeschaltet.
-</div>
+<p>Diese Umfrage wurde noch nicht zur Beantwortung freigeschaltet.</p>
 {% endif %}

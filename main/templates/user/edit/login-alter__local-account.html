@@ -1,0 +1,22 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% set user_site = "edit" %}
+{% set user_edit_site = "login" %}
+{% include "user/_header.html" %}
+<div class="grid">
+  <div class="column2__lg column12 p2">
+    {% include "user/edit/_header.html" %}
+  </div>
+  <div class="column10__lg column12 p2">
+    <h1>Anmeldedaten ändern</h1>
+    <p>Bitte gib neue Anmeldedaten ein.</p>
+    <form action="" method="post">
+      <label for="email" class="form">E-Mail-Adresse</label>
+      <input type="email" class="form" name="email" id="email" value="{{ data.getDetail('email') }}">
+      <label for="password" class="form">Passwort</label>
+      <input type="password" class="form" name="password" id="password">
+      <button type="submit" class="_btn _btn--primary">Aktualisieren</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

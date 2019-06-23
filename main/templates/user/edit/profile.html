@@ -1,0 +1,187 @@
+{% extends "layout_new.html" %}
+{% block body %}
+<script src="/static/new_js/pilearn.markdown.js"></script>
+<script src="/static/new_js/pilearn.editor.js"></script>
+{% set user_site = "edit" %}
+{% set user_edit_site = "profile" %}
+{% include "user/_header.html" %}
+<div class="grid">
+  <div class="column2__lg column12 p2">
+    {% include "user/edit/_header.html" %}
+  </div>
+  <div class="column10__lg column12 p2">
+    <h1>Profil bearbeiten</h1>
+    <h4>Name des Benutzerkontos</h4>
+    <input class="form" value="{{ data.getDetail("realname") }}" id="user_name"{% if (data.id != user.id and not user.isDev()) %} readonly{% endif %}>
+    {% if (data.id != user.id and not user.isDev()) and data.id > 0 %}
+    <button class="_btn _btn-danger _btn-sm d-b" onclick="$('#user_name').val('benutzer-'+{{ data.id }}); $(this).attr('disabled', true);">Zurücksetzen</button>
+    {% endif %}
+    <div class="grid">
+      <div class="colbox200__lg column12">
+        <h4>Profilbild</h4>
+        <div class="horizontal-list">
+          <img src="{{ data.getDetail("profile_image") }}" alt="Profilbild von {{ data.getDetail("name") }}" class="thumbnail-l" id="profile_image">
+          {% if data.id == user.id  %}
+          <div class="p2">
+            <select class="form" id="profile_image-selection">
+              <option disabled selected>Neu auswählen</option>
+              <option value="identicon">Identicon (Muster)</option>
+              <option value="gravatar">Gravatar</option>
+              <option value="url">Von URL</option>
+              <option value="none">Kein</option>
+            </select>
+            <button class="_btn _btn-dark _btn-sm" id="profile_image_btn">Auswählen</button>
+          </div>
+          {% else %}
+          <button class="_btn _btn-danger _btn-sm d-b" id="profile_image-reset-btn">Zurücksetzen</button>
+          {% endif %}
+        </div>
+      </div>
+      <div class="colbox-fill__lg column12">
+        <h4>Profiltext</h4>
+        <div class="js--editor js--editor:preview">
+          <textarea id="profile_text" class="form form-large js--editor-textarea"{% if (data.id != user.id and not user.isDev()) %} readonly{% endif %}>{{ data.getDetail("aboutme") }}</textarea>
+          <div class="p2 js--editor-preview hr-original"></div>
+        </div>
+        {% if (data.id != user.id and not user.isDev()) %}
+        <button class="_btn _btn-danger _btn-sm d-b" onclick="$('#profile_text').val(''); $(this).attr('disabled', true);">Zurücksetzen</button>
+        {% endif %}
+      </div>
+    </div>
+    <h4>Optionale Informationen (öffentlich)</h4>
+    {% set pd = data.getProfileData() %}
+    <div class="horizontal-list">
+      <div class="p1">
+        <label for="profile_place" class="form">Wohnort</label>
+        <input id="profile_place" class="form form-inline" value="{{ pd.place if pd.place }}"{% if (data.id != user.id and not user.isDev()) %} readonly{% endif %}>
+        {% if (data.id != user.id and not user.isDev()) and data.id > 0 %}
+        <button class="_btn _btn-danger _btn-sm d-b" onclick="$('#profile_place').val(''); $(this).attr('disabled', true);">Zurücksetzen</button>
+        {% endif %}
+      </div>
+      <div class="p1">
+        <label for="profile_website" class="form">Webseite</label>
+        <div class="horizontal-list">
+          <span class="col-dark-dddd f-bold d-b pt3">http://</span>
+          <input id="profile_website" class="form form-inline" value="{{ pd.website if pd.website }}" placeholder="example.de"{% if (data.id != user.id and not user.isDev()) %} readonly{% endif %}>
+        </div>
+        {% if (data.id != user.id and not user.isDev()) and data.id > 0 %}
+        <button class="_btn _btn-danger _btn-sm d-b" onclick="$('#profile_website').val(''); $(this).attr('disabled', true);">Zurücksetzen</button>
+        {% endif %}
+      </div>
+      <div class="p1">
+        <label for="profile_twitter" class="form">Twitter</label>
+        <input id="profile_twitter" class="form form-inline" value="{{ pd.twitter if pd.twitter }}" placeholder="@benutzername"{% if (data.id != user.id and not user.isDev()) %} readonly{% endif %}>
+        {% if (data.id != user.id and not user.isDev()) and data.id > 0 %}
+        <button class="_btn _btn-danger _btn-sm d-b" onclick="$('#profile_twitter').val(''); $(this).attr('disabled', true);">Zurücksetzen</button>
+        {% endif %}
+      </div>
+    </div>
+    <label class="form" for="profile_projects">Projekte</label>
+    <div class="js--editor js--editor:preview">
+      <textarea id="profile_projects" class="form js--editor-textarea" placeholder="Du kannst eine Liste mit Projekten eingeben, die auf deiner Profilseite angezeigt werden wird."{% if (data.id != user.id and not user.isDev()) %} readonly{% endif %}>{{ pd.projects if pd.projects }}</textarea>
+      <div class="p2 js--editor-preview hr-original"></div>
+    </div>
+    {% if (data.id != user.id and not user.isDev()) and data.id > 0 %}
+    <button class="_btn _btn-danger _btn-sm d-b" onclick="$('#profile_projects').val(''); $(this).attr('disabled', true);">Zurücksetzen</button>
+    {% endif %}
+    <hr class="hr-original">
+    <button class="_btn _btn--primary _btn-lg" id="submit_btn">Profil speichern</button>
+    <div class="_warnbox p-s _warnbox-success hide" id="save_success"><p>Das Profil wurde erfolgreich gespeichert.</p></div>
+    <div class="_warnbox p-s _warnbox-danger hide" id="save_errors"></div>
+  </div>
+</div>
+<script>
+  {% if user.id == data.id %}{% set emailhash = data.getEmailHashs() %}
+  GravatarHash = "{{ emailhash.raw }}";
+  IdenticonHash = "{{ emailhash.salted }}";
+  {% endif %}
+  PiJS.editor.init();
+  $("#profile_image_btn").on("click", function() {
+    option = $("#profile_image-selection").val()
+    if(option == "identicon") {
+      URL ="https://www.gravatar.com/avatar/" + IdenticonHash + "?d=identicon&s=256";
+      $("#profile_image").attr("src", URL)
+    } else if(option == "gravatar") {
+      URL ="https://www.gravatar.com/avatar/" + IdenticonHash + "?&s=256";
+      $("#profile_image").attr("src", URL)
+    } else if(option == "none") {
+      URL ="";
+      $("#profile_image").attr("src", URL)
+    } else if(option == "url") {
+      $(this).attr("disabled", true);
+      d = $("<div class='_floatbox -no-round _dialog-medium p3'></div>");
+      d.append($("<h3>Profilbild von URL laden</h3>"));
+      d.append($("<input class='form js--profile-picture-link' type='url' placeholder='Link einfügen'>"));
+      btn = $("<button class='_btn _btn-dark'>Auswählen</button>");
+      d.append(btn);
+      btn2 = $("<button class='_btn _btn-dark _btn-outline'>Abbrechen</button>");
+      d.append(btn2);
+      d.css({
+        top: (window.scrollY+150) + "px",
+        left: "50%",
+        transform: "translateX(-50%)"
+      });
+
+      btn.on("click", function() {
+        URL = $(".js--profile-picture-link").val();
+        $("#profile_image").attr("src", URL);
+        d.remove();
+        $("#profile_image_btn").removeAttr("disabled");
+      });
+
+      btn2.on("click", function() {
+        d.remove();
+        $("#profile_image_btn").removeAttr("disabled");
+      });
+      $(document.body).append(d);
+    }
+  });
+  $("#profile_image-reset-btn").on("click", function() {
+    option = $("#profile_image-selection").val()
+    URL ="";
+    $("#profile_image").attr("src", URL)
+    $(this).attr("disabled", true);
+  });
+
+  $("#submit_btn").on("click", function() {
+    $("#save_success, #save_errors").addClass("hide");
+    $(this).attr("disabled", true);
+    $.ajax({
+      method: "POST",
+      url: "/user/{{ data.id }}/edit",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        name: $("#user_name").val(),
+        profile_image: $("#profile_image").attr("src"),
+        profile_text: $("#profile_text").val(),
+        profile_place: $("#profile_place").val(),
+        profile_website: $("#profile_website").val(),
+        profile_twitter: $("#profile_twitter").val(),
+        profile_projects: $("#profile_projects").val()
+      }),
+      success: function(r) {
+        $("#submit_btn").removeAttr("disabled");
+        if(r.result=="ok") {
+          $("#save_success").removeClass("hide");
+        } else if (r.result == "error") {
+          wb = $("#save_errors");
+          wb.html("");
+          wb.append($("<p>Das Profil konnte nicht vollständig gespeichert werden. Es sind Fehler aufgetreten:</p>"))
+          l = $("<ul></ul>");
+          for (var i = 0; i < r.errors.length; i++) {
+            l.append($("<li>").text(r.errors[i]));
+          }
+          wb.append(l);
+          wb.removeClass("hide");
+        }
+      },
+      error: function() {
+        $("#submit_btn").attr("disabled", true);
+        wb = $("#save_errors");
+        wb.text("Die Verbindung zum Server konnte nicht hergestellt werden.")
+        wb.removeClass("hide");
+      }
+    })
+  })
+</script>
+{% endblock %}

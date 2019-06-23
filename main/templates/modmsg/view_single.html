@@ -1,54 +1,51 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
+<h1>Moderator-Nachrichten an {{ thread.getContacted().getDetail("realname") }}</h1>
 {% if user.isMod() %}
-<p class="warning">Du siehst die <strong>Benutzeransicht</strong> dieses Threads. <a href="?mod=1">Moderatorenansicht zeigen</a></p>
+<div class="_banner _banner-dark">Du siehst die <strong>Benutzeransicht</strong> dieses Threads. <a href="?mod=1">Moderatorenansicht zeigen</a></div>
 {% endif %}
 {% set msgs = thread.getMessages() %}
 {% for msg in msgs %}
-<div class="split-screen">
-  <aside style="background-color: #eee; padding: 10px">
-    {% if loop.index == 1 %}
-    <h4>Ursprüngliche Nachricht</h4>
-    {% else %}
-    <h4>Antwort</h4>
-    {% endif %}
-
+<div class="p2 m2 mb6 grid bb1s bb-dark-ll">
+  <div class="p2 column2 column12__sm">
+    <dl>
+      <dt>gesendet</dt>{% set ct=msg.getSubmissionTime() %}
+      <dd title="{{ ct[1] }}">{{ ct[2] }}</dd>
     {% if msg.getDetail("message_receiver") == thread.getDetail("contacted_user") %}{% set c = msg.getReceiver() %}
-    <dl>
       <dt>von</dt>
       <dd>&pi;-Learn Moderatoren</dd>
       <dt>an</dt>
       <dd><a href="/u/{{ c.id }}">{{ c.getHTMLName()|safe }}</a></dd>
-    </dl>
     {% else %}{% set c = msg.getSubmitter() %}
-    <dl>
       <dt>von</dt>
       <dd><a href="/u/{{ c.id }}">{{ c.getHTMLName()|safe }}</a></dd>
       <dt>an</dt>
       <dd>&pi;-Learn Moderatoren</dd>
+    {% endif %}
     </dl>
-    {% endif %}{% set ct=msg.getSubmissionTime() %}
-    <p>gesendet <span title="{{ ct[1] }}">{{ ct[2] }}</span></p>
-  </aside>
-  <main>
+  </div>
+  <div class="column10 column12__sm p2 fs-base2">
     {{ msg.getContent()|markdown }}
-  </main>
+  </div>
 </div>
-<hr>
 {% endfor %}
-<div class="split-screen">
-  <aside style="background-color: #eee; padding: 10px">
-    <h4>Antwort hinzufügen</h4>
-  </aside>
-  <main>
+<div class="p2 m2 mb6 grid bb1s bb-dark-ll">
+  <div class="p2 column2 column12__sm">
+    <h3 class="fs-subheading">Eigene Antwort hinzufügen</h3>
+  </div>
+  <div class="column10 column12__sm p2 fs-base2">
     {% if thread.isClosed() %}
-    <p>Dieser Nachrichtenverlauf ist geschlossen. Es können keine neuen Nachrichten hinzugefügt werden.
-    {% elif msgs[-1].getDetail("submitted_by") == user.id and not user.isAdmin() %}
-    <p>Vielen Dank für deine Antwort</p>
-    <p>Du hast auf die letzte Nachricht bereits geantwortet. Du kannst keine neuen Antworten hinzufügen, bis das Moderatorenteam reagiert hat.</p>
+    <div class="_alert _alert-danger">
+      <p>Dieser Nachrichtenverlauf ist geschlossen. Es können keine neuen Nachrichten hinzugefügt werden.</p>
+    </div>
+    {% elif msgs[-1].getDetail("submitted_by") == user.id and not user.isMod() %}
+    <div class="_alert _alert-danger">
+      <p>Vielen Dank für deine Antwort</p>
+      <p>Du hast auf die letzte Nachricht bereits geantwortet. Du kannst keine neuen Antworten hinzufügen, bis das Moderatorenteam reagiert hat.</p>
+    </div>
     {% else %}
     {% if user.id == thread.getDetail("contacted_user") %}
-    <div class="warning">
+    <div class="_alert _alert-warning">
       <p>Um die Situation bestmöglich zu lösen, beachte diese Hinweise:</p>
       <ul>
         <li>Sei freundlich, auch wenn ein Fehler passiert sein sollte.</li>
@@ -59,23 +56,23 @@
     {% endif %}
     <form action="/user-message/{{ thread.getDetail("contacted_user") }}/thread/{{thread.id}}/add-response" method="post">
         {% if user.id == thread.getDetail("contacted_user") %}
-        <textarea id="qresponse" name="response">Hallo,
+        <textarea class="form form-large" id="qresponse" name="response">Hallo,
 
 &lt;!-- Text hier einfügen --&gt;
 
 Viele Grüße,
 {{ thread.getContacted().getDetail("realname") }}</textarea>
         {% else %}
-        <textarea id="qresponse" name="response">Hallo {{ thread.getContacted().getDetail("realname") }},
+        <textarea class="form form-large" id="qresponse" name="response">Hallo {{ thread.getContacted().getDetail("realname") }},
 
 &lt;!-- Text hier einfügen --&gt;
 
 Viele Grüße,
 &pi;-Learn Moderatorenteam</textarea>
         {% endif %}
-        <button type="submit">Absenden</button>
+        <button class="_btn _btn--primary" type="submit">Absenden</button>
     </form>
     {% endif %}
-  </main>
+  </div>
 </div>
 {% endblock %}

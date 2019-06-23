@@ -1,15 +1,23 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-    <div class="httperror">
-      <div class="img">
-        <img src="/static/img/error403.png">
-      </div>
-      <div>
-        <h2>Zugriff verboten</h2>
-        <p>Oh nein! <b>Du hast nicht die nötigen Berechtigungen, um auf diese Seite zuzugreifen.</b></p>
-        <p>Du musst dich entweder <a href="/login">anmelden</a> oder mehr Reputation sammeln.</p>
-        <hr>
-        <small>Fehlercode: <b>403</b></small>
-      </div>
+<div class="p3">
+  <div class="grid">
+    <div class="column4 column3__md hide__sm p4">
+      <div class="col--primary-dd p2 ta-c f-bold fs-display3">403</div>
     </div>
+    <div class="column8 column9__md column12__sm p2">
+      <h1>Zugriff verweigert</h1>
+      <p class="p-lead">Oh nein! Auf diese Seite darfst du nicht zugreifen.</p>
+      <p>Momentan ist es dir nicht erlaubt auf diese Seite zuzugreifen. Das kann verschiedene Ursachen haben:</p>
+      <ul>
+        {% if not user.isLoggedIn() %}
+        <li>Du bist nicht <a href="/login">angemeldet</a>.</li>
+        {% endif %}
+        <li>Du hast noch nicht genug <a href="/help/model/reputation">Reputation</a>, um auf diese Seite zuzugreifen. (Du hast {{ user.getReputation() }} Reputation)</li>
+        <li>Nur Eingeweihte dürfen auf diese Seite zugreifen (Moderatoren, Kursadmins, ...)</li>
+      </ul>
+      <p>Wenn du der Meinung bist, dass du auf diese Seite zugreifen können solltest, melde dies <a href="/f/0">im globalen Forum</a> mit dem Tag <em>Fehler</em>.</p>
+    </div>
+  </div>
+</div>
 {% endblock %}

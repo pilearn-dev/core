@@ -10,11 +10,10 @@ def _sl(list):
 
 class ReviewQueue:
 
-    def __init__(self, file, core_table, finished_at, one_man_decider=["team*"]):
+    def __init__(self, file, core_table, finished_at):
         self.file = file
         self.core_table = core_table
         self.finished_at = finished_at
-        self.one_man_decider = one_man_decider
 
     def getOpenCount(self, u):
         con = None
@@ -77,7 +76,7 @@ class ReviewQueue:
             not_skipped = cur.fetchall()
             count = len(not_skipped)
             if not self.isCompleted(id):
-                if u.getDetail("role") in self.one_man_decider and result != 1:
+                if u.isMod() and result != 1:
                     cur.execute("UPDATE "+self.core_table+"_queue SET state=1, result=? WHERE id=?", (result, id))
                 elif count > self.finished_at:
                     troc = [r["result"] for r in not_skipped]
@@ -393,10 +392,10 @@ class FlagQueue:
             if con:
                 con.close()
 
-PostClosure = ReviewQueue("forum.db", "closure", 3, ["moderator", "administrator", "team.mod", "team.admin", "team.dev"])
-PostReopen = ReviewQueue("forum.db", "reopen", 3, ["moderator", "administrator", "team.mod", "team.admin", "team.dev"])
-PostDeletion = ReviewQueue("forum.db", "post_deletion", 3, ["moderator", "administrator", "team.mod", "team.admin", "team.dev"])
-AnswerDeletion = ReviewQueue("forum.db", "answer_deletion", 3, ["moderator", "administrator", "team.mod", "team.admin", "team.dev"])
+PostClosure = ReviewQueue("forum.db", "closure", 3)
+PostReopen = ReviewQueue("forum.db", "reopen", 3)
+PostDeletion = ReviewQueue("forum.db", "post_deletion", 3)
+AnswerDeletion = ReviewQueue("forum.db", "answer_deletion", 3)
 CustomQueue = FlagQueue("user.db", "custom")
 
 def getReviewItemCount(u):
@@ -414,10 +413,8 @@ def getReviewCountState(u):
     return "null"
 
 def getFlaggedItemCount(u):
-    if u.isAdmin():
+    if u.isMod():
         filter = None
-    elif u.isMod():
-        filter = ["forum.question", "forum.answer", "forum.comment"]
     else:
         filter = []
     return CustomQueue.getOpenItemCount(filter)

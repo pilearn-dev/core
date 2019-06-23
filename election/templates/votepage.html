@@ -23,14 +23,12 @@
           {% elif vote_state == 6 %}
           <h3>Ergebnis der {{ vote_name }}</h3>
           <p>Die Wahl ist beendet und die Stimmen wurden ausgezählt. Es wurden folgende Kandidaten gewählt:</p>
-          <ul>
+          <div class="horizontal-list">
           {% for c in vote_candidate if c.isElected() %}
-          <li>
-            <a href="/u/{{ c.getCandidate().id }}">{{ c.getCandidate().getHTMLName()|safe }}</a>
-          </li>
+          {{ user_card(c.getCandidate(), level="in") }}
           {% endfor %}
-          </ul>
-          <p>Die Ergebnisse können <a href="/election/{{ vote_id }}/get-ballot-data/ergebnise.blt">hier</a> im .blt-Format heruntergeladen werden und z.B. mit <a href="https://github.com/Conservatory/openstv">OpenSTV</a> überprüft werden.</p>
+          </div>
+          <p>Die Ergebnisse können <a href="/election/{{ vote_id }}/get-ballot-data/result.blt">hier</a> im .blt-Format heruntergeladen werden und z.B. mit <a href="https://github.com/Conservatory/openstv">OpenSTV</a> überprüft werden.</p>
           {% endif %}
         </div>
         <h2 id="candidate-list">{{ vote_candidate|length }} Kandidat{{ "en" if vote_candidate|length != 1 else "" }}</h2>
@@ -39,13 +37,6 @@
           <div class="_card {% if c.isRetracted() or c.isFailed() %}_card-danger{% endif %}">
             <div class="_card-title">{{ c.getCandidate().getDetail("realname") }}</div>
             <div class="_card-content">
-              {% if c.isRetracted() %}
-                <p class="f-bold col-danger-dd">Die Kandidatur wurde zurückgezogen.</p>
-              {% elif c.isFailed() %}
-                <p class="f-bold col-danger-dd">{{ c.getCandidate().getDetail("realname") }} kam nicht in die nächste Runde.</p>
-              {% elif c.isElected() %}
-                <p class="f-bold col-success-dd">{{ c.getCandidate().getDetail("realname") }} wurde gewählt. HERZLICHEN GLÜCKWUNSCH!</p>
-              {% endif %}
               {% if vote_state == 5 %}
                 <div class="_btnlist">
 
@@ -101,6 +92,11 @@
               {% endif %}
               <div class="grid">
                 <div class="column7__lg column12">
+                  {% if c.isRetracted() %}
+                    <p class="f-bold col-danger-dd">Die Kandidatur wurde zurückgezogen.</p>
+                  {% elif c.isFailed() %}
+                    <p class="f-bold col-danger-dd">{{ c.getCandidate().getDetail("realname") }} kam nicht in die nächste Runde.</p>
+                  {% endif %}
                   <div class="_link-list">
                     {% if (user.isDev() or user.id == c.getCandidate().id) and c.getDetail("state") == 0 and vote_state < 4 %}
                       <a href="#!" onclick="if(confirm('Willst du diese Kandidatur wirklich zurückziehen? Du kannst danach nicht erneut kandidieren und die Kandidatur kann nicht wiederhergestellt werden.'))$.ajax({'url': '/election/{{ vote_id }}/api', method:'POST', contentType: 'application/json; charset=utf-8', data: JSON.stringify({'action':'retract', 'candidate': 1 }), 'success':function(){window.location.reload();}})">zurückziehen</a>
@@ -116,7 +112,7 @@
                     {% endif %}
                   </div>
                 </div>
-                <div class="column5__lg column12"><div class="push-right">{{ user_card(c.getCandidate(), True) }}</div></div>
+                <div class="column5__lg column12"><div class="push-right">{{ user_card(c.getCandidate(), highlight=True, level="brin") }}</div></div>
               </div>
             </div>
           </div>

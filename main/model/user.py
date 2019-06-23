@@ -4,16 +4,11 @@ import secrets
 import sqlite3 as lite
 from flask import request, session, url_for
 from sha1 import sha1,md5
-from model import privileges as mprivileges, tags as mtags
+from model import privileges as mprivileges
 from controller import times as ctimes
 import time
 
 class User:
-
-    STD_USER = "u"
-    MOD_USER = "m"
-    ADMIN_USER = "a"
-    DEV_USER = "d"
 
     repActions = {
         "update": "Korrektur",
@@ -39,19 +34,19 @@ class User:
         self.__data = self.getInfo()
 
     def isDev(self):
-        return self.getDetail("role") == "team.dev"
+        return bool(self.getDetail("is_team"))
 
     def isTeam(self):
-        return self.getDetail("role").startswith("team.")
+        return bool(self.getDetail("is_dev"))
 
     def isAdmin(self):
-        return self.isDev() or self.getDetail("role") == "administrator" or self.getDetail("role") == "team.admin"
+        return self.isMod()
 
     def isMod(self):
-        return self.isAdmin() or self.getDetail("role") == "moderator" or self.getDetail("role") == "team.mod"
+        return bool(self.getDetail("is_mod"))
 
     def isDeleted(self):
-        return self.getDetail("deleted") == 1
+        return self.getDetail("deleted") != 0
 
     def isDisabled(self):
         x = self.getDetail("banned") == 1
@@ -69,6 +64,14 @@ class User:
 
     def getDetail(self, d):
         return self.__data[d]
+
+
+    def getEmailHashs(self):
+        email = self.getDetail("email")
+        return {
+            "salted": md5(email+"#pilearn#"+str(self.id)),
+            "raw": md5(email)
+        }
 
 
     def getShortProfileText(self):
@@ -107,6 +110,52 @@ class User:
 
         return text.strip()
 
+    def getPref(self, key, default):
+        if self.id == -3: return default
+        if session.get("login") == self.id and session.get("preference:"+key, False):
+            return session["preference:"+key]
+
+        try:
+            con = lite.connect('databases/user.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT value FROM user_preference_overrides WHERE user_id = ? AND pref_key=?", (self.id,key))
+            d = cur.fetchone()
+            if d is None:
+                return default
+            if session.get("login") == self.id:
+                session["preference:"+key] = d["value"]
+            return d["value"]
+        except lite.Error as e:
+            print e
+            return default
+        finally:
+            if con:
+                con.close()
+
+    def setPref(self, key, value):
+        if self.id == -3: return False
+        try:
+            con = lite.connect('databases/user.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT value FROM user_preference_overrides WHERE user_id = ? AND pref_key=?", (self.id,key))
+            d = cur.fetchone()
+            if d is None:
+                cur.execute("INSERT INTO user_preference_overrides VALUES (?, ?, ?)", (self.id,key,value))
+            else:
+                cur.execute("UPDATE user_preference_overrides SET value=? WHERE user_id = ? AND pref_key=?", (value,self.id,key))
+            con.commit()
+            if session.get("login") == self.id:
+                session["preference:"+key] = value
+            return True
+        except lite.Error as e:
+            print e
+            return False
+        finally:
+            if con:
+                con.close()
+
     def getRepDelta(self):
         if self.id == -3: return
         try:
@@ -144,16 +193,11 @@ class User:
             name = self.getDetail("realname")
         except Exception as e:
             raise SyntaxError(self.id)
-        if self.isAdmin():
+        if self.isMod():
             if with_border:
-                name = name + " <span title='Administrator'>&#11042;</span>"
+                name = name + u" <span title='Moderator'>♦</span>"
             else:
-                name = name + " &#11042;"
-        elif self.isMod():
-            if with_border:
-                name = name + " <span title='Moderator'>&#11040;</span>"
-            else:
-                name = name + " &#11040;"
+                name = name + u" ♦"
         return name
 
     def getBanReason(self):
@@ -197,19 +241,43 @@ class User:
             if con:
                 con.close()
 
+    # Regetting the reputation will fix any possible race-condition-based discrepancy between user.reputation and the reputation table.
+    # Regetting DOES NOT recalculate the users reputation history and shall only be used if there's a possible discrepancy.
+    # :forall: will reget everyones reputation, otherwise only current users' one
+    def regetRep(self, forall=False):
+        if self.id == -3: return
+        try:
+            con = lite.connect('databases/user.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            if forall:
+                cur.execute("UPDATE user SET reputation = 1")
+                cur.execute("UPDATE user SET reputation = 1+MAX((SELECT Sum(amount) FROM reputation WHERE reputation.user_id=user.id),0) WHERE (SELECT Count(*) FROM reputation WHERE reputation.user_id=user.id) > 0")
+            else:
+                cur.execute("UPDATE user SET reputation = 1 WHERE id=?", (self.id,))
+                cur.execute("UPDATE user SET reputation = 1+MAX((SELECT Sum(amount) FROM reputation WHERE reputation.user_id=user.id),0) WHERE user.id=? AND (SELECT Count(*) FROM reputation WHERE reputation.user_id=user.id) > 0", (self.id,))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
     def getReputationChanges(self):
         if self.id == -3: return []
         try:
             con = lite.connect('databases/user.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT * FROM reputation WHERE user_id=? ORDER BY given_date DESC, id DESC", (self.id, ))
+            cur.execute("SELECT *, Sum(amount) AS total_amount FROM reputation WHERE user_id=? GROUP BY given_date/3600, message HAVING total_amount!=0 ORDER BY given_date DESC, id DESC", (self.id, ))
             all = cur.fetchall()
             if all is None:
                 return []
             allnew = []
             for i in all:
                 i = dict(i)
+                i["amount"] = i["total_amount"]
                 d = i["given_date"]
                 i["parsed_date"] = [d, ctimes.stamp2german(d), ctimes.stamp2shortrelative(d, False)]
                 allnew.append(i)
@@ -226,7 +294,7 @@ class User:
             con = lite.connect('databases/user.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT * FROM (SELECT \"reputation\" AS type, amount AS data, given_date, message AS label, Null AS class, recognized FROM reputation WHERE user_id=? UNION ALL SELECT \"badge\" AS type, badge_associations.data AS data, badge_associations.given_date, badges.name AS label, badges.class AS class, badge_associations.recognized AS recognized FROM badges, badge_associations WHERE userid=? AND badge_associations.badgeid=badges.id) ORDER BY given_date DESC LIMIT 50", (self.id, self.id))
+            cur.execute("SELECT * FROM (SELECT \"reputation\" AS type, amount AS data, given_date, message AS label, Null AS class, recognized FROM reputation WHERE user_id=? GROUP BY given_date/3600, label HAVING data!=0 UNION ALL SELECT \"badge\" AS type, badge_associations.data AS data, badge_associations.given_date, badges.name AS label, badges.class AS class, badge_associations.recognized AS recognized FROM badges, badge_associations WHERE userid=? AND badge_associations.badgeid=badges.id) ORDER BY given_date DESC LIMIT 50", (self.id, self.id))
             all = cur.fetchall()
             if all is None:
                 return []
@@ -337,7 +405,7 @@ class User:
                     "deleted": bool(d_["is_hidden"]),
                     "user_id": d_["user_id"],
                     "creator": User.from_id(d_["creator_id"]),
-                    "relative_date": ctimes.stamp2relative(d_["creation_date"]),
+                    "relative_date": ctimes.stamp2shortrelative(d_["creation_date"]),
                     "absolute_date": ctimes.stamp2german(d_["creation_date"]),
                     "content": d_["content"],
                     "type": d_["type"]
@@ -459,7 +527,10 @@ class User:
                 con.close()
 
     def getReputation(self):
-        return max(0, self.getDetail("reputation"))
+        return max(1, self.getDetail("reputation"))
+
+    def getProfileData(self):
+        return self.getDetail("profile")
 
     def getBadgeBreakdown(self):
         try:
@@ -497,13 +568,13 @@ class User:
                 con = lite.connect('databases/user.db')
                 con.row_factory = lite.Row
                 cur = con.cursor()
-                cur.execute("SELECT * FROM user WHERE id=?", (self.id, ))
+                cur.execute("SELECT user.*, user_roles.is_mod, user_roles.is_dev, user_roles.is_team FROM user, user_roles WHERE user.id=? AND user.role=user_roles.id", (self.id, ))
                 data = cur.fetchone()
                 if data is None:
                     return {}
                 return {
                     "id": data['id'],
-                    "name": data["name"],
+                    "name": data["realname"],
                     "realname": data['realname'],
                     "email": data['email'],
                     "deleted": data['deleted'],
@@ -512,14 +583,23 @@ class User:
                     "ban_end": data['ban_end'],
                     "role": data['role'],
                     "reputation": data['reputation'] if not data["banned"] == 1 else 0,
-                    "profile_image": data["profile_image"] if data["profile_image"] is not None and data["profile_image"] != "" else ("https://www.gravatar.com/avatar/"+md5(data["email"]+"#pilearn#"+str(data["id"]))+"?d=identicon"),
+                    "profile_image": data["profile_image"],
                     "password": secrets.token_urlsafe(16) if data["password"] != "" else "",
                     "aboutme":data["aboutme"] if data["aboutme"] != None else "",
                     "frozen": bool(data["frozen"]),
                     "suspension": json.loads(data["suspension"]) if data["suspension"] is not None else [],
                     "labels": json.loads(data["labels"]) if data["labels"] is not None else [],
                     "login_provider": data["login_provider"],
-                    "mergeto": data["mergeto"]
+                    "mergeto": data["mergeto"],
+                    "is_mod": data['is_mod'],
+                    "is_dev": data['is_dev'],
+                    "is_team": data['is_team'],
+                    "profile": {
+                        "place": data['profile_place'],
+                        "website": data['profile_website'],
+                        "twitter": data['profile_twitter'],
+                        "projects": data['profile_projects'],
+                    }
                 }
             except lite.Error as e:
                 #raise lite.Error from e
@@ -530,7 +610,7 @@ class User:
         else:
             return {
                 "id": -3,
-                "name": "<anonym>",
+                "name": "Anonymer Benutzer",
                 "realname": "Anonymer Benutzer",
                 "email": "",
                 "deleted": 1,
@@ -542,24 +622,21 @@ class User:
                 "aboutme":"",
                 "suspension": [],
                 "labels": [],
-                "login_provider": "none"
+                "login_provider": "none",
+                "is_mod": False,
+                "is_dev": False,
+                "is_team": False
             }
 
     def isLoggedIn(self):
         return self.id != -3
 
     def getNotifications(self):
-        all = self.may("general_showAllNotifications")
         try:
             con = lite.connect('databases/user.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            if not all and self.isDisabled():
-                cur.execute("SELECT * FROM notifications WHERE user_id=? AND (visible!=0 OR type='pm')", (self.id, ))
-            elif all:
-                cur.execute("SELECT * FROM notifications WHERE user_id=?", (self.id, ))
-            else:
-                cur.execute("SELECT * FROM notifications WHERE user_id=? AND visible!=0", (self.id, ))
+            cur.execute("SELECT * FROM notifications WHERE user_id=?", (self.id, ))
             return_value = []
             data = cur.fetchone()
             while data:
@@ -584,10 +661,8 @@ class User:
         rep = self.getReputation()
         if rep >= mprivileges.getOne(prop) and (prop not in self.getDetail("suspension") or ignoreSuspension):
             return True
-        elif prop.startswith("forum_"):
-            return self.isMod()
         else:
-            return self.isAdmin()
+            return self.isMod()
 
 
     def notify(self, type,msg,url):
@@ -650,6 +725,91 @@ class User:
 
 
 
+    def getUserReached(self):
+        if self.id == -3: return 0
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT Count(*) FROM enrollments As enr, courses, enrollments As own WHERE enr.courseid=courses.id AND own.courseid=courses.id AND own.permission=4 AND own.userid=?", (self.id, ))
+            return cur.fetchone()[0]
+        except lite.Error as e:
+            return 0
+        finally:
+            if con:
+                con.close()
+
+
+    def getForumQuestionCount(self):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT Count(*) FROM articles WHERE deleted=0 AND author=?", (self.id,))
+            return cur.fetchone()[0]
+        except lite.Error as e:
+            return 0
+        finally:
+            if con:
+                con.close()
+
+    def getForumAnswerCount(self):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT Count(*) FROM answers WHERE deleted=0 AND author=?", (self.id,))
+            return cur.fetchone()[0]
+        except lite.Error as e:
+            return 0
+        finally:
+            if con:
+                con.close()
+
+    def getForumVoteCount(self):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT Count(*) FROM score_votes WHERE nullified=0 AND user_id=?", (self.id,))
+            return cur.fetchone()[0]
+        except lite.Error as e:
+            return 0
+        finally:
+            if con:
+                con.close()
+
+
+    def getFlagHelpfulTotal(self):
+        COUNT = 0
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT Count(*) FROM (SELECT * FROM closure_flags WHERE state=1 AND flagger_id=? UNION SELECT * FROM reopen_flags WHERE state=1 AND flagger_id=? UNION SELECT * FROM post_deletion_flags WHERE state=1 AND flagger_id=? UNION SELECT * FROM post_undeletion_flags WHERE state=1 AND flagger_id=?) As tbl", (self.id,self.id,self.id,self.id))
+            COUNT += cur.fetchone()[0]
+        except lite.Error as e:
+            return COUNT
+        finally:
+            if con:
+                con.close()
+
+        try:
+            con = lite.connect('databases/user.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT Count(*) FROM custom_flag WHERE state=1 AND flagger_id=?", (self.id,))
+            COUNT += cur.fetchone()[0]
+        except lite.Error as e:
+            return COUNT
+        finally:
+            if con:
+                con.close()
+
+        return COUNT
+
+
+
     @classmethod
     def getRoleTable(cls, role):
         try:
@@ -690,18 +850,41 @@ class User:
 
     @classmethod
     def safe(cls, id):
+        if not cls.exists(id):
+            u = cls.blank()
+            u.id = id
+            u._User__data = {
+                "id": id,
+                "name": "benutzer-" + str(id),
+                "realname": "benutzer-" + str(id),
+                "email": "",
+                "deleted": 1,
+                "banned": 0,
+                "role": "user",
+                "reputation": 0,
+                "profile_image": "",
+                "password":"",
+                "aboutme":"",
+                "suspension": [],
+                "labels": [],
+                "login_provider": "none",
+                "is_mod": False,
+                "is_dev": False,
+                "is_team": False
+            }
+            return u
         u = cls(id)
         if u.getDetail("mergeto"):
             u = cls(u.getDetail("mergeto"))
         return u
 
     @classmethod
-    def login(cls, username, password):
+    def login(cls, email, password):
         try:
             con = lite.connect('databases/user.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT * FROM user WHERE name=? AND (password=? OR password='') AND login_provider='local_account'", (username, sha1(password)))
+            cur.execute("SELECT * FROM user WHERE email=? AND (password=? OR password='') AND login_provider='local_account'", (email, sha1(password)))
             data = cur.fetchone()
             if data is None:
                 return -3
@@ -733,7 +916,7 @@ class User:
                 if data["mergeto"]:
                     new_id = data["mergeto"]
                     return new_id
-                if data["deleted"] == 1:
+                if data["deleted"] != 0:
                     return -4
                 else:
                     return data['id']
@@ -744,15 +927,15 @@ class User:
                 con.close()
 
     @classmethod
-    def register(cls, username, password, realname, email):
+    def register(cls, password, realname, email):
         try:
             con = lite.connect('databases/user.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute(u"SELECT * FROM user WHERE name=? OR email=?", (username, email))
+            cur.execute(u"SELECT * FROM user WHERE email=?", (email,))
             if cur.fetchone():
                 return -3
-            cur.execute(u"INSERT INTO user (name, realname, email, password, banned, role, reputation, aboutme, login_provider) VALUES (?, ?, ?, ?, 0, 'user', 0, ?, 'local_account')", (username, realname, email, sha1(password), u""))
+            cur.execute(u"INSERT INTO user (name, realname, email, password, banned, role, reputation, aboutme, login_provider, deleted, mergeto, labels, member_since) VALUES (?, ?, ?, ?, 0, 1, 1, '', 'local_account', 0, 0, '[]', ?)", (realname, realname, email, sha1(password), time.time()))
             data = cur.lastrowid
             con.commit()
             return data
@@ -764,14 +947,14 @@ class User:
                 con.close()
 
     @classmethod
-    def reset_deletion(cls, username, password):
+    def reset_deletion(cls, email, password):
         try:
             con = lite.connect('databases/user.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute(u"UPDATE user SET deleted=0 WHERE name=? AND password=?", (username, sha1(password)))
+            cur.execute(u"UPDATE user SET deleted=0 WHERE email=? AND password=?", (email, sha1(password)))
             con.commit()
-            cur.execute(u"SELECT id FROM user WHERE name=? AND password=?", (username, sha1(password)))
+            cur.execute(u"SELECT id FROM user WHERE email=? AND password=?", (email, sha1(password)))
             data = cur.fetchone()["id"]
             return data
         except lite.Error as e:
@@ -797,12 +980,12 @@ class User:
                 con.close()
 
     @classmethod
-    def passwdreset(cls, username, email):
+    def passwdreset(cls, email):
         try:
             con = lite.connect('databases/user.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("UPDATE user SET password='' WHERE name=? AND email=?", (username, email))
+            cur.execute("UPDATE user SET password='' WHERE email=?", (email,))
             con.commit()
             return True
         except lite.Error as e:
@@ -838,3 +1021,27 @@ def getCurrentUser():
         return User.blank()
     else:
         return User.from_id(session.get('login'))
+
+
+def getRoles():
+    try:
+        con = lite.connect('databases/user.db')
+        cur = con.cursor()
+        cur.execute("SELECT id, name, is_mod, is_dev, is_team FROM user_roles ORDER BY id ASC")
+        data = cur.fetchall()
+        DATA =  []
+        for d in data:
+            DATA.append({
+                "id": d[0],
+                "strid": str(d[0]),
+                "name": d[1],
+                "is_mod": bool(d[2]),
+                "is_dev": bool(d[3]),
+                "is_team": bool(d[4])
+            })
+        return DATA
+    except lite.Error as e:
+        return []
+    finally:
+        if con:
+            con.close()

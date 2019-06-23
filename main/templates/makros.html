@@ -1,57 +1,64 @@
-{% macro user_card(user, is_expanded=False) %}
-  {% set card_id=g.random_number(1, 99999) %}
-  <div class="user-profile-meta">
-  <div class="user-profile-badge{% if user.isTeam() %} is-dev{% endif %}{% if is_expanded %} expanded{% endif %}" id="user-card-{{ user.id }}-{{ card_id }}">
-      <div class="image-area">
-          {% if user.id == -1 %}{% elif user.getDetail("profile_image") %}
-              <img src="{{ user.getDetail("profile_image") }}" alt="">
+{#
+ # User card level specifier:
+ # n: name (always included)
+ # i: user profile image
+ # r: user reputation
+ # b: user badges
+ # a: additional html (specified by $additional_html)
+ #}
+{% macro user_card(user, highlight=False, level="nirb", additional_html="", superverb="", supertime="", unlinked=False, pad=3) %}
+  {% if not user.isDeleted() and not unlinked %}<a href="/u/{{ user.id }}"{% else %}<span{% endif %} class="m1 p{{ pad }} a-unlined b-r1{% if not("r" in level or "b" in level or "a" in level) %} d-f{% else %} d-b{% endif %} base2{% if highlight %} bg--primary-lll{% endif %}" style="line-height: 1;{% if "r" in level or "b" in level or "a" in level %} width: 200px;{% endif %}">
+    {% if superverb or supertime %}
+    <div class="col-dark-ddd pb2">{% if superverb %}<span class="f-bold">{{ superverb }}</span>{% endif %}{% if superverb and supertime %} {% endif %}{% if supertime %}{{ supertime }}{% endif %}</div>
+    {% endif %}
+    {% if "i" in level %}
+      <div class="grid">
+      {% if "r" in level or "b" in level %}
+        <div class="colbox-50 mr2">
+          {% if not user.getDetail("profile_image") %}
+          <svg class="thumbnail-xs col-black" viewBox="0 0 48 48" width="3em" height="3em">
+            <path d="M18,6 l16,0 l0,16 l-16,0 z M32,22 l10,20 l-32,0 l10,-20" fill="transparent" stroke-width="1" />
+            <path d="M18,22 l16,0 M10,42 l32,0" fill="transparent" stroke-width="3" />
+          </svg>
           {% else %}
-              <i class="fa fa-user fa-2x" aria-hidden="true"></i>
+          <img src="{{ user.getDetail("profile_image") }}" alt="" class="thumbnail-xs">
           {% endif %}
-      </div>
-      <div class="text-area">
-          {% if user.id == -3 %}
-            <h4>Anonymer Benutzer</h4>
-            <span class="author-role"> &nbsp; </span>
-            &nbsp;
-          {% elif user.id == -1 %}
-            <h4>Community-Beitrag</h4>
-            <span class="author-role"> &nbsp; </span>
-            &nbsp;
+        </div>
+      {% else %}
+        <div class="colbox mr2">
+          {% if not user.getDetail("profile_image") %}
+          <svg class="thumbnail-xs" style="max-width: 1.75em" viewBox="0 0 48 48" width="1.75em" height="1.75em">
+            <path d="M18,6 l16,0 l0,16 l-16,0 z M32,22 l10,20 l-32,0 l10,-20" fill="transparent" stroke-width="1" />
+            <path d="M18,22 l16,0 M10,42 l32,0" fill="transparent" stroke-width="3" />
+          </svg>
           {% else %}
-            <h4><a href="/u/{{ user.id }}">{{ user.getHTMLName()|safe }}</a></h4>
-            {% if user.isTeam() %}
-                <span class="author-role">&pi;-Learn Team</span>
-            {% elif user.isAdmin() %}
-                <span class="author-role">ADMINISTRATOR</span>
-            {% elif user.isMod() %}
-                <span class="author-role">MODERATOR</span>
-            {% else %}
-            <span class="author-role"> &nbsp; </span>
-            {% endif %}
-            <span class="author-rep"> Reputation: {{ g.num2suff(user.getReputation()) }}</span>
+          <img src="{{ user.getDetail("profile_image") }}" alt="" class="thumbnail-xs" style="max-width: 1.75em">
           {% endif %}
-      </div>
-    {% if user.getDetail("labels")|length != 0 and user.id != -1 and user.id != -3 %}
-    <div class="below-area">
-        <p class="expandable">
-            {{ user.getDetail("realname") }} ist
-            {% for label in user.getDetail("labels") %}
-                {% if loop.first %}{% elif loop.last %} und {% else %}, {% endif %}<strong>{{ user.labels[label] }}</strong>{% if loop.last %}.{% endif %}
-            {% endfor %}
-        </p>
-        <p class="expandable">
-          {{ user.getShortProfileText()|striptags|safe }}
-        </p>
-        {% if not is_expanded %}
-            <a href="#!" onclick="document.getElementById('user-card-{{ user.id }}-{{ card_id }}').classList.toggle('expanded');if(this.innerText=='(mehr)'){this.innerText='(weniger)'}else{this.innerText='(mehr)'}">(mehr)</a>
-        {% else %}
-            <a href="#!" onclick="document.getElementById('user-card-{{ user.id }}-{{ card_id }}').classList.toggle('expanded');if(this.innerText=='(mehr)'){this.innerText='(weniger)'}else{this.innerText='(mehr)'}">(weniger)</a>
-        {% endif %}
+        </div>
+      {% endif %}
+      <div class="colbox" style="flex-grow: 1;">
+    {% endif %}
+    {% if user.id == -3 %}
+      <div class="fs-base3 col-dark-ddd d-b">Anonym</div>
+    {% else %}
+    <div class="fs-base3 anchor--primary d-b">{{ user.getHTMLName()|safe }}</div>
+    {% endif %}
+    {% if "r" in level and not user.isDeleted() %}
+      <span class="_badge _badge-score col-dark-ddd">{{ user.getReputation() }}</span>
+    {% endif %}
+    {% if "b" in level and not user.isDeleted() and not user.isDisabled() %}
+      {% for type in user.getBadgeBreakdown() %}
+      <span class="_badge _badge-score _badge-score-{{ type[1] }} col-dark-ddd"><span class="_badge-icon"></span>{{ type[0] }}</span>
+      {% endfor %}
+    {% endif %}
+    {% if "i" in level %}
+    </div>
     </div>
     {% endif %}
-  </div>
-</div>
+    {% if "a" in level %}
+    <div class="col-black">{{ additional_html|safe }}</div>
+    {% endif %}
+  {% if not user.isDeleted() and not unlinked %}</a>{% else %}</span>{% endif %}</a>
 {% endmacro %}
 
 

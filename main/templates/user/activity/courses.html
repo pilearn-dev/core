@@ -1,0 +1,95 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% set user_site = "activity" %}
+{% set user_activity_site = "courses" %}
+{% include "user/_header.html" %}
+<div class="p2">
+  {% include "user/activity/_header.html" %}
+
+  {% set courses=mcourses.getByUser(data) %}
+  {% set proposals=mproposals.byProposer(data) %}
+  <div class="grid">
+    <div class="column3 column12__sm p2">
+      <div class="_nav _nav-v">
+        <a {% if request.values.get("view", "offered") == "offered" %}class="-active"{% endif %} href="?page=courses&view=offered">Angebotene Kurse ({{ courses|length }})</a>
+        <a {% if request.values.get("view", "offered") == "proposed" %}class="-active"{% endif %} href="?page=courses&view=proposed">Vorgeschlagene Kurse ({{ proposals|length }})</a>
+        {% if data.id == user.id or user.isMod() %}
+        <a {% if request.values.get("view", "offered") == "enrolled" %}class="-active"{% endif %} href="?page=courses&view=enrolled">Besuchte Kurse</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="column9 column12__sm p2">
+      {% if request.values.get("view", "offered") == "offered" %}
+      <div class="col-dark fs-display2 push-right f-bold">{{ courses|length }}</div>
+      <h2 class="mt6 m2">Angebotene Kurse</h2>
+      <div class="_list">
+      {% for c in courses %}
+      {% set t = c.getTopic() %}
+      {% set linked = c.getDetail("state") !=0 or c.isEnrolled(user) or user.isMod() %}
+        {% if linked %}
+        <a class="_list-item" href="/c/{{ c.id }}">
+        {% else %}
+        <span class="_list-item">
+        {% endif %}
+          <span class="push-right d-b">
+            <span class="_badge _badge-unit">{{ t.getTitle() }}</span>
+          </span>
+          <span class="fs-base3 d-b">{{ c.getTitle() }}</span>
+          <span class="fs-base2 col-dark-ddd d-b">{{ c.getShortdesc() }}</span>
+        {% if not linked %}
+        <span class="fs-base2 col-danger-ddd f-italic d-b">Dieser Kurs ist noch nicht verfügbar.</span>
+        </span>
+        {% else %}
+        </a>
+        {% endif %}
+      {% endfor %}
+      </div>
+      {% elif request.values.get("view", "offered") == "proposed" %}
+      <div class="col-dark fs-display2 push-right f-bold">{{ proposals|length }}</div>
+      <h2 class="mt6 m2">Vorgeschlagene Kurse</h2>
+      <div class="_list">
+      {% for p in proposals if not p.isDeleted() or user.isMod() %}
+      {% set t = p.getTopic() %}
+      {% set ct = p.getCreationTime() %}
+        <a class="_list-item" href="/course/proposal/{{ p.id }}">
+          <span class="push-right d-b">
+            <span class="_badge _badge-unit">{{ t.getTitle() }}</span>
+          </span>
+          <span class="fs-base3 d-b">{{ p.getTitle() }}</span>
+          <span class="fs-base2 col-dark-ddd d-b">{{ p.getShortdesc() }}</span>
+          <span class="d-b">
+            {% if p.isDeleted() %}
+            <span class="_badge _badge-vote _badge-vote-filled-danger">gelöscht</span>
+            {% elif p.isDeclined() %}
+            <span class="_badge _badge-vote _badge-vote-danger">abgelehnt</span>
+            {% elif p.getDetail("courseid") != 0 %}
+            <span class="_badge _badge-vote _badge-vote-filled-success">erfolgreich</span>
+            {% else %}
+            <span class="_badge _badge-vote _badge-vote--primary">{{ p.getPercScore() }}% vollständig</span>
+            {% endif%}
+            <span class="p1 col-dark-d" title="{{ ct[1] }}">{{ ct[2] }}</span>
+          </span>
+        </a>
+      {% endfor %}
+      </div>
+      {% elif request.values.get("view", "offered") == "enrolled" and (user.id == data.id or user.isMod()) %}
+      {% set enrolled=mcourses.getFromUser(data) %}
+      <div class="col-dark fs-display2 push-right f-bold">{{ enrolled|length }}</div>
+      <h2 class="mt6 m2">Besuchte Kurse</h2>
+      <div class="_list">
+        {% for c in enrolled %}
+        {% set t = c.getTopic() %}
+          <a class="_list-item" href="/c/{{ c.id }}">
+            <span class="push-right d-b">
+              <span class="_badge _badge-unit">{{ t.getTitle() }}</span>
+            </span>
+            <span class="fs-base3 d-b">{{ c.getTitle() }}</span>
+            <span class="fs-base2 col-dark-ddd d-b">{{ c.getShortdesc() }}</span>
+          </a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

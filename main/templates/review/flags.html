@@ -17,32 +17,25 @@
   <aside>
     <div style="position: sticky; top: 10px;">
       <h3>Überblick</h3>
-      {% if user.isAdmin() %}
       <ol>
         <li class="visited"><a href="?mod=all&admin=all">Alle anzeigen</a></li>
         <li class="visited"><a href="?mod=pending&admin=pending">Nur offene</a></li>
       </ol>
       <h4>Moderatoren-Meldungen</h4>
-      {% endif %}
       <ol>
         <li class="visited"><a href="?mod=all&admin=none#mod-flags">Alle anzeigen</a></li>
         <li class="visited"><a href="?mod=done&admin=none#mod-flags">Nur erledigte</a></li>
         <li class="visited"><a href="?mod=pending&admin=none#mod-flags">Nur offene</a></li>
       </ol>
-      {% if user.isAdmin() %}
       <h4>Administrator-Meldungen</h4>
       <ol>
         <li class="visited"><a href="?mod=none&admin=all#admin-flags">Alle anzeigen</a></li>
         <li class="visited"><a href="?mod=none&admin=done#admin-flags">Nur erledigte</a></li>
         <li class="visited"><a href="?mod=none&admin=pending#admin-flags">Nur offene</a></li>
       </ol>
-      {% endif %}
     </div>
   </aside>
   <main>
-    {% if user.isAdmin() %}
-    <h3 class="highlighted-h3" id="mod-flags">Meldungen für Moderatoren</h3>
-    {% endif %}
     <div class="flag-overview">
     {% for f in mod_flags if request.values.get("mod", "all") == "all" or (request.values.get("mod", "all")=="done" and f.state != 0) or (request.values.get("mod", "all")=="pending" and f.state == 0) %}
       <div class="single-flag">
@@ -71,8 +64,6 @@
       </div>
     {% endfor %}
     </div>
-    {% if user.isAdmin() %}
-    <h3 class="highlighted-h3" id="admin-flags">Meldungen für Administratoren</h3>
     <div class="flag-overview">
     {% for f in admin_flags if request.values.get("admin", "all") == "all" or (request.values.get("admin", "all")=="done" and f.state != 0) or (request.values.get("admin", "all")=="pending" and f.state == 0) %}
       <div class="single-flag">
@@ -101,7 +92,6 @@
       </div>
     {% endfor %}
     </div>
-    {% endif %}
   </main>
 </div>
 {% endblock %}

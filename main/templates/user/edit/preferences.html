@@ -1,0 +1,42 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% set user_site = "edit" %}
+{% set user_edit_site = "preferences" %}
+{% include "user/_header.html" %}
+<div class="grid">
+  <div class="column2__lg column12 p2">
+    {% include "user/edit/_header.html" %}
+  </div>
+  <div class="column10__lg column12 p2">
+    <h1>Einstellungen</h1>
+    {% set darkTheme = data.getPref("darkTheme", False) == "1" %}
+    {% set autoSave = data.getPref("autoSave", False) == "1" %}
+    <p>Beachte: Einstellungen sind verzögert gespeichert, damit &pi;-Learn schneller ist. Es kann daher eine ganze Weile dauern, bis eine Veränderung auch auf anderen Geräten angezeigt wird. Um eine Aktualisierung zu erzwingen, musst du dich auf diesen ab- und wieder anmelden.</p>
+    <h2>Dunkelmodus</h2>
+    <p>Du kannst die Farben invertieren, und damit die Webseite in einen Modus mit dunkleren Farben schalten.</p>
+    <p>Status: <strong>{{ "an" if darkTheme else "aus" }}</strong></p>
+    <button class="_btn _btn--primary" onclick="update_pref('darkTheme', '{{ 0 if darkTheme else 1 }}', function(){window.location.reload()})">{{ "Ausschalten" if darkTheme else "Anschalten" }}</button>
+    <h2>Automatisches Speichern von Kursmodulen</h2>
+    <p>Wenn diese Einstellung aktiviert ist, wird der Kurseditor halbminütlich versuchen, die Inhalte zu speichern (Nur Infoseiten + Quizze)</p>
+    <p>Status: <strong>{{ "an" if autoSave else "aus" }}</strong></p>
+    <button class="_btn _btn--primary" onclick="update_pref('autoSave', '{{ 0 if autoSave else 1 }}', function(){window.location.reload()})">{{ "Ausschalten" if autoSave else "Anschalten" }}</button>
+  </div>
+</div>
+<script>
+  function update_pref(key, val, scb) {
+    $.ajax({
+      method: "POST",
+      url: "/user/{{ data.id }}/preferences",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        key: key,
+        value: val
+      }),
+      success: function(r) {scb();},
+      error: function() {
+        alert("Verbindung fehlgeschlagen!");
+      }
+    })
+  }
+</script>
+{% endblock %}

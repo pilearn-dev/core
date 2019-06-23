@@ -1,0 +1,120 @@
+{% extends "layout_new.html" %}
+{% block body %}
+<script src="/static/new_js/pilearn.markdown.js"></script>
+<script src="/static/new_js/pilearn.editor.js"></script>
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "admin", user) }}
+<div class="grid">
+  <div class="column3 column12__sm p2">
+    <div class="_nav _nav-v">
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/identity">Identität</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/announcements">Ankündigungen</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/membership" class="-active">Benutzer</a>
+      {% if course.getDetail("state") == 0 %}
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/publish">Veröffentlichen</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="column9 column12__sm p3">
+    <h1>Benutzer</h1>
+    {% set role = course.getCourseRole(user) %}
+    {% if role == 3 %}
+    <p>Du bist <strong>Kursbearbeiter</strong> für diesen Kurs.</p>
+    {% elif role == 4 %}
+    <p>Du bist <strong>Kursbesitzer</strong> für diesen Kurs.</p>
+    {% endif %}
+    <p>Kursbesitzer (Administratoren des Kurses)</p>
+    {% set course_admins = course.getEnrolledByPerm(4) %}
+    <ul>
+    {% for u in course_admins %}
+    <li>
+      <a href="/u/{{ u.id }}">{{ u.getHTMLName()|safe }}</a>
+      <a href="#!" onclick="revokeStatus(this, {{ u.id }});" class="_btn _btn-xs _btn-danger _btn-lighter">entfernen</a></li>
+    {% endfor %}
+      <li><input class="form form-inline" id="status-add-4" placeholder="Benutzer-ID"><button class="_btn _btn--primary" onclick="addStatus(this, $('#status-add-4').val(), 4)">Hinzu</button></li>
+    </ul>
+    <p>Kursbearbeiter (können alles bearbeiten)</p>
+    {% set course_editors = course.getEnrolledByPerm(3) %}
+    <ul>
+    {% for u in course_editors %}
+    <li>
+      <a href="/u/{{ u.id }}">{{ u.getHTMLName()|safe }}</a>
+      <a href="#!" onclick="revokeStatus(this, {{ u.id }});" class="_btn _btn-xs _btn-danger _btn-lighter">entfernen</a></li>
+    {% endfor %}
+      <li><input class="form form-inline" id="status-add-3" placeholder="Benutzer-ID"><button class="_btn _btn--primary" onclick="addStatus(this, $('#status-add-3').val(), 3)">Hinzu</button></li>
+    </ul>
+    <p>Kursbetrachter (können auch nicht freigeschalteten Kurs besuchen)</p>
+    {% set course_visitors = course.getEnrolledByPerm(2) %}
+    <ul>
+    {% for u in course_visitors %}
+    <li>
+      <a href="/u/{{ u.id }}">{{ u.getHTMLName()|safe }}</a>
+      <a href="#!" onclick="revokeStatus(this, {{ u.id }});" class="_btn _btn-xs _btn-danger _btn-lighter">entfernen</a></li>
+    {% endfor %}
+      <li><input class="form form-inline" id="status-add-2" placeholder="Benutzer-ID"><button class="_btn _btn--primary" onclick="addStatus(this, $('#status-add-2').val(), 2)">Hinzu</button></li>
+    </ul>
+    <p>In diesen Kurs sind <span class="_badge _badge-s-dark">{{ course.getEnrolledCount() }}</span> Benutzer eingeschrieben.</p>
+    <h3>Benutzer aus Kurs entfernen</h3>
+    <p>Du kannst einen Benutzer, der sich nicht an die Regeln hält, aus dem Kurs entfernen (Benutzer kann sich wieder einschreiben) und die Moderatoren darüber kontaktieren.</p>
+    <input class="form form-inline" id="kick-remove" placeholder="Benutzer-ID"><button class="_btn _btn-danger" onclick="revokeAccess(this, $('#kick-remove').val())">Rauswerfen</button>
+  </div>
+</div>
+<script>
+  function addStatus($this, id, role) {
+    $this = $($this);
+    $this.addClass("-loading");
+    $.ajax({
+      url: "/course/{{ course.id }}/{{ course.getLabel() }}/admin/membership",
+      method: "POST",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({"action": "give-role", "user": id, "role": role}),
+      success: function( r ) {
+        if(r.result == "success")
+          window.location.reload();
+        else {
+          PiJS.warnbox.error(r.error, $this.parent());
+          $this.removeClass("-loading");
+        }
+      }
+    });
+  }
+
+  function revokeStatus($this, id) {
+    $this = $($this);
+    $this.addClass("-loading");
+    $.ajax({
+      url: "/course/{{ course.id }}/{{ course.getLabel() }}/admin/membership",
+      method: "POST",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({"action": "revoke-role", "user": id}),
+      success: function( r ) {
+        if(r.result == "success")
+          window.location.reload();
+        else {
+          PiJS.warnbox.error(r.error, $this.parent());
+          $this.removeClass("-loading");
+        }
+      }
+    });
+  }
+
+  function revokeAccess($this, id) {
+    $this = $($this);
+    $this.addClass("-loading");
+    $.ajax({
+      url: "/course/{{ course.id }}/{{ course.getLabel() }}/admin/membership",
+      method: "POST",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({"action": "kick-remove", "user": id}),
+      success: function( r ) {
+        if(r.result == "success")
+          window.location.reload();
+        else {
+          PiJS.warnbox.error(r.error, $this.parent());
+          $this.removeClass("-loading");
+        }
+      }
+    });
+  }
+</script>
+{% endblock %}

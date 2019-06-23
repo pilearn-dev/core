@@ -1,190 +1,157 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-<link rel="stylesheet" href="/static/css/simplemde.min.css">
-<script src="/static/js/simplemde.min.js"></script>
-<script src="/static/js/systemerror.js"></script>
-<div class="tabination">
-  <ul>
-    <li><a href="/courses">Übersicht</a></li>
-    <li><a href="/course/search">Suchen</a></li>
-    <li><a href="/topics">Themen</a></li>
-    <li class="active"><a href="/course/propose">Vorschlagen</a></li>
-  </ul>
+<script src="/static/new_js/pilearn.markdown.js"></script>
+<script src="/static/new_js/pilearn.editor.js"></script>
+<div class="_nav _nav-t _nav-right">
+  <a href="/courses">Übersicht</a>
+  <a href="/course/search">Suchen</a>
+  <a href="/topics">Themen</a>
+  <a href="/course/propose" class="-active">Vorschlagen</a>
 </div>
-    <h2>Kurs vorschlagen</h2>
-    {% if user.may("course_propose") %}
-      <div class="rally" id="propose_rally">
-        <div class="rally-item" id="intro">
-          <div class="rally-blank">&nbsp;</div>
-          <div class="rally-centerbox">
-            <div class="rally-heading">
-              Du möchtest einen Kurs anbieten?
-            </div>
-            <p>Dann bist du hier genau richtig! Noch fünf kleine Schritte und dann kann es mit deinem Kurs losgehen.</p>
-            <p>Keine Sorge, die meisten eingegebenen Informationen kannst du später noch ändern.</p>
-            <button onclick="rallyTo()" class="primary-btn dispose-on-small">Weiter &raquo;</button>
-          </div>
-          <div class="rally-infobox">
-            <strong>Überblick</strong>
-            <ol>
-              <li>Was muss ich wissen?</li>
-              <li>Worum geht es in dem Kurs</li>
-              <li>Was wird im Kurs angeboten</li>
-              <li>Was benötigt man zur Teilnahme</li>
-              <li>Was passiert jetzt?</li>
-            </ol>
-          </div>
-        </div>
-        <div class="rally-item" id="knowledge">
-          <div class="rally-blank">&nbsp;</div>
-          <div class="rally-centerbox">
-            <div class="rally-heading">
-              1. Was muss ich wissen?
-            </div>
-            <p>Bitte beachte diese drei Hinweise, die entscheiden, ob ein Kurs angenommen wird:</p>
-            <ul>
-              <li><strong>Prüfe ob dieser Kurs bereits existiert.</strong> Mehrere Kurse zum genau gleichen Thema sind unnötig. <a href="/course/search">Suche</a> nach Kursen und überprüfe auch auf der Startseite, ob es bereits ähnliche Kursvorschläge gibt.</li>
-              <li><strong>Beachte unsere <a href="/help/faq/course-hints" target="_blank">Hinweise zum Umfang und Inhalt eines &pi;-Learn-Kurses.</a></strong></li>
-              <li><strong>Vermeide Fehler.</strong> Die Kursinformationen sollten (größtenteils) fehlerfrei sein. Überprüfe sie noch einmal vor dem Abschicken.</li>
-            </ul>
-            <button onclick="rallyBack()" class="dispose-on-small">&laquo; Zurück</button>&nbsp;<button onclick="rallyTo()" class="primary-btn dispose-on-small">Weiter &raquo;</button>
-          </div>
-          <div class="rally-blank">&nbsp;</div>
-        </div>
-        <div class="rally-item" id="topic">
-          <div class="rally-blank">&nbsp;</div>
-          <div class="rally-centerbox">
-            <div class="rally-heading">
-              2. Worum geht es in dem Kurs?
-            </div>
-            <label for="title">Kurstitel</label>
-            <input id="title" onblur="showRI('rally-info-topic'); hideRI('rally-info-title');" onfocus="hideRI('rally-info-topic'); showRI('rally-info-title')">
-            <label for="shortdesc">Kurzbeschreibung (Elevator pitch)</label>
-            <input id="shortdesc" onblur="showRI('rally-info-topic'); hideRI('rally-info-shortdesc');" onfocus="hideRI('rally-info-topic'); showRI('rally-info-shortdesc')">
-            <b>Thema des Kurses</b>
-            <div id="topicform">
-            {% for t in topic.getAll() %}
-            <label for="topic-{{ t.getName() }}"><input type="radio" value="{{ t.id }}" name="topic" id="topic-{{ t.getName() }}"> <a class="topic" href="/t/{{ t.getName() }}">{{ t.getTitle() }}</a> &ndash; {{ t.getExcerpt() }}</label>
-            {% endfor %}
-            </div>
-            &nbsp;<br><button onclick="rallyBack()" class="dispose-on-small">&laquo; Zurück</button>&nbsp;<button onclick="rallyTo()" class="primary-btn dispose-on-small">Weiter &raquo;</button>
-          </div>
-          <div class="rally-infobox">
-            <div class="rally-info" id="rally-info-title">
-              <p>Der <strong>Titel</strong> ist das wichtigste Merkmal eines Kurses.</p>
-              <p>Er sollte mit so wenig Worten wie möglich klar machen, worum es geht.</p>
-              <div class="good-example example"><i class="fa fa-check fa-fw"></i> Die 5 häufigsten Fahrrad-Pannen und wie man diese beheben kann</div>
-              <div class="good-example example"><i class="fa fa-check fa-fw"></i> Grundrechenarten Mathematik</div>
-              <div class="bad-example example"><i class="fa fa-times fa-fw"></i> Echt toller Kurs</div>
-              <div class="bad-example example"><i class="fa fa-times fa-fw"></i> Erklärung ob der Tatsache, dass unter Annahme ... 3+3=6 ist.</div>
-            </div>
-            <div class="rally-info" id="rally-info-shortdesc">
-              <p>Die <strong>Kurzbeschreibung</strong> soll den Benutzer innerhalb von Sekunden dazu überzeugen, am Kurs teilzunehmen, aber auch nicht reißerisch sein.</p>
-              <hr>
-              <p><strong>Tipp:</strong> Stell dir vor du würdest eine unbekannte Person im Fahrstuhl treffen und hast jetzt 10-30 Sekunden Zeit dieser Person den Kurs vorzustellen. Was würdest du erwähnen?</p>
-            </div>
-            <div class="rally-info shown" id="rally-info-topic">
-              <p>Wähle einen <strong>Kurstitel</strong>, eine <strong>Kurzbeschreibung</strong> für deinen Kurs und suche ein <strong>Themengebiet</strong> aus, in das dein Kurs passt.</p>
-            </div>
-          </div>
-        </div>
-        <div class="rally-item">
-          <div class="rally-blank">&nbsp;</div>
-          <div class="rally-centerbox" id="description">
-            <div class="rally-heading">
-              3. Was wird im Kurs angeboten?
-            </div>
-            <label for="longdesc">Detailbeschreibung</label>
-            <textarea id="longdesc"></textarea>
-            <button onclick="rallyBack()" class="dispose-on-small">&laquo; Zurück</button>&nbsp;<button onclick="rallyTo()" class="primary-btn dispose-on-small">Weiter &raquo;</button>
-          </div>
-          <div class="rally-infobox">
-            <div class="rally-info shown" id="rally-info-topic">
-              <p>Die <strong>Detailbeschreibung</strong> gibt weiterführende Informationen:</p>
-              <div class="example good-example"><i class="fa fa-fw fa-check"></i> Erklärung von Namen</div>
-              <div class="example good-example"><i class="fa fa-fw fa-check"></i> Links zu wichtigen Webseiten</div>
-              <div class="example good-example"><i class="fa fa-fw fa-check"></i> An wen richtet sich der Kurs</div>
-              <div class="example bad-example"><i class="fa fa-fw fa-times"></i> Was braucht man zum Kurs</div>
-              <div class="example bad-example"><i class="fa fa-fw fa-times"></i> Genauer Kursaufbau</div>
-              <p>Du kannst <a href="/help/faq/markdown">Markdown</a> verwenden</p>
-            </div>
-          </div>
-        </div>
-        <div class="rally-item" id="requirements">
-          <div class="rally-blank">&nbsp;</div>
-          <div class="rally-centerbox">
-            <div class="rally-heading">
-              4. Was benötigt man zur Teilnahme?
-            </div>
-            <label for="requirements_form">Voraussetzungen</label>
-            <textarea id="requirements_form"></textarea>
-            <button onclick="rallyBack()" class="dispose-on-small">&laquo; Zurück</button>&nbsp;<button onclick="rallyTo()" class="primary-btn dispose-on-small">Weiter &raquo;</button>
-          </div>
-          <div class="rally-infobox">
-            <div class="rally-info shown" id="rally-info-topic">
-              <p>Die <strong>Voraussetzungen</strong> geben an, was zur Teilnahme am Kurs benötigt wird:</p>
-              <div class="example good-example"><i class="fa fa-fw fa-check"></i> Materialien</div>
-              <div class="example good-example"><i class="fa fa-fw fa-check"></i> Software</div>
-              <div class="example good-example"><i class="fa fa-fw fa-check"></i> Vorwissen</div>
-              <div class="example bad-example"><i class="fa fa-fw fa-times"></i> An wen richtet sich der Kurs</div>
-              <div class="example bad-example"><i class="fa fa-fw fa-times"></i> Worum geht der Kurs</div>
-              <p>Du kannst <a href="/help/faq/markdown">Markdown</a> verwenden</p>
-            </div>
-          </div>
-        </div>
-        <div class="rally-item" id="next">
-          <div class="rally-blank">&nbsp;</div>
-          <div class="rally-centerbox">
-            <div class="rally-heading">
-              5. Was passiert jetzt?
-            </div>
-            <p>Als nächstes überprüfen wir, ob es sich überhaupt lohnt, so einen Kurs anzubieten. Da es schade für deinen Aufwand wäre, versuchen wir sicherzustellen, dass wenigstens ein paar Benutzer an deinem Kurs teilnehmen.</p>
-            <p>Dafür wird dieser Vorschlag auf der Startseite angezeigt, mit der Bitte, dass Benutzer, die an diesem Kurs teilnehmen würden, dies durch einen Knopfdruck versprechen.</p>
-            <p>Wenn innerhalb eines Monats genug Teilnehmer dies versprechen, wirst du informiert, dass du jetzt den Kurs bearbeiten kannst</p>
-            <button onclick="rallyBack()" class="dispose-on-small">&laquo; Zurück</button>&nbsp;<button onclick="propose()" class="primary-btn">Vorschlag einreichen</button>
-          </div>
-          <div class="rally-blank">&nbsp;</div>
-        </div>
+<h1>Kurse vorschlagen</h1>
+{% if user.may("course_propose") %}
+<div class="_card">
+  <div class="_card-title _card-subtitle">
+      1. Informationen
+  </div>
+  <div class="_card-content js--slide1">
+       <p class="p-lead">Du möchtest einen Kurs anbieten?</p>
+
+      <p>Dann bist du hier genau richtig! Noch vier kleine Schritte und dann kann es mit deinem Kurs losgehen.</p>
+
+      <p>Keine Sorge, die meisten eingegebenen Informationen kannst du später noch ändern.</p>
+
+      <p>Bitte beachte auch diese drei Hinweise, die entscheiden, ob ein Kurs angenommen wird:</p>
+      <ul>
+        <li><strong>Prüfe ob dieser Kurs bereits existiert.</strong> Mehrere Kurse zum genau gleichen Thema sind unnötig. <a href="/course/search">Suche</a> nach Kursen und überprüfe auch auf der Startseite, ob es bereits ähnliche Kursvorschläge gibt.</li>
+        <li><strong>Beachte unsere <a href="/help/faq/course-hints" target="_blank">Hinweise zum Umfang und Inhalt eines &pi;-Learn-Kurses.</a></strong></li>
+        <li><strong>Vermeide Fehler.</strong> Die Kursinformationen sollten (größtenteils) fehlerfrei sein. Überprüfe sie noch einmal vor dem Abschicken.</li>
+      </ul>
+  </div>
+  <div class="_card-content js--slide1">
+      <div class="push-right">
+          <button class="_btn _btn--primary _btn-lg" onclick="$('.js--slide1').addClass('hide');$('.js--slide2').removeClass('hide');">Weiter &raquo;</button>
       </div>
-      <script>
-        function rallyTo() {
-          el = document.querySelector("#propose_rally");
-          el.scrollBy({top:window.innerHeight, behavior: "smooth"});
-        }
-        function rallyBack() {
-          el = document.querySelector("#propose_rally");
-          el.scrollBy({top:-window.innerHeight, behavior: "smooth"});
-        }
-        function hideRI(q) {
-          document.getElementById(q).classList.remove("shown");
-        }
-        function showRI(q) {
-          document.getElementById(q).classList.add("shown");
-        }
-        function propose() {
-          if(document.getElementById("title").value.trim() == "" ||
-             document.getElementById("shortdesc").value.trim() == "" ||
-             document.getElementById("topicform").querySelector(":checked") == null ||
-             document.getElementById("longdesc").value.trim() == "" ||
-             document.getElementById("requirements_form").value.trim() == "") {
-            issueSystemError("Der Vorschlag wurde nicht vollständig ausgefüllt.");
-            return;
+      <div class="push-reset"></div>
+  </div>
+  <div class="_card-title _card-subtitle">
+      2. Allgemeine Daten
+  </div>
+  <div class="_card-content js--slide2 hide">
+    <label class="form" for="title">Kurstitel</label>
+    <input class="form" id="title">
+    <label class="form" for="shortdesc">Kurzbeschreibung (Elevator pitch)</label>
+    <input class="form" id="shortdesc">
+    <label class="form">Thema des Kurses</label>
+    <div id="topicform">
+    {% for t in topic.getAll() %}
+    <label class="form" for="topic-{{ t.getName() }}"><input class="form-radio" type="radio" value="{{ t.id }}" name="topic" id="topic-{{ t.getName() }}"> <a class="_badge _badge-unit" href="/t/{{ t.getName() }}">{{ t.getTitle() }}</a> &ndash; {{ t.getExcerpt() }}</label>
+    {% endfor %}
+    </div>
+  </div>
+  <div class="_card-content js--slide2 hide">
+      <div class="push-right">
+          <button class="_btn _btn--primary _btn-lg _btn-outline" onclick="$('.js--slide2').addClass('hide');$('.js--slide1').removeClass('hide');">&laquo; Zurück</button>
+          <button class="_btn _btn--primary _btn-lg" onclick="$('.js--slide2').addClass('hide');$('.js--slide3').removeClass('hide');">Weiter &raquo;</button>
+      </div>
+      <div class="push-reset"></div>
+  </div>
+  <div class="_card-title _card-subtitle">
+      3. Detailbeschreibung
+  </div>
+  <div class="_card-content js--slide3 hide">
+    <label class="form" for="longdesc">Detailbeschreibung</label>
+    <div class="js--editor js--editor:preview">
+      <textarea class="form form-large js--editor-textarea" id="longdesc"></textarea>
+      <div class="p2 js--editor-preview hr-original"></div>
+    </div>
+  </div>
+  <div class="_card-content js--slide3 hide">
+      <div class="push-right">
+          <button class="_btn _btn--primary _btn-lg _btn-outline" onclick="$('.js--slide3').addClass('hide');$('.js--slide2').removeClass('hide');">&laquo; Zurück</button>
+          <button class="_btn _btn--primary _btn-lg" onclick="$('.js--slide3').addClass('hide');$('.js--slide4').removeClass('hide');">Weiter &raquo;</button>
+      </div>
+      <div class="push-reset"></div>
+  </div>
+  <div class="_card-title _card-subtitle">
+      4. Erforderliche Materialien
+  </div>
+  <div class="_card-content js--slide4 hide">
+    <label class="form" for="requirements_form">Voraussetzungen</label>
+    <div class="js--editor js--editor:preview">
+      <textarea class="form form-large js--editor-textarea" id="requirements_form"></textarea>
+      <div class="p2 js--editor-preview hr-original"></div>
+    </div>
+  </div>
+  <div class="_card-content js--slide4 hide">
+      <div class="push-right">
+          <button class="_btn _btn--primary _btn-lg _btn-outline" onclick="$('.js--slide4').addClass('hide');$('.js--slide3').removeClass('hide');">&laquo; Zurück</button>
+          <button class="_btn _btn--primary _btn-lg" onclick="$('.js--slide4').addClass('hide');$('.js--slide5').removeClass('hide');">Weiter &raquo;</button>
+      </div>
+      <div class="push-reset"></div>
+  </div>
+  <div class="_card-title _card-subtitle">
+      5. Kursvorschlag absenden
+  </div>
+  <div class="_card-content js--slide5 hide">
+    <p class="p-lead">Du bist jetzt bereit, den Kursvorschlag abzusenden!</p>
+    <p>Als nächstes überprüfen wir, ob es sich überhaupt lohnt, so einen Kurs anzubieten. Da es schade für deinen Aufwand wäre, versuchen wir sicherzustellen, dass wenigstens ein paar Benutzer an deinem Kurs teilnehmen.</p>
+    <p>Dafür wird dieser Vorschlag auf der Startseite angezeigt, mit der Bitte, dass Benutzer, die an diesem Kurs teilnehmen würden, dies durch einen Knopfdruck versprechen.</p>
+    <p>Wenn innerhalb eines Monats genug Teilnehmer dies versprechen, wirst du informiert, dass du jetzt den Kurs bearbeiten kannst</p>
+  </div>
+  <div class="_card-content js--slide5 hide">
+      <div class="push-right">
+          <button class="_btn _btn--primary _btn-lg _btn-outline" onclick="$('.js--slide5').addClass('hide');$('.js--slide4').removeClass('hide');">&laquo; Zurück</button>
+          <button class="_btn _btn--primary _btn-lg" onclick="propose();" id="submit-btn">Kursvorschlag absenden</button>
+      </div>
+      <div class="push-reset"></div>
+  </div>
+</div>
+  <script>
+    function propose() {
+      $this = $("#submit-btn");
+      if($("#title").val().trim() == "" ||
+         $("#shortdesc").val().trim() == "" ||
+         $("#topicform").find(":checked").length == 0 ||
+         $("#longdesc").val().trim() == "" ||
+         $("#requirements_form").val().trim() == "") {
+        PiJS.warnbox.error("Der Vorschlag wurde nicht vollständig ausgefüllt.", $this.parent());
+        return;
+      }
+      $this.addClass("-loading").attr("disabled", true);
+      $.ajax({
+        method: "POST",
+        url: "/course/propose",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({
+          title: $("#title").val(),
+          topic: $("#topicform").find(":checked").val(),
+          shortdesc: $("#shortdesc").val(),
+          longdesc: $("#longdesc").val(),
+          requirements: $("#requirements_form").val()
+        }),
+        success: function(r) {
+          $this.removeAttr("disabled").removeClass("-loading");
+          if(r.result=="success") {
+            window.location.href = r.url;
+          } else if (r.result == "error") {
+            PiJS.warnbox.error(r.error, $this.parent());
+          } else if (r.result == "errors") {
+            PiJS.warnbox.error("<p>Es sind Fehler aufgetreten:</p><ul><li>" + r.errors.join("</li><li>") + "</li></ul>", $this.parent(), true);
           }
-          $post("course/propose", {
-            "title": document.getElementById("title").value.trim(),
-            "shortdesc": document.getElementById("shortdesc").value.trim(),
-            "topic": document.getElementById("topicform").querySelector(":checked").value,
-            "longdesc": document.getElementById("longdesc").value.trim(),
-            "requirements": document.getElementById("requirements_form").value.trim(),
-          }, function (k) {
-            window.location.href = k;
-          })
+        },
+        error: function() {
+          $this.removeAttr("disabled").removeClass("-loading");
+          PiJS.warnbox.error("Die Verbindung zum Server konnte nicht hergestellt werden.", $this.parent());
         }
-      </script>
-    {% else %}
-      <div class="error">
-          <h4>Privileg noch nicht erreicht</h4>
-          <p>Du darfst noch keine Kurse vorschlagen</p>
-      </div>
-    {% endif %}
+      })
+    }
+    PiJS.editor.init();
+  </script>
+{% else %}
+  <div class="error">
+      <h4>Privileg noch nicht erreicht</h4>
+      <p>Du darfst noch keine Kurse vorschlagen</p>
+  </div>
+{% endif %}
 {% endblock %}

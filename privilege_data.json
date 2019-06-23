@@ -4,21 +4,21 @@
         "desc": "Für alle Nutzer, die dieses Privileg noch nicht erreicht haben, werden Benachrichtigungen ausgeblendet, sobald sie erledigt sind.",
         "id": "general_showAllNotifications",
         "type": "honor",
-        "showInHelp": true
+        "showInHelp": false
     },
     {
         "name": "Benutzer melden",
         "desc": "Du kannst verdächtiges Verhalten eines Nutzers über einen Knopf auf der Benutzerseite melden.",
         "id": "general_reportUser",
         "type": "moderation",
-        "showInHelp": true
+        "showInHelp": false
     },
     {
         "name": "Benutzer sperren",
         "desc": "Du kannst einen Benutzer über einen Knopf auf der Benutzerseite sperren. Der Benutzer kann daraufhin nicht mehr an einem Kurs oder im Forum teilnehmen. Seine Reputation wird während der Sperrzeit auf 1 gesetzt, so dass er auch anderweitig nicht an π-Learn teilnehmen kann.",
         "id": "general_banUser",
         "type": "moderation",
-        "showInHelp": true
+        "showInHelp": false
     },
     {
         "name": "Moderatorentools",
@@ -32,21 +32,21 @@
         "desc": "Du kannst Kommentare zu Kursen hinzufügen. (Verbesserungsvorschläge, Danksagungen, ...)",
         "id": "course_comment",
         "type": "participiation",
-        "showInHelp": true
+        "showInHelp": false
     },
     {
         "name": "Kommentare von Kursen bewerten",
         "desc": "Du kannst Kommentare von Kursen bewerten, wenn du sie hilfreich findest, oder mit der Meinung übereinstimmst.",
         "id": "course_commentVote",
         "type": "participiation",
-        "showInHelp": true
+        "showInHelp": false
     },
     {
         "name": "Kurse bewerten",
         "desc": "Du kannst Kurse bewerten.",
         "id": "course_vote",
         "type": "participiation",
-        "showInHelp": true
+        "showInHelp": false
     },
     {
         "name": "Kurse vorschlagen",
@@ -60,21 +60,21 @@
         "desc": "Du kannst die Bearbeitung von Kursseiten vorschlagen.",
         "id": "course_proposeEdit",
         "type": "participiation",
-        "showInHelp": true
+        "showInHelp": false
     },
     {
         "name": "Kurse bearbeiten",
         "desc": "Du kannst die Kursseiten bearbeiten und Bearbeitungsvorschläge moderieren. Dazu erhältst du Zugriff auf die entsprechende Moderationsliste.",
         "id": "course_reviewEdits",
         "type": "participiation",
-        "showInHelp": true
+        "showInHelp": false
     },
     {
         "name": "An geschützten Beiträgen mitarbeiten",
         "desc": "Du kannst jetzt an geschützten Beiträgen mitarbeiten.",
         "id": "forum_workAtProtected",
         "type": "honor",
-        "showInHelp": true
+        "showInHelp": false
     },
     {
         "name": "Kommentare schreiben",
@@ -109,14 +109,14 @@
         "desc": "Du kannst jetzt Bearbeitungen von Beiträgen vorschlagen.",
         "id": "forum_proposeEdit",
         "type": "participiation",
-        "showInHelp": true
+        "showInHelp": false
     },
     {
         "name": "Direkt mit anderen Nutzern chatten",
         "desc": "Du kannst jetzt mit anderen Nutzern chatten.",
         "id": "forum_directChat",
         "type": "participiation",
-        "showInHelp": true
+        "showInHelp": false
     },
     {
         "name": "Beiträge bearbeiten",
@@ -144,7 +144,7 @@
         "desc": "Du kannst jetzt einen Teil deiner Reputation als Belohnung aussetzen. Mehr Informationen findest du [hier](/help/award)",
         "id": "forum_setAward",
         "type": "honor",
-        "showInHelp": true
+        "showInHelp": false
     },
     {
         "name": "Fragen schließen",

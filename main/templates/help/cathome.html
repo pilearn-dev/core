@@ -1,19 +1,24 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-    <h2><a href="/help">Hilfethemen</a> &raquo; Kategorie: {{ cat.getTitle() }}</h2>
-    {% if user.isAdmin() %}
-    <p style="margin: 0; font-size: 0.8em;">{% if not cat.isActive() %}<span style="color: #d00;">inaktive Kategorie</span>{% else %}aktive Kategorie{% endif %} &ndash; {% if cat.mayAdminEdit() or user.isTeam() %}<a href="?editor=yes"><i class="fa fa-pencil"></i> Bearbeiten</a> &ndash; {% if user.isTeam() or cat.mayAdminCreateNewpage() %}<a href="/help/new:entry?parent=0&category={{ cat.getUrlPart() }}">Neue Seite</a>{% endif %}{% else %}Bearbeitung nicht erlaubt{% endif %}</p>
+    <h1 class="anchor-black"><a href="/help">Hilfethemen</a> &raquo; {{ cat.getTitle() }}</h1>
+    {% if user.isMod() %}
+    <p class="m0 fs-caption anchor-dark">{% if not cat.isActive() %}<span style="color: #d00;">inaktive Kategorie</span>{% else %}aktive Kategorie{% endif %} &ndash; {% if cat.mayAdminEdit() or user.isTeam() %}<a href="?editor=yes"><i class="fa fa-pencil"></i> Bearbeiten</a> &ndash; {% if user.isTeam() or cat.mayAdminCreateNewpage() %}<a href="/help/new:entry?parent=0&category={{ cat.getUrlPart() }}">Neue Seite</a>{% endif %}{% else %}Bearbeitung nicht erlaubt{% endif %}</p>
     {% endif %}
-    {% if not cat.isActive() %}<div class="deleted-section" style="padding: 10px;">{% endif %}
+    {% if not cat.isActive() %}<div class="bg-danger-lll p2">{% endif %}
     <p>{{ cat.getExcerpt() }}</p>
-    <ul class="help-list">
-      {% for hdoc in cat.getFullpage() if hdoc.isActive() or user.isAdmin() %}
+    <div class="_option-list">
+      {% for hdoc in cat.getFullpage() if hdoc.isActive() or user.isMod() %}
+      <a class="_option-list-item" href="/help/{{ hdoc.getUrl() }}">
         {% if hdoc.isPinned() %}
-          <li class="pinned"><a href="/help/{{ hdoc.getUrl() }}">{{ hdoc.getTitle() }}{% if not hdoc.isActive() %} <strong>(inaktiv)</strong>{% elif hdoc.isDeprecated() %} <strong>(veraltet)</strong>{% endif %}</a></li>
+            <div class="_option-list-prefix _option-list-prefix-withicon"><span class="_badge _badge-dot--primary" title="angeheftet"></span></div>
         {% else %}
-          <li><a href="/help/{{ hdoc.getUrl() }}">{{ hdoc.getTitle() }}{% if not hdoc.isActive() %} <strong>(inaktiv)</strong>{% elif hdoc.isDeprecated() %} <strong>(veraltet)</strong>{% endif %}</a></li>
+            <div class="_option-list-prefix"></div>
         {% endif %}
+            <div class="_option-list-label">
+                {{ hdoc.getTitle() }}
+            </div>
+        </a>
       {% endfor %}
-    </ul>
+    </div>
     {% if not cat.isActive() %}</div>{% endif %}
 {% endblock %}

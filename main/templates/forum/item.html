@@ -1,353 +1,169 @@
 {% from "makros.html" import user_card %}
 {% macro forum_item(post, type, master=None) %}
-<div class="forum-article-item{% if post.isDeleted() or (type=="answer" and master.isDeleted()) %} deleted{% endif %}" id="{{ type }}-{{ post.id }}">
-    <div class="left-area">
-        <div class='rate' id="rate-{{type}}-{{post.id}}">
-            {% set the_vote = post.getUserVote(user) %}
-            {% if not (type == "post" and post.isLocked()) and not (master and (master.isLocked() or master.isDeleted())) and not post.isDeleted() %}
-              {% if not post.isFrozen() and user.may("forum_voteUp") %}
-                {% if the_vote == 1 %}
-                <a href='#!' class="active up-vote vote1" onclick="$post('forum/{{ post.getDetail("forumID") }}/{{ type }}/{{ post.id }}/vote', {'direction':1}, function(e){e=JSON.parse(e);x = document.querySelector('#rate-{{type}}-{{post.id}} .active');if(x){x.classList.remove('active')}  document.querySelector('#rate-{{type}}-{{post.id}} span').innerText=e.score;document.querySelector('#rate-{{type}}-{{post.id}} .vote' + e.checked).classList.add('active')})">&#9651;</a>
-                {% else %}
-                <a href='#!' class="up-vote vote1" onclick="$post('forum/{{ post.getDetail("forumID") }}/{{ type }}/{{ post.id }}/vote', {'direction':1}, function(e){e=JSON.parse(e);x = document.querySelector('#rate-{{type}}-{{post.id}} .active');if(x){x.classList.remove('active')}  document.querySelector('#rate-{{type}}-{{post.id}} span').innerText=e.score;document.querySelector('#rate-{{type}}-{{post.id}} .vote' + e.checked).classList.add('active')})">&#9651;</a>
-                {% endif %}
-              {% elif not user.may("forum_voteUp") %}
-                {% if user.isLoggedIn() %}
-                  <a href='#!' class="up-vote vote1" onclick="issueSystemInfo('Du musst mehr Reputationspunkte sammeln, um Beiträge zu bewerten.')">&#9651;</a>
-                {% else %}
-                  <a href='#!' class="up-vote vote1" onclick="issueSystemInfo('Angemeldete Benutzer können Reputation sammeln und Beiträge bewerten. <a href=\'/login\'>Jetzt anmelden</a>.')">&#9651;</a>
-                {% endif %}
-              {% else %}
-                <a href='#!' class="up-vote vote1" onclick="issueSystemError('Beitrag wurde eingefroren und kann nicht bewertet werden.')">&#9651;</a>
-              {% endif %}
-            {% endif %}
-            <span>{{ post.getScore() }}</span>
-            {% if not (type == "post" and post.isLocked()) and not (master and (master.isLocked() or master.isDeleted())) and not post.isDeleted() %}
-              {% if not post.isFrozen() and user.may("forum_voteDown") %}
-                {% if the_vote == -1 %}
-                <a href='#!' class="active down-vote vote-1" onclick="$post('forum/{{ post.getDetail("forumID") }}/{{ type }}/{{ post.id }}/vote', {'direction':-1}, function(e){e=JSON.parse(e);x = document.querySelector('#rate-{{type}}-{{post.id}} .active');if(x){x.classList.remove('active')}  document.querySelector('#rate-{{type}}-{{post.id}} span').innerText=e.score;document.querySelector('#rate-{{type}}-{{post.id}} .vote' + e.checked).classList.add('active')})">&#9661;</a>
-                {% else %}
-                <a href='#!' class="down-vote vote-1" onclick="$post('forum/{{ post.getDetail("forumID") }}/{{ type }}/{{ post.id }}/vote', {'direction':-1}, function(e){e=JSON.parse(e);x = document.querySelector('#rate-{{type}}-{{post.id}} .active');if(x){x.classList.remove('active')}  document.querySelector('#rate-{{type}}-{{post.id}} span').innerText=e.score;document.querySelector('#rate-{{type}}-{{post.id}} .vote' + e.checked).classList.add('active')})">&#9661;</a>
-                {% endif %}
-              {% elif not user.may("forum_voteDown") %}
-                {% if user.isLoggedIn() %}
-                  <a href='#!' class="down-vote vote-1" onclick="issueSystemInfo('Du musst mehr Reputationspunkte sammeln, um Beiträge zu bewerten.')">&#9661;</a>
-                {% else %}
-                  <a href='#!' class="down-vote vote-1" onclick="issueSystemInfo('Angemeldete Benutzer können Reputation sammeln und Beiträge bewerten. <a href=\'/login\'>Jetzt anmelden</a>.')">&#9661;</a>
-                {% endif %}
-              {% else %}
-                <a href='#!' class="down-vote vote-1" onclick="issueSystemError('Beitrag wurde eingefroren und kann nicht bewertet werden.')">&#9661;</a>
-              {% endif %}
-            {% endif %}
-        </div>
-        {% if post.getAward() != 0 %}
-            <div class="award" title="Dieser Beitrag hat eine offene Belohnung in Höhe von {{ post.award }} Reputationspunkten.">+{{ post.award }}</div>
-        {% endif %}
-        {% if type=="post" and user.isMod() and not post.isDeleted() %}
-            {% if post.isPinned() %}
-                <a href="#!" onclick="$post('forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/mod', {'property': 'pinned', 'new_value': 0}, function(){window.location.reload();});" class="pin-el">
-                    <div class="align-center">
-                        <i class="fa-stack"><i class="fa fa-stack-2x fa-ban"></i><i class="fa fa-stack-1x fa-thumb-tack"></i></i>
-                    </div>
-                    <div class="pinned-state">
-                        Angeheftet
-                    </div>
-                </a>
-            {% else %}
-                <a href="#!" onclick="$post('forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/mod', {'property': 'pinned', 'new_value': 1}, function(){window.location.reload();});" class="pin-el">
-                    <div class="align-center">
-                      <i class="fa fa-thumb-tack fa-lg"></i>
-                    </div>
-                    <div class="pinned-state">
-                        Nicht angeheftet
-                    </div>
-                </a>
-            {% endif %}
-        {% endif %}
+<div class="grid">
+  <div class="colbox75 p1">
+    <div class="d-f -c ta-c mt0">
+      {% set the_vote = post.getUserVote(user) %}
+      {% if not (type == "post" and post.isLocked()) and not (master and (master.isLocked() or master.isDeleted())) and not post.isDeleted() %}
+        <button class="up-vote _btn _btn--primary _btn-icononly {{ '-active' if the_vote == 1 }}" data-vote="up" data-vote-post="{{ type }}-{{ post.id }}">
+            <svg class="_btn-icon" width="3em" height="3em" viewbox="0 0 48 48">
+                <path d="M24,12 l16,24 l-32,0 z" />
+            </svg>
+        </button>
+        <span class="score-vote fs-heading col-dark-ddd f-brand">{{ post.getScore() }}</span>
+        <button class="down-vote _btn _btn--primary _btn-icononly {{ '-active' if the_vote == -1 }}" data-vote="down" data-vote-post="{{ type }}-{{ post.id }}">
+            <svg class="_btn-icon" width="3em" height="3em" viewbox="0 0 48 48">
+                <path d="M8,12 l32,0 l-16,24 z" />
+            </svg>
+        </button>
         {% if type == "answer" %}{% set op = master.getDetail("author") %}{% if op == -1 %}{% set op = master.getRevision(1).editor.id %}{% endif %}{% endif %}
-        {% if type == "answer" and (user.id == op or op == -3 and user.isMod()) and not (post.isFrozen() or master.isLocked()) and not post.isDeleted() and not master.isDeleted() %}
-          {% if post.isAccepted() %}
-          <a href='#!' class="accept-mark active" onclick="$post('forum/{{ post.getDetail("forumID") }}/{{ type }}/{{ post.id }}/accept', {}, function(e){e=JSON.parse(e);x = document.querySelector('.accept-mark.active');if(x){x.classList.remove('active')}  document.querySelector('#answer-'+e.checked+' .accept-mark').classList.add('active')})"><i class="fa fa-check"></i></a>
-          {% else %}
-          <a href='#!' class="accept-mark" onclick="$post('forum/{{ post.getDetail("forumID") }}/{{ type }}/{{ post.id }}/accept', {}, function(e){e=JSON.parse(e);x = document.querySelector('.accept-mark.active');if(x){x.classList.remove('active')}  document.querySelector('#answer-'+e.checked+' .accept-mark').classList.add('active')})"><i class="fa fa-check"></i></a>
-          {% endif %}
+        {% if type == "answer" and (user.id == op) %}
+        <button class="accept-vote _btn _btn-success _btn-icononly {{ '-active' if post.isAccepted() }}" data-vote="accept" data-vote-post="{{ type }}-{{ post.id }}">
+          <svg class="_btn-icon" width="3em" height="3em" viewbox="0 0 48 48">
+              <path d="M6,32 l10,10 l26,-26 l-5,-5 l-21,21 l-5,-5 z" />
+          </svg>
+        </button>
         {% elif type == "answer" and post.isAccepted() %}
-        <span class="accept-mark active"><i class="fa fa-check"></i></span>
-        {% endif %}
-    </div>
-    <div class="right-area">
-        {% if not post.isDestroyed() or user.isMod() %}
-            {{ (post.getContent().replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
-        {% else %}
-            <div class="error">
-                <h3>Zerstörter Beitrag</h3>
-                <p>Dieser Beitrag wurde zerstört und darum nicht angezeigt.</p>
-            </div>
-        {% endif %}
-    </div>
-    <div class="down-area">
-        {% if not post.isDestroyed() %}
-            <div class="alignment-right">
-                {% if post.getDetail("author") != -1 %}
-                {{ user_card(post.getAuthor()) }}
-                {% else %}
-                <p class="tiny padded-text" style="max-width: 230px; color: #333;"><strong>Wiki</strong><br><span style="font-size: 0.8em; line-height: 0.5;">Dieser Beitrag kann von allen Benutzern bearbeitet werden.</span></p>
-                {% endif %}
-                {% if type == "post" %}
-                {% if post.hasRevision() %}
-                <p class="tiny padded-text"><a href="/forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/revisions">bearbeitet von <b>{{ post.getRevision('latest').editor.getHTMLName()|safe }}</b></a><br><span style="color: #666; font-style: italic;" title="{{ post.getRevision("latest").absolute_time }}">bearbeitet {{ post.getRevision("latest").relative_time }}</span><br><span style="color: #666; font-style: italic;" title="{{ post.getRevision(1).absolute_time }}">erstellt {{ post.getRevision(1).relative_time }}</span></p>
-                {% else %}
-                <p class="tiny padded-text"><a href="/forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/revisions">erstellt von <b>{{ post.getRevision('latest').editor.getHTMLName()|safe }}</b></a><br><span style="color: #666; font-style: italic;" title="{{ post.getRevision(1).absolute_time }}">erstellt {{ post.getRevision("latest").relative_time }}</span></p>
-                {% endif %}
-                {% elif type == "answer" %}
-                {% if post.hasRevision() %}
-                <p class="tiny padded-text"><a href="/forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/revisions">bearbeitet von <b>{{ post.getRevision('latest').editor.getHTMLName()|safe }}</b></a><br><span style="color: #666; font-style: italic;" title="{{ post.getRevision("latest").absolute_time }}">beantwortet {{ post.getRevision("latest").relative_time }}</span><br><span style="color: #666; font-style: italic;" title="{{ post.getRevision(1).absolute_time }}">erstellt {{ post.getRevision(1).relative_time }}</span></p>
-                {% else %}
-                <p class="tiny padded-text"><a href="/forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/revisions">beantwortet von <b>{{ post.getRevision('latest').editor.getHTMLName()|safe }}</b></a><br><span style="color: #666; font-style: italic;" title="{{ post.getRevision(1).absolute_time }}">beantwortet {{ post.getRevision("latest").relative_time }}</span></p>
-                {% endif %}
-                {% endif %}
-                {% if type == "post" %}
-                  <div style="flex-grow: 1; margin-top: 10px;">
-                      Tags:
-                      {% for tag in post.getTags() %}
-                          {% if tag in moderator_tags %}
-                              <span class='tag moderator-tag'>{{ tag }}</span>
-                          {% else %}
-                              <span class='tag'>{{ tag }}</span>
-                          {% endif %}
-                      {% endfor %}
-                  </div>
-                {% endif %}
-            </div>
-            {% endif %}
-            {% if post.isFrozen() and not (type == "post" and post.isLocked()) %}
-              <div class="action-forbidden red-style">
-                <h4>Dieser Beitrag wurde von <a href="/u/{{ post.getFrozenBy().id }}">{{ post.getFrozenBy().getHTMLName()|safe }}</a> eingefroren und kann nicht bearbeitet werden.</h4>
-                {% if post.getFrozenMessage() != "" %}
-                  {{ post.getFrozenMessage()|markdown }}
-                {% endif %}
-              </div>
-            {% endif %}
-            {% if post.isDestroyed() %}
-              <div class="action-forbidden red-style">
-                <h4>Dieser Beitrag wurde von einem Moderator zerstört.</h4>
-                <p>Entweder auf <b>Anfrage des ursprünglichen Autors</b> oder aufgrund wiederholter Meldung als <b>gefährlicher Beitrag</b> wurde dieser Beitrag zerstört. Weitere Aktionen sind nicht erlaubt, dieser Beitrag wird bald von unserem Server vernichtet.</p>
-              </div>
-            {% endif %}
-            <div class="footer-area">
-            {% if not post.isDestroyed() %}
-              {% if post.getModNotice() != "" %}
-                  <div class="action-forbidden">
-                      {{ post.getModNotice()|markdown }}
-                  </div>
-              {% endif %}
-            {% endif %}
-              <p class="tiny action-bar">
-              {% if not (post.isFrozen() or post.isDestroyed() or (master and master.isLocked())) or user.isMod() %}
-                {% if user.may("forum_proposeEdit") or user.id == post.getAuthor().id %}
-                <a href="/forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/edit">Bearbeiten</a>
-                {% endif %}
-                {% if user.may("forum_flag") %}
-                    {% if type == "post" %}
-                      {% if not (type=="post" and post.isClosed()) and not post.isDeleted() %}
-                          {% if user.may("forum_closeQuestion") %}
-                              <a href="#!" onclick="document.getElementById('article_close_dialog').classList.toggle('open');">Schließen</a>
-                            {% endif %}
-                      {% elif post.isDeleted() and not (type=="post" and post.isClosed()) %}
-                          <a href="#!" disabled>Schließen</a>
-                      {% elif post.isDeleted() and post.isClosed() %}
-                          <a href="#!" disabled>Öffnen</a>
-                      {% else %}
-                          {% if user.may("forum_closeQuestion") %}
-                              <a href="#!" onclick="$post('forum/{{ forum.id }}/{{ type }}/{{ post.id }}/reopen', {}, function(){window.location.reload();})">Öffnen</a>
-                          {% endif %}
-                      {% endif %}
-                      <a href="#!" onclick="document.getElementById('article_flag_dialog').classList.toggle('open');">Melden</a>
-                  {% endif %}
-                {% endif %}
-
-
-                {% if (user.may("general_autoMod") and not post.isDestroyed()) or user.isMod() %}
-                    {% if post.isDeleted() and not post.isDestroyed() %}
-                        <a href="#!" onclick="$post('forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/undelete', {}, function(){window.location.reload();})" style="font-weight: bold;">Un-Löschen</a>
-                    {% elif post.isDestroyed() %}
-                      <a href="#!" style="font-weight: bold;" disabled>Un-Löschen</a>
-                    {% else %}
-                        <a href="#!" onclick="$post('forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/delete', {}, function(){window.location.reload();})">Löschen</a>
-                    {% endif %}
-                {% endif %}
-                {% if user.may("forum_setProtection") and type == "post" %}
-                  {% if post.isProtected() and (user.isMod() or post.isNewbieProtection()) %}
-                  <a href="#!" style="font-weight: bold;" onclick="$post('forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/unprotect', {}, function(){window.location.reload();})">Un-Schützen</a>
-                  {% else %}
-                  <a href="#!" onclick="warn_protection()">Schützen</a>
-                  <script>
-                  function warn_protection() {
-                    {% if user.isMod() %}
-                    issueSystemQuestion('<p><strong>Welchen Schutz willst du einsetzen?</strong></p><ul><li>Antwort-Schutz (Neue Benutzer können nicht mehr antworten)</li><li>Wiki-Schutz (keine neuen Antworten)</li></ul>', [["Antwort-Schutz", "#!' onclick='$post(\"forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/protect\", {\"type\":1}, function(){window.location.reload();})"], ["Wiki-Schutz", "#!' onclick='$post(\"forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/protect\", {\"type\":2}, function(){window.location.reload();})"]]);
-                    {% else %}
-                    issueSystemQuestion('Willst du diesen Beitrag wirklich schützen? Neue Benutzer können ihn danach nicht mehr beantworten.', [["Ja", "#!' onclick='$post(\"forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/protect\", {\"type\":1}, function(){window.location.reload();})"], ["Nein", "dismiss"]]);
-                    {% endif %}
-                  }
-                  </script>
-                  {% endif %}
-                {% endif %}
-                {% if user.isMod() %}{% set cc = post.getCommentCounts() %}
-                <a href="#!" onclick="document.getElementById('modtools-{{ type}}-{{ post.id}}-dialog').classList.add('open');" style="color: #a00;">Mod!</a>
-              {% endif %}
-            {% endif %}
-            </p>
-          </div>
-          <div class="comment-section">
-            {% for c in post.getComments(user.isMod()) if not c.isDeleted() or request.values.get("with-deleted-comments", False) == type + "-" ~ post.id %}
-              <div class="comment {% if c.isDeleted() %}deleted-section{% endif %}" id="{{ type }}-{{ post.id }}-comment-{{ c.id }}">{% set ct = c.getCreationTime() %}{% set ca = c.getAuthor() %}
-                <div class="comment-voting">
-                  {#<span class="comment-score">{{ c.getScore() }}</span>
-                  {% if not c.isDeleted() %}
-                  <a href="#!" onclick="Z=document.querySelector('#{{ type }}-{{ post.id }}-comment-{{ c.id }} > .comment-voting > a.comment-vote-active');if(Z){Z.classList.remove('comment-vote-active')}this.classList.add('comment-vote-active')"><i class="fa fa-caret-up fa-lg"></i><!--&#9651;--></a><!-- .comment-vote-active -->
-                  {% else %}
-                  <a>&nbsp;</a>
-                  {% endif #}
-                  {% if c.isDeleted() %}
-                  <a href="#!" onclick="$post('forum/{{ forum.id }}/comment/{{ c.id }}/vote', {'type':'restore', 'reason':'=Mod'}, function(){window.location.reload();})" class="comment-flag comment-vote-active"><i class="fa fa-times-circle"></i></a>
-                  {% elif user.id == ca.id %}
-                  <a href="#!" onclick="$post('forum/{{ forum.id }}/comment/{{ c.id }}/vote', {'type':'delete', 'reason':'=Autor'}, function(){window.location.reload();})" class="comment-flag"><i class="fa fa-times-circle"></i></a>
-                  {% elif user.isMod() %}
-                  <a href="#!" onclick="flag_comment({{ c.id }})" class="comment-flag"><i class="fa fa-times-circle"></i></a>
-                  {# else %}
-                  <a href="#!" onclick="flag_comment({{ c.id }})" class="comment-flag"><i class="fa fa-flag"></i></a>#}
-                  {% endif %}
-                </div>
-                <div class="comment-entry">
-                  {{ c.getContent() }}
-                  <span class="comment-meta">
-                    <span>&mdash;</span>
-                    <a href="#{{ type }}-{{ post.id }}-comment-{{ c.id }}" class="comment-date" title="{{ ct[1] }}">{{ ct[2] }}</a>
-                    <span>von</span>
-                    <a href="/u/{{ ca.id }}" class="comment-owner">{{ ca.getHTMLName()|safe }}</a>
-                    {% if c.isDeleted() %}{% set cd = c.getDeletedBy() %}
-                    <span><strong>gelöscht</strong> von</span>
-                    <a href="/u/{{ cd.id }}" class="comment-owner">{{ cd.getHTMLName()|safe }}</a>
-                    {% endif %}
-                  </span>
-                </div>
-              </div>
-            {% endfor %}
-          </div>
-          {% if user.isLoggedIn() and not user.isDisabled() %}
-          {% if not (type == "post" and post.isLocked()) and not post.isFrozen() and not (master and (master.isLocked() or master.isDeleted())) and not post.isDeleted() %}
-          <a class="comment-button" href="#!" id="{{ type }}-{{ post.id }}-comment-button" onclick="document.getElementById('{{ type }}-{{ post.id }}-comment-area').classList.toggle('shown')">Kommentieren</a>
-          <div class="comment-area" id="{{ type }}-{{ post.id }}-comment-area">
-            <textarea id="{{ type }}-{{ post.id }}-comment-box" placeholder="Nutze Kommentare für konstruktive Kritik (Verbesserungsvorschläge) und Rückfragen."></textarea>
-            <button onclick="$post('forum/{{ forum.id }}/{{ type }}/{{ post.id }}/comment', {'content': document.getElementById('{{ type }}-{{ post.id }}-comment-box').value}, function(id){if(!isNaN(id)){window.location.replace('?comment-update='+id+'#{{ type }}-{{ post.id }}-comment-'+id);}else{issueSystemError(id)}})">Kommentieren</button>
-          </div>
-          {% else %}
-          <p class="comment-error">Gelöschte/Eingefrorene Beiträge können nicht kommentiert werden.</p>
-          {% endif %}
-          {% if user.isMod() %}
-          {% if request.values.get("with-deleted-comments", False) != type + "-" ~ post.id %}
-          <a href="?with-deleted-comments={{ type }}-{{ post.id }}#{{ type }}-{{ post.id }}" class="comment-filter-button"><i class="fa fa-filter"></i> Alle ({{ cc[2] }}&raquo;{{ cc[0] }})</a>
-          {% else %}
-          <a href="?with-deleted-comments=none#{{ type }}-{{ post.id }}" class="comment-filter-button"><i class="fa fa-filter"></i> Aktive ({{ cc[0] }}&raquo;{{ cc[2] }})</a>
-          {% endif %}
-          {% endif %}
-          {% endif %}
-    </div>
-</div>
-
-{% if user.isMod() %}
-<div class="flagging-modal" id="modtools-{{ type}}-{{ post.id}}-dialog">
-    <div class="flagging-dialog">
-        <div class="close-link"><a href="#!" onclick="document.getElementById('modtools-{{ type}}-{{ post.id}}-dialog').classList.remove('open');">&times;</a></div>
-        <div id="modtools-{{ type }}-{{ post.id }}-overview">
-          <h3>Moderatoren-Tools</h3>
-          <ul class="flagging-reason-list">
-            {% if post.isFrozen() %}
-              <li class="flagging-reason-item" onclick="$post('forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/mod', {'property':'frozen', 'new_value':0}, function(){window.location.reload();})"><h4><a href="#!">Auftauen</a> <em>(sofort!)</em></h4>
-              <p>Dieser Beitrag kann wieder bearbeitet, bewertet und moderiert werden.</p></li>
-            {% else %}
-              <li class="flagging-reason-item" onclick="document.getElementById('modtools-{{ type}}-{{ post.id}}-overview').setAttribute('hidden', 'hidden'); document.getElementById('modtools-{{ type}}-{{ post.id}}-frozen').removeAttribute('hidden');"><h4><a href="#!">Beitrag einfrieren</a></h4>
-              <p>Dieser Beitrag kann nicht mehr bearbeitet, bewertet und moderiert werden.</p></li>
-            {% endif %}
-            <li class="flagging-reason-item" onclick="document.getElementById('modtools-{{ type}}-{{ post.id}}-overview').setAttribute('hidden', 'hidden'); document.getElementById('modtools-{{ type}}-{{ post.id}}-message').removeAttribute('hidden');"><h4><a href="#!">Nachricht setzen</a></h4>
-            <p>Eine Nachricht auswählen/eingeben, die unter dem Beitrag angezeigt wird.</p></li>
-            {% if user.isDev() %}
-            <li class="flagging-reason-item" onclick="val=prompt('Autorenschaft übertragen!\n\nBenutzer-ID', '');if(val){$post('forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/mod', {'property': 'author', 'new_value': val }, function(){window.location.reload();})}"><h4><a href="#!">Übertragen</a> <em>(sofort!)</em></h4>
-            <p>Diesen Beitrag an einen anderen Benutzer übertragten</p></li>
-            {% endif %}
-            {% if post.getAuthor().id != -1 %}
-            <li class="flagging-reason-item" onclick="$post('forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/mod', {'property': 'author', 'new_value': -1 }, function(){window.location.reload();})"><h4><a href="#!">Wiki</a> <em>(sofort!)</em></h4>
-            <p>Diesen Beitrag in einen Wiki-Modus umwandeln, so dass der Beitrag von allen Benutzern bearbeitet werden kann.</p></li>
-            {% endif %}
-            {% if post.isDeleted() and not post.isDestroyed() %}
-              <li class="flagging-reason-item" onclick="$post('forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/destroy', {}, function(){window.location.reload();})"><h4><a href="#!">Zerstören</a> <em>(sofort!)</em></h4>
-              <p>Diesen Beitrag zerstören, so dass der Inhalt nur noch Moderatoren angezeigt wird.</p></li>
-            {% endif %}
-          </ul>
-          <p>
-            <button onclick="document.getElementById('modtools-{{ type}}-{{ post.id}}-dialog').classList.remove('open');">Abbrechen</button>
-          </p>
+        <div class="p1 ta-c">
+          <svg class="_btn-icon col-success-dd" width="2.5em" height="2.5em" viewbox="0 0 48 48">
+              <path d="M6,32 l10,10 l26,-26 l-5,-5 l-21,21 l-5,-5 z" />
+          </svg>
         </div>
-
-        <div id="modtools-{{ type }}-{{ post.id }}-message" hidden>
-          <h3><a href="#!" onclick="document.getElementById('modtools-{{ type}}-{{ post.id}}-message').setAttribute('hidden', 'hidden'); document.getElementById('modtools-{{ type}}-{{ post.id}}-overview').removeAttribute('hidden');">Moderatoren-Tools</a> / Nachricht setzen</h3>
-          <p>Ein leeres Feld verhindert das Anzeigen einer Moderatorennachricht.</p>
-          <textarea id="modmsg-{{ type}}-{{ post.id}}-dialog-value">{{ post.getModNotice() }}</textarea>
-          <p>
-              <button onclick="$post('forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/mod', {'property':'moderatorNotice', 'new_value':document.getElementById('modmsg-{{ type}}-{{ post.id}}-dialog-value').value}, function(){window.location.reload();})" class="primary-btn">Fertig</button>
-              <button onclick="document.getElementById('modtools-{{ type}}-{{ post.id}}-dialog').classList.remove('open');">Keine Änderung</button>
-          </p>
-        </div>
-
-        <div id="modtools-{{ type }}-{{ post.id }}-frozen" hidden>
-          <h3><a href="#!" onclick="document.getElementById('modtools-{{ type}}-{{ post.id}}-frozen').setAttribute('hidden', 'hidden'); document.getElementById('modtools-{{ type}}-{{ post.id}}-overview').removeAttribute('hidden');">Moderatoren-Tools</a> / Beitrag einfrieren</h3>
-          {% if type == "post" %}
-          <p>Sollen auch alle Antworten eingefroren werden?</p>
-        {% if post.isLocked() %}
-          <label for="is-frozenAndLocked-checkbox-{{type}}-{{post.id}}"><input checked type="checkbox" onchange="$post('forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/mod', {'property': 'frozenAsLock', 'new_value': ( this.checked ? 1 : 0)})" id="is-frozenAndLocked-checkbox-{{type}}-{{post.id}}"> Auch alle Antworten einfrieren</label>
-        {% else %}
-          <label for="is-frozenAndLocked-checkbox-{{type}}-{{post.id}}"><input type="checkbox" onchange="$post('forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/mod', {'property': 'frozenAsLock', 'new_value': ( this.checked ? 1 : 0)})" id="is-frozenAndLocked-checkbox-{{type}}-{{post.id}}"> Auch alle Antworten einfrieren</label>
         {% endif %}
-        {% endif %}
-          <p>Welche Nachricht soll angezeigt werden</p>
-          <div class="flagging-reason-list">
-
-          {% for label_type in post.FREEZONS %}
-            {% if label_type == "" %}
-              {% if post.getFrozenMessage() == label_type %}
-                <label for="frozen-text-{{ type }}-{{ post.id }}-{{ loop.index + 1 }}" class="flagging-reason-item" style="color: #d00;">
-                  <input type="radio" checked onchange="this.checked ? ($post('forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/mod', {'property': 'frozenMessage', 'new_value': '' })) : 0" name="frozen-text" id="frozen-text-{{ type }}-{{ post.id }}-{{ loop.index + 1 }}">
-                  Keinen Text anzeigen
-                </label>
-              {% else %}
-                <label for="frozen-text-{{ type }}-{{ post.id }}-{{ loop.index + 1 }}" class="flagging-reason-item" style="color: #d00;">
-                  <input type="radio" onchange="this.checked ? ($post('forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/mod', {'property': 'frozenMessage', 'new_value': '' })) : 0" name="frozen-text" id="frozen-text-{{ type }}-{{ post.id }}-{{ loop.index + 1 }}">
-                  Keinen Text anzeigen
-                </label>
-              {% endif %}
-            {% else %}
-              {% if post.getFrozenMessage() == label_type %}
-                <label for="frozen-text-{{ type }}-{{ post.id }}-{{ loop.index + 1 }}" class="flagging-reason-item">
-                  <input type="radio" checked onchange="this.checked ? ($post('forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/mod', {'property': 'frozenMessage', 'new_value': '{{ label_type }}' })) : 0" name="frozen-text" id="frozen-text-{{ type }}-{{ post.id }}-{{ loop.index + 1 }}">
-                  {{ label_type|markdown }}
-                </label>
-              {% else %}
-                <label for="frozen-text-{{ type }}-{{ post.id }}-{{ loop.index + 1 }}" class="flagging-reason-item">
-                  <input type="radio" onchange="this.checked ? ($post('forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/mod', {'property': 'frozenMessage', 'new_value': '{{ label_type }}' })) : 0" name="frozen-text" id="frozen-text-{{ type }}-{{ post.id }}-{{ loop.index + 1 }}">
-                  {{ label_type|markdown }}
-                </label>
-              {% endif %}
-            {% endif %}
-          {% endfor %}
+      {% else %}
+        <span class="score-vote fs-heading col-dark-ddd p2 f-brand">{{ post.getScore() }}</span>
+        {% if type == "answer" and post.isAccepted() %}
+        <div class="p1 ta-c">
+          <svg class="_btn-icon col-success-dd" width="2.5em" height="2.5em" viewbox="0 0 48 48">
+              <path d="M6,32 l10,10 l26,-26 l-5,-5 l-21,21 l-5,-5 z" fill="transparent" stroke-width="1" />
+              <path d="M6,31 l10,10 l26,-26" fill="transparent" stroke-width="3" />
+          </svg>
         </div>
-        <p>
-            <button onclick="$post('forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/mod', {'property': 'frozen', 'new_value': 1 }, function(){window.location.reload();})
-            " class="warn-btn">Einfrieren</button>
-            <button onclick="document.getElementById('modtools-{{ type}}-{{ post.id}}-dialog').classList.remove('open');">Abbrechen</button>
-        </p>
+        {% endif %}
+      {% endif %}
+    </div>
+  </div>
+  <div class="colbox-fill p2">
+
+    {{ (post.getContent().replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
+
+    <div class="push-right">
+        {{ user_card(post.getAuthor(), type=="post" or (type == "answer" and master.getDetail("author")==post.getDetail("author")), superverb="gefragt" if type == "post" else "geantwortet", supertime=post.getCreationTime()[2]) }}
+    </div>
+    {% if post.hasRevision() %}{% set rev = post.getRevision("latest") %}
+    <div class="push-right">
+      <div class="m1 p2 b-r1 d-b base2" style="line-height: 1; width: 200px;">
+        <a href="/forum/{{ forum.id }}/{{ forum.getDetail("label") }}/{{ type }}/{{ post.id }}/revisions" class="d-b anchor-dark"><span class="f-bold">bearbeitet</span> {{ rev.relative_time }}</a>
+        {{ user_card(rev.editor, level="in", pad=0) }}
       </div>
+    </div>
+    {% endif %}
+    <div class="push-reset hide__lg hide__md"></div>
+    {% if type == "post" %}
+      <div class="horizontal-list">{% for tag in post.getTagObjects() %}
+          {% if tag.isModOnly() %}
+              <a href="/f/{{ forum.id }}/tagged/{{ tag.getName() }}" class='_badge _badge-tag _badge-tag-modonly'>{{ tag.getName() }}</a>
+          {% else %}
+              <a href="/f/{{ forum.id }}/tagged/{{ tag.getName() }}" class='_badge _badge-tag'>{{ tag.getName() }}</a>
+          {% endif %}
+      {% endfor %}</div>
+    {% endif %}
+
+    <ul class="_link-list">
+      <li><a href="" title="Rechtsklick / Link-Adresse kopieren">teilen</a></li>
+      <li><a href="/f/{{ post.getDetail('forumID') }}/{{ type }}/{{ post.id }}/edit">bearbeiten</a></li>
+      <li><a href="#!" class="js--post-dialog" data-dialog="flag" data-dialog-post="{{ type }}-{{ post.id }}">melden</a></li>
+      {% if type == "post" and user.may("forum_closeQuestion") %}
+        {% if post.isClosed() %}
+          <li><a href="#!" class="js--post-flag" data-vote="reopen" data-vote-post="{{ type }}-{{ post.id }}">öffnen</a></li>
+        {% else %}
+          <li><a href="#!" class="js--post-dialog" data-dialog="close" data-dialog-post="{{ type }}-{{ post.id }}">schließen</a></li>
+        {% endif %}
+      {% endif %}
+      {% if user.may("general_autoMod") %}
+        {% if post.isDeleted() %}{% set udv = post.getUndelVotes() %}
+        <li><a href="#!" class="js--post-flag" data-vote="undelete" data-vote-post="{{ type }}-{{ post.id }}">un-löschen{{ (' (' ~ udv ~ ')') if udv}}</a></li>
+        {% else %}{% set dv = post.getDelVotes() %}
+        <li><a href="#!" class="js--post-flag" data-vote="delete" data-vote-post="{{ type }}-{{ post.id }}">löschen{{ (' (' ~ dv ~ ')') if dv}}</a></li>
+        {% endif %}
+      {% endif %}
+      {% if user.isMod() %}
+        <li><a href="#!" class="js--post-dialog" data-dialog="mod" data-dialog-post="{{ type }}-{{ post.id }}">&diams; mod</a></li>
+      {% endif %}
+    </ul>
+
+    {% if post.isDeleted() and type == "answer" %}
+    <div class="col-danger-ddd anchor-danger">
+      {{ post.getDeleteMessage()|safe }} <a href="/help/faq/deleted-posts#from-deleted">[Hilfe]</a>
+    </div>
+    {% endif %}
+
+    <div class="push-reset"></div>
+  </div>
+</div>{% set notice = post.getModNotice() %}
+{% if post.isDeleted() or post.isFrozen() or notice or (type=="post" and (post.isClosed() or post.isProtected())) %}
+<div class="grid">
+  <div class="colbox75 hide__sm">&nbsp;</div>
+  <div class="colbox-fill">
+    {% if type == "post" and post.isClosed() %}
+    <div class="content-warning">
+      {{ post.getClosureWarning(True)|safe }}
+    </div>
+    {% endif %}
+    {% if post.isDeleted() and type == "post" %}
+    <div class="content-warning">
+      {{ post.getDeleteMessage()|safe }}
+      <p>Mehr Informationen zu gelöschten Beiträgen findest du <a href="/help/faq/deleted-posts#from-deleted">hier</a>.</p>
+    </div>
+    {% endif %}
+    {% if post.isFrozen() %}{% set fb=post.getFrozenBy() %}
+    <div class="content-warning">
+      <h3 class="m0 f-sans fs-subheading"><strong>gesperrt</strong> von {% if fb.isDeleted() %}{{ fb.getHTMLName()|safe }}{% else %}<a href="/u/{{ post.getFrozenBy().id }}">{{ fb.getHTMLName()|safe }}</a>{% endif %}</h3>
+      {% if notice %}
+        {{ notice|safe }}
+        <p class="fs-caption pt2">Gesperrte Beiträge können nicht bewertet, bearbeitet oder kommentiert werden.</p>
+      {% else %}
+        <p class="fs-caption pt1">Gesperrte Beiträge können nicht bewertet, bearbeitet oder kommentiert werden.</p>
+      {% endif %}
+    </div>
+    {% elif notice %}
+    <div class="content-warning">
+      {{ notice|safe }}
+    </div>
+    {% endif %}
   </div>
 </div>
 {% endif %}
-
+<div class="grid bt1s bt-dark-ll bb1s bb-dark-l">
+  <div class="colbox-fill p2">
+    <div id="{{ type }}-{{ post.id }}-comments">
+      {% include "forum/comments.html" %}
+    </div>
+    {% if user.isLoggedIn() and not user.isDisabled() %}
+      {% if not (type == "post" and post.isLocked()) and not post.isFrozen() and not (master and (master.isLocked() or master.isDeleted())) and not post.isDeleted() %}
+      <div class="js--comment-area hide" id="{{ type }}-{{ post.id }}-comment-area">
+        <textarea class="form form-small" id="{{ type }}-{{ post.id }}-comment-box" placeholder="Nutze Kommentare für konstruktive Kritik (Verbesserungsvorschläge) und Rückfragen."></textarea>
+        <button class="_btn _btn-dark _btn-sm js--comment-button" data-post="{{ type }}-{{ post.id }}">Kommentieren</button>
+      </div>
+      <div class="_btnlist">
+        <button class="_btn _btn-xs js--comment-area-button" data-post="{{ type }}-{{ post.id }}">Kommentieren</button>
+        {% if user.isMod() %}
+        {% set cc = post.getCommentCounts() %}
+        {% if cc[1] != 0 %}
+        <button class="_btn _btn-xs _btn-danger _btn-lighter" onclick="fetchComments('{{ type }}-{{ post.id }}', true)">{{ cc[1] }} gelöschte</button>
+        {% endif %}
+        <div style="flex-grow: 1"></div>
+        {% if cc[0] != 0 %}
+        <button class="_btn _btn-xs _btn-danger" data-purge-comments="{{ type }}-{{ post.id }}">alle löschen</button>
+        {% endif %}
+        {% endif %}
+      </div>
+    {% else %}
+      <div class="_btnlist">
+          <button class="_btn _btn-xs _btn-on-light">Gelöschte/Gesperrte Beiträge können nicht kommentiert werden.</button>
+      </div>
+    {% endif %}
+    {% endif %}
+  </div>
+</div>
 {% endmacro %}

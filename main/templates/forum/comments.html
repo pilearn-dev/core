@@ -1,0 +1,44 @@
+{% for c in post.getComments(user.isMod()) if not c.isDeleted() or with_deleted %}
+<div id="{{ type }}-{{ post.id }}-comment-{{ c.id }}" class="grid bb1s bb-dark-ll {% if c.isDeleted() %}bg-danger-lll{% endif %}" data-comment-post="{{ type }}-{{ post.id }}">{% set ct = c.getCreationTime() %}{% set ca = c.getAuthor() %}
+  <div class="colbox75 p2 pt1__sm pt1__md pt1__lg fs-base1 ta-c">
+      <div class="horizontal-list" style="justify-content: flex-end;">
+          <span class="fs-base3 p1 js--comment-score">{{ c.getScore() if c.getScore() }}</span>
+          {% if c.getDetail("comment_author") != user.id and user.isLoggedIn() %}
+          <button class="up-vote _btn _btn--primary _btn-xs _btn-icononly{{ " -active" if c.hasVote(user.id, "up") }}" data-comment-vote="up" data-vote-comment="{{ c.id }}">
+              &#9650;
+          </button>
+          {% endif %}
+      </div>
+  </div>
+  <div class="colbox-fill fs-base1 p2" style="line-height: 1.5;">
+    {{ c.getContent() }}
+    &mdash;
+    {% if ca.isDeleted() %}
+    <span class="p1 b-r1 d-i fs-base2" style="line-height: 1;">
+        {{ ca.getHTMLName()|safe }}
+    </span>
+    {% else %}
+    <a href="/u/{{ ca.id }}" class="p1 b-r1 d-i fs-base2" style="line-height: 1;">
+        {{ ca.getHTMLName()|safe }}
+    </a>
+    {% endif %}
+    <a href="#{{ type }}-{{ post.id }}-comment-{{ c.id }}" class="anchor-dark" title="{{ ct[1] }}">{{ ct[2] }}</a>
+    {% if c.isDeleted() %}{% set cd = c.getDeletedBy() %}
+    <span class="col-danger-ddd anchor-danger">gelöscht von
+    {% if cd.isDeleted() %}
+    <span class="col-dark-dd">{{ cd.getHTMLName()|safe }}</span>
+    {% else %}
+    <a href="/u/{{ cd.id }}">{{ cd.getHTMLName()|safe }}</a>
+    {% endif %}
+    </span>
+    <button class="_btn _btn-xs _btn-danger _btn-on-light" data-comment-vote="restore" data-vote-comment="{{ c.id }}">un-löschen</button>
+    {% else %}
+    {% if c.getDetail("comment_author") == user.id %}
+    <button class="_xbtn" data-comment-vote="delete" data-vote-comment="{{ c.id }}">&times;</button>
+    {% elif user.isMod() %}
+    <button class="_xbtn" data-comment-vote="kill" data-vote-comment="{{ c.id }}">&times;</button>
+    {% endif %}
+    {% endif %}
+  </div>
+</div>
+{% endfor %}

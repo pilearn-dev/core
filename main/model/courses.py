@@ -4,7 +4,7 @@ import secrets
 import sqlite3 as lite
 from flask import request, session, url_for
 from sha1 import sha1
-from model import privileges as mprivileges, tags as mtags, user as muser
+from model import privileges as mprivileges, user as muser
 
 class Courses:
 
@@ -29,6 +29,25 @@ class Courses:
             if con:
                 con.close()
 
+    def getHash(self):
+        return sha1("[id:" + str(self.id) + ",name:" + self.getTitle()+"]")[:15]
+
+    def getPattern(self):
+        course_hash = self.getHash()
+        pattern = "background: linear-gradient("
+
+        is_letter=(lambda x: x.lower() in "abcdefghijklmnopqrstuvxyz")
+        get_direction=(lambda x: sum(map(ord, x)) % 360)
+
+        if is_letter(course_hash[0]):
+            pattern += str(get_direction(course_hash[:4])) + "deg, #" + course_hash[8:14] + ", #" +  course_hash[1:7]
+        else:
+            pattern += str(get_direction(course_hash[-4:])) + "deg, #" + course_hash[1:7] + ", #" +  course_hash[8:14]
+
+        pattern += ");"
+
+        return pattern
+
     def getForum(self):
         import forum as mforum
         return mforum.Forum(self.id)
@@ -40,6 +59,42 @@ class Courses:
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM courses WHERE state=1 ORDER BY id * RANDOM() DESC")
+            all = cur.fetchall()
+            if all is None:
+                return []
+            all = list(map(lambda x: Courses(x["id"]), all))
+            return all
+        except lite.Error as e:
+            return []
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def getRandomBeloved(cls, uid):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT id FROM courses WHERE topicid IN (SELECT topics.id FROM topics, courses, enrollments WHERE courses.topicid=topics.id AND enrollments.courseid=courses.id AND enrollments.userid=? GROUP BY topics.id HAVING Count(*) >= 2) AND state=1 ORDER BY Random() LIMIT 3", (uid,))
+            all = cur.fetchall()
+            if all is None:
+                return []
+            all = list(map(lambda x: Courses(x["id"]), all))
+            return all
+        except lite.Error as e:
+            return []
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def getGlobalBeloved(cls):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM (SELECT courses.id FROM courses, enrollments WHERE courses.id=enrollments.courseid GROUP BY courses.id HAVING Count(*)>=3 ORDER BY Count(*) DESC LIMIT 10) AS c ORDER BY Random() LIMIT 3")
             all = cur.fetchall()
             if all is None:
                 return []
@@ -90,6 +145,27 @@ class Courses:
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM courses WHERE id IN (SELECT courseid FROM enrollments WHERE userid=?)", (u.id,))
+            all = cur.fetchall()
+            if all is None:
+                return []
+            all = list(map(lambda x: Courses(x["id"]), all))
+            return all
+        except lite.Error as e:
+            return []
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def getByUser(cls, u, toponly=False):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            if not toponly:
+                cur.execute("SELECT id FROM courses WHERE id IN (SELECT courseid FROM enrollments WHERE userid=? AND permission>=3)", (u.id,))
+            else:
+                cur.execute("SELECT courses.id FROM enrollments As enr, courses, enrollments As own WHERE enr.courseid=courses.id AND own.courseid=courses.id AND own.permission=4 AND own.userid=? GROUP BY courses.id HAVING Count(*) >= 3 ORDER BY Count(*) DESC LIMIT 3", (u.id,))
             all = cur.fetchall()
             if all is None:
                 return []
@@ -155,6 +231,20 @@ class Courses:
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO enrollments (courseid, userid, lastunitid, permission) VALUES (?, ?, 0, 1)", (self.id, u.id))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def unenroll(self, u):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("DELETE FROM enrollments WHERE courseid=? AND userid=?", (self.id, u.id))
             con.commit()
             return True
         except lite.Error as e:
@@ -253,6 +343,20 @@ class Courses:
             if con:
                 con.close()
 
+    def setCourseRole(self, u, role):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("UPDATE enrollments SET permission=? WHERE courseid=? AND userid=?", (role, self.id, u.id))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
     def getEnrolledByPerm(self, perm):
         try:
             con = lite.connect('databases/courses.db')
@@ -261,6 +365,20 @@ class Courses:
             cur.execute("SELECT * FROM enrollments WHERE courseid=? AND permission=?", (self.id, perm))
             d =cur.fetchall()
             return [muser.User.from_id(_["userid"]) for _ in d]
+        except lite.Error as e:
+            return []
+        finally:
+            if con:
+                con.close()
+
+    def getUnitsByType(self, type):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM units WHERE courseid=? AND type=? AND availible=1", (self.id,type))
+            d =cur.fetchall()
+            return [Units(_["id"]) for _ in d]
         except lite.Error as e:
             return []
         finally:
@@ -280,7 +398,8 @@ class Courses:
                     "id": dd["id"],
                     "title": dd["title"],
                     "availible": bool(dd["availible"]),
-                    "children": []
+                    "children": [],
+                    "type": dd["type"]
                 }
                 cur.execute("SELECT * FROM units WHERE courseid=? AND parent=? ORDER BY unit_order, id", (self.id, dd["id"]))
                 ddd = cur.fetchall()
@@ -288,7 +407,8 @@ class Courses:
                     dx["children"].append({
                         "id": dy["id"],
                         "title": dy["title"],
-                        "availible": bool(dy["availible"])
+                        "availible": bool(dy["availible"]),
+                        "type": dy["type"]
                     })
                 d.append(dx)
             return d

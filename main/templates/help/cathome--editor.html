@@ -29,9 +29,9 @@
         <input type="checkbox" id="active" name="active" value="true" {% if cat.isActive() %}checked{% endif %}>&nbsp;
         <label for="active">Kategorie wird angezeigt?</label><br>
         <input type="checkbox" id="may_edit" name="may_edit" value="true" {% if cat.mayAdminEdit() %}checked{% endif %}>&nbsp;
-        <label for="may_edit">Kategorie kann von Administratoren bearbeitet werden?</label><br>
+        <label for="may_edit">Kategorie kann von Moderatoren bearbeitet werden?</label><br>
         <input type="checkbox" id="subpage" name="subpage" value="true" {% if cat.mayAdminCreateNewpage() %}checked{% endif %}>&nbsp;
-        <label for="subpage">Administratoren können Seiten erstellen?</label><br>
+        <label for="subpage">Moderatoren können Seiten erstellen?</label><br>
       {% endif %}
     </form>
     <style>

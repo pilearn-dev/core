@@ -1,193 +1,126 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-    <link rel="stylesheet" href="/static/css/simplemde.min.css">
-    <script src="/static/js/simplemde.min.js"></script>
-    <script src="/static/js/_tags.js"></script>
+  <script src="/static/new_js/pilearn.markdown.js" charset="utf-8"></script>
+  <script src="/static/new_js/pilearn.editor.js" charset="utf-8"></script>
+{% from "_course-header.html" import forum_header %}
+{{ forum_header(forum, "forum", user) }}
 
-    <nav class="coursenav">
-      {% if forum.id == 0 %}
-          <h2>globales Forum</h2>
-          <p>für alle Fragen zu &pi;-Learn selber und für Fehlermeldungen oder Verbesserungsideen</p>
-      {% else %}
-        {% set topic = forum.getTopic() %}
-        <h2>{{ forum.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
-        {{ forum.getByLine()|markdown }}
-        <ul>
-          <li><a href="/c/{{ forum.id }}/info">Informationen</a></li>
-          <li><a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/start">Kursinhalte</a></li>
-          <li class="active"><a href="/f/{{ forum.id }}">Kursforum</a></li>
-        </ul>
-      {% endif %}
-    </nav>
+<div class="p2">
+  <h1 class="fs-subtitle">Neue Frage
+  {% if forum.id == 0 %}
+    zu &pi;-Learn</h1>
+  {% else %}
+    zum Kurs {{ forum.getTitle() }}</h1>
+  {% endif %}
 
-    <h2>Neuen Beitrag posten</h2>
+  {% if not user.isLoggedIn() %}
+    <p>Du musst dich <a href="/login">anmelden</a> oder <a href="/register">registrieren</a>, um eine Frage in diesem Forum zu stellen.</p>
+  {% elif user.isDisabled() %}
+    <p>Gesperrte Benutzer können keine Fragen stellen.</p>
+  {% else %}
+  <div class="grid">
+    <div action="" method="POST" class="column8__lg column12">
+      <label for="title" class="form">Überschrift deiner Frage</label>
+      <div class="fs-caption">Fasse deine Frage in einem Fragesatz zusammen</div>
+      <input class="form" id="title" name="title">
 
-
-    {% set fullwizard = not (user.may("forum_workAtProtected") and not request.values.get("with-wizard", False)) %}
-    <form action="" method="post" class="rally rally-big{% if not fullwizard %} one-page{% endif %}" id="ask_rally">
-      <div class="rally-item" id="intro">
-        {% if fullwizard %}<div class="rally-blank">&nbsp;</div>{% endif %}
-        <div class="rally-centerbox{% if not fullwizard %} rally-cb-big{% endif %}">
-          <div class="rally-heading">
-            {% if not fullwizard %}<strong>{% endif %}{% if forum.id == 0 %}Du hast eine Frage zu &pi;-Learn?{% else %}Du hast eine Frage zum Kurs <em>{{ forum.getTitle() }}</em>?{% endif %}{% if not fullwizard %}</strong>{% endif %}
-          </div>
-          {% if fullwizard %}
-          <p>Dann bist du hier genau richtig! Noch vier kleine Schritte und deine Frage wird veröffentlicht, so dass andere sie beantworten können.</p>
-          <button onclick="rallyTo()" class="primary-btn" type="button">Weiter &raquo;</button>
-          {% endif %}
-        </div>
-        {% if fullwizard %}
-        <div class="rally-infobox">
-          <strong>Überblick</strong>
-          <ol>
-            <li>Was muss ich wissen?</li>
-            <li>Dein Problem nennen</li>
-            <li>Deine Fragestellung</li>
-            <li>Was passiert jetzt?</li>
-          </ol>
-        </div>
-        {% endif %}
+      <label for="body" class="form">Ausformulierung deiner Frage</label>
+      <div class="js--editor p2 js--editor:preview">
+        <textarea name="body" id="body" class="form form-large js--editor-textarea"></textarea>
+        <div class="p2 js--editor-preview hr-original"></div>
       </div>
-      <div class="rally-item" id="knowledge">
-        {% if fullwizard %}<div class="rally-blank">&nbsp;</div>{% endif %}
-        <div class="rally-centerbox{% if not fullwizard %} rally-cb-big{% endif %}">
-          <div class="rally-heading">
-            {% if fullwizard %}
-            1. Was muss ich wissen?
-            {% else %}
-            Hinweise
-            {% endif %}
-          </div>
+
+      <label for="tags" class="form">Schlagwörter zu deiner Frage</label>
+      <div class="fs-caption">Füge 1-5 leerzeichengetrennte Schlagwörter zu deiner Frage hinzu.</div>
+      <div class="fs-caption">Tipp: Nutze eines der Schlagwörter <em>diskussion</em>, <em>support</em>, <em>fehler</em> oder <em>verbesserungsidee</em>, damit deine Frage besser beantwortet werden kann.</div>
+      <input class="form" name="tags" id="tags" placeholder="1 - 5 Schlagwörter, durch Leerzeichen getrennt (fehler quiz woche2)">
+
+      <div class="_warnbox p-s _warnbox-warning hide" id="save_warnings"></div>
+
+      <button class="_btn _btn--primary js--submit" type="submit">Absenden</button>
+      <a href="/f/{{ forum.id }}" class="_btn _btn--primary _btn-on-light">Abbrechen</a>
+
+      <div class="_warnbox p-s _warnbox-danger hide" id="save_errors"></div>
+    </div>
+    <div class="column4__lg column12 p2">
+      <div class="_card _card-warning">
+        <div class="_card-title">Informationen</div>
+        <div class="_card-content">
           <p>Wenn du diese Hinweise befolgst, wird deine Frage schneller beantwortet:</p>
           <ul>
             <li><strong>Erst Suchen, dann Fragen.</strong> Stecke bitte ein wenig Zeit in deine Frage und versuche erst, das Problem selber zu lösen.</li>
             <li><strong>Sei detailliert.</strong> Erkläre dein Problem so detailliert, dass es auch jemand verstehen kann, der sich noch nicht so genau mit dem Thema beschäftigt hat, wie du.</li>
             <li><strong>Fragen sollen <em>beantwortbar</em> sein.</strong> Darum stelle bitte keine Fragen, deren Beantwortung ein Buch füllen könnte, oder die keine eindeutig richtige Antwort haben (aka. subjektive Fragen)</li>
           </ul>
-          {% if fullwizard %}
-          <button onclick="rallyBack()" type="button">&laquo; Zurück</button>&nbsp;<button onclick="rallyTo()" class="primary-btn" type="button">Weiter &raquo;</button>
-          {% endif %}
-        </div>
-        <div class="rally-blank">&nbsp;</div>
-      </div>
-      <div class="rally-item" id="quest">
-        <div class="rally-centerbox rally-cb-big">
-          <div class="rally-heading">
-            {% if fullwizard %}
-            2. Dein Problem nennen
-            {% endif %}
-          </div>
-          {% include "uploader/button.html" %}
-          <textarea id="qcontent" name="content"></textarea>
-          {% if fullwizard %}
-          &nbsp;<br><button onclick="rallyBack()" type="button">&laquo; Zurück</button>&nbsp;<button class="primary-btn" onclick="rallyTo()" type="button">Weiter &raquo;</button>
-          {% endif %}
-        </div>
-        <div>
-        <div class="rally-infobox">
-          <p>Versuche dein Problem <strong>so einfach und detailliert</strong> wie möglich zu beschreiben. Gib <strong>Beispiele und Referenzen</strong> an. Erkläre, was du <strong>bereits probiert</strong> hast.</p>
-        </div>
         </div>
       </div>
-      <div class="rally-item" id="topic">
-        {% if fullwizard %}<div class="rally-blank">&nbsp;</div>{% endif %}
-        <div class="rally-centerbox{% if not fullwizard %} rally-cb-big{% endif %}">
-          <div class="rally-heading">
-            {% if fullwizard %}
-            3. Deine Fragestellung
-            {% endif %}
-          </div>
-          <label for="qtitle">
-              Überschrift
-          </label>
-          <input id="qtitle" name="title" onblur="showRI('rally-info-topic'); hideRI('rally-info-title');" onfocus="hideRI('rally-info-topic'); showRI('rally-info-title')">
-          <label for="qtags">
-              Tags
-          </label>
-          <div id="qtags" style="border: 1px solid #ddd; padding: 10px; display: flex; flex-direction: column; flex-wrap: wrap;">
-              <div class="tag-holder" style="display: inline-flex; align-items: center;" data-id="tag-holder"></div>
-              <input onkeyup="" style="flex-grow:1" data-id="tag-input" placeholder="Neues Tag hinzufügen (min. 1, max. 5)" onblur="showRI('rally-info-topic'); hideRI('rally-info-tags');" onfocus="hideRI('rally-info-topic'); showRI('rally-info-tags')">
-          </div>
-          <input type="hidden" id="qtags_syncwith" name="tags">
-          &nbsp;<br>{% if fullwizard %}<button onclick="rallyBack()" type="button">&laquo; Zurück</button>&nbsp;<button class="primary-btn" onclick="rallyTo()" type="button">Weiter &raquo;</button>{% else %}<button type="submit" class="primary-btn" id="sbmbtn">Frage stellen</button>{% endif %}
-        </div>
-        <div class="rally-infobox">
-          <div class="rally-info shown" id="rally-info-topic">
-            <p>Sorge dafür, dass andere deine Frage finden, indem du eine <strong>aussagekräftige Überschrift</strong> und <strong>passende Tags</strong> findest.</p>
-          </div>
-          <div class="rally-info" id="rally-info-title">
-            <p>Die <strong>Überschrift</strong> muss aussagekräftig sein, sodass andere deine Frage finden können.</p>
-            <div class="good-example example"><i class="fa fa-check fa-fw"></i> Atom stürzt beim Speichern von Python-Datei ab</div>
-            <div class="good-example example"><i class="fa fa-check fa-fw"></i> Auf welche Tierarten bezieht sich das Zitat in der Einheit "Zitate"?</div>
-            <div class="bad-example example"><i class="fa fa-times fa-fw"></i> HILFE!!! SCHNELL!!!</div>
-            <div class="bad-example example"><i class="fa fa-times fa-fw"></i> Benutzer sucht dringend Antwort auf Frage</div>
-          </div>
-          <div class="rally-info" id="rally-info-tags">
-            <p>Die <strong>Tags</strong> sortieren die Beiträge in Kategorien. Tags beschreiben <em>worum es in der Frage geht</em> und nicht <em>um was für eine Frage es sich handelt</em>.</p>
-            <p>Tags bestehen aus zwei bis 20 alphanumerische Zeichen plus Umlaute, Bindestrich und Doppelpunkt</p>
-            <div class="good-example example"><i class="fa fa-check fa-fw"></i> <span class="tag">Python3</span></div>
-            <div class="good-example example"><i class="fa fa-check fa-fw"></i> <span class="tag">Tierarten</span></div>
-            <div class="bad-example example"><i class="fa fa-times fa-fw"></i> <span class="tag">sehr-einfach</span></div>
-            <div class="bad-example example"><i class="fa fa-times fa-fw"></i> <span class="tag">Polynomgleichungslösungsmenge</span></div>
-          </div>
-        </div>
-      </div>
-      {% if fullwizard %}
-      <div class="rally-item" id="next">
-        <div class="rally-blank">&nbsp;</div>
-        <div class="rally-centerbox">
-          <div class="rally-heading">
-            4. Was passiert jetzt?
-          </div>
-          <p>Herzlichen Glückwunsch! Deine Frage kann gleich abgeschickt werden. Dann werden andere Benutzer deine Frage sehen und können versuchen, sie zu beantworten.</p>
-          <button onclick="rallyBack()" type="button">&laquo; Zurück</button>&nbsp;<button type="submit" class="primary-btn" id="sbmbtn">Frage stellen</button>
-        </div>
-        <div class="rally-blank">&nbsp;</div>
-      </div>
-      {% endif %}
     </div>
+  </div>
+  {% endif %}
+</div>
     <script>
-      function rallyTo() {
-        el = document.querySelector("#ask_rally");
-        el.scrollBy({top:window.innerHeight, behavior: "smooth"});
-      }
-      function rallyBack() {
-        el = document.querySelector("#ask_rally");
-        el.scrollBy({top:-window.innerHeight, behavior: "smooth"});
-      }
-      function hideRI(q) {
-        document.getElementById(q).classList.remove("shown");
-      }
-      function showRI(q) {
-        document.getElementById(q).classList.add("shown");
-      }
-        var simplemde = new SimpleMDE({ element: document.getElementById("qcontent"), forceSync:true, parsingConfig: {strikethrough: false}, promptURLs:true, spellChecker:false });
-        tagmgr = addTagInput("#qtags");
-        tagmgr.tagInput.addEventListener("keydown", function() {
-            document.getElementById("sbmbtn").setAttribute("disabled", true);
-        })
-        tagmgr.tagInput.addEventListener("keyup", function() {
-            document.getElementById("sbmbtn").removeAttribute("disabled");
-        })
-        tagmgr.sync = function(tags) {
-            document.getElementById("qtags_syncwith").value = tags.join(",");
-        }
-        tagmgr.requirementMet = function(tag) {
-            return tag.match(/^[a-zA-Z:0-9äöüß-]{2,20}$/);
-        }
-        tagmgr.getExtraClass = function(tag) {
-            if({{ moderator_tags|tojson }}.indexOf(tag) != -1) {
-                return "moderator-tag";
-            }
-            return null;
-        }
-        tagmgr.mayBeSet = function(tag) {
-            {% if not user.isMod() %}
-                return {{ moderator_tags|tojson }}.indexOf(tag) == -1;
-            {% else %}
-                return true;
-            {% endif %}
-        }
-    </script>
+      PiJS.editor.init();
 
+      $(".js--submit").click(function() {
+        $("#save_errors, #save_warnings").addClass("hide");
+        ignore_warnings = $("#save_warnings .js--ignore-warnings").is(":checked");
+        $(this).attr("disabled", true);
+        tags = $("#tags").val();
+        if(!tags)
+          tags = [];
+        else
+          tags = tags.trim().split(" ")
+        $.ajax({
+          method: "POST",
+          url: "/forum/{{ forum.id }}/{{ forum.getLabel() }}/new" + (ignore_warnings ? "?ignore-warnings=yes" : ""),
+          contentType: "application/json; charset=utf-8",
+          data: JSON.stringify({
+            title: $("#title").val(),
+            body: $("#body").val(),
+            tags: tags
+          }),
+          success: function(r) {
+            $(".js--submit").removeAttr("disabled");
+            if(r.result=="ok") {
+              window.location.href = r.url;
+            } else if (r.result == "error") {
+              wb = $("#save_errors");
+              wb.html("");
+              wb.append($("<p>Die Frage konnte nicht gestellt werden. Es sind Fehler aufgetreten:</p>"))
+              l = $("<ul></ul>");
+              for (var i = 0; i < r.errors.length; i++) {
+                l.append($("<li>").text(r.errors[i]));
+              }
+              wb.append(l);
+              if(r.warnings.length) {
+                wb.append($("<p>Weiterhin wurden folgende Warnungen zurückgegeben, die du ignorieren kannst.</p>"))
+                l = $("<ul></ul>");
+                for (var i = 0; i < r.warnings.length; i++) {
+                  l.append($("<li>").text(r.warnings[i]));
+                }
+                wb.append(l);
+              }
+              wb.removeClass("hide");
+            } else if (r.result == "warnings") {
+              wb = $("#save_warnings");
+              wb.html("");
+              wb.append($("<p>Es wurden folgende Warnungen zurückgegeben, die du ignorieren kannst, indem du die Box unten auswählst und den Beitrag erneut absendest:</p>"))
+              l = $("<ul></ul>");
+              for (var i = 0; i < r.warnings.length; i++) {
+                l.append($("<li>").text(r.warnings[i]));
+              }
+              wb.append(l);
+              wb.append($("<label for='warning_ignorance'><input type='checkbox' class='js--ignore-warnings' id='warning_ignorance'> Danke für diese Warnungen, ich entscheide mich dafür, diese zu ignorieren.</p>"))
+              wb.removeClass("hide");
+            }
+          },
+          error: function() {
+            $("#submit_btn").attr("disabled", true);
+            wb = $("#save_errors");
+            wb.text("Die Verbindung zum Server konnte nicht hergestellt werden.")
+            wb.removeClass("hide");
+          }
+        });
+      })
+    </script>
 {% endblock %}

@@ -1,99 +1,136 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% from "forum/item.html" import forum_item with context %}
 {% block body %}
-    <nav class="coursenav">
-      {% if forum.id == 0 %}
-          <h2>globales Forum</h2>
-          <p>für alle Fragen zu &pi;-Learn selber und für Fehlermeldungen oder Verbesserungsideen</p>
-      {% else %}
-        {% set topic = forum.getTopic() %}
-        <h2>{{ forum.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
-        {{ forum.getByLine()|markdown }}
-        <ul>
-          <li><a href="/c/{{ forum.id }}/info">Informationen</a></li>
-          <li><a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/start">Kursinhalte</a></li>
-          <li class="active"><a href="/f/{{ forum.id }}">Kursforum</a></li>
-        </ul>
-      {% endif %}
-    </nav>
-    <h2>{{ post.getHTMLTitle()|safe }}</h2>
-    {% if post.isDeleted() %}
-        <div class="post-warning">
-            {{ post.getDeleteMessage()|markdown }}
-        </div>
-    {% endif %}
-    {% if post.isClosed() %}
-        <div class="post-warning">
-          {{ post.getClosureWarning()|markdown }}
-        </div>
-    {% endif %}
-    {% if post.isLocked() %}
-        <div class="post-warning">
-          <h3>Dieser Beitrag wurde von <a href="/u/{{ post.getFrozenBy().id }}">{{ post.getFrozenBy().getHTMLName()|safe }}</a> <strong>eingefroren</strong>.</h3>
-          {% if post.getFrozenMessage() != "" %}
-            {{ post.getFrozenMessage()|markdown }}
-          {% endif %}
-        </div>
-    {% elif post.isProtected() %}
-        <div class="post-warning">
-          <h3>Dieser Beitrag wurde von <a href="/u/{{ post.getProtectedBy().id }}">{{ post.getProtectedBy().getHTMLName()|safe }}</a> <strong>geschützt</strong>.</h3>
-          {% if post.isNewbieProtection() %}
-          {{ post.PROTECTION_MESSAGE["answer"]|markdown }}
-          {% elif post.isWikiProtection() %}
-          {{ post.PROTECTION_MESSAGE["wiki"]|markdown }}
-          {% endif %}
-        </div>
-    {% endif %}
-    {% if post.getAward() != 0 %}
-        <div class="success">
-            <h3>Hier gibt es eine Belohnung</h3>
-            <p>Dieser Post hat eine offene Belohnung in Höhe von <span class="award">{{ post.award }}</span> Reputationspunkten. Beantworte den Post und streiche die Belohnung ein.</p>
-        </div>
-    {% endif %}
-    {% if post.isDeleted() %}
-    <div class="deleted-section">
-    {% endif %}
-    <div class="forum-article-list">
+<script src="/static/new_js/pilearn.markdown.js" charset="utf-8"></script>
+<script src="/static/new_js/pilearn.editor.js" charset="utf-8"></script>
+{% from "_course-header.html" import forum_header %}
+{{ forum_header(forum, "forum", user) }}
+<div class="grid">
+  <div class="column8__lg column12 p2">
+    <h1 class="anchor-black f-brand"><a href="/f/{{ forum.id }}/{{ post.id }}">{{ post.getTitle() }}</a></h1>
+    <div class="p1 {% if post.isDeleted() %}bg-danger-lll{% endif %}" id="fullpost">
+      <div id="post-{{ post.id }}">
         {{ forum_item(post, "post") }}
-        {% for answer in post.getAnswers() if answer.mayBeSeen(user) %}
-          {{ forum_item(answer, "answer", post) }}
-        {% endfor %}
-        {% if not post.isDeleted() and user.isLoggedIn() and not post.isClosed() and not post.isWikiProtection() and not post.isLocked() and not (post.isNewbieProtection() and not user.may("forum_workAtProtected")) %}
-            <div>
-                <link rel="stylesheet" href="/static/css/simplemde.min.css">
-                <script src="/static/js/simplemde.min.js"></script>
-                <h3>Antworten</h3>
-                {% include "uploader/button.html" %}
-                <form action="/forum/{{ forum.id }}/{{ forum.getDetail("label") }}/post/{{ post.id }}/answer" method="post">
-                    <textarea id="qanswer" name="answer"></textarea>
-                    <button type="submit">Absenden</button>
-                </form>
-                <script>
-                    var simplemde = new SimpleMDE({ element: document.getElementById("qanswer"), forceSync:true, parsingConfig: {strikethrough: false}, promptURLs:true, spellChecker:false });
-                </script>
-            </div>
-        {% endif %}
+      </div>
+      {% for answer in post.getAnswers() if answer.mayBeSeen(user) %}
+      <div id="answer-{{ answer.id }}" class="{% if answer.isDeleted() %}bg-danger-lll{% endif %}">
+        {{ forum_item(answer, "answer", post) }}
+      </div>
+      {% endfor %}
+      {% if not post.isDeleted() and user.isLoggedIn() and not post.isClosed() and not post.isWikiProtection() and not post.isLocked() and not (post.isNewbieProtection() and not user.may("forum_workAtProtected")) %}
+      <h2>Selber antworten</h2>
+      {% if user.getReputation() < 20 %}
+      <div class="bg-info-lll anchor-info b-r1 p2">
+        <p>Vielen Dank, dass du diese Frage beantworten möchtest. Beachte aber bitte dabei diese Hinweise:</p>
+        <ul>
+          <li>Antworten sollen die Frage so gut wie möglich beantworten.<br>Also ist folgendes nicht in Ordnung: Rückfragen, "Ich auch"-Kommentare oder Dankesbotschaften.</li>
+          <li>Du kannst <a href="#!">Markdown</a> nutzen um deinen Beitrag zu formatieren.</li>
+          <li>Du und andere können deinen Beitrag auch später noch bearbeiten um kleine Fehler zu korrigieren oder aktuelle Informationen hinzuzufügen.<br>Füge trotzdem alle wichtigen Informationen schon jetzt in deine Antwort ein.</li>
+        </ul>
+        <p>Antworten, die diese Hinweise nicht beachten müssen leider gelöscht werden.</p>
+      </div>
+      {% endif %}
+      <div class="js--editor js--editor:preview">
+        <textarea class="form form-large js--editor-textarea" id="qanswer" name="answer"></textarea>
+        <div class="js--editor-preview p2 hr-original"></div>
+      </div>
+
+      <div class="_warnbox p-s _warnbox-warning hide" id="save_warnings"></div>
+
+      <button class="_btn _btn--primary js--submit" type="submit">Antwort hinzufügen</button>
+
+      <div class="_warnbox p-s _warnbox-danger hide" id="save_errors"></div>
+
+      <script>
+          PiJS.editor.init();
+
+          $(".js--submit").on("click", function() {
+            $("#save_errors, #save_warnings").addClass("hide");
+            ignore_warnings = $("#save_warnings .js--ignore-warnings").is(":checked");
+            $(this).attr("disabled", true);
+
+            $.ajax({
+              method: "POST",
+              url: "/forum/{{ forum.id }}/{{ forum.getLabel() }}/post/{{ post.id }}/answer" + (ignore_warnings ? "?ignore-warnings=yes" : ""),
+              contentType: "application/json; charset=utf-8",
+              data: JSON.stringify({
+                body: $("#qanswer").val()
+              }),
+              success: function(r) {
+                $(".js--submit").removeAttr("disabled");
+                if(r.result=="ok") {
+                  window.location.href = r.url;
+                } else if (r.result == "error") {
+                  wb = $("#save_errors");
+                  wb.html("");
+                  wb.append($("<p>Die Antwort konnte nicht abgeschickt werden. Es sind Fehler aufgetreten:</p>"))
+                  l = $("<ul></ul>");
+                  for (var i = 0; i < r.errors.length; i++) {
+                    l.append($("<li>").text(r.errors[i]));
+                  }
+                  wb.append(l);
+                  if(r.warnings.length) {
+                    wb.append($("<p>Weiterhin wurden folgende Warnungen zurückgegeben, die du ignorieren kannst.</p>"))
+                    l = $("<ul></ul>");
+                    for (var i = 0; i < r.warnings.length; i++) {
+                      l.append($("<li>").text(r.warnings[i]));
+                    }
+                    wb.append(l);
+                  }
+                  wb.removeClass("hide");
+                } else if (r.result == "warnings") {
+                  wb = $("#save_warnings");
+                  wb.html("");
+                  wb.append($("<p>Es wurden folgende Warnungen zurückgegeben, die du ignorieren kannst, indem du die Box unten auswählst und den Beitrag erneut absendest:</p>"))
+                  l = $("<ul></ul>");
+                  for (var i = 0; i < r.warnings.length; i++) {
+                    l.append($("<li>").text(r.warnings[i]));
+                  }
+                  wb.append(l);
+                  wb.append($("<label for='warning_ignorance'><input type='checkbox' class='js--ignore-warnings' id='warning_ignorance'> Danke für diese Warnungen, ich entscheide mich dafür, diese zu ignorieren.</p>"))
+                  wb.removeClass("hide");
+                }
+              },
+              error: function() {
+                $("#submit_btn").attr("disabled", true);
+                wb = $("#save_errors");
+                wb.text("Die Verbindung zum Server konnte nicht hergestellt werden.")
+                wb.removeClass("hide");
+              }
+            });
+        })
+
+      </script>
+      {% endif %}
     </div>
-    {% if post.isDeleted() %}
-    </div>
+  </div>
+  <div class="column4__lg column12 p2">
+    {% if user.isLoggedIn() and user.isEnabled() %}
+    <a href="/f/{{ forum.id }}/new" class="hide__md hide__sm _btn _btn--primary _btn-lg push-right">Frage stellen</a>
+    <div class="push-reset"></div>
     {% endif %}
-    {{ forum_close_dialog(user, post, forum) }}
-    <script src="/static/js/post-flagging.js"></script>
-    <script>
-      function flag_comment(commentid) {
-        {% if user.isMod() %}
-        issueSystemQuestion('<p><strong>Wieso möchtest du diesen Kommentar löschen?</strong></p>', [
-          ["SPAM/Beleidigend", "#!' onclick='$post(\"forum/{{ forum.id }}/comment/"+commentid+"/vote\", {\"type\":\"kill\", \"reason\":\"SPAM/Beleidigend\"}, function(){window.location.reload();})"],
-          ["Unnötig/Veraltet", "#!' onclick='$post(\"forum/{{ forum.id }}/comment/"+commentid+"/vote\", {\"type\":\"kill\", \"reason\":\"Unnötig/Veraltet\"}, function(){window.location.reload();})"],
-          ["Anderes", "#!' onclick='$post(\"forum/{{ forum.id }}/comment/"+commentid+"/vote\", {\"type\":\"kill\", \"reason\":\"Anderes\"}, function(){window.location.reload();})"]
-        ]);
-        {% else %}
-        issueSystemQuestion('<p><strong>Wieso möchtest du diesen Kommentar melden?</strong></p><small>Ist dein Grund nicht aufgeführt, melde den übergeordneten Beitrag mit dem Grund Anderes und beschreibe den Moderatoren dein Problem.</small>', [
-          ["SPAM", "#!' onclick='$post(\"forum/{{ forum.id }}/comment/"+commentid+"/vote\", {\"type\":\"flag\", \"reason\":\"SPAM\"}, function(){window.location.reload();})"],
-          ["Beleidigend", "#!' onclick='$post(\"forum/{{ forum.id }}/comment/"+commentid+"/vote\", {\"type\":\"flag\", \"reason\":\"Beleidigend\"}, function(){window.location.reload();})"],
-          ["Unnötig/Veraltet", "#!' onclick='$post(\"forum/{{ forum.id }}/comment/"+commentid+"/vote\", {\"type\":\"flag\", \"reason\":\"Unnötig/Veraltet\"}, function(){window.location.reload();})"]
-        ]);
-        {% endif %}
-      }
-    </script>
+
+    {% set announcements = ForumAnnouncement.byForum(forum.id) %}
+    {% if announcements|length > 0 %}
+    <div class="_card">
+      <div class="_card-title _card-subtitle">Ankündigungen</div>
+      <div class="_card-content _card-content-direct">
+      <div class="_list _list-unbordered">
+      {% for a in announcements %}
+      <a class="_list-item fs-base1 _list-item-keepcolor" href="{{ a.getLink() }}">
+          {% if a.getEnd() %}
+            <span class="d-b col-dark-dd">{{ a.getStart()[1] }} - {{ a.getEnd()[1] }}</span>
+          {% else %}
+            <span class="d-b col-dark-d">{{ a.getStart()[1] }}</span>
+          {% endif %}
+          <span class="d-b mb1 fs-base2">{{ a.getTitle() }}</span>
+      </a>
+      {% endfor %}
+      </div>
+      </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+<script src="/static/new_js/forum.js" charset="utf-8"></script>
 {% endblock %}

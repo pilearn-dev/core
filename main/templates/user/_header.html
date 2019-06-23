@@ -1,0 +1,19 @@
+{% if data.isDisabled() %}
+<div class="behaviour-warning">{% set end=data.getBanEnd() %}
+  <p>Dieser Benutzer wurde <strong>{{ data.getBanReason() }}</strong> <a href="/help/users/banned">gesperrt</a>. Die Sperrung endet <span title="{{ end[1] }}">{{ end[2] }}</span>.</p>
+</div>
+{% endif %}
+<nav class="_nav _nav-t mt2">
+  <a href="/user/{{ data.id }}/{{ data.getDetail("name" ) }}" class="-{{ 'active' if user_site == 'profile' }}">Profil</a>
+  <a href="/user/{{ data.id }}/{{ data.getDetail("name" ) }}/activity" class="-{{ 'active' if user_site == 'activity' }}">Aktivität</a>
+  {% if user.isMod() or user.id == data.id %}
+    <a href="/user/{{ data.id }}/{{ data.getDetail("name" ) }}/edit" class="-{{ 'active' if user_site == 'edit' }}">Konto bearbeiten</a>
+    {% if user.isMod() %}
+    <a href="/tools/user/ops/{{ data.id }}" target="_blank" class="js--mod-user-ops">&diams; Ops</a>
+    {% endif %}
+  {% endif %}
+  {% if user.id == data.id %}
+  <div style="flex-grow: 1"></div>
+  <a class="_nav-t-btn _btn _btn-dark _btn-sm _btn-outline hide__sm" href="/auth/logout">Abmelden</a>
+  {% endif %}
+</nav>

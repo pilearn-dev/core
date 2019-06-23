@@ -1,6 +1,6 @@
 # coding: utf-8
 from flask import request, session, redirect, url_for, abort, render_template, jsonify
-from model import user as muser, courses as mcourses, reviews as mreviews, forum as mforum
+from model import user as muser, courses as mcourses, reviews as mreviews, forum as mforum, modmsg as mmodmsg
 import time
 
 def tools_info():
@@ -11,7 +11,7 @@ def tools_info():
 
 def tools_courses_latest():
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
     num = int(request.values.get("num", 5))
     if num not in [5, 10, 15, 20, 25]:
@@ -22,14 +22,14 @@ def tools_courses_latest():
 
 def tools_courses_proposalsearch():
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
     return render_template("tools/proposal_search.html", title="Werkzeuge - Vorschlagsuche", thispage="tools", num=5, page=max(0, min(10, int(request.values.get("page", "1")))), pages=10, topic=mcourses.Topic)
 
 
 def tools_user_flags_index():
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
 
     flagged = mreviews.CustomQueue.getItems(["user"])
@@ -44,7 +44,7 @@ def tools_user_flags_index():
 
 def tools_user_flags_item(id):
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
 
     flagged = mreviews.CustomQueue.getItemData(id)
@@ -68,7 +68,7 @@ def tools_user_flags_item(id):
 
 def tools_user_flags_action(id):
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
 
     flagged = mreviews.CustomQueue.getItemData(id)
@@ -89,7 +89,7 @@ def tools_user_flags_action(id):
 
 def tools_user_flags_finish(id):
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
 
     flagged = mreviews.CustomQueue.getItemData(id)
@@ -108,7 +108,7 @@ def tools_user_flags_finish(id):
 
 def tools_forum_flags_index():
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
 
     flagged = mreviews.CustomQueue.getItems(["forum.question", "forum.answer"])
@@ -128,7 +128,7 @@ def tools_forum_flags_index():
 
 def tools_forum_flags_item(id):
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
 
     flagged = mreviews.CustomQueue.getItemData(id)
@@ -157,7 +157,7 @@ def tools_forum_flags_item(id):
 
 def tools_forum_flags_action(id):
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
 
     flagged = mreviews.CustomQueue.getItemData(id)
@@ -183,7 +183,7 @@ def tools_forum_flags_action(id):
 
 def tools_forum_flags_finish(id):
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
 
     flagged = mreviews.CustomQueue.getItemData(id)
@@ -204,7 +204,7 @@ def tools_forum_flags_finish(id):
 
 def tools_user_ops_index(uid):
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
     if not muser.User.exists(uid):
         abort(404)
@@ -212,8 +212,6 @@ def tools_user_ops_index(uid):
     action = request.values.get("action", "init")
     if action == "init":
         return render_template("tools/user_ops.html", title="Werkzeuge - Benutzerfunktionen", thispage="tools", data=data)
-    elif action == "lookup-annotations":
-        return render_template("tools/user_ops_lookup-annotation.html", title="Werkzeuge - Benutzerfunktionen", thispage="tools", data=data)
     elif action == "add-annotation":
         return render_template("tools/user_ops_add-annotation.html", title="Werkzeuge - Benutzerfunktionen", thispage="tools", data=data)
     elif action == "merge":
@@ -243,7 +241,7 @@ def tools_user_ops_index(uid):
                 data.addAnnotation("accessdata", request.form["reason"], cuser, time.time())
                 show_data = True
         return render_template("tools/user_ops_access-pii.html", title="Werkzeuge - Benutzerfunktionen", thispage="tools", data=data, show_data=show_data)
-    elif action == "unban":
+    elif action == "unban" and request.method == "POST":
         if data.isDisabled():
             data.setDetail("banned", 0)
             data.setDetail("ban_reason", "")
@@ -254,6 +252,32 @@ def tools_user_ops_index(uid):
 
     return redirect(url_for("tools_user_ops_index", uid=uid))
 
+def tools_user_moddialog(uid):
+    cuser = muser.getCurrentUser()
+    if not cuser.isMod():
+        abort(404)
+    if not muser.User.exists(uid):
+        abort(404)
+    data = muser.User.from_id(uid)
+    tpl = mmodmsg.getTemplates()
+    return render_template("tools/user/mod-dialog.html", data=data, templates=tpl)
+
+def tools_user_summary(uid, view=None):
+    cuser = muser.getCurrentUser()
+    if not cuser.isMod():
+        abort(404)
+    if not muser.User.exists(uid):
+        abort(404)
+    data = muser.User.from_id(uid)
+    if view == "annotations":
+        if request.method == "POST":
+            data.addAnnotation("custom", request.json["comment"], cuser, time.time())
+            return "ok"
+        else:
+            return render_template("tools/user/summary_annotations.html", title="Anmerkungen zu " + data.getHTMLName(False), thispage="tools", data=data)
+    else:
+        abort(404)
+
 def apply(app):
     app.route("/tools")(tools_info)
     app.route("/tools/courses/latest")(tools_courses_latest)
@@ -263,6 +287,8 @@ def apply(app):
     app.route("/tools/user/flags/<int:id>/validate", methods=["POST"])(tools_user_flags_action)
     app.route("/tools/user/flags/<int:id>/finish", methods=["POST"])(tools_user_flags_finish)
     app.route("/tools/user/ops/<uid>", methods=["GET", "POST"])(tools_user_ops_index)
+    app.route("/tools/user/<uid>/dialog", methods=["GET", "POST"])(tools_user_moddialog)
+    app.route("/tools/user/<uid>/summary", methods=["GET", "POST"])(app.route("/tools/user/<uid>/summary/<view>", methods=["GET", "POST"])(tools_user_summary))
 
     app.route("/tools/forum/flags", methods=["GET", "POST"])(tools_forum_flags_index)
     app.route("/tools/forum/flags/<int:id>", methods=["GET", "POST"])(tools_forum_flags_item)

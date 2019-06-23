@@ -1,27 +1,28 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-    <h2><a href="/badges">Abzeichen</a> / <span class="ubadge ubadge-{{ b.getClass() }}"><span class="ubadge-icon"></span>{{ b.getName() }}</span></h2>
+    <h1><a class="anchor-black" href="/badges">Abzeichen</a> / <span class="_badge _badge-award _badge-award-{{ b.getClass() }}"><span class="_badge-icon"></span>{{ b.getName() }}</span></h1>
     {% if user.isDev() %}
-    <a href="?dev-options=1">Mit Entwickleroptionen</a>
+    <a class="fs-base1 anchor-dark" href="?dev-options=1">Mit Entwickleroptionen</a>
     {% endif %}
-    <p>{{ b.getDescription() }}</p>
-    <h3>Verliehen an</h3>
-    <ul>
+    <p class="fs-base3">{{ b.getDescription() }}</p>
+    <h2>Verliehen an</h2>
+    <div class="_datalist">
     {% for data in b.getAwardees() %}
-      <li>
-        <a href="/u/{{ data.user.id }}">{{ data.user.getHTMLName()|safe }}</a> <span title="{{ data.time[1] }}">{{ data.time[2] }}</span>
+      <div class="_datalist-item">
+        <a class="_datalist-field" href="/u/{{ data.user.id }}">{{ data.user.getHTMLName()|safe }}</a>
+        <span class="_datalist-field" title="{{ data.time[1] }}">{{ data.time[2] }}</span>
         {% if user.isDev() and request.values.get("dev-options",0)=="1" %}
-        <form action="/badges/{{ b.id }}/revoke" method="post"><input name="from" type="hidden" value="{{ data.user.id }}"><input name="ts" type="hidden" value="{{ data.time[0] }}"><button type="submit">Entziehen</button></form>
+        <form class="_datalist-action" action="/badges/{{ b.id }}/revoke" method="post"><input name="from" type="hidden" value="{{ data.user.id }}"><input name="ts" type="hidden" value="{{ data.time[0] }}"><button type="submit" class="_btn _btn-sm _btn-danger">Entziehen</button></form>
         {% endif %}
-      </li>
+      </div>
     {% endfor %}
-    </ul>
+    </div>
     {% if user.isDev() and request.values.get("dev-options",0)=="1" %}
-      <h3>An einen Benutzer verleihen</h3>
-      <form action="/badges/{{ b.id }}/award" method="post">
-        <input name="to" placeholder="Benutzer-ID">
-        <input name="data" placeholder="Daten (leer=Null)">
-        <button type="submit">Verleihen</button>
+      <h2>An einen Benutzer verleihen</h2>
+      <form action="/badges/{{ b.id }}/award" method="post" class="horizontal-list">
+        <input name="to" class="form form-inline" placeholder="Benutzer-ID">
+        <input name="data" class="form form-inline" placeholder="Daten (leer=Null)">
+        <button type="submit" class="_btn">Verleihen</button>
       </form>
     {% endif %}
 {% endblock %}

@@ -6,7 +6,7 @@ import secrets, random
 
 from controller import md, num as cnum
 from model import privileges as mprivileges, tags as mtags, user as muser, forum as mforum, proposal as mproposal, courses as mcourses, reviews as mreviews, post_templates as mpost_templates
-from view import auth as vauth, user as vuser, review as vreview, help as vhelp, courses as vcourses, forum as vforum, jsonapi as vjsonapi, survey as vsurvey, proposal as vproposal, tools as vtools, dialog as vdialog, modmsg as vmodmsg, helpdesk as vhelpdesk, upload, topbar as vtopbar, badges as vbadges
+from view import auth as vauth, user as vuser, review as vreview, help as vhelp, courses as vcourses, forum as vforum, jsonapi as vjsonapi, survey as vsurvey, proposal as vproposal, tools as vtools, dialog as vdialog, modmsg as vmodmsg, helpdesk as vhelpdesk, upload, topbar as vtopbar, badges as vbadges, announcements as vannouncements, about as vabout
 
 from sha1 import md5
 
@@ -14,7 +14,12 @@ import traceback as tb
 
 import sqlite3 as lite
 import re, json, time
+
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
+
 app = Flask(__name__)
+
 app.config.update(dict(
     SECRET_KEY='S6b9ySuzI2Uv55aY3To8',
     MAX_CONTENT_LENGTH = 4 * 1024 * 1024
@@ -32,6 +37,12 @@ SITE_LABEL = pidata["label"]
 BETA_TOKEN = pidata["beta_token"]
 BETA_AUTH_KEY = pidata["register_key"]
 HAS_MATHJAX = pidata["mathjax"]
+SENTRY_ERROR_LOGGING = pidata["sentry_error_logging"]
+if SENTRY_ERROR_LOGGING:
+    sentry_sdk.init(
+        dsn=pidata["sentry_logging_key"],
+        integrations=[FlaskIntegration()]
+    )
 
 f = open("version.json", "r")
 pivers = json.loads(f.read())
@@ -41,29 +52,24 @@ __version__ = pivers["main"]
 @app.context_processor
 def prepare_template_context():
     user = muser.getCurrentUser()
-    if user.isDeleted():
-        session.pop('login', None)
-        user = muser.User.blank()
 
     notifications = user.getNotifications()
-    moderator_tags = mtags.moderator_only
 
     g.random_number = random.randint
     g.num2suff = cnum.num2suff
 
-    def countNotifications(notif):
-        count = 0
-        for n in notif:
-            count += 1 if (n["visibility"] == 2) else 0
-        return count
 
-    g.countNotifications = countNotifications
+    if SENTRY_ERROR_LOGGING:
+        with sentry_sdk.configure_scope() as scope:
+            scope.user = {
+                "id": user.id,
+                "username": user.getHTMLName(False)
+            }
 
     return {
         "user": user,
         "review": mreviews,
         "user_messages": notifications,
-        "moderator_tags": moderator_tags,
         "privileges": mprivileges,
         "global_notification": GLOBAL_NOTIFICATION,
         "in_beta": IN_BETA,
@@ -79,6 +85,14 @@ def prepare_template_context():
 @app.before_request
 def prepare_request():
     user = muser.getCurrentUser()
+
+    def countNotifications(notif):
+        count = 0
+        for n in notif:
+            count += 1 if (n["visibility"] == 2) else 0
+        return count
+
+    g.countNotifications = countNotifications
 
     if IS_OFFLINE and request.values.get("beta_auth") == BETA_TOKEN or request.values.get("beta_key")==BETA_AUTH_KEY:
         resp = redirect(url_for("index"))
@@ -96,12 +110,11 @@ def prepare_request():
         uid = user.id
         session.pop('login', None)
         session["former_login"]=uid
-        print(uid)
         return redirect(url_for("youarebanned"))
 
 @app.route("/")
 def index():
-    return render_template('index.html', title="Startseite", thispage="index", globalForum=mforum.Forum.from_id(0), _proposal=mproposal.Proposal)
+    return render_template('index.html', title="Startseite", thispage="index", globalForum=mforum.Forum.from_id(0), topics=mcourses.Topic, _proposal=mproposal.Proposal, courses=mcourses.Courses)
 
 @app.route("/hide-hero", methods=["POST"])
 def hide_hero():
@@ -352,6 +365,8 @@ vhelpdesk.apply(app)
 upload.apply(app)
 vtopbar.apply(app)
 vbadges.apply(app)
+vannouncements.apply(app)
+vabout.apply(app)
 
 @app.errorhandler(404)
 def error404(x):

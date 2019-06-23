@@ -1,8 +1,8 @@
 # coding: utf-8
-from flask import render_template, redirect, abort, url_for, request
+from flask import render_template, redirect, abort, url_for, request, jsonify
 from model import privileges as mprivileges, courses as mcourses, user as muser, survey as msurvey, proposal as mproposal, forum as mforum
 from controller import query as cquery
-import json
+import json, time
 def courses_index():
     cuser = muser.getCurrentUser()
     course_list=mcourses.Courses.getCourseList()
@@ -14,20 +14,34 @@ def courses_index():
             now_courses.append(c)
             if len(now_courses) == 5:
                 break
-    return render_template('courses/index.html', title=u"Kursüberblick", thispage="course", my_courses=my_courses, now_courses=now_courses)
+    return render_template('courses/index.html', title=u"Kursüberblick", thispage="courses", my_courses=my_courses, now_courses=now_courses)
 
 def courses_propose():
     cuser = muser.getCurrentUser()
     if request.method == "GET":
-        return render_template('courses/propose.html', title=u"Kurs vorschlagen", thispage="course", topic=mcourses.Topic)
+        return render_template('courses/propose.html', title=u"Kurs vorschlagen", thispage="courses", topic=mcourses.Topic)
     elif request.method == "POST":
         if cuser.may("course_propose"):
             data = request.json
-            print(data["topic"])
-            p = mproposal.Proposal.createNew(data["topic"], data["title"], data["shortdesc"], data["longdesc"], data["requirements"], cuser)
+            topic = data["topic"]
+            title = data["title"].strip()
+            shortdesc = data["shortdesc"].strip()
+            longdesc = data["longdesc"].strip()
+            requirements = data["requirements"].strip()
+
+            topic = mcourses.Topic(topic)
+            if not topic.isGiveable():
+                return jsonify({"result": "error", "error": "Das Thema " + topic.getTitle() + " kann nicht vergeben werden."})
+
+            errors = _validateCourse(title, shortdesc, longdesc, requirements)
+
+            if len(errors) != 0:
+                return jsonify({"result": "errors", "errors": errors})
+
+            p = mproposal.Proposal.createNew(topic.id, title, shortdesc, longdesc, requirements, cuser)
             if p:
-                return url_for("proposal_show", id=p.id)
-            return "javascript:issueSystemError('Ein Fehler ist aufgetreten.')"
+                return jsonify({"result": "success", "url":url_for("proposal_show", id=p.id)})
+            return jsonify({"result": "error", "error": "Ein Fehler ist aufgetreten."})
         else:
             abort(405)
 
@@ -48,11 +62,11 @@ def courses_search():
             add.extend(add_)
 
         if request.values.get("topic", ""):
-            t = request.values.get("topicid", "all")
+            t = request.values.get("topic", "all")
             if t != "all":
                 try:
                     t = int(t)
-                    q.append("topic = ?")
+                    q.append("topicid = ?")
                     add.append(t)
                 except:
                     pass
@@ -73,7 +87,7 @@ def courses_search():
         cnum = mcourses.Courses.queryNum(q, add)
         courses = mcourses.Courses.query(q, add, 0, 30)
     #print(cquery.buildSFTextQuery("text", s))
-    return render_template('courses/search.html', title=u"Kurse durchsuchen", thispage="course", topic=mcourses.Topic, courses=courses, cnum=cnum)
+    return render_template('courses/search.html', title=u"Kurse durchsuchen", thispage="courses", topic=mcourses.Topic, courses=courses, cnum=cnum)
 
 def course_info(id,label=None):
     if not mcourses.Courses.exists(id):
@@ -81,7 +95,7 @@ def course_info(id,label=None):
     course = mcourses.Courses(id)
     if course.getLabel() != label:
         return redirect(url_for("course_info", id=id, label=course.getLabel()))
-    return render_template('courses/info.html', title=course.getTitle(), thispage="course", data=course)
+    return render_template('courses/info.html', title=course.getTitle(), thispage="courses", data=course, ForumAnnouncement=mforum.ForumAnnouncement)
 
 def course_related_proposal(id,label=None):
     if not mcourses.Courses.exists(id):
@@ -91,51 +105,95 @@ def course_related_proposal(id,label=None):
         return redirect(url_for("course_related_proposal", id=id, label=course.getLabel()))
     return redirect(url_for("proposal_show", id=mproposal.Proposal.byCourse(id).id))
 
-def course_edit(id,label=None):
+def course_admin(id,label=None, page="identity"):
     if not mcourses.Courses.exists(id):
         abort(404)
     course = mcourses.Courses(id)
     cuser = muser.getCurrentUser()
-    if course.getLabel() != label:
-        return redirect(url_for("course_edit", id=id, label=course.getLabel()))
-    if not(cuser.may("course_reviewEdits") or cuser.isMod() or course.getCourseRole(cuser) == 4):
+    if course.getLabel() != label and request.method != "POST":
+        return redirect(url_for("course_admin", id=id, label=course.getLabel()))
+    if not(cuser.isMod() or course.getCourseRole(cuser) == 4):
         abort(404)
-    if request.method == "POST":
-        data = request.json
-        print(data)
-        course.setDetail("title", data["title"])
-        course.setDetail("shortdesc", data["shortdesc"])
-        course.setDetail("longdesc", data["longdesc"])
-        course.setDetail("requirements", data["requirements"])
-        return "ok"
-    else:
-        return render_template('courses/edit.html', title=course.getTitle(), thispage="course", data=course)
+    if page == "identity":
+        if request.method == "POST":
 
-def course_permissions(id,label=None):
-    if not mcourses.Courses.exists(id):
-        abort(404)
-    course = mcourses.Courses(id)
-    cuser = muser.getCurrentUser()
-    if course.getLabel() != label:
-        return redirect(url_for("course_edit", id=id, label=course.getLabel()))
-    if not course.getCourseRole(cuser) >= 3:
-        abort(404)
-    if request.method == "POST":
-        return "ok"
-    else:
-        return render_template('courses/permissions.html', title=course.getTitle(), thispage="course", data=course)
+            data = request.json
 
-def course_publish(id,label=None):
+            title = data["title"].strip()
+            shortdesc = data["shortdesc"].strip()
+            longdesc = data["longdesc"].strip()
+            requirements = data["requirements"].strip()
+
+            errors = _validateCourse(title, shortdesc, longdesc, requirements)
+
+            if len(errors):
+                return jsonify({
+                    "result": "error",
+                    "errors": errors
+                })
+            else:
+                course.setDetail("title", title)
+                course.setDetail("shortdesc", shortdesc)
+                course.setDetail("longdesc", longdesc)
+                course.setDetail("requirements", requirements)
+                return jsonify({
+                    "result": "ok"
+                })
+
+        else:
+            return render_template('courses/admin/identity.html', title=course.getTitle(), thispage="courses", course=course)
+    elif page == "announcements":
+        return render_template("announcements/list.html", title=course.getTitle(), forum=mforum.Forum(course.id), announcements=mforum.ForumAnnouncement.byForum(course.id, True), thispage="courses")
+    elif page == "publish":
+        if request.method == "POST":
+            course.setDetail("state", 1)
+            return "{ok}"
+        else:
+            return render_template('courses/admin/publish.html', title=course.getTitle(), thispage="courses", course=course)
+    elif page == "membership":
+        if request.method == "POST":
+            if request.json["action"] == "give-role":
+                user_to_receive = muser.User(request.json["user"])
+                role_to_receive = request.json["role"]
+                if not role_to_receive in range(1, 5):
+                    return jsonify({ "result": "error", "error": u"Ungültige Ziel-Rolle" })
+                if course.isEnrolled(user_to_receive):
+                    course.setCourseRole(user_to_receive, role_to_receive)
+                    return jsonify({ "result": "success"})
+                else:
+                    return jsonify({ "result": "error", "error": u"Nur möglich für Benutzer, die im Kurs eingeschrieben sind." })
+            elif request.json["action"] == "revoke-role":
+                user_to_receive = muser.User(request.json["user"])
+                if course.isEnrolled(user_to_receive) and course.getCourseRole(user_to_receive) != 1:
+                    course.setCourseRole(user_to_receive, 1)
+                    return jsonify({ "result": "success"})
+            elif request.json["action"] == "kick-remove":
+                user_to_receive = muser.User(request.json["user"])
+                if course.isEnrolled(user_to_receive) and course.getCourseRole(user_to_receive) == 1:
+                    course.unenroll(user_to_receive)
+                    user_to_receive.customflag(u"Benutzer von " + cuser.getHTMLName(False) + u" (#" + str(cuser.id) + u") aus dem Kurs " + course.getTitle() + u" (#" + str(course.id) + ") geworfen.", muser.User.from_id(-1))
+                    return jsonify({ "result": "success"})
+                else:
+                    return jsonify({ "result": "error", "error": u"Nicht möglich: Benutzer nicht eingeschrieben oder Benutzer hat Rolle." })
+
+            return jsonify({ "result": "error", "error": u"Ungültige Anfrage" })
+        else:
+            return render_template('courses/admin/membership.html', title=course.getTitle(), thispage="courses", course=course)
+    else:
+        abort(404)
+
+def course_edit_overview(id,label=None):
     if not mcourses.Courses.exists(id):
         abort(404)
     course = mcourses.Courses(id)
     cuser = muser.getCurrentUser()
-    if course.getLabel() != label:
-        return redirect(url_for("course_publish", id=id, label=course.getLabel()))
-    if not course.getCourseRole(cuser) == 4:
+    if course.getLabel() != label and request.method != "POST":
+        return redirect(url_for("course_edit_overview", id=id, label=course.getLabel()))
+    if not(cuser.isMod() or course.getCourseRole(cuser) >= 3):
         abort(404)
-    course.setDetail("state", 1)
-    return "ok"
+
+    return render_template('courses/edit/index.html', title=course.getTitle(), thispage="courses", course=course)
+
 
 def course_enroll(id,label=None):
     if not mcourses.Courses.exists(id):
@@ -144,8 +202,6 @@ def course_enroll(id,label=None):
     if course.getLabel() != label:
         return redirect(url_for("course_enroll", id=id, label=course.getLabel()))
     cuser = muser.getCurrentUser()
-    if course.getDetail("state") == 0 and not cuser.isMod():
-        abort(403)
     if not course.isEnrolled(cuser):
         course.enroll(cuser)
         enrolled_count = course.getEnrolledCount()
@@ -154,7 +210,9 @@ def course_enroll(id,label=None):
             for e in earners:
                 e.setDetail("reputation", 1+e.getInfo()["reputation"])
                 e.setReputationChange("enroll", "Kurs: ["+course.getTitle()+"](/c/"+str(course.id)+")", 1)
-    return redirect(url_for("course_start", label=course.getLabel(), id=course.id))
+    if course.getDetail("state") != 0:
+        return redirect(url_for("course_start", label=course.getLabel(), id=course.id))
+    return redirect(url_for("course_info", label=course.getLabel(), id=course.id))
 
 def course_start(id,label=None):
     if not mcourses.Courses.exists(id):
@@ -191,18 +249,18 @@ def unit_show(unit_id,course_id,unit_label=None,course_label=None):
         abort(403)
     course.setLastVisitedUnitId(cuser, unit.id)
     if unit.getType() == "info":
-        return render_template('courses/unit_info.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
+        return render_template('courses/units/info.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
     elif unit.getType() == "extvideo":
-        return render_template('courses/unit_extvideo.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
+        return render_template('courses/units/extvideo.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
     elif unit.getType() == "survey":
         s = msurvey.Survey(unit.getJSON()["survey"])
-        return render_template('courses/unit_survey.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit, survey=s)
+        return render_template('courses/units/survey.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit, survey=s)
     elif unit.getType() == "quiz":
         try:
-            return render_template('courses/unit_quiz.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
-        except:
+            return render_template('courses/units/quiz.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit, int=int)
+        except Exception as e:
             if request.values.get("re-submit", 0)=="true":
-                abort(500)
+                raise e
             data = {"re-submit":"true", "submission-error": "incomplete"}
             return redirect(url_for("unit_show", course_id=course_id, course_label=course_label, unit_id=unit_id, unit_label=unit.getLabel(), **data))
     elif unit.getType() == "pinboard":
@@ -211,7 +269,7 @@ def unit_show(unit_id,course_id,unit_label=None,course_label=None):
             a = None
         else:
             a = mforum.Article(aid)
-        return render_template('courses/unit_pinboard.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit, post=a)
+        return render_template('courses/units/pinboard.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit, post=a)
     abort(500)
 
 def unit_edit(unit_id,course_id,unit_label=None,course_label=None):
@@ -234,15 +292,15 @@ def unit_edit(unit_id,course_id,unit_label=None,course_label=None):
         if unit.getLabel() != unit_label:
             return redirect(url_for("unit_edit", course_id=course_id, course_label=course_label, unit_id=unit_id, unit_label=unit.getLabel()))
         if unit.getType() == "info":
-            return render_template('courses/edit_unit_info.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
+            return render_template('courses/edit/unit-info.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
         elif unit.getType() == "extvideo":
-            return render_template('courses/edit_unit_extvideo.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
+            return render_template('courses/edit/unit-extvideo.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
         elif unit.getType() == "survey":
-            return render_template('courses/edit_unit_survey.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
+            return render_template('courses/edit/unit-survey.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
         elif unit.getType() == "quiz":
-            return render_template('courses/edit_unit_quiz.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
+            return render_template('courses/edit/unit-quiz.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
         elif unit.getType() == "pinboard":
-            return render_template('courses/edit_unit_pinboard.html', title="[Bearbeiten] " + course.getTitle() + " - " + unit.getTitle(), thispage="course", course=course, data=unit)
+            return render_template('courses/edit/unit-pinboard.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
         abort(500)
 
 
@@ -295,7 +353,23 @@ def unit_submit(unit_id,course_id,unit_label=None,course_label=None):
                     TOTAL_SCORE += pts
                     RESULT_DATA[k] = ({"max":i["data"]["points"], "sum":pts, "selection":_, "correct":i["data"]["choices"]})
 
+
         unit.addViewData(cuser, json.dumps({"result":RESULT_DATA, "max": MAX_SCORE, "sum": TOTAL_SCORE}))
+        return "{ok}"
+    elif unit.getType() == "pinboard":
+        aid = int(unit.getJSON())
+        if aid == 0:
+            abort(500)
+        else:
+            a = mforum.Article(aid)
+
+        data = request.json
+        answer = mforum.Answer.createNew(a.getDetail("forumID"), aid, data["comment"], muser.User(-1))
+        answer.addRevision(data["comment"], cuser, u"Ursprüngliche Version")
+
+        a.setDetail("last_activity_date", time.time())
+        answer.setDetail("last_activity_date", time.time())
+        answer.setDetail("creation_date", time.time())
         return "{ok}"
     abort(500)
 
@@ -319,40 +393,26 @@ def unit_new(course_id):
     return url_for("unit_show", unit_id=x, course_id=course_id)
 
 def topic_index():
-    return render_template('topic/index.html', title=u"Themen", thispage="course", topic=mcourses.Topic)
+    return render_template('topic/index.html', title=u"Themen", thispage="courses", topic=mcourses.Topic)
 
-def topic_info(name, id=None):
-    if not mcourses.Topic.exists(name):
-        abort(404)
-    topic = mcourses.Topic.from_name(name)
-    if topic.id != id:
-        return redirect(url_for("topic_info", name=name, id=topic.id))
-    return render_template('topic/info.html', title=topic.getTitle(), thispage="course", data=topic)
-
-def topic_courses(name, id=None):
+def topic_view(name):
     if not mcourses.Topic.exists(name):
         abort(404)
     topicCourseList=mcourses.Topic.getCourseList(name)
-    print(topicCourseList)
     topic = mcourses.Topic.from_name(name)
-    if topic.id != id:
-        return redirect(url_for("topic_courses", name=name, id=topic.id))
-    return render_template('topic/courses.html', title=topic.getTitle()+u" – Kurse", thispage="course", courses=topicCourseList, data=topic)
+    return render_template('topic/courses.html', title=topic.getTitle()+u" – Kurse", thispage="courses", courses=topicCourseList, data=topic)
 
-def topic_edit(name, id=None):
+def topic_edit(name):
     if not mcourses.Topic.exists(name):
         abort(404)
     topic = mcourses.Topic.from_name(name)
-    if topic.id != id:
-        return redirect(url_for("topic_edit", name=name, id=topic.id))
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
     if request.method == "GET":
-        return render_template('topic/edit.html', title=topic.getTitle()+u" – Bearbeiten", thispage="course", data=topic)
+        return render_template('topic/edit.html', title=topic.getTitle()+u" – Bearbeiten", thispage="courses", data=topic)
     else:
         data = request.json
-        print(data)
         topic.setDetail("title", data["title"])
         topic.setDetail("excerpt", data["excerpt"])
         topic.setDetail("description", data["description"])
@@ -365,7 +425,7 @@ def course_unit_reorder(id,label=None):
         abort(404)
     course = mcourses.Courses(id)
     cuser = muser.getCurrentUser()
-    if not(course.getCourseRole(cuser) == 4):
+    if not(course.getCourseRole(cuser) >= 3):
         abort(404)
     if request.method == "POST":
         data = (request.json)
@@ -385,25 +445,48 @@ def course_unit_reorder(id,label=None):
     else:
         if course.getLabel() != label:
             return redirect(url_for("course_unit_reorder", id=id, label=course.getLabel()))
-        return render_template('courses/unit_reorder.html', title="Kursmodule neu anordnen: " + course.getTitle(), thispage="course", data=course)
+        return render_template('courses/edit/reorder.html', title="Kursmodule neu anordnen: " + course.getTitle(), thispage="courses", data=course)
+
+def _validateCourse(title, shortdesc, longdesc, requirements):
+    errors = []
+
+    if 5 > len(title):
+        errors.append(u"Der Titel des Kurses ist zu kurz. Mindestens 5 Zeichen erforderlich. (aktuell: %i)" % len(title))
+    if 80 < len(title):
+        errors.append(u"Der Titel des Kurses ist zu lang. Höchstens 80 Zeichen möglich. (aktuell: %i)" % len(title))
+
+    if 5 > len(shortdesc):
+        errors.append(u"Die Kurzbeschreibung ist zu kurz. Mindestens 15 Zeichen erforderlich. (aktuell: %i)" % len(shortdesc))
+    if 280 < len(shortdesc):
+        errors.append(u"Die Kurzbeschreibung ist zu lang. Höchstens 280 Zeichen möglich. (aktuell: %i)" % len(shortdesc))
+
+    if 5 > len(longdesc):
+        errors.append(u"Die Kurzbeschreibung ist zu kurz. Mindestens 50 Zeichen erforderlich. (aktuell: %i)" % len(longdesc))
+    if 15000 < len(longdesc):
+        errors.append(u"Die Kurzbeschreibung ist zu lang. Höchstens 15000 Zeichen möglich. (aktuell: %i)" % len(longdesc))
+
+    if 5 > len(requirements):
+        errors.append(u"Die Kurzbeschreibung ist zu kurz. Mindestens 10 Zeichen erforderlich. (aktuell: %i)" % len(requirements))
+    if 7500 < len(requirements):
+        errors.append(u"Die Kurzbeschreibung ist zu lang. Höchstens 7500 Zeichen möglich. (aktuell: %i)" % len(requirements))
+
+    return errors
 
 def apply(app):
     app.route("/courses")(courses_index)
     app.route("/course/propose", methods=["GET", "POST"])(courses_propose)
     app.route("/c/search")(app.route("/course/search")(courses_search))
-    app.route("/c/<int:id>")(app.route("/c/<int:id>/info")(app.route("/course/<int:id>/<label>/details")(course_info)))
+    app.route("/c/<int:id>")(app.route("/c/<int:id>/info")(app.route("/course/<int:id>/<label>/details")(app.route("/course/<int:id>/<label>")(course_info))))
     app.route("/c/<int:id>/proposal")(app.route("/course/<int:id>/<label>/proposal")(course_related_proposal))
-    app.route("/c/<int:id>/edit", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/edit", methods=["GET", "POST"])(course_edit))
-    app.route("/@/c/<int:id>/permissions", methods=["GET", "POST"])(app.route("/@/course/<int:id>/<label>/permissions", methods=["GET", "POST"])(course_permissions))
-    app.route("/c/<int:id>/publish", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/publish", methods=["GET", "POST"])(course_publish))
+    app.route("/c/<int:id>/admin", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/admin", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/admin/<page>", methods=["GET", "POST"])(course_admin)))
     app.route("/c/<int:id>/enroll")(app.route("/course/<int:id>/<label>/enroll")(course_enroll))
     app.route("/c/<int:id>/start")(app.route("/course/<int:id>/<label>/start")(course_start))
     app.route("/c/<int:course_id>/<int:unit_id>", methods=["GET", "POST"])(app.route("/c/<int:course_id>/u/<int:unit_id>", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/unit/<int:unit_id>/<unit_label>/show", methods=["GET", "POST"])(unit_show)))
-    app.route("/c/<int:course_id>/u/<int:unit_id>/edit", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/unit/<int:unit_id>/<unit_label>/edit", methods=["GET", "POST"])(unit_edit))
+    app.route("/c/<int:id>/edit", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/edit", methods=["GET", "POST"])(course_edit_overview))
+    app.route("/c/<int:course_id>/edit/unit/<int:unit_id>", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/edit/unit/<int:unit_id>/<unit_label>", methods=["GET", "POST"])(unit_edit))
     app.route("/c/<int:course_id>/u/<int:unit_id>/submit", methods=["POST"])(app.route("/course/<int:course_id>/<course_label>/unit/<int:unit_id>/<unit_label>/submit", methods=["POST"])(unit_submit))
-    app.route("/c/<int:course_id>/u/new", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/unit/new", methods=["GET", "POST"])(unit_new))
+    app.route("/c/<int:course_id>/edit/add", methods=["POST"])(app.route("/course/<int:course_id>/<course_label>/edit/add", methods=["POST"])(unit_new))
     app.route("/topics")(topic_index)
-    app.route("/t/<name>")(app.route("/t/<name>/info")(app.route("/topic/<int:id>/<name>/info")(topic_info)))
-    app.route("/t/<name>/c")(app.route("/t/<name>/courses")(app.route("/topic/<int:id>/<name>/courses")(topic_courses)))
-    app.route("/t/<name>/e", methods=["GET", "POST"])(app.route("/topic/<int:id>/<name>/edit", methods=["GET", "POST"])(topic_edit))
-    app.route("/c/<int:id>/unit_reorder", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/unit_reorder", methods=["GET", "POST"])(course_unit_reorder))
+    app.route("/t/<name>")(app.route("/topic/<name>")(topic_view))
+    app.route("/t/<name>/edit", methods=["GET", "POST"])(app.route("/topic/<name>/edit", methods=["GET", "POST"])(topic_edit))
+    app.route("/c/<int:id>/edit/reorder", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/edit/reorder", methods=["GET", "POST"])(course_unit_reorder))

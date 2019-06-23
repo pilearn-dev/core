@@ -1,84 +1,40 @@
-{% extends "layout.html" %}
+{% set pattern="individual" %}
+{% extends "layout_new.html" %}
 {% block body %}
-  <div class="modal-overlay">
-    <div class="modal">
-        <h2>Anmeldung</h2>
-        {% if error == "not-found" %}
-            <div class="error">
-                Dieser Benutzeraccount wurde nicht gefunden.
-            </div>
-        {% elif error == "forbidden" %}
-            <div class="error">
-                Dieser Benutzeraccount wurde gelöscht. Du kannst dich nicht mit diesem Konto anmelden. Eventuell kann das Konto wiederhergestellt werden. Registriere dafür ein Konto mit den exakt gleichen Anmeldedaten.
-            </div>
-        {% elif error == "format" %}
-            <div class="error">
-                Das Format, das du für deine Benutzerdaten angegeben hast ist ungültig.
-            </div>
-        {% endif %}
-        <div class="login-option-dialog">
-          <div class="login-option">
-            <input type="radio" id="login_via_username_and_passwort" name="login_via">
-            <label for="login_via_username_and_passwort" class="login-option-selection">Mit lokalem Konto anmelden</label>
-            <div class="login-option-content">
-              <form action="" method="post">
-                  <label for="username">Benutzername:</label>
-                  <input id="username" name="username">
-                  <label for="password">Passwort:</label>
-                  <input id="password" name="password" type="password">
-                  <p><i><a href="/reset-password">Passwort zurücksetzen</a></i></p>
-                  <input type="hidden" name="login_provider" value="local_account">
-                  <button id="reglog" class="primary-btn">Anmelden</button>
-              </form>
-            </div>
-          </div>
-          <div class="login-option">
-            <input type="radio" id="login_via_registration" name="login_via">
-            <label for="login_via_registration" class="login-option-selection">Mit lokalem Konto registrieren</label>
-            <div class="login-option-content">
-              <form action="" method="post">
-                  <label for="username">Benutzername:</label>
-                  <input id="username" name="username">
-                  <label for="password">Passwort:</label>
-                  <input id="password" name="password" type="password">
-                  <label for="realname">Anzeigename:</label>
-                  <input id="realname" name="realname">
-                  <label for="email">E-Mail-Adresse:</label>
-                  <input id="email" name="email" type="email">
-                  <p>Mit dem Abschicken dieses Formulars erklärst du dich mit den <a href="/help/legal/terms">Nutzungsbedingungen</a> und unseren <a href="/help/data-policy">Datenschutzrichtlinien</a> einverstanden.</p>
-                  <input type="hidden" name="login_provider" value="local_registration">
-                  <button id="reglog" class="primary-btn">Registrieren</button>
-              </form>
-            </div>
-          </div>
-          <div class="login-option">
-            <input type="radio" id="login_via_google" name="login_via">
-            <label for="login_via_google" class="login-option-selection">Externes Konto</label>
-            <div class="login-option-content">
-              <a href="/oauth/google"><button class="danger-btn"><i class="fa fa-google"></i> Google</button></a>
-            </div>
-          </div>
+<div class="single-fluid-small grid p3">
+  <div class="column6 column8__md column12__sm p1" id="option-login">
+    <div class="container s3 p4">
+      <h1 class="fs-subtitle ta-c bb1 bb-s bb-dark-ll">Anmelden</h1>
+      {% if error == "not-found" %}
+        <div class="_alert _alert-danger">
+            Dieser Benutzeraccount wurde nicht gefunden.
         </div>
+      {% elif error == "forbidden" %}
+        <div class="_alert _alert-danger">
+            Dieser Benutzeraccount wurde gelöscht. Du kannst dich nicht mit diesem Konto anmelden. Eventuell kann das Konto wiederhergestellt werden. Registriere dafür ein Konto mit den exakt gleichen Anmeldedaten.
+        </div>
+      {% elif error == "format" %}
+        <div class="_alert _alert-danger">
+            Das Format, das du für deine Benutzerdaten angegeben hast ist ungültig.
+        </div>
+      {% endif %}
+      <p>Melde dich mit einem bereits existierenden Benutzerkonto an.</p>
+      <p>Du hast noch kein Benutzerkonto? Dann kannst du <a href="/auth/register">ein neues Benutzerkonto erstellen</a>.</p>
+      <h2 class="fs-base3 col-dark-dd ta-c">Externe Dienste</h2>
+      <div class="grid">
+          <a href="/auth/oauth-provider/google" class="_btn _btn-service _btn-service-google">Google-Anmeldung</a>
+      </div>
+      <h2 class="fs-base3 col-dark-dd ta-c">&pi;-Learn-Konto</h2>
+      <form action="" method="POST">
+        <label for="login_email" class="form">E-Mail:</label>
+        <input id="login_email" class="form" name="email">
+        <label for="login_password" class="form">Passwort:</label>
+        <input id="login_password" class="form" name="password" type="password">
+        <input type="hidden" name="login_provider" value="local_account">
+        <button class="_btn _btn--primary" type="submit">Anmelden</button>
+        <a href="/auth/password-reset" class="_btn _btn--primary _btn-on-light">Passwort vergessen</a>
+      </form>
     </div>
   </div>
-  <script>
-    var state = "log";
-    document.querySelector(".reglogtoggle").addEventListener("click", function () {
-        if(document.querySelector(".regonly").hasAttribute("hidden")) {
-            document.querySelector(".regonly").removeAttribute("hidden");
-        } else {
-            document.querySelector(".regonly").setAttribute("hidden", true);
-        }
-
-        if(state == "log") {
-            document.querySelector("#reglog").innerText = "Registrieren";
-            document.querySelector(".reglogtoggle").innerText = "Anmelden";
-            state = "reg";
-        } else {
-            document.querySelector("#reglog").innerText = "Anmelden";
-            document.querySelector(".reglogtoggle").innerText = "Registrieren";
-            state = "log";
-        }
-    })
-  </script>
+</div>
 {% endblock %}

@@ -1,49 +1,138 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-    <link rel="stylesheet" href="/static/css/simplemde.min.css">
-    <script src="/static/js/simplemde.min.js"></script>
+  <script src="/static/new_js/pilearn.markdown.js" charset="utf-8"></script>
+  <script src="/static/new_js/pilearn.editor.js" charset="utf-8"></script>
+{% from "_course-header.html" import forum_header %}
+{{ forum_header(forum, "forum", user) }}
 
-    <nav class="coursenav">
-      {% if forum.id == 0 %}
-          <h2>globales Forum</h2>
-          <p>für alle Fragen zu &pi;-Learn selber und für Fehlermeldungen oder Verbesserungsideen</p>
-      {% else %}
-        {% set topic = forum.getTopic() %}
-        <h2>{{ forum.getTitle() }} <i><a href="/topic/{{ topic.id }}/{{ topic.getName() }}/info" class="topic">{{ topic.getTitle() }}</a></i></h2>
-        {{ forum.getByLine()|markdown }}
-        <ul>
-          <li><a href="/c/{{ forum.id }}/info">Informationen</a></li>
-          <li><a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/start">Kursinhalte</a></li>
-          <li class="active"><a href="/f/{{ forum.id }}">Kursforum</a></li>
-        </ul>
-      {% endif %}
-    </nav>
+<div class="p2">
+  <h1 class="fs-subtitle">Antwort auf Frage
+  {% if forum.id == 0 %}
+    zu &pi;-Learn
+  {% else %}
+    zum Kurs {{ forum.getTitle() }}
+  {% endif %}
+  bearbeiten</h1>
 
-    <h2>Beitrag bearbeiten</h2>
+  {% if not user.isLoggedIn() %}
+    <p>Du musst dich <a href="/login">anmelden</a> oder <a href="/register">registrieren</a>, um Antworten zu bearbeiten.</p>
+  {% elif user.isDisabled() %}
+    <p>Gesperrte Benutzer können keine Fragen stellen.</p>
+  {% else %}
+  <div class="grid">
+    <div class="column8__lg column12">
+      <label class="form">Antwort auf die Frage</label>
+      <div class="_card">
+        <div class="_card-header">
+          <div class="horizontal-list">
+            <div class="p1">
+                <a href="#!" class="_card-expander" onclick="$(this).toggleClass('-open');$('.js--body-preview').toggleClass('hide');"></a>
+            </div>
+            <div class="p1">
+                <a href="/f/{{ art.getDetail("forumID") }}/{{ art.id }}" class="fs-subheading">{{ art.getHTMLTitle()|safe }}</a>
+            </div>
+          </div>
+        </div>
+        <div class="_card-content hide js--body-preview">
+          {{ (art.getContent().replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
+        </div>
+      </div>
+      <label for="body" class="form">Ausformulierung deiner Antwort</label>
+      <div class="js--editor p2 js--editor:preview">
+        <textarea name="body" id="body" class="form form-large js--editor-textarea">{{ answer.getContent() }}</textarea>
+        <div class="p2 js--editor-preview hr-original"></div>
+      </div>
 
-    <p>Hier noch einmal die Kriterien für einen guten Forumsartikel:</p>
-    <ul>
-        <li>Deine eingegebenen Inhalte müssen mit dem <a href="/help/legal/coc">Code of Conduct</a> kompatibel sein.</li>
-        <li>Deine eingegebenen Inhalte sollten keine groben Rechtschreibfehler aufweisen</li>
-        <li>Versuche die eingegebenen Inhalte möglichst verständlich zu formulieren.</li>
-        <li>Werbe in den Inhalten nicht übermäßig für ein bestimmtes Produkt oder eine Marke.</li>
-        <li>Versuche die eingegebenen Inhalte möglichst verständlich zu formulieren.</li>
-        <li><b>Denke daran, den Ausgangspost zu beantworten!</b></li>
-    </ul>
+      <label for="comment" class="form">Kommentar zur Bearbeitung</label>
+      <input class="form" id="comment" name="comment">
 
-    <form action="" method="post">
-        <label for="qcontent">
-            Inhalt des Forumposts
-        </label>
-        <textarea id="qcontent" name="content">{{ answer.getContent() }}</textarea>
-        <label for="qcomment">Kommentar zu den Änderungen:</label>
-        <input id="qcomment" name="comment"></input>
-        &nbsp;<br>
-        <button type="submit" id="sbmbtn">Speichern</button>&nbsp;<a href="/f/{{ forum.id }}/{{ answer.getDetail("articleID") }}#answer-{{ answer.id }}">Abbrechen</a>
-    </form>
+      <div class="_warnbox p-s _warnbox-warning hide" id="save_warnings"></div>
 
+      <button class="_btn _btn--primary js--submit" type="submit">Absenden</button>
+      <a href="/f/{{ forum.id }}/{{ art.id }}#answer-{{ answer.id }}" class="_btn _btn--primary _btn-on-light">Abbrechen</a>
+
+      <div class="_warnbox p-s _warnbox-danger hide" id="save_errors"></div>
+    </div>
+    <div class="column4__lg column12 p2">
+      <div class="_card _card-warning">
+        <div class="_card-title">Informationen</div>
+        <div class="_card-content">
+          <p>Bearbeite Beiträge, um ...</p>
+          <ul>
+            <li>Schreibfehler zu korrigieren.</li>
+            <li>die Aussage verständlicher zu machen.</li>
+            <li>Belege hinzuzufügen.</li>
+            <li>die Formattierung zu verbessern.</li>
+          </ul>
+          <p>Beachte dabei, ...</p>
+          <ul>
+            <li>die Intentionen des Autors zu beachten.</li>
+            <li>möglichst alle Probleme zu beheben.</li>
+            <li>keinen <a href="/help/faq/edit-war">Edit-War</a> zu beginnen.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
     <script>
-        var simplemde = new SimpleMDE({ element: document.getElementById("qcontent"), forceSync:true, parsingConfig: {strikethrough: false}, promptURLs:true, spellChecker:false });
-    </script>
+      PiJS.editor.init();
 
+      $(".js--submit").click(function() {
+        $("#save_errors, #save_warnings").addClass("hide");
+        ignore_warnings = $("#save_warnings .js--ignore-warnings").is(":checked");
+        $(this).attr("disabled", true);
+        $.ajax({
+          method: "POST",
+          url: "/forum/{{ forum.id }}/{{ forum.getLabel() }}/answer/{{ answer.id }}/edit" + (ignore_warnings ? "?ignore-warnings=yes" : ""),
+          contentType: "application/json; charset=utf-8",
+          data: JSON.stringify({
+            body: $("#body").val(),
+            comment: $("#comment").val()
+          }),
+          success: function(r) {
+            $(".js--submit").removeAttr("disabled");
+            if(r.result=="ok") {
+              window.location.href = r.url;
+            } else if (r.result == "error") {
+              wb = $("#save_errors");
+              wb.html("");
+              wb.append($("<p>Die Antwort konnte nicht bearbeitet werden. Es sind Fehler aufgetreten:</p>"))
+              l = $("<ul></ul>");
+              for (var i = 0; i < r.errors.length; i++) {
+                l.append($("<li>").text(r.errors[i]));
+              }
+              wb.append(l);
+              if(r.warnings.length) {
+                wb.append($("<p>Weiterhin wurden folgende Warnungen zurückgegeben, die du ignorieren kannst.</p>"))
+                l = $("<ul></ul>");
+                for (var i = 0; i < r.warnings.length; i++) {
+                  l.append($("<li>").text(r.warnings[i]));
+                }
+                wb.append(l);
+              }
+              wb.removeClass("hide");
+            } else if (r.result == "warnings") {
+              wb = $("#save_warnings");
+              wb.html("");
+              wb.append($("<p>Es wurden folgende Warnungen zurückgegeben, die du ignorieren kannst, indem du die Box unten auswählst und den Beitrag erneut absendest:</p>"))
+              l = $("<ul></ul>");
+              for (var i = 0; i < r.warnings.length; i++) {
+                l.append($("<li>").text(r.warnings[i]));
+              }
+              wb.append(l);
+              wb.append($("<label for='warning_ignorance'><input type='checkbox' class='js--ignore-warnings' id='warning_ignorance'> Danke für diese Warnungen, ich entscheide mich dafür, diese zu ignorieren.</p>"))
+              wb.removeClass("hide");
+            }
+          },
+          error: function() {
+            $("#submit_btn").attr("disabled", true);
+            wb = $("#save_errors");
+            wb.text("Die Verbindung zum Server konnte nicht hergestellt werden.")
+            wb.removeClass("hide");
+          }
+        });
+      })
+    </script>
 {% endblock %}

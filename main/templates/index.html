@@ -1,60 +1,117 @@
-{% extends "layout.html" %}
+{% extends "layout_new.html" %}
 {% block body %}
-{% if user.isLoggedIn() %}
-    <h2 class="bigheading">Willkommen zurück!</h2>
-    <p>
-        Hallo {{ user.getHTMLName()|safe }}! Willkommen zurück bei &pi;-Learn. Wir haben dich bereits vermisst.
-    </p>
-{% else %}
-    <h2 class="bigheading">Willkommen bei &pi;-Learn!</h2>
-    <p>
-        Bei &pi;-Learn kannst du bei verschiedenen Kursen (Workshops) teilnehmen. Dafür verdienst du dir Reputationspunkte. Je mehr Punkte du hast, desto mehr Berechtigungen hast du. Zum Beispiel kannst du im Forum Posts als hilfreich markieren oder Kurse bewerten oder dann am Ende auch selber Kurse erstellen oder bearbeiten.<br>
-        Auch anonym kannst du Kurse besuchen und in den Foren mitlesen, aber richtig Spaß macht es nur, wenn du dich anmeldest:
-        <a href="/login"><button class="primary-btn block-btn">Ich will mitmachen</button></a>
-    </p>
-{% endif %}
-    <div class="pentagon">
-      <div class="pent-item">
-        <h2>Wichtig für die Community</h2>
-        {% set pinnedArticles = globalForum.getPinnedArticles() %}
-        {% if pinnedArticles|length > 0 %}
-          {% for article in pinnedArticles %}{% set gac=article.getAnswerCount() %}
-            <div class="forum-inline-article">
-              <div class="fia-score{% if article.hasAccepted() %} has-accepted{% elif gac > 0 %} is-answered{% endif %}" title="Dieser Beitrag hat {{ gac }} Antworten{% if article.hasAccepted() %}, von denen eine akzeptiert wurde{% else %}; es wurde keine akzeptiert{% endif %}. Die Bewertung des Beitrags ist {{ article.getScore() }}.">{{ article.getScore() }}</div>
-              <div class="fia-title"><a href="/f/0/{{ article.id }}">{{ article.getTitle() }}</a></div>
-            </div>
-          {% endfor %}
-        {% else %}
-          <p>Im Moment gibt es keine Nachrichten von Relevanz für die ganze Community</p>
-        {% endif %}
+<div class="grid">
+  <div class="column8__lg column12 mt1__lg p2">
+    {% if not user.isLoggedIn() %}
+      <h1>Willkommen!</h1>
+      <p>Willkommen bei &pi;-Learn. Du kannst dir einen <a href="/courses">Kurs</a> zum Stöbern suchen oder dich <a href="/login">anmelden</a>, um Teil der Community zu werden.</p>
+      <p>Dies sind die beliebtesten Kurse dieser Seite:</p>
+      <div class="_list">
+        {% for c in courses.getGlobalBeloved() %}
+          <a class="_list-item fs-base1 _list-item-keepcolor" href="/c/{{ c.id }}">
+              <span class="d-b mb1 fs-base3">{{ c.getTitle() }} <span class="_badge _badge-unit">{{ c.getTopic().getTitle() }}</span></span>
+              <span class="d-b col-black">{{ c.getShortdesc() }}</span>
+          </a>
+        {% endfor %}
       </div>
-      <div class="pent-item">
-        <h2>Wichtig für dich</h2>
-        {% set pinnedCArticles = globalForum.getCoursePinnedArticles(user) %}
-        {% if pinnedCArticles|length > 0 %}
-          {% for article in pinnedCArticles %}{% set gac=article.getAnswerCount() %}
-            <div class="forum-inline-article">
-              <div class="fia-score{% if article.hasAccepted() %} has-accepted{% elif gac > 0 %} is-answered{% endif %}" title="Dieser Beitrag hat {{ gac }} Antworten{% if article.hasAccepted() %}, von denen eine akzeptiert wurde{% else %}; es wurde keine akzeptiert{% endif %}. Die Bewertung des Beitrags ist {{ article.getScore() }}.">{{ article.getScore() }}</div>
-              <div class="fia-title"><a href="/f/{{article.getDetail("forumID")}}/{{ article.id }}">{{ article.getTitle() }}</a></div>
-            </div>
-          {% endfor %}
+    {% else %}
+      <h1>Willkommen {{ user.getHTMLName()|safe }}!</h1>
+      {% if delta > 0 or notificationCount != 0 %}
+      <p>Du hast {% if notificationCount!=0 %}<span class="_badge _badge-s-danger">{{ notificationCount }}</span> neue Nachricht{{ "en" if notificationCount != 1 }}{% endif %}{% if delta > 0 and notificationCount != 0 %} und {% endif %}{% if delta > 0 %}<span class="_badge _badge-s-success">+{{ delta }}</span> neue Reputation.{% endif %}.</p>
+      {% endif %}
+      <p>Diese Kurse könnten dich vielleicht interessieren:</p>
+      <div class="_list">
+        {% for c in courses.getRandomBeloved(user.id) %}
+          <a class="_list-item fs-base1 _list-item-keepcolor" href="/c/{{ c.id }}">
+              <span class="d-b mb1 fs-base3">{{ c.getTitle() }} <span class="_badge _badge-unit">{{ c.getTopic().getTitle() }}</span></span>
+              <span class="d-b col-black">{{ c.getShortdesc() }}</span>
+          </a>
         {% else %}
-          <p>Im Moment gibt es keine Nachrichten von Relevanz für dich</p>
-        {% endif %}
+        {% for c in courses.getGlobalBeloved() %}
+          <a class="_list-item fs-base1 _list-item-keepcolor" href="/c/{{ c.id }}">
+              <span class="d-b mb1 fs-base3">{{ c.getTitle() }} <span class="_badge _badge-unit">{{ c.getTopic().getTitle() }}</span></span>
+              <span class="d-b col-black">{{ c.getShortdesc() }}</span>
+          </a>
+        {% endfor %}
+        {% endfor %}
       </div>
-      <div class="pent-item">
-        <h2>Kursvorschläge</h2>
-        {% set courseProposals = _proposal.getFeatured() %}
-        {% if courseProposals|length > 0 %}
-          {% for proposal in courseProposals %}
-              <div class="forum-inline-article">
-                <div class="fia-score{% if proposal.getPercScore() >= 50 %} is-answered{% endif %}">{{ proposal.getPercScore() }}%</div>
-                <div class="fia-title"><a href="/course/proposal/{{proposal.id}}">{{ proposal.getTitle() }}</a></div>
-              </div>
-          {% endfor %}
-        {% else %}
-          <p>Im Moment gibt es keine aktiven Kursvorschläge</p>
-        {% endif %}
+    {% endif %}
+      <p>Du kannst dir auch eins unserer Themen aussuchen, um in diesem nach interessanten Kursen zu suchen:</p>
+      <div class="horizontal-list">
+        {% for t in topics.getAll() %}
+        <a href="/t/{{ t.getName() }}" class="_badge _badge-unit">{{ t.getTitle() }}</a>
+        {% endfor %}
       </div>
-    </div>
+      <h2>Kursvorschläge</h2>
+      <p>Diese Kurse wurden von Benutzern vorgeschlagen. Wähle die aus, die dich interessieren und unterstütze sie, indem du versprichst, dass du an ihnen teilnehmen möchtest.</p>
+      {% set courseProposals = _proposal.getFeatured() %}
+      {% if courseProposals|length > 0 %}
+      <div class="_list">
+        {% for proposal in courseProposals %}
+          <a class="_list-item fs-base1 _list-item-keepcolor" href="/course/proposal/{{proposal.id}}">{% set ct=proposal.getCreationTime() %}
+              <span class="d-b col-dark-dd push-right"><span title="{{ ct[1] }}">{{ ct[3] }}</span><br>{{ proposal.getPercScore() }}%</span>
+              <span class="d-b mb1 fs-base3">{{ proposal.getTitle() }} <span class="_badge _badge-unit">{{ proposal.getTopic().getTitle() }}</span></span>
+              <span class="d-b col-black">{{ proposal.getShortdesc() }}.</span>
+          </a>
+        {% endfor %}
+      </div>
+      {% else %}
+        <p>Im Moment gibt es keine aktiven Kursvorschläge</p>
+      {% endif %}
+  </div>
+  <div class="column4__lg column12 p3">
+    {% if not user.isLoggedIn() %}
+      <div class="_card _card-warning">
+          <div class="_card-title">
+            Willkommen bei &pi;-Learn!
+          </div>
+          <div class="_card-content">
+              <p>π-Learn ist eine Community-gesteuerte Open Learning Webseite. Das heißt, jeder Benutzer kann sein Wissen in Form von Kursen und Forenbeiträgen mit anderen teilen.</p>
+              <p>Alle Inhalte werden frei veröffentlicht und können von allen angesehen werden, aber so richtig Spaß macht es erst, wenn man sich anmeldet.</p>
+          </div>
+          <div class="_card-actions">
+              <a href="/tour">mehr erfahren</a>
+              <a href="/login">anmelden</a>
+          </div>
+      </div>
+    {% endif %}
+    {% set announcements = globalForum.getAnnouncements(user) %}
+    {% if announcements|length > 0 %}
+    <div class="_card">
+      <div class="_card-title _card-subtitle">Ankündigungen</div>
+      <div class="_card-content _card-content-direct">
+      <div class="_list _list-unbordered">
+      {% for a in announcements %}
+      <a class="_list-item fs-base1 _list-item-keepcolor" href="{{ a.getLink() }}">
+          {% if a.getEnd() %}
+            <span class="d-b col-dark-dd push-right">{{ a.getStart()[1] }} - {{ a.getEnd()[1] }}</span>
+          {% else %}
+            <span class="d-b col-dark-dd push-right">{{ a.getStart()[1] }}</span>
+          {% endif %}
+          {% if a.getDetail("forum") == 0 %}
+          <span class="d-b col-dark-dd mb1">Globale Ankündigung</span>
+          {% else %}
+          <span class="d-b col-dark-dd mb1">Kurs: {{ a.getForum().getTitle() }}</span>
+          {% endif %}
+          <span class="d-b mb1 fs-base2">{{ a.getTitle() }}</span>
+      </a>
+      {% endfor %}
+      </div>
+      </div>
+      </div>
+    {% endif %}
+      <div class="_card">
+          <div class="_card-title _card-subtitle">
+            Suche
+          </div>
+          <div class="_card-content">
+              <form action="/course/search" method="GET">
+                  <p>Du kannst nach einem Kurs suchen:</p>
+                  <input class="form" name="title">
+                  <button class="_btn _btn-dark" type="submit">Suchen</button><a href="/course/search" class="_btn _btn-dark _btn-on-light">Erweitert</a>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
 {% endblock %}

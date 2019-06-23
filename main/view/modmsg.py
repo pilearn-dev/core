@@ -7,7 +7,7 @@ import time
 
 def msg_new_thread(user):
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
 
     u = muser.User.from_id(user)
@@ -19,8 +19,11 @@ def msg_new_thread(user):
     elif request.method == "POST":
         try:
             template, message, suspend, suspension_reason, suspension_length = \
-            request.json["template"], request.json["message"], request.json["suspend"], \
-            request.json["suspension_reason"], int(request.json["suspension_length"])
+            int(request.json["template"]), request.json["message"], request.json["suspend"], \
+            request.json["suspension_reason"], request.json["suspension_length"]
+
+            if suspend:
+                suspension_length = int(suspension_length)
 
             if suspend and suspension_length > 365:
                 return "javascript:alert('Nur das Team kann Benutzer für mehr als ein Jahr sperren. Kontaktieren Sie uns über das Helpdesk.')"
@@ -41,9 +44,11 @@ def msg_new_thread(user):
             if template != 0:
                 t = mmodmsg.getTemplateById(template)
                 tt = t["title"]
-                u.notify("pm", "Ein Administrator hat dich wegen '" + tt + "' privat kontaktiert. Bitte beachte seine Nachricht!", URL)
+                u.notify("pm", "Ein Moderator hat dich wegen '" + tt + "' privat kontaktiert. Bitte beachte seine Nachricht!", URL)
+                u.addAnnotation("message", "["+tt+"]("+URL+")", cuser, time.time())
             else:
-                u.notify("pm", "Ein Administrator hat dich privat kontaktiert. Bitte beachte seine Nachricht!", URL)
+                u.notify("pm", "Ein Moderator hat dich privat kontaktiert. Bitte beachte seine Nachricht!", URL)
+                u.addAnnotation("message", "[anderes]("+URL+")", cuser, time.time())
 
             if suspend:
                 u.setDetail("banned", 1)
@@ -51,7 +56,7 @@ def msg_new_thread(user):
                 ban_end = int(time.time()) + 5 + 60 * 60 * 24 * int(suspension_length)
                 u.setDetail("ban_end", ban_end)
 
-                u.addAnnotation("ban", "**Sperrung** " + suspension_reason + u" für " + ctimes.duration2text(60 * 60 * 24 * suspension_length), cuser, time.time())
+                u.addAnnotation("ban", "**Sperrung** " + suspension_reason + u" für " + str(suspension_length) + "d", cuser, time.time())
 
             return URL
         except Exception as e:
@@ -60,7 +65,7 @@ def msg_new_thread(user):
 
 def msg_tpl_data(tpid):
     cuser = muser.getCurrentUser()
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(404)
 
     tpl = mmodmsg.getTemplateById(tpid)
@@ -72,9 +77,9 @@ def msg_view_single(user, thread_id):
     if not mmodmsg.UserMsgThread.exists(thread_id):
         abort(404)
     thread = mmodmsg.UserMsgThread(thread_id)
-    if thread.getDetail("contacted_user") != int(user) or (not cuser.isAdmin() and thread.getDetail("contacted_user") != cuser.id):
+    if thread.getDetail("contacted_user") != int(user) or (not cuser.isMod() and thread.getDetail("contacted_user") != cuser.id):
         abort(404)
-    if request.values.get("mod", False) and cuser.isAdmin():
+    if request.values.get("mod", False) and cuser.isMod():
         return render_template('modmsg/view_single_mod.html', title=u"[mod] Nachrichtenverlauf", thispage="users", thread=thread)
 
     return render_template('modmsg/view_single.html', title=u"Nachrichtenverlauf", thispage="users", thread=thread)
@@ -84,12 +89,12 @@ def msg_add_response(user, thread_id):
     if not mmodmsg.UserMsgThread.exists(thread_id):
         abort(404)
     thread = mmodmsg.UserMsgThread(thread_id)
-    if thread.getDetail("contacted_user") != int(user) or (not cuser.isAdmin() and thread.getDetail("contacted_user") != cuser.id):
+    if thread.getDetail("contacted_user") != int(user) or (not cuser.isMod() and thread.getDetail("contacted_user") != cuser.id):
         abort(404)
 
     msgs = thread.getMessages()
 
-    if msgs[-1].getDetail("submitted_by") == cuser.id and not cuser.isAdmin():
+    if msgs[-1].getDetail("submitted_by") == cuser.id and not cuser.isMod():
         abort(403)
 
     URL = url_for("msg_view_single", user=user, thread_id=thread_id)
@@ -113,7 +118,7 @@ def msg_close_or_reopen(user, thread_id):
     if thread.getDetail("contacted_user") != int(user):
         abort(404)
 
-    if not cuser.isAdmin():
+    if not cuser.isMod():
         abort(403)
 
     if not thread.isClosed():

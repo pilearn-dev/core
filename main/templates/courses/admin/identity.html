@@ -1,0 +1,88 @@
+{% extends "layout_new.html" %}
+{% block body %}
+<script src="/static/new_js/pilearn.markdown.js"></script>
+<script src="/static/new_js/pilearn.editor.js"></script>
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "admin", user) }}
+<div class="grid">
+  <div class="column3 column12__sm p2">
+    <div class="_nav _nav-v">
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/identity" class="-active">Identität</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/announcements">Ankündigungen</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/membership">Benutzer</a>
+      {% if course.getDetail("state") == 0 %}
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/publish">Veröffentlichen</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="column9 column12__sm p3">
+    <h1>Identität des Kurses</h1>
+
+    <label for="title" class="form">Name des Kurses</label>
+    <input id="title" class="form" value="{{ course.getTitle() }}">
+
+    <label for="shortdesc" class="form">Eine kurze Beschreibung (Anreißer) des Kurses</label>
+    <input id="shortdesc" class="form" value="{{ course.getShortdesc() }}">
+
+    <label for="longdesc" class="form">Ausführliche Beschreibung des Kurses und der angebotenen Inhalte</label>
+
+    <div class="js--editor js--editor:preview">
+      <textarea id="longdesc" class="form form-large js--editor-textarea">{{ course.getLongdesc() }}</textarea>
+      <div class="p2 js--editor-preview hr-original"></div>
+    </div>
+
+    <label for="requirements" class="form">Welche materiellen oder wissensbezogenen Voraussetzungen besitzt dieser Kurs</label>
+
+    <div class="js--editor js--editor:preview">
+      <textarea id="requirements" class="form form-large js--editor-textarea">{{ course.getRequirements() }}</textarea>
+      <div class="p2 js--editor-preview hr-original"></div>
+    </div>
+
+    <button class="_btn _btn--primary _btn-lg" id="submit_btn">Kurs aktualisieren</button>
+
+    <div class="_warnbox p-s _warnbox-success hide" id="save_success"><p>Der Kurs wurde erfolgreich gespeichert.</p></div>
+    <div class="_warnbox p-s _warnbox-danger hide" id="save_errors"></div>
+  </div>
+</div>
+<script>
+  PiJS.editor.init();
+
+  $("#submit_btn").on("click", function() {
+    $("#save_success, #save_errors").addClass("hide");
+    $(this).attr("disabled", true);
+    $.ajax({
+      method: "POST",
+      url: "/course/{{ course.id }}/{{ course.getLabel() }}/admin/identity",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        title: $("#title").val(),
+        shortdesc: $("#shortdesc").val(),
+        longdesc: $("#longdesc").val(),
+        requirements: $("#requirements").val()
+      }),
+      success: function(r) {
+        $("#submit_btn").removeAttr("disabled");
+        if(r.result=="ok") {
+          $("#save_success").removeClass("hide");
+        } else if (r.result == "error") {
+          wb = $("#save_errors");
+          wb.html("");
+          wb.append($("<p>Der Kurs konnte nicht vollständig gespeichert werden. Es sind Fehler aufgetreten:</p>"))
+          l = $("<ul></ul>");
+          for (var i = 0; i < r.errors.length; i++) {
+            l.append($("<li>").text(r.errors[i]));
+          }
+          wb.append(l);
+          wb.removeClass("hide");
+        }
+      },
+      error: function() {
+        $("#submit_btn").attr("disabled", true);
+        wb = $("#save_errors");
+        wb.text("Die Verbindung zum Server konnte nicht hergestellt werden.")
+        wb.removeClass("hide");
+      }
+    })
+  })
+</script>
+{% endblock %}

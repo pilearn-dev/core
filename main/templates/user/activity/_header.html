@@ -1,0 +1,11 @@
+<h1 class="fs-heading">Aktivität von {{ data.getHTMLName()|safe }}</h1>
+<div class="_nav _nav-t _nav-t-smaller">
+  <a href="?page=summary" class="-{{ 'active' if user_activity_site == 'summary' }}">Übersicht</a>
+  <a href="?page=courses" class="-{{ 'active' if user_activity_site == 'courses' }}">Kurse</a>
+  <a href="?page=forum" class="-{{ 'active' if user_activity_site == 'forum' }}">Forum</a>
+  <a href="?page=reputation" class="-{{ 'active' if user_activity_site == 'reputation' }}">Reputation</a>
+  <a href="?page=badges" class="-{{ 'active' if user_activity_site == 'badges' }}">Abzeichen</a>
+  {% if data.id == user.id or user.isMod() %}
+  <a href="?page=flags" class="-{{ 'active' if user_activity_site == 'flags' }}">Meldungen</a>
+  {% endif %}
+</div>

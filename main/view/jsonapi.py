@@ -17,8 +17,8 @@ def jsex_forum_articles():
                 "id": aut.id,
                 "html_name": aut.getHTMLName(False),
                 "name": aut.getDetail("realname"),
-                "is_mod": aut.isMod() and not aut.isMod(),
-                "is_admin": aut.isAdmin(),
+                "is_mod": aut.isMod(),
+                "is_team": aut.isTeam(),
                 "reputation": aut.getReputation()
             },
             "score": a.getScore(),

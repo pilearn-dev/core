@@ -1,0 +1,84 @@
+{% extends "layout_new.html" %}
+{% block body %}
+<link rel="stylesheet" href="/static/ps/polyskript.css">
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "edit", user) }}
+
+<div class="grid -equal-columns">
+  <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
+    <div class="p3">
+      <h2>Menü</h2>
+      <nav class="_nav _nav-v">
+        <a href="/c/{{ course.id }}/edit" class="f-bold mb3">Übersicht</a>
+        {% for element in course.getMenu() %}
+        {% if element.availible %}
+        <a href="/c/{{ course.id }}/edit/unit/{{ element.id }}" class="{{ '-active' if element.id == data.id }}">{{ element.title }}</a>
+        {% else %}
+        <a href="/c/{{ course.id }}/edit/unit/{{ element.id }}" class="f-italic {{ '-active' if element.id == data.id }}">[{{ element.title }}]</a>
+        {% endif %}
+        {% if element.children %}
+        <nav class="_nav _nav-v">
+          {% for child in element.children %}
+           {% if child.availible %}
+           <a href="/c/{{ course.id }}/edit/unit/{{ child.id }}" class="{{ '-active' if child.id == data.id }}">{{ child.title }}</a>
+           {% else %}
+           <a href="/c/{{ course.id }}/edit/unit/{{ child.id }}" class="f-italic {{ '-active' if child.id == data.id }}">[{{ child.title }}]</a>
+           {% endif %}
+          {% endfor %}
+        </nav>
+        {% endif %}
+        {% endfor %}
+      </nav>
+    </div>
+   </div>
+   <div class="column9__lg column12 bs2-light p3">
+      <a href="#!" class="_btn _btn-dark _btn-outline _btn-lg" onclick="prompt('Der Quelltext dieser Seite ist: ', JSON.stringify(ps.data));">Exportieren</a>
+      <a href="#!" class="_btn _btn-dark _btn-outline _btn-lg" onclick="x=JSON.parse(prompt('Bitte Quelltext einfügen: ', '{}'));if(x) {ps.data=x;ps._update()}">Importieren</a>
+
+      <button class="_btn _btn--primary push-right _btn-lg js--savebtn" onclick="save()">Speichern</button>
+
+      {% if data.isDisabled() %}
+      <button class="_btn _btn-outline _btn--primary push-right _btn-lg js--active" onclick="$(this).toggleClass('-active')">Verfügbar</button>
+      {% else %}
+      <button class="_btn _btn-outline -active _btn--primary push-right _btn-lg js--active" onclick="$(this).toggleClass('-active')">Verfügbar</button>
+      {% endif %}
+
+      <div class="push-reset"></div>
+      <input class="form ta-c" style="font-size: 2.5em; font-weight: bold;" id="title" value="{{ data.getTitle() }}">
+      <label for="c_embed" class="form">ID/Link des Beitrags, der eingebettet werden soll:</label>
+      <input type="text" class="form" id="c_embed" value="{{ data.getJSON() }}">
+      <script>
+       function save() {
+         $(".js--savebtn").addClass("-loading").text("Speichere...");
+         x = $("#c_embed").val().match(/^https?:\/\/[a-z0-9A-Z.]+?\/forum\/([0-9]+?)\/[a-z0-9-]+?\/article\/([0-9]+?)\/[a-z0-9-]+?$/);
+         if(!Number.isNaN(Number($("#c_embed").val()))) {
+          x = [0,0,$("#c_embed").val()];
+         } else if(!x || x[1] != {{ course.id }}) {
+           alert("Dieser Link ist ungünstig. Der Forenbeitrag muss sich im Kursforum für diesen Kurs befinden.");
+           return;
+         }
+         $.ajax({
+           method: "POST",
+           url: "/c/{{ course.id }}/edit/unit/{{ data.id }}",
+           contentType: "application/json; charset=utf-8",
+           data: JSON.stringify({
+             "title": $("#title").val(),
+             "availible": $(".js--active").hasClass("-active"),
+             "content": x[2]
+           }),
+           success: function( result ) {
+             $(".js--savebtn").removeClass("-loading").text("Gespeichert.");
+             setTimeout(function() {
+               $(".js--savebtn").text("Speichern");
+             }, 1200);
+           },
+           error: function() {
+             $(".js--savebtn").removeClass("-loading").text("Fehler beim Speichern");
+           }
+         });
+       }
+
+     </script>
+   </div>
+   </div>
+{% endblock %}

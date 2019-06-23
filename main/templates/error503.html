@@ -1,28 +1,26 @@
-{% extends "layout.html" %}
+{% set pattern="individual" %}
+{% extends "layout_new.html" %}
 {% block body %}
-    <div class="">
-      <div>
-        {{ message|markdown }}
-        {% if in_beta %}
-          <form class="access-form" action="" method="get" id="access-form">
-            <label for="beta_auth">Zugriffs-Code:</label>
-            <input id="beta_auth" name="beta_key">
-            <button id="reglog" class="danger-btn">Weiter &raquo;</button>
-          </form>
-        {% endif %}
-      </div>
+<div class="single-fluid-small grid">
+  <div class="column7 column12__sm p2">
+    <div class="_alert _alert--primary">
+      {{ message|markdown }}
+    </div>
   </div>
-  <style>
-  .hero {
-    display: none;
-  }
-  .access-form {
-    background-color: white;
-    color: black;
-    margin: 5px 0;
-    border: 1px solid #aaa;
-    padding: 20px !important;
-    display: block;
-  }
-  </style>
+  <div class="column6 column12__sm p1">
+    <div class="container s3 p2">
+      {% if in_beta %}
+      <h1 class="fs-subtitle ta-c bb1 bb-s bb-dark-ll">Zugriff erhalten.</h1>
+      <p>Einen Zugriffs-Code eingeben, um Zugriff auf die Seite zu erhalten.</p>
+      <form action="" method="post">
+        <label for="access_code" class="form">Zugriffs-Code:</label>
+        <input id="access_code" name="beta_key" class="form">
+        <button class="_btn _btn--primary" type="submit">Weiter &raquo;</button>
+      </form>
+      {% else %}
+      <p>Du musst eine Einladung erhalten haben, um auf die Webseite zugreifen zu können.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
 {% endblock %}

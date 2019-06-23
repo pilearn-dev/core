@@ -1,0 +1,13 @@
+<div class="_nav _nav-v">
+  <a href="?page=profile" class="-{{ 'active' if user_edit_site == 'profile' }}">Profil</a>
+  <a href="?page=login" class="-{{ 'active' if user_edit_site == 'login' }}">Anmeldedaten</a>
+  <a href="?page=preferences" class="-{{ 'active' if user_edit_site == 'peferences' }}">Einstellungen</a>
+  {% if user.isDev() %}
+  <a href="?page=dev" class="-{{ 'active' if user_edit_site == 'dev' }}">Entwickleroptionen</a>
+  {% endif %}
+  <a href="?page=delete" class="-{{ 'active' if user_edit_site == 'delete' }}">Konto löschen</a>
+</div>
+
+{% if data.isDeleted() %}
+<p class="col-danger-ddd p2 f-bold bg-danger-ll">Dieses Benutzerkonto wurde gelöscht.</p>
+{% endif %}
