@@ -7,7 +7,7 @@
  # a: additional html (specified by $additional_html)
  #}
 {% macro user_card(user, highlight=False, level="nirb", additional_html="", superverb="", supertime="", unlinked=False, pad=3) %}
-  {% if not user.isDeleted() and not unlinked %}<a href="/u/{{ user.id }}"{% else %}<span{% endif %} class="m1 p{{ pad }} b-r1{% if not("r" in level or "b" in level or "a" in level) %} d-f{% else %} d-b{% endif %} base2{% if highlight %} bg--primary-lll{% endif %}" style="line-height: 1;{% if "r" in level or "b" in level or "a" in level %} width: 200px;{% endif %}">
+  {% if not user.isDeleted() and not unlinked %}<a href="/u/{{ user.id }}"{% else %}<span{% endif %} class="m1 p{{ pad }} a-unlined b-r1{% if not("r" in level or "b" in level or "a" in level) %} d-f{% else %} d-b{% endif %} base2{% if highlight %} bg--primary-lll{% endif %}" style="line-height: 1;{% if "r" in level or "b" in level or "a" in level %} width: 200px;{% endif %}">
     {% if superverb or supertime %}
     <div class="col-dark-ddd pb2">{% if superverb %}<span class="f-bold">{{ superverb }}</span>{% endif %}{% if superverb and supertime %} {% endif %}{% if supertime %}{{ supertime }}{% endif %}</div>
     {% endif %}
