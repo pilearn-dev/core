@@ -1,0 +1,64 @@
+{% from "makros.html" import user_card %}
+{% extends "layout_new.html" %}
+{% block body %}
+<div class="push-right _nav _nav-t mt3 m2__sm">
+  <a href="https://twitter.com/@pi_learn">Twitter</a>
+  <a href="/tour">Tour</a>
+  <a href="/about/team" class="-active">Team</a>
+</div>
+<div class="push-reset hide__md hide__lg"></div>
+<h1 class="p1 fs-subtitle">Über uns</h1>
+<p class="p-lead">Das ist das &pi;-Learn Team, dass diese Webseite entwickelt und anbietet:</p>
+{% if user.isDev() %}
+<a href="/help/concept/teampage" class="fs-caption">Diese Liste bearbeiten</a>
+{% endif %}
+<div class="p3">
+  {% for entry in team %}
+  {% if entry[0] == -1 %} <!-- Section -->
+  <h2 class="fs-heading f-bold">{{ entry[1] }}</h2>
+  <p>{{ entry[2] }}</p>
+  {% else %} <!-- Member -->
+    {% set pd = entry[4] %}
+  <div class="horizontal-list">
+    <div class="p1">
+      {% if not pd.image %}
+      <svg class="thumbnail-l col-black" viewBox="0 0 48 48" width="10em" height="10em">
+        <path d="M18,6 l16,0 l0,16 l-16,0 z M32,22 l10,20 l-32,0 l10,-20" fill="transparent" stroke-width="1" />
+        <path d="M18,22 l16,0 M10,42 l32,0" fill="transparent" stroke-width="3" />
+      </svg>
+      {% else %}
+      <img src="{{ pd.image }}" alt="" class="thumbnail-l">
+      {% endif %}
+    </div>
+    <div class="p3" style="width: 300px">
+      {% if entry[0] != 0 %}
+      <a href="/u/{{ entry[0] }}" class="fs-base3 anchor-dark d-b f-bold">{{ entry[1] }}</a>
+      {% else %}
+      <div class="fs-base3 d-b f-bold">{{ entry[1] }}</div>
+      {% endif %}
+      <ul>
+        {% for task in entry[2] %}
+        <li>{{ task }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="p1" style="width: 200px">
+      <dl class="anchor-dark">
+        {% if pd.website %}
+        <dt>Webseite</dt>
+        <dd><a href="//{{ pd.website }}">{{ pd.website }}</a></dd>
+        {% endif %}
+        {% if pd.twitter %}
+        <dt>Twitter</dt>
+        <dd><a href="https://twitter.com/{{ pd.twitter }}">{{ pd.twitter }}</a></dd>
+        {% endif %}
+      </dl>
+    </div>
+    <div class="p4 fs-base1" style="max-width: 300px">
+      {{ entry[3]|markdown }}
+    </div>
+  </div>
+  {% endif %}
+  {% endfor %}
+</div>
+{% endblock %}
