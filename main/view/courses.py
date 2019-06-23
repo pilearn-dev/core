@@ -425,7 +425,7 @@ def course_unit_reorder(id,label=None):
         abort(404)
     course = mcourses.Courses(id)
     cuser = muser.getCurrentUser()
-    if not(course.getCourseRole(cuser) == 4):
+    if not(course.getCourseRole(cuser) >= 3):
         abort(404)
     if request.method == "POST":
         data = (request.json)
