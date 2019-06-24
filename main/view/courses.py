@@ -113,7 +113,7 @@ def course_admin(id,label=None, page="identity"):
     cuser = muser.getCurrentUser()
     if course.getLabel() != label and request.method != "POST":
         return redirect(url_for("course_admin", id=id, label=course.getLabel()))
-    if not(cuser.isMod() or course.getCourseRole(cuser) == 4):
+    if not(cuser.isMod() or course.getCourseRole(cuser) == 4) or cuser.isDisabled():
         abort(404)
     if page == "identity":
         if request.method == "POST":
@@ -190,7 +190,7 @@ def course_edit_overview(id,label=None):
     cuser = muser.getCurrentUser()
     if course.getLabel() != label and request.method != "POST":
         return redirect(url_for("course_edit_overview", id=id, label=course.getLabel()))
-    if not(cuser.isMod() or course.getCourseRole(cuser) >= 3):
+    if not(cuser.isMod() or course.getCourseRole(cuser) >= 3) or cuser.isDisabled():
         abort(404)
 
     return render_template('courses/edit/index.html', title=course.getTitle(), thispage="courses", course=course)
@@ -279,7 +279,7 @@ def unit_edit(unit_id,course_id,unit_label=None,course_label=None):
     course = mcourses.Courses(course_id)
     unit = mcourses.Units(unit_id)
     cuser = muser.getCurrentUser()
-    if not (cuser.isMod() or course.getCourseRole(cuser) >= 3):
+    if not (cuser.isMod() or course.getCourseRole(cuser) >= 3) or cuser.isDisabled():
         abort(404)
     if request.method == "POST":
         unit.setDetail("title", request.json["title"])
@@ -379,7 +379,7 @@ def unit_new(course_id):
         abort(404)
     course = mcourses.Courses(course_id)
     cuser = muser.getCurrentUser()
-    if not (cuser.isMod() or course.getCourseRole(cuser) >= 3):
+    if not (cuser.isMod() or course.getCourseRole(cuser) >= 3) or cuser.isDisabled():
         abort(404)
     empty_set = {
         "info":"[]",
@@ -426,7 +426,7 @@ def course_unit_reorder(id,label=None):
         abort(404)
     course = mcourses.Courses(id)
     cuser = muser.getCurrentUser()
-    if not(course.getCourseRole(cuser) >= 3):
+    if not(course.getCourseRole(cuser) >= 3) or cuser.isDisabled():
         abort(404)
     if request.method == "POST":
         data = (request.json)
