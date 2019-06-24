@@ -19,7 +19,7 @@
         <span class="_badge fs-heading _badge-score">{{ data.getReputation() }}</span>
       </div>
       <div class="p1 ta-c mt0 mb0">
-        {% for type in user.getBadgeBreakdown() %}
+        {% for type in data.getBadgeBreakdown() %}
         <span class="_badge fs-subheading _badge-score _badge-score-{{ type[1] }}"><span class="_badge-icon"></span>{{ type[0] }}</span>
         {% endfor %}
       </div>
