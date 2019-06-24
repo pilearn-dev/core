@@ -79,9 +79,9 @@
       <div class="_card s2">
         {% set topic = course.getTopic() %}
         <a href="/topic/{{ topic.getName() }}" class="_badge _badge-unit m1 f-bold push-right m2">{{ topic.getTitle() }}</a>
-        <div class="_card-image">
+        <a href="/course/{{ course.id }}/{{ course.getLabel() }}"><div class="_card-image">
           <div style="height: 150px; width: 100%;  inset; {{ course.getPattern() }}">&nbsp;</div>
-        </div>
+        </div></a>
         <div class="_card-header">
           <a class="anchor-black fs-subheading" href="/course/{{ course.id }}/{{ course.getLabel() }}">{{ course.getTitle() }}</a>
           <div class="fs-caption">{{ (course.getByLine()|markdown)[3:-4] }}</div>
