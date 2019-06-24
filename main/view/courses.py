@@ -18,6 +18,7 @@ def courses_index():
 
 def courses_propose():
     cuser = muser.getCurrentUser()
+    if not cuser.isLoggedIn() or cuser.isDisabled(): abort(403)
     if request.method == "GET":
         return render_template('courses/propose.html', title=u"Kurs vorschlagen", thispage="courses", topic=mcourses.Topic)
     elif request.method == "POST":
@@ -196,7 +197,7 @@ def course_edit_overview(id,label=None):
 
 
 def course_enroll(id,label=None):
-    if not mcourses.Courses.exists(id):
+    if not mcourses.Courses.exists(id) or muser.require_login() or muser.getCurrentUser().isDisabled():
         abort(404)
     course = mcourses.Courses(id)
     if course.getLabel() != label:
@@ -305,7 +306,7 @@ def unit_edit(unit_id,course_id,unit_label=None,course_label=None):
 
 
 def unit_submit(unit_id,course_id,unit_label=None,course_label=None):
-    if not mcourses.Courses.exists(course_id) or not mcourses.Units.exists(unit_id):
+    if not mcourses.Courses.exists(course_id) or not mcourses.Units.exists(unit_id) or muser.require_login() or muser.getCurrentUser().isDisabled():
         abort(404)
     course = mcourses.Courses(course_id)
     unit = mcourses.Units(unit_id)

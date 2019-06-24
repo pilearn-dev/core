@@ -174,7 +174,11 @@
               </div>
              {% endif %}
             {% endfor %}
+            {% if user.isLoggedIn() %}
             <button class="_btn _btn-lg _btn--primary" onclick="send();">Absenden</button>
+            {% else %}
+            <p>Du bist nicht angemeldet und kannst dieses Quiz daher leider nicht abschicken.</p>
+            {% endif %}
           {% endif %}
         </div>
         <div class="column4 column12__sm p2">

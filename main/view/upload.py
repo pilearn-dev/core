@@ -13,6 +13,8 @@ def allowed_file(filename):
 
 def upload_dialog():
     cu = muser.getCurrentUser()
+    if muser.require_login() or cu.isDisabled():
+        abort(404)
     uc = mupload.UserUpload.has_by_user(cu)
     if uc > 0:
         if request.values.get("upload-for-sure", 0) == 0 or (uc >= USER_FILE_LIMIT and not cu.isTeam()):
@@ -51,7 +53,7 @@ def upload_remove_image(id, fn=None):
 
 def upload_post():
     cu = muser.getCurrentUser()
-    if not cu.isLoggedIn():
+    if not cu.isLoggedIn() or cu.isDisabled():
         return redirect(url_for("upload_dialog", error="not-anonymous"))
     if 'file' not in request.files:
         return redirect(url_for("upload_dialog", error="not-selected"))

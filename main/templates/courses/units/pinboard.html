@@ -86,7 +86,7 @@
          </div>
          {% endfor %}
          </div>
-         {% if not course.getCourseRole(user) >= 3 %}
+         {% if not course.getCourseRole(user) >= 3 and user.isLoggedIn() %}
          <h2>Kommentar hinzufügen</h2>
          <p>Die bisherigen Antworten drücken nicht deine Meinung aus? Du möchtest noch etwas hinzufügen?</p>
          <p>Schreibe selber einen Kommentar:</p>

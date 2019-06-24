@@ -20,12 +20,12 @@ def survey_edit(id, label=None):
     if msurvey.Survey.exists(id):
         survey = msurvey.Survey(id)
         forum = mforum.Forum(survey.getDetail("associated_forum"))
-        if not(cuser.isDev() or survey.getDetail("survey_owner") == cuser.id):
+        if not(cuser.isDev() or survey.getDetail("survey_owner") == cuser.id) or cuser.isDisabled():
             if survey.getDetail("associated_forum") == 0:
                 abort(404)
             else:
                 cou = mcourses.Courses(forum.id)
-                if not cou.getCourseRole(cuser) > 3:
+                if not cou.getCourseRole(cuser) > 3 or cuser.isDIsabled():
                     abort(404)
         if request.method == "GET":
             if label != survey.getLabel():
@@ -42,6 +42,7 @@ def survey_edit(id, label=None):
 
 def survey_submit(id, label=None):
     cuser = muser.getCurrentUser()
+    if not cuser.isLoggedIn() or cuser.isDisabled(): abort(403)
     if msurvey.Survey.exists(id):
         survey = msurvey.Survey(id)
         forum = mforum.Forum(survey.getDetail("associated_forum"))

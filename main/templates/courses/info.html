@@ -35,7 +35,7 @@
       <div class="p3">
         {% if data.getDetail("state") == 0 and not data.getCourseRole(user) >= 2 %}
         <button class="_btn _btn-dark _btn-lg -active" disabled>Kurs noch nicht verfügbar</button>
-        {% if not data.isEnrolled(user) %}
+        {% if not data.isEnrolled(user) and user.isLoggedIn() %}
         <a href="/course/{{ data.id }}/{{ data.getLabel() }}/enroll" class="_btn _btn-dark _btn-on-light _btn-lg">Einschreiben</a>
         {% endif %}
         {% elif data.isEnrolled(user) or not user.isLoggedIn() %}
