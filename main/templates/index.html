@@ -1,117 +1,164 @@
+{% set pattern="individual" %}
+{% set announcements = globalForum.getAnnouncements(user) %}
 {% extends "layout_new.html" %}
 {% block body %}
-<div class="grid">
-  <div class="column8__lg column12 mt1__lg p2">
-    {% if not user.isLoggedIn() %}
-      <h1>Willkommen!</h1>
-      <p>Willkommen bei &pi;-Learn. Du kannst dir einen <a href="/courses">Kurs</a> zum Stöbern suchen oder dich <a href="/login">anmelden</a>, um Teil der Community zu werden.</p>
-      <p>Dies sind die beliebtesten Kurse dieser Seite:</p>
-      <div class="_list">
-        {% for c in courses.getGlobalBeloved() %}
-          <a class="_list-item fs-base1 _list-item-keepcolor" href="/c/{{ c.id }}">
-              <span class="d-b mb1 fs-base3">{{ c.getTitle() }} <span class="_badge _badge-unit">{{ c.getTopic().getTitle() }}</span></span>
-              <span class="d-b col-black">{{ c.getShortdesc() }}</span>
-          </a>
-        {% endfor %}
-      </div>
-    {% else %}
-      <h1>Willkommen {{ user.getHTMLName()|safe }}!</h1>
-      {% if delta > 0 or notificationCount != 0 %}
-      <p>Du hast {% if notificationCount!=0 %}<span class="_badge _badge-s-danger">{{ notificationCount }}</span> neue Nachricht{{ "en" if notificationCount != 1 }}{% endif %}{% if delta > 0 and notificationCount != 0 %} und {% endif %}{% if delta > 0 %}<span class="_badge _badge-s-success">+{{ delta }}</span> neue Reputation.{% endif %}.</p>
-      {% endif %}
-      <p>Diese Kurse könnten dich vielleicht interessieren:</p>
-      <div class="_list">
-        {% for c in courses.getRandomBeloved(user.id) %}
-          <a class="_list-item fs-base1 _list-item-keepcolor" href="/c/{{ c.id }}">
-              <span class="d-b mb1 fs-base3">{{ c.getTitle() }} <span class="_badge _badge-unit">{{ c.getTopic().getTitle() }}</span></span>
-              <span class="d-b col-black">{{ c.getShortdesc() }}</span>
-          </a>
-        {% else %}
-        {% for c in courses.getGlobalBeloved() %}
-          <a class="_list-item fs-base1 _list-item-keepcolor" href="/c/{{ c.id }}">
-              <span class="d-b mb1 fs-base3">{{ c.getTitle() }} <span class="_badge _badge-unit">{{ c.getTopic().getTitle() }}</span></span>
-              <span class="d-b col-black">{{ c.getShortdesc() }}</span>
-          </a>
-        {% endfor %}
-        {% endfor %}
-      </div>
-    {% endif %}
-      <p>Du kannst dir auch eins unserer Themen aussuchen, um in diesem nach interessanten Kursen zu suchen:</p>
-      <div class="horizontal-list">
-        {% for t in topics.getAll() %}
-        <a href="/t/{{ t.getName() }}" class="_badge _badge-unit">{{ t.getTitle() }}</a>
-        {% endfor %}
-      </div>
-      <h2>Kursvorschläge</h2>
-      <p>Diese Kurse wurden von Benutzern vorgeschlagen. Wähle die aus, die dich interessieren und unterstütze sie, indem du versprichst, dass du an ihnen teilnehmen möchtest.</p>
-      {% set courseProposals = _proposal.getFeatured() %}
-      {% if courseProposals|length > 0 %}
-      <div class="_list">
-        {% for proposal in courseProposals %}
-          <a class="_list-item fs-base1 _list-item-keepcolor" href="/course/proposal/{{proposal.id}}">{% set ct=proposal.getCreationTime() %}
-              <span class="d-b col-dark-dd push-right"><span title="{{ ct[1] }}">{{ ct[3] }}</span><br>{{ proposal.getPercScore() }}%</span>
-              <span class="d-b mb1 fs-base3">{{ proposal.getTitle() }} <span class="_badge _badge-unit">{{ proposal.getTopic().getTitle() }}</span></span>
-              <span class="d-b col-black">{{ proposal.getShortdesc() }}.</span>
-          </a>
-        {% endfor %}
-      </div>
-      {% else %}
-        <p>Im Moment gibt es keine aktiven Kursvorschläge</p>
-      {% endif %}
-  </div>
-  <div class="column4__lg column12 p3">
-    {% if not user.isLoggedIn() %}
-      <div class="_card _card-warning">
-          <div class="_card-title">
-            Willkommen bei &pi;-Learn!
-          </div>
-          <div class="_card-content">
-              <p>π-Learn ist eine Community-gesteuerte Open Learning Webseite. Das heißt, jeder Benutzer kann sein Wissen in Form von Kursen und Forenbeiträgen mit anderen teilen.</p>
-              <p>Alle Inhalte werden frei veröffentlicht und können von allen angesehen werden, aber so richtig Spaß macht es erst, wenn man sich anmeldet.</p>
-          </div>
-          <div class="_card-actions">
-              <a href="/tour">mehr erfahren</a>
-              <a href="/login">anmelden</a>
-          </div>
-      </div>
-    {% endif %}
-    {% set announcements = globalForum.getAnnouncements(user) %}
-    {% if announcements|length > 0 %}
-    <div class="_card">
-      <div class="_card-title _card-subtitle">Ankündigungen</div>
-      <div class="_card-content _card-content-direct">
-      <div class="_list _list-unbordered">
-      {% for a in announcements %}
-      <a class="_list-item fs-base1 _list-item-keepcolor" href="{{ a.getLink() }}">
-          {% if a.getEnd() %}
-            <span class="d-b col-dark-dd push-right">{{ a.getStart()[1] }} - {{ a.getEnd()[1] }}</span>
-          {% else %}
-            <span class="d-b col-dark-dd push-right">{{ a.getStart()[1] }}</span>
-          {% endif %}
-          {% if a.getDetail("forum") == 0 %}
-          <span class="d-b col-dark-dd mb1">Globale Ankündigung</span>
-          {% else %}
-          <span class="d-b col-dark-dd mb1">Kurs: {{ a.getForum().getTitle() }}</span>
-          {% endif %}
-          <span class="d-b mb1 fs-base2">{{ a.getTitle() }}</span>
-      </a>
-      {% endfor %}
-      </div>
-      </div>
-      </div>
-    {% endif %}
-      <div class="_card">
-          <div class="_card-title _card-subtitle">
-            Suche
-          </div>
-          <div class="_card-content">
-              <form action="/course/search" method="GET">
-                  <p>Du kannst nach einem Kurs suchen:</p>
-                  <input class="form" name="title">
-                  <button class="_btn _btn-dark" type="submit">Suchen</button><a href="/course/search" class="_btn _btn-dark _btn-on-light">Erweitert</a>
+{% if not user.isLoggedIn() %}
+<div class="_banner _banner--primary _banner-strong">
+    <div class="single-fluid">
+        <div class="grid">
+            <div class="column8 column12__sm p2">
+                <h1 class="fs-display2">Willkommen bei &pi;-Learn!</h1>
+                <p class="fs-heading">π-Learn ist eine Community-gesteuerte Open Learning Webseite. Das heißt, jeder Benutzer kann sein Wissen in Form von Kursen und Forenbeiträgen mit anderen teilen.</p>
+                <p class="fs-heading">Alle Inhalte werden frei veröffentlicht und können von allen angesehen werden, aber so richtig Spaß macht es erst, wenn man sich anmeldet.</p>
+            </div>
+            <div class="column4 column12__sm p2">
+              <h1>Registrieren</h1>
+              <form action="/auth/register" method="POST">
+                <input id="register_email" class="form" name="email" type="email" placeholder="E-Mail-Adresse">
+                <input id="register_username" class="form" name="realname" placeholder="Benutzername">
+                <input id="register_password" class="form" name="password" type="password" placeholder="Passwort">
+                <input type="hidden" name="login_provider" value="local_account">
+                <button class="_btn _btn-xl _btn--primary _btn-on-dark _btn-lighter" type="submit">Registrieren</button>
               </form>
-          </div>
-      </div>
-  </div>
+              <p class="anchor-white col-dark-lll fs-caption">Wenn du dich registrierst, erklärst du dich mit den <a href="/help/legal/terms">Nutzungsbedingungen</a> und der <a href="/help/legal/data-info">Datenschutzerklärung</a> einverstanden.</p>
+
+            </div>
+        </div>
+    </div>
 </div>
+<div class="_banner _banner--primary">
+    <div class="single-fluid">
+        <div class="grid ta-c -equal-columns">
+            <div class="column4__lg br1s br--primary-d br0s__sm column12 p6">
+              <h1 class="fs-subtitle"><strong>Kurse</strong> – zu verschiedenen Themen</h1>
+              <img src="/static/img/tour/courses.svg" alt="">
+            </div>
+            <div class="column4__lg br1s br--primary-d br0s__sm column12 p6">
+              <h1 class="fs-subtitle"><strong>Jeder</strong> kann Inhalte einbringen</h1>
+              <img src="/static/img/tour/contents.svg" alt="">
+            </div>
+            <div class="column4__lg column12 p6">
+              <h1 class="fs-subtitle">Die <strong>Community</strong> kontrolliert die Inhalte</h1>
+              <img src="/static/img/tour/community-review.svg" alt="">
+            </div>
+        </div>
+        <div class="grid">
+            <div>
+                <a href="/courses" class="_btn _btn-xl _btn--primary">Kurse ansehen</a>
+                <a href="/tour" class="_btn _btn-xl _btn--primary">Mehr erfahren</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+<div class="container single-fluid">
+    <div class="p4">
+        <h1 class="-better-sorted"><span class="i">Empfohlene Kurse</span></h1>
+        {% if not user.isLoggedIn() %}
+            {% set c = courses.getGlobalBeloved() %}
+        {% else %}
+            {% set c = courses.getRandomBeloved(user.id) %}
+            {% if not c %}
+              {% set c = courses.getGlobalBeloved() %}
+            {% endif %}
+        {% endif %}
+        <div class="grid">
+          {% for course in c %}
+            <div class="colbox375 p2">
+              <div class="_card s2">
+                {% set topic = course.getTopic() %}
+                <a href="/topic/{{ topic.getName() }}" class="_badge _badge-unit m1 f-bold push-right m2">{{ topic.getTitle() }}</a>
+                <a href="/course/{{ course.id }}/{{ course.getLabel() }}"><div class="_card-image">
+                  <div style="height: 150px; width: 100%;  inset; {{ course.getPattern() }}">&nbsp;</div>
+                </div></a>
+                <div class="_card-header">
+                  <a class="anchor-black fs-subheading" href="/course/{{ course.id }}/{{ course.getLabel() }}">{{ course.getTitle() }}</a>
+                  <div class="fs-caption">{{ (course.getByLine()|markdown)[3:-4] }}</div>
+                </div>
+                <div class="_card-content">
+                  <p>{{ course.getShortdesc() }}</p>
+                </div>
+                <div class="_card-footer">
+                  {% if not user.isLoggedIn() or course.isEnrolled(user) %}
+                    <a href="/course/{{ course.id }}/{{ course.getLabel() }}/start" class="_btn _btn--primary">Zum Kurs</a>
+                  {% else %}
+                    <a href="/course/{{ course.id }}/{{ course.getLabel() }}/enroll" class="_btn _btn--primary">Einschreiben</a>
+                  {% endif %}
+                    <a href="/course/{{ course.id }}/{{ course.getLabel() }}" class="_btn _btn--primary _btn-on-light">Informationen</a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+    </div>
+    {% if announcements|length > 0 %}
+    <div class="grid p1">
+        <div class="column7__lg column12 p4">
+    {% else %}
+        <div class="column7__lg column12 p5">
+    {% endif %}
+            <h1 class="-better-sorted"><span class="i">Kurse finden</span></h1>
+            <div class="p3">
+                <p class="p-lead">Du kannst unsere <a href="/topics">Themen</a> durchstöbern ...</p>
+                <div class="horizontal-list p3">
+                    {% for t in topics.getAll() %}
+                    <div class="p1">
+                    <a href="/t/{{ t.getName() }}" class="_badge fs-subheading _badge-unit">{{ t.getTitle() }}</a>
+                    </div>
+                    {% endfor %}
+                </div>
+                <form action="/course/search" method="GET">
+                    <label for="coursesearch" class="form">... oder nach Kursen suchen</label>
+                    <div class="grid p2">
+                        <div class="colbox-fill">
+                            <input class="form" id="coursesearch" name="title">
+                        </div>
+                        <div class="p1">
+                            <button class="_btn _btn--primary" type="submit">Suchen</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            {% set courseProposals = _proposal.getFeatured() %}
+            {% if courseProposals|length > 0 %}
+            <h1 class="-better-sorted"><span class="i">Ideen für Kurse</span></h1>
+            <p>Diese Kurse wurden von Benutzern vorgeschlagen. Wähle die aus, die dich interessieren und unterstütze sie, indem du erklärst, dass du an ihnen teilnehmen möchtest.</p>
+            <div class="_list">
+            {% for proposal in courseProposals %}
+                <a class="_list-item fs-base1 _list-item-keepcolor" href="/course/proposal/{{proposal.id}}">{% set ct=proposal.getCreationTime() %}
+                    <span class="d-b col-dark-dd push-right"><span title="{{ ct[1] }}">{{ ct[3] }}</span><br>{{ proposal.getPercScore() }}%</span>
+                    <span class="d-b mb1 fs-heading">{{ proposal.getTitle() }} <span class="_badge _badge-unit">{{ proposal.getTopic().getTitle() }}</span></span>
+                    <span class="d-b col-black">{{ proposal.getShortdesc() }}.</span>
+                </a>
+            {% endfor %}
+            </div>
+      {% endif %}
+        </div>
+        {% if announcements|length > 0 %}
+        <div class="column5__lg column12 p4">
+            <h1 class="-better-sorted"><span class="i">Ankündigungen</span></h1>
+            <div class="_list">
+                {% for a in announcements %}
+                <a class="_list-item fs-base1 _list-item-keepcolor" href="{{ a.getLink() }}">
+                    {% if a.getEnd() %}
+                      <span class="d-b col-dark-dd push-right">{{ a.getStart()[1] }} - {{ a.getEnd()[1] }}</span>
+                    {% else %}
+                      <span class="d-b col-dark-dd push-right">{{ a.getStart()[1] }}</span>
+                    {% endif %}
+                    {% if a.getDetail("forum") == 0 %}
+                    <span class="d-b col-dark-dd mb1">Globale Ankündigung</span>
+                    {% else %}
+                    <span class="d-b col-dark-dd mb1">Kurs: {{ a.getForum().getTitle() }}</span>
+                    {% endif %}
+                    <span class="d-b mb1 fs-base2">{{ a.getTitle() }}</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+    </div>
+</div>
+<style>
+  #banner\:login-request { display: none; }
+</style>
 {% endblock %}
