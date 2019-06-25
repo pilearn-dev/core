@@ -109,6 +109,7 @@ def forum_new(id, label=None):
         id = int(id)
     except:
         abort(404)
+    if muser.require_login() or muser.getCurrentUser().isDisabled(): abort(403)
     if mforum.Forum.exists(id):
         forum = mforum.Forum.from_id(id)
         cuser = muser.getCurrentUser()
@@ -175,6 +176,7 @@ def forum_post_answer(forum_id, post_id, forum_label=None):
         post_id = int(post_id)
     except:
         abort(404)
+    if muser.require_login() or muser.getCurrentUser().isDisabled(): abort(403)
     if mforum.Forum.exists(forum_id):
         forum = mforum.Forum.from_id(forum_id)
         cuser = muser.getCurrentUser()
@@ -300,6 +302,7 @@ def forum_post_edit(forum_id, post_id, forum_label=None):
         post_id = int(post_id)
     except:
         abort(404)
+    if muser.require_login() or muser.getCurrentUser().isDisabled(): abort(403)
     if mforum.Forum.exists(forum_id):
         forum = mforum.Forum.from_id(forum_id)
         if forum_label != forum.getDetail("label"):
@@ -373,7 +376,7 @@ def forum_post_dialog(post_id):
     if post_id[0] not in ["post", "answer"]: abort(404)
     try: post_id[1] = int(post_id[1])
     except: abort(404)
-
+    if muser.require_login() or muser.getCurrentUser().isDisabled(): abort(403)
     cuser = muser.getCurrentUser()
     el = mforum.Article if post_id[0] == "post" else mforum.Answer
     if el.exists(post_id[1]):
@@ -571,7 +574,8 @@ def forum_answer_edit(forum_id, answer_id, forum_label=None):
     try:
         answer_id = int(answer_id)
     except:
-        abort(404)#
+        abort(404)
+    if muser.require_login() or muser.getCurrentUser().isDisabled(): abort(403)
     if mforum.Forum.exists(forum_id):
         if mforum.Answer.exists(forum_id, answer_id):
             cuser = muser.getCurrentUser()
@@ -682,7 +686,7 @@ def forum_post_flag(forum_id, post_id):
     if post_id[0] not in ["post", "answer"]: abort(404)
     try: post_id[1] = int(post_id[1])
     except: abort(404)
-
+    if muser.require_login() or muser.getCurrentUser().isDisabled(): abort(403)
     data = request.json
     cuser = muser.getCurrentUser()
     el = mforum.Article if post_id[0] == "post" else mforum.Answer
@@ -721,7 +725,11 @@ def forum_post_vote(post_id):
     if post_id[0] not in ["post", "answer"]: abort(404)
     try: post_id[1] = int(post_id[1])
     except: abort(404)
-
+    if muser.require_login() or muser.getCurrentUser().isDisabled():
+        return jsonify({
+            "result": "errpr",
+            "error": "Du bist nicht angemeldet."
+        })
     data = request.json
     cuser = muser.getCurrentUser()
     el = mforum.Article if post_id[0] == "post" else mforum.Answer
@@ -1006,7 +1014,7 @@ def forum_comment(post_id):
     if post_id[0] not in ["post", "answer"]: abort(404)
     try: post_id[1] = int(post_id[1])
     except: abort(404)
-
+    if muser.require_login() or muser.getCurrentUser().isDisabled(): abort(403)
     data = request.json
     cuser = muser.getCurrentUser()
     el = mforum.Article if post_id[0] == "post" else mforum.Answer

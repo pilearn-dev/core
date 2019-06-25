@@ -9,6 +9,7 @@ def announcements_list(forum_id):
     cuser = muser.getCurrentUser()
     if not mforum.Forum.exists(forum_id):
         abort(404)
+    if not cuser.isLoggedIn() or cuser.isDisabled(): abort(403)
     f = mforum.Forum(forum_id)
     if f.id == 0:
         if not cuser.isMod():
@@ -23,6 +24,7 @@ def announcements_add(forum_id):
     cuser = muser.getCurrentUser()
     if not mforum.Forum.exists(forum_id):
         abort(404)
+    if not cuser.isLoggedIn() or cuser.isDisabled(): abort(403)
     f = mforum.Forum(forum_id)
     if f.id == 0:
         if not cuser.isMod():
@@ -51,6 +53,7 @@ def announcements_edit(forum_id, announcement_id):
     cuser = muser.getCurrentUser()
     if not mforum.Forum.exists(forum_id):
         abort(404)
+    if not cuser.isLoggedIn() or cuser.isDisabled(): abort(403)
     f = mforum.Forum(forum_id)
     if f.id == 0:
         if not cuser.isMod():

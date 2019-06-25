@@ -643,7 +643,7 @@ class User:
                 return_value.append({
                     "type": data["type"],
                     "message": data["message"],
-                    "link": "/notification/" + str(data["id"]) if (data["visible"] == 1 and not (self.isDisabled() and data["type"]=="pm")) else data["link"],
+                    "link": "/notification/" + str(data["id"]) if (data["visible"] == 1) else data["link"],
                     "visibility": data["visible"]
                 })
                 data = cur.fetchone()

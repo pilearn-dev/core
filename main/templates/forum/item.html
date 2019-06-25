@@ -71,6 +71,7 @@
 
     <ul class="_link-list">
       <li><a href="" title="Rechtsklick / Link-Adresse kopieren">teilen</a></li>
+      {% if user.isLoggedIn() %}
       <li><a href="/f/{{ post.getDetail('forumID') }}/{{ type }}/{{ post.id }}/edit">bearbeiten</a></li>
       <li><a href="#!" class="js--post-dialog" data-dialog="flag" data-dialog-post="{{ type }}-{{ post.id }}">melden</a></li>
       {% if type == "post" and user.may("forum_closeQuestion") %}
@@ -89,6 +90,7 @@
       {% endif %}
       {% if user.isMod() %}
         <li><a href="#!" class="js--post-dialog" data-dialog="mod" data-dialog-post="{{ type }}-{{ post.id }}">&diams; mod</a></li>
+      {% endif %}
       {% endif %}
     </ul>
 

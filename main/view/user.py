@@ -47,7 +47,7 @@ def user_edit_page(id, name=None):
         if user.isDeleted():
             if not cuser.isMod():
                 abort(404)
-        if user.id != cuser.id and not cuser.isMod():
+        if user.id != cuser.id and not cuser.isMod() or cuser.isDisabled():
             abort(404)
         if name != user.getDetail("name"):
             return redirect(url_for("user_edit_page", id=id, name=user.getDetail("name")))
@@ -313,7 +313,7 @@ def edit_user(id):
     id = int(id)
     if id < 0 and not cuser.isMod():
         abort(403)
-    if not (cuser.isMod() or id == cuser.id):
+    if not (cuser.isMod() or id == cuser.id) or cuser.isDisabled():
         abort(403)
 
     user = muser.User(id)

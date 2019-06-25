@@ -106,11 +106,6 @@ def prepare_request():
     if user.isDeleted():
         session.pop('login', None)
         return redirect(url_for("index"))
-    elif user.isDisabled():
-        uid = user.id
-        session.pop('login', None)
-        session["former_login"]=uid
-        return redirect(url_for("youarebanned"))
 
 @app.route("/")
 def index():
@@ -327,7 +322,7 @@ def __devquesrevman():
 def notification(id):
     cuser = muser.getCurrentUser()
     not_data = cuser.getNotification(id)
-    if not_data is None:
+    if not_data is None or not_data["user_id"] != cuser.id:
         abort(400)
     else:
         cuser.hideNotification(id)
@@ -337,17 +332,6 @@ def notification(id):
 @app.route("/tour")
 def tour():
     return render_template("tour/pi-learn.html", title="Tour", topic=mcourses.Topic)
-
-@app.route("/ban-notice")
-def youarebanned():
-    uid = session.get("former_login", 0)
-    if not muser.User.exists(uid):
-        abort(404)
-    data = muser.User.from_id(uid)
-    if not data.isDisabled():
-        abort(404)
-    print(data.getDetail("ban_reason"))
-    return render_template("ban-notification.html", title="Du wurdest gesperrt", data=data, templ=mpost_templates)
 
 vauth.apply(app, pidata)
 vuser.apply(app)

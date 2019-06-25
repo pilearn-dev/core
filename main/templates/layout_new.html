@@ -31,7 +31,7 @@
           </svg>
         </a>
       </nav>
-      <a class="_header-brand pl2 pr2" href="#!"><img src="/static/img/logo_pi-learn.svg"><span class="hide__sm">&pi;-Learn</span></a>
+      <a class="_header-brand pl2 pr2" href="/"><img src="/static/img/logo_pi-learn.svg"><span class="hide__sm">&pi;-Learn</span></a>
       <div class="_header-spacer"></div>
       <nav class="_header-items">
         {% if user.isMod() %}
@@ -161,9 +161,9 @@
     </div>
     </footer>
     {% if not (user.isLoggedIn() or request.cookies.get("hide-hero-login-request", False)) %}
-        <div class="_banner _banner--primary _banner-strong _banner-bottom _banner-with-decoration">
+        <div class="_banner _banner--primary _banner-strong _banner-bottom" id="banner:login-request">
             <div class="single-fluid grid">
-              <p class="column9 column12__sm">Willst du auch mitmachen und dein Wissen teilen?</p><div class="column3 column12__sm al-r"><a href="/login" class="_btn _btn--primary _btn-lighter">Registrieren</a><a href="#!" onclick="K=this;$.ajax({url:'/hide-hero',method:'POST', data:JSON.stringify({'hero':'login-request'}),
+              <p class="column9 column12__sm">Willst du auch mitmachen und dein Wissen teilen?</p><div class="column3 column12__sm al-r"><a href="/login" class="_btn _btn--primary _btn-on-dark _btn-lighter">Registrieren</a><a href="#!" onclick="K=this;$.ajax({url:'/hide-hero',method:'POST', data:JSON.stringify({'hero':'login-request'}),
               contentType: 'application/json; charset=utf-8',success:function(){K.parentNode.parentNode.parentNode.style.display='none';}});" class="_btn _btn--primary _btn-on-dark">&times;</a></div></div>
         </div>
     {% endif %}

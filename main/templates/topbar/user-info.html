@@ -20,7 +20,7 @@
   <div class="-relative fs-base3">
     <span class="_badge _badge-score">{{ user.getReputation() }}</span>
     {% for type in user.getBadgeBreakdown() %}
-    <span class="_badge _badge-score _badge-score-{{ type[1] }} hide__md hide__sm"><span class="_badge-icon"></span>{{ type[0] }}</span>
+    <span class="_badge _badge-score _badge-score-{{ type[1] }}"><span class="_badge-icon"></span>{{ type[0] }}</span>
     {% endfor %}
   </div>
   <p class="fs-3">{{ user.getShortProfileText()|striptags|safe }} <a href="/u/{{ user.id }}">mehr</a></p>
