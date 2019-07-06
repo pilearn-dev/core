@@ -85,9 +85,9 @@ class User:
         allowed = []
         for t in text:
             if t == " ":
-                if last_char in u".!?":
+                if last_char in u".!?" and allowed[-2] not in "0123456789":
                     sentences += 1
-            if sentences >= 2:
+            if sentences >= 4:
                 break
             else:
                 allowed.append(t)
@@ -96,12 +96,12 @@ class User:
 
         text = text.strip()
 
-        if len(text) > 140:
+        if len(text) > 200:
             T = text.split(" ")
             text = []
             len_ = 0
             for _ in T:
-                if len(_) + len_ > 138:
+                if len(_) + len_ > 198:
                     break
                 else:
                     len_ += len(_) + 1
