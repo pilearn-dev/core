@@ -1,4 +1,5 @@
 {% extends "layout_new.html" %}
+{% block meta_description %}{{ data.getShortProfileText()|striptags|safe }}{% endblock %}
 {% block body %}
 
 

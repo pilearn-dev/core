@@ -1,4 +1,5 @@
 {% extends "layout_new.html" %}
+{% block meta_description %}{{ "Globales Forum für alle Fragen zu &pi;-Learn selber und für Fehlermeldungen oder Verbesserungsideen"|safe if forum.id == 0 else "Kursforum zum Kurs " + forum.getTitle() }}{% endblock %}
 {% block body %}
 {% from "_course-header.html" import forum_header %}
 {{ forum_header(forum, "forum", user) }}

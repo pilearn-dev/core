@@ -1,4 +1,5 @@
 {% extends "layout_new.html" %}
+{% block meta_description %}{{ data.getShortdesc() }}{% endblock %}
 {% block body %}
 {% set topic = data.getTopic() %}
 {% if not(data.getDetail("state") == 0 and not data.getCourseRole(user) >= 2) and (data.isEnrolled(user) or not user.isLoggedIn()) %}
