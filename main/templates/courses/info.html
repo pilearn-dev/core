@@ -9,6 +9,11 @@
   <a href="/course/{{ data.id }}/{{ data.getLabel() }}/edit">Bearbeiten</a>
   {% endif %}
   <a href="/forum/{{ data.id }}/{{ data.getLabel() }}">Forum</a>
+  {% if data.getCourseRole(user) >= 3 %}
+  <a href="/course/{{ data.id }}/{{ data.getLabel() }}/pull-requests"{% if current_page == "pr" %} class="-active"{% endif %}>Pull Requests</a>
+  {% else %}
+  <a href="/course/{{ data.id }}/{{ data.getLabel() }}/branches"{% if current_page == "pr" %} class="-active"{% endif %}>Pull Requests</a>
+  {% endif %}
   {% if data.getCourseRole(user) == 4 or user.isMod() %}
   <a href="/course/{{ data.id }}/{{ data.getLabel() }}/admin">Verwaltung</a>
   {% endif %}

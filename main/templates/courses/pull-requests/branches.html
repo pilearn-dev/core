@@ -1,0 +1,29 @@
+{% set needs_mathjax=True %}
+{% extends "layout_new.html" %}
+{% block body %}
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "pr", user) }}
+
+<div class="p4 ta-c">
+    <p class="fs-heading">Du möchtest diesen Kurs verbessern?</p>
+    <p class="fs-base3">Dann kannst du eine Pull Request mit konkreten Änderungsvorschlägen stellen. Nebenbei kannst du auch Reputation erhalten (2 bis 20 Punkte)</p>
+  {% if user.isLoggedIn() and user.isEnabled() %}
+    <span><button onclick="createPR(this);" class="_btn _btn--primary _btn-lighter _btn-xl">Neue Pull Request</button></span>
+  {% endif %}
+</div>
+
+<script>
+  function createPR(_this) {
+    $.ajax({
+      method: "POST",
+      url: "/course/{{ course.id }}/{{ course.getLabel() }}/branches/create",
+      success: function( result ) {
+        window.location.reload();
+      },
+      error: function() {
+        PiJS.warnbox.error("Fehler beim Erstellen der PR", $(_this).parent());
+      }
+    });
+  }
+</script>
+{% endblock %}
