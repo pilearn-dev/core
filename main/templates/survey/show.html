@@ -43,22 +43,29 @@
   function send() {
     var data = {};
     has_error = false;
-    m = document.querySelectorAll(".highlight-missing");
+    m = document.querySelectorAll(".bg-danger-lll.missing");
     for (var i = 0; i < m.length; i++) {
-      m[i].classList.remove("highlight-missing");
+      m[i].classList.remove("bg-danger-lll");
+      m[i].classList.remove("missing");
     }
     {%- for i in survey.getContent() %}
       {%- if i.type == "multiple-choice" %}
       x = document.querySelector("[name='survey-question-{{ loop.index }}']:checked");
-      if(!x) {document.querySelector("[name='survey-question-{{ loop.index }}']:first-of-type").parentNode.parentNode.classList.add("highlight-missing"); has_error=true;} else {data[{{ loop.index }}] = x.value;}
+      if(!x) {p=document.querySelector("[name='survey-question-{{ loop.index }}']:first-of-type").parentNode.parentNode.classList;p.add("bg-danger-lll");p.add("missing"); has_error=true;} else {data[{{ loop.index }}] = x.value;}
       {%- elif i.type == "text-answer" %}
           data[{{ loop.index }}] = document.querySelector("#survey-question-{{ loop.index }}-answer").value;
       {%- endif %}
     {%- endfor %}
     if(!has_error) {
-      $post("sv/{{ survey.id }}/submit", data, function () {
-        window.location.reload();
-      })
+      $.ajax({
+        url: "/sv/{{ survey.id }}/submit",
+        method: "POST",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(data),
+        success: function( r ) {
+          window.location.reload();
+        }
+      });
     } else {
       alert("Einige Felder wurden ungültig ausgefüllt.");
     }
