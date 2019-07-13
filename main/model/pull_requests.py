@@ -110,6 +110,20 @@ class Branch:
             if con:
                 con.close()
 
+    def removeOverride(self, id):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("DELETE FROM branch_overrides WHERE id=?", (id,))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
     def hasOverrideForUnit(self, unit_id):
         try:
             con = lite.connect('databases/courses.db')

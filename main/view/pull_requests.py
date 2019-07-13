@@ -86,7 +86,8 @@ def branch_item(unit_id, override_id, branch_id, course_id,course_label=None):
     if override_id != "-":
         override_id = int(override_id)
         override = branch.getSingleOverride(override_id)
-        if override[2] != unit_id: abort(404)
+        if not override or override["overrides"] != unit_id or override["branch"] != branch_id:
+            abort(404)
         data["title"] = override["title"]
         if not data["type"]:
             data["type"] = override["type"]
@@ -100,7 +101,7 @@ def branch_update_item(unit_id, override_id, branch_id, course_id,course_label=N
     course = mcourses.Courses(course_id)
     cuser = muser.getCurrentUser()
     if course.getLabel() != course_label and request.method != "POST":
-        return redirect(url_for("branch_item", branch_id=branch_id, course_id=course_id, course_label=course.getLabel(), unit_id=unit_id, override_id=override_id))
+        return redirect(url_for("branch_update_item", branch_id=branch_id, course_id=course_id, course_label=course.getLabel(), unit_id=unit_id, override_id=override_id))
     if not mpull_requests.Branch.exists(branch_id):
         abort(404)
     branch = mpull_requests.Branch(branch_id)
@@ -135,6 +136,8 @@ def branch_update_item(unit_id, override_id, branch_id, course_id,course_label=N
     if override_id != "-":
         override_id = int(override_id)
         override = branch.getSingleOverride(override_id)
+        if not override or override["overrides"] != unit_id or override["branch"] != branch_id:
+            abort(404)
         data["title"] = override["title"]
 
         # Do not allow arbitrary changing the type
@@ -154,10 +157,31 @@ def branch_update_item(unit_id, override_id, branch_id, course_id,course_label=N
 
     return jsonify({ "override_id": result })
 
+def branch_revert_override(override_id, branch_id, course_id,course_label=None):
+    if not mcourses.Courses.exists(course_id):
+        abort(404)
+    course = mcourses.Courses(course_id)
+    cuser = muser.getCurrentUser()
+    if course.getLabel() != course_label and request.method != "POST":
+        return redirect(url_for("branch_revert_override", branch_id=branch_id, course_id=course_id, course_label=course.getLabel(), override_id=override_id))
+    if not mpull_requests.Branch.exists(branch_id):
+        abort(404)
+    branch = mpull_requests.Branch(branch_id)
+
+    if not (branch.getDetail("author") == cuser.id or cuser.isMod()) or cuser.isDisabled() or branch.getDetail("course_id") != course.id:
+        abort(404)
+
+    override = branch.getSingleOverride(override_id)
+    if not override or override["branch"] != branch_id:
+        abort(404)
+    branch.removeOverride(override_id)
+
+    return redirect(url_for("course_single_branch", id=branch_id, course_id=course_id, course_label=course.getLabel()))
 
 def apply(app):
     app.route("/c/<int:id>/branches")(app.route("/course/<int:id>/<label>/branches")(course_branches))
     app.route("/c/<int:id>/branches/create", methods=["POST"])(app.route("/course/<int:id>/<label>/branches/create", methods=["POST"])(course_create_branch))
     app.route("/c/<int:course_id>/branch/<int:id>")(app.route("/course/<int:course_id>/<course_label>/branch/<int:id>")(course_single_branch))
     app.route("/c/<int:course_id>/branch/<int:branch_id>/item/<unit_id>/<override_id>")(app.route("/course/<int:course_id>/<course_label>/branch/<int:branch_id>/item/<unit_id>/<override_id>")(branch_item))
-    app.route("/c/<int:course_id>/branch/<int:branch_id>/update/<unit_id>/<override_id>", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/branch/<int:branch_id>/update/<unit_id>/<override_id>", methods=["GET", "POST"])(branch_update_item))
+    app.route("/c/<int:course_id>/branch/<int:branch_id>/update/<unit_id>/<override_id>", methods=["POST"])(app.route("/course/<int:course_id>/<course_label>/branch/<int:branch_id>/update/<unit_id>/<override_id>", methods=["POST"])(branch_update_item))
+    app.route("/c/<int:course_id>/branch/<int:branch_id>/revert/<int:override_id>", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/branch/<int:branch_id>/revert/<int:override_id>", methods=["GET", "POST"])(branch_revert_override))

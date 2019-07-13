@@ -98,9 +98,9 @@
                   <td><a href="/c/{{ course.id }}/branch/{{ branch.id }}/item/{{ element.id if element.id else '-' }}/{{ element.overrides if element.overrides else '-' }}">{{ element.title }}</a></td>
                   <td>
                     {% if element.created %}
-                    <span class="_badge _badge-s-success">erstellt</span>
+                    <span class="_badge _badge-s-success">erstellt <a href="/c/{{ course.id }}/branch/{{ branch.id }}/revert/{{ element.overrides if element.overrides else '-' }}" class="_badge-revoke">&times;</a></span>
                     {% elif element.changed %}
-                    <span class="_badge _badge-s-warning">verändert</span>
+                    <span class="_badge _badge-s-warning">verändert <a href="/c/{{ course.id }}/branch/{{ branch.id }}/revert/{{ element.overrides if element.overrides else '-' }}" class="_badge-revoke">&times;</a></span>
                     {% endif %}
                   </td>
               </tr>
@@ -123,9 +123,9 @@
                     <td>&mdash;<a href="/c/{{ course.id }}/branch/{{ branch.id }}/item/{{ child.id if child.id else '-' }}/{{ child.overrides if child.overrides else '-' }}">{{ child.title }}</a></td>
                     <td>
                       {% if child.created %}
-                      <span class="_badge _badge-s-success">erstellt</span>
+                      <span class="_badge _badge-s-success">erstellt <a href="/c/{{ course.id }}/branch/{{ branch.id }}/revert/{{ child.overrides if child.overrides else '-' }}" class="_badge-revoke">&times;</a></span>
                       {% elif child.changed %}
-                      <span class="_badge _badge-s-warning">verändert</span>
+                      <span class="_badge _badge-s-warning">verändert <a href="/c/{{ course.id }}/branch/{{ branch.id }}/revert/{{ child.overrides if child.overrides else '-' }}" class="_badge-revoke">&times;</a></span>
                       {% endif %}
                     </td>
                 </tr>
@@ -156,17 +156,6 @@
             <div class="_card-content hide js--tips-repeat">
               <p>Übung macht bekanntlichermaßen den Meister. Deshalb sollten Inhalte regelmäßig durch Quizze unterteilt werden.</p>
               <p>In Quizzen kann die Wiederholung, Anwendung oder Weiterentwicklung von bereits gelerntem erfolgen. Außerdem geben Quizze kurzfristiges Feedback, sodass der Benutzer merkt, ob er die Kursinhalte verstanden hat.</p>
-            </div>
-            <div class="_card-title _card-subtitle"><a href="#!" data-toggle=".js--tips-test" data-toggle-class="hide">Kurse testen</a></div>
-            <div class="_card-content hide js--tips-test">
-              <p>Jeder kann Fehler machen. Fehler sind aber häufig ärgerlich und können zu Frust bei den Teilnehmenden führen.</p>
-              <p>Daher empfehlen wir, den Kurs mit mindestens zwei Benutzerinnen oder Benutzern zu testen:</p>
-              <ol>
-                <li>Du suchst zwei Testpersonen aus und gibst diesen den Link zum Kurs.</li>
-                <li>Die Testpersonen schreiben sich auf der Kursseite für den Kurs ein.</li>
-                <li>Du gibst <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/membership">hier</a> den Testpersonen Kursbetrachter-Status</li>
-                <li>Über das Kursforum oder andere Wege, geben diese dir dann Feedback.</li>
-              </ol>
             </div>
         </div>
     </div>
