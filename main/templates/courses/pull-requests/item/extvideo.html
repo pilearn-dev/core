@@ -1,0 +1,152 @@
+{% extends "layout_new.html" %}
+{% set autoSave = user.getPref("autoSave", False) == "1" %}
+{% block body %}
+<link rel="stylesheet" href="/static/ps/polyskript.css">
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "pr", user) }}
+
+<div class="bg--primary-ll mt3 p2">
+  {% if branch.isAbandoned() %}
+  <div class="fs-base3 p1">Dieser Änderungsvorschlag wurde <strong>aufgegeben</strong>.</div>
+  {% elif not branch.getDetail("pull_request") %}
+  <div class="grid -full-center">
+    <div class="colbox-fill column12__sm column12__md">
+      <div class="fs-base3 p1">Dieser Änderungsvorschlag ist noch <strong>in Arbeit</strong>.</div>
+    </div>
+    <div class="colbox column12__sm column12__md">
+      <div class="_btnlist">
+        <button class="_btn _btn--primary">Vorschlag absenden</button>
+        <button class="_btn _btn--primary">Vorschlag aufgeben</button>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="grid -full-center">
+    <div class="colbox-fill column12__sm column12__md">
+      <div class="fs-base3 p1">Dieser Änderungsvorschlag wurde abgesendet und wird jetzt entschieden.</div>
+    </div>
+    <div class="colbox column12__sm column12__md">
+      <div class="_btnlist">
+        <a href="/course/{{ course.id }}/{{ course.getLabel() }}/pull-request/{{ branch.getDetail("pull_request")}}" class="_btn _btn--primary">Zur Pull Request</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+
+<div class="grid -equal-columns">
+  <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
+    <div class="p3">
+      <h2>Menü</h2>
+      <nav class="_nav _nav-v">
+        <a href="/c/{{ course.id }}/branch/{{ branch.id }}" class="f-bold mb3">Übersicht</a>
+        {% for element in branch.getMenu() if element.availible %}
+        <a href="/c/{{ course.id }}/branch/{{ branch.id }}/item/{{ element.id if element.id else '-' }}/{{ element.overrides if element.overrides else '-' }}" {{ 'class="-active"'|safe if (element.id or "-") == unit_id and (element.overrides or "-") == override_id }}>
+          {% if element.created %}
+          <span class="col-success-ddd">&#9679;</span>
+          {% elif element.changed %}
+          <span class="col-warning-ddd">&#9679;</span>
+          {% endif %}
+          {{ element.title }}
+        </a>
+        {% if element.children %}
+        <nav class="_nav _nav-v">
+          {% for child in element.children if child.availible %}
+           <a href="/c/{{ course.id }}/branch/{{ branch.id }}/item/{{ child.id if child.id else '-' }}/{{ child.overrides if child.overrides else '-' }}" {{ 'class="-active"'|safe if (child.id or "-") == unit_id and (child.overrides or "-") == override_id }}>
+             {% if child.created %}
+             <span class="col-success-ddd">&#9679;</span>
+             {% elif child.changed %}
+             <span class="col-warning-ddd">&#9679;</span>
+             {% endif %}
+             {{ child.title }}
+           </a>
+          {% endfor %}
+        </nav>
+        {% endif %}
+        {% endfor %}
+      </nav>
+    </div>
+  </div>
+  <div class="column9__lg column12 p3">
+
+    <button class="_btn _btn--primary push-right _btn-lg js--savebtn" onclick="save()">Speichern</button>
+
+    <div class="push-reset"></div>
+    <input class="form ta-c" style="font-size: 2.5em; font-weight: bold;" id="title" value="{{ data.title }}">
+
+
+    <p>Videos von externen Plattformen (Youtube, Vimeo, ...) sind mit einer Datenschutzfunktion ausgestattet und werden erst nach Knopfdruck geladen.</p>
+    <p>Bitte beachten &ndash; Nur Videos verwenden, wenn die Weitergabe für kommerzielle Zwecke erlaubt ist.</p>
+    <label for="c_platform" class="form">Plattform:</label>
+    <select id="c_platform" class="form">
+      <option{% if data.content.platform == "youtube" %} selected{% endif %} value="youtube">Youtube</option>
+      <option{% if data.content.platform == "vimeo" %} selected{% endif %} value="vimeo">Vimeo</option>
+      <option{% if data.content.platform == "_link" %} selected{% endif %} value="_link">Direktlink</option>
+    </select>
+    <label for="c_embed" class="form">Einbettcode</label>
+    <input type="text" class="form" id="c_embed" value="{{ data.content.embedcode }}">
+    <div class="_card">
+      <div class="_card-title _card-subtitle"><a href="#!" data-toggle=".js--embedinfo" data-toggle-class="hide">Informationen zum Einbettcode</a></div>
+      <div class="_card-content js--embedinfo hide">
+        <p>Bei <strong>Youtube</strong> ist der Einbettcode derjenige Teil hinter dem <code>?v=</code>:</p>
+        <pre>https://www.youtube.com/watch?v=<span class="mark">abc123</span></pre>
+        <p>Bei <strong>Vimeo</strong> ist der Einbettcode derjenige Teil hinter dem Domainnamen:</p>
+        <pre>https://vimeo.com/<span class="mark">123</span></pre>
+        <p>Bei <strong>Direktlinks</strong> ist der Einbettcode der Direktlink</p>
+      </div>
+    </div>
+
+
+    <script>
+
+     override_id = "{{ overrides if overrides else '-' }}";
+
+     function save() {
+       $(".js--savebtn").addClass("-loading").text("Speichere...");
+
+       platform = document.getElementById("c_platform").value;
+       embedcode = document.getElementById("c_embed").value;
+       YOUTUBE_REGEX = /^(?:https?:\/\/)?(?:www\.)?(?:(?:youtu\.be\/([a-zA-Z0-9_-]+?))|(?:youtube\.com\/watch\?v=([a-zA-Z0-9_-]+?)))$/;
+
+       if(platform=="youtube") {
+         if(embedcode.match(YOUTUBE_REGEX)) {
+           embedcode = embedcode.replace(YOUTUBE_REGEX, "$1$2");
+         }
+       }
+
+
+       $.ajax({
+         method: "POST",
+         url: "/c/{{ course.id }}/branch/{{ branch.id }}/update/{{ unit_id if unit_id else '-' }}/" + override_id,
+         contentType: "application/json; charset=utf-8",
+         data: JSON.stringify({
+           "title": $("#title").val(),
+           "content": {
+             "platform": platform,
+             "embedcode": embedcode
+            }
+         }),
+         success: function( result ) {
+           override_id = result.override_id
+           $(".js--savebtn").removeClass("-loading").text("Gespeichert.");
+           setTimeout(function() {
+             $(".js--savebtn").text("Speichern");
+           }, 1200);
+         },
+         error: function() {
+           $(".js--savebtn").removeClass("-loading").text("Fehler beim Speichern");
+         }
+       });
+     }
+
+     {% if autoSave %}
+     setInterval(function(){save();}, 30000);
+     {% endif %}
+
+   </script>
+
+  </div>
+</div>
+
+{% endblock %}

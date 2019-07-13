@@ -399,7 +399,8 @@ class Courses:
                     "title": dd["title"],
                     "availible": bool(dd["availible"]),
                     "children": [],
-                    "type": dd["type"]
+                    "type": dd["type"],
+                    "unit_order": dd["unit_order"]
                 }
                 cur.execute("SELECT * FROM units WHERE courseid=? AND parent=? ORDER BY unit_order, id", (self.id, dd["id"]))
                 ddd = cur.fetchall()
@@ -408,7 +409,9 @@ class Courses:
                         "id": dy["id"],
                         "title": dy["title"],
                         "availible": bool(dy["availible"]),
-                        "type": dy["type"]
+                        "type": dy["type"],
+                        "children": [],
+                        "unit_order": dd["unit_order"]
                     })
                 d.append(dx)
             return d
@@ -580,7 +583,8 @@ class Units:
                 "content": data['content'],
                 "type": data['type'],
                 "parent": data['parent'],
-                "availible": bool(data['availible'])
+                "availible": bool(data['availible']),
+                "unit_order": data["unit_order"]
             }
         except lite.Error as e:
             #raise lite.Error from e

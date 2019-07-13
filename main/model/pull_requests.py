@@ -4,7 +4,7 @@ import secrets
 import sqlite3 as lite
 from flask import request, session, url_for
 from sha1 import sha1
-from model import user as muser
+from model import user as muser, courses as mcourses
 from controller import times as ctimes
 
 class Branch:
@@ -30,13 +30,123 @@ class Branch:
             if con:
                 con.close()
 
+    def getMenu(self):
+        menu = self.getCourse().getMenu()
+        new_menu = self.applyMenuOverrides(menu, 0, 0)
+        new_menu = sorted(new_menu, key=lambda x: x["unit_order"])
+        return new_menu
+
+    def applyMenuOverrides(self, menu, pu, po):
+        new_menu = []
+        change_requests = self.getOverrides(pu,po)
+        for item in menu:
+            for change_request_id in range(len(change_requests)):
+                change_request = change_requests[change_request_id]
+
+                if change_request["overrides"] == item["id"]:
+
+                    item["title"] = change_request["title"]
+                    item["overrides"] = change_request["id"]
+                    item["order"] = change_request["unit_order"]
+                    item["children"] = sorted(self.applyMenuOverrides(self.applyMenuOverrides(item["children"], None, change_request["id"]), item["id"], None), key=lambda x: x["unit_order"])
+
+                    item["changed"] = bool(change_request["changed"])
+                    item["created"] = False
+
+                    new_menu.append(item)
+
+                    del change_requests[change_request_id]
+                    break
+            else:
+                item.update({
+                    "changed": False,
+                    "created": False,
+                    "overrides": None
+                })
+                item["children"] = sorted(self.applyMenuOverrides(item["children"], item["id"], None), key=lambda x: x["unit_order"])
+                new_menu.append(item)
+        new_menu += change_requests
+
+        return new_menu
+
     def getCourse(self):
-        return mcourses.Course(self.getDetail("course_id"))
+        return mcourses.Courses(self.getDetail("course_id"))
 
     def getAuthor(self):
         return muser.User.safe(self.getDetail("author"))
 
     def isAbandoned(self): return bool(self.getDetail("abandoned"))
+
+    def getOverrides(self, parent_unit=None, parent_override=None):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            if parent_unit is not None and parent_override is not None:
+                cur.execute("SELECT * FROM branch_overrides WHERE branch=? AND parent_unit=? AND parent_override = ?", (self.id, parent_unit, parent_override))
+            elif parent_unit is not None:
+                cur.execute("SELECT * FROM branch_overrides WHERE branch=? AND parent_unit=?", (self.id, parent_unit))
+            elif parent_override is not None:
+                cur.execute("SELECT * FROM branch_overrides WHERE branch=? AND parent_override=?", (self.id, parent_override))
+            else:
+                cur.execute("SELECT * FROM branch_overrides WHERE branch=?", (self.id,))
+            return cur.fetchall()
+        except lite.Error as e:
+            return []
+        finally:
+            if con:
+                con.close()
+
+    def getSingleOverride(self, id):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM branch_overrides WHERE id=?", (id,))
+            return cur.fetchone()
+        except lite.Error as e:
+            return None
+        finally:
+            if con:
+                con.close()
+
+    def hasOverrideForUnit(self, unit_id):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM branch_overrides WHERE branch=? AND overrides=?", (self.id, unit_id))
+            return cur.fetchone()
+        except lite.Error as e:
+            return None
+        finally:
+            if con:
+                con.close()
+
+    def updateOrMakeOverride(self, unit_id, override_id, data):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            if self.hasOverrideForUnit(unit_id) or override_id != "-":
+                if override_id != "-":
+                    cur.execute("UPDATE branch_overrides SET parent_unit=?, parent_override=?, title=?, content=?, type=?, unit_order=? WHERE id=?", (data["parent_unit"], data["parent_override"], data["title"], data["content"], data["type"], data["unit_order"], override_id))
+                else:
+                    cur.execute("UPDATE branch_overrides SET parent_unit=?, parent_override=?, title=?, content=?, type=?, unit_order=? WHERE branch=? AND overrides=?", (data["parent_unit"], data["parent_override"], data["title"], data["content"], data["type"], data["unit_order"], self.id, unit_id))
+
+                cur.execute("SELECT * FROM branch_overrides WHERE branch=? AND overrides=?", (self.id,unit_id))
+                rowid = cur.fetchone()["id"]
+            else:
+                cur.execute("INSERT INTO branch_overrides (branch, overrides, parent_unit, parent_override, title, content, type, unit_order, changed, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 0)", (self.id, unit_id, data["parent_unit"], data["parent_override"], data["title"], data["content"], data["type"], data["unit_order"]))
+                rowid = cur.lastrowid
+            con.commit()
+            return rowid
+        except lite.Error as e:
+            print e
+            return False
+        finally:
+            if con:
+                con.close()
 
     def getInfo(self):
         try:
@@ -57,7 +167,6 @@ class Branch:
                 "decision": data['decision'],
                 "decision_date": data['decision_date'],
                 "hide_as_spam": data['hide_as_spam'],
-                "delta_body": data['delta_body'],
                 "delta_factor": data['delta_factor']
             }
         except lite.Error as e:
@@ -102,7 +211,7 @@ class Branch:
             con = lite.connect('databases/courses.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("INSERT INTO branches (author, course_id, pull_request, abandoned, abandoned_date, decision, decision_date, hide_as_spam, delta_body, delta_factor) VALUES (?, ?, NULL, 0, 0, 0, 0, 0, '', 0)", (user_id, course_id))
+            cur.execute("INSERT INTO branches (author, course_id, pull_request, abandoned, abandoned_date, decision, decision_date, hide_as_spam, delta_factor) VALUES (?, ?, NULL, 0, 0, 0, 0, 0, 0)", (user_id, course_id))
             data = con.commit()
             return Branch(cur.lastrowid)
         except lite.Error as e:
