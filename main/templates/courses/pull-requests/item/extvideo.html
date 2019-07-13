@@ -100,7 +100,7 @@
 
     <script>
 
-     override_id = "{{ overrides if overrides else '-' }}";
+     override_id = "{{ override_id if override_id else '-' }}";
 
      function save() {
        $(".js--savebtn").addClass("-loading").text("Speichere...");

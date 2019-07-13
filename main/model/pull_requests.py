@@ -65,7 +65,19 @@ class Branch:
                 })
                 item["children"] = sorted(self.applyMenuOverrides(item["children"], item["id"], None), key=lambda x: x["unit_order"])
                 new_menu.append(item)
-        new_menu += change_requests
+
+        for leftover_request in change_requests:
+            new_menu += [{
+                "id": None,
+                "title": leftover_request["title"],
+                "availible": True,
+                "children": self.applyMenuOverrides([], None, leftover_request["id"]),
+                "type": leftover_request["type"],
+                "unit_order": leftover_request["unit_order"],
+                "changed": False,
+                "created": True,
+                "overrides": leftover_request["id"]
+            }]
 
         return new_menu
 
@@ -145,11 +157,13 @@ class Branch:
             if self.hasOverrideForUnit(unit_id) or override_id != "-":
                 if override_id != "-":
                     cur.execute("UPDATE branch_overrides SET parent_unit=?, parent_override=?, title=?, content=?, type=?, unit_order=? WHERE id=?", (data["parent_unit"], data["parent_override"], data["title"], data["content"], data["type"], data["unit_order"], override_id))
+
+                    rowid = override_id
                 else:
                     cur.execute("UPDATE branch_overrides SET parent_unit=?, parent_override=?, title=?, content=?, type=?, unit_order=? WHERE branch=? AND overrides=?", (data["parent_unit"], data["parent_override"], data["title"], data["content"], data["type"], data["unit_order"], self.id, unit_id))
 
-                cur.execute("SELECT * FROM branch_overrides WHERE branch=? AND overrides=?", (self.id,unit_id))
-                rowid = cur.fetchone()["id"]
+                    cur.execute("SELECT * FROM branch_overrides WHERE branch=? AND overrides=?", (self.id,unit_id))
+                    rowid = cur.fetchone()["id"]
             else:
                 cur.execute("INSERT INTO branch_overrides (branch, overrides, parent_unit, parent_override, title, content, type, unit_order, changed, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, 0)", (self.id, unit_id, data["parent_unit"], data["parent_override"], data["title"], data["content"], data["type"], data["unit_order"]))
                 rowid = cur.lastrowid
@@ -157,6 +171,29 @@ class Branch:
             return rowid
         except lite.Error as e:
             print e
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def newUnitOverride(self, title, body, type):
+        data = {
+            "title": title,
+            "type": type,
+            "content": body,
+            "parent_unit": 0,
+            "parent_override": 0,
+            "unit_order": self.getMenu()[-1]["unit_order"]
+        }
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("INSERT INTO branch_overrides (branch, overrides, parent_unit, parent_override, title, content, type, unit_order, changed, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 1)", (self.id, None, data["parent_unit"], data["parent_override"], data["title"], data["content"], data["type"], data["unit_order"]))
+            rowid = cur.lastrowid
+            con.commit()
+            return rowid
+        except lite.Error as e:
             return False
         finally:
             if con:

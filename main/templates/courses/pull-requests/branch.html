@@ -189,20 +189,6 @@
         <p>Wiederholung von gelernten Inhalten mit Multiple-Choice, Multiple-Answer und Textantwort-Fragen.</p>
       </div>
     </label>
-    <label class="_toollist-item" for="newitem_dialog-4">
-      <input type="radio" class="form-radio" id="newitem_dialog-4" value="survey" name="newitem_dialog">
-      <div class="_toollist-data">
-        <h4>Umfrage</h4>
-        <p>Eine Umfrage zu Demografie, Erfahrung und/oder Lernergebnis der Kursteilnehmenden.</p>
-      </div>
-    </label>
-    <label class="_toollist-item" for="newitem_dialog-5">
-      <input type="radio" class="form-radio" id="newitem_dialog-5" value="pinboard" name="newitem_dialog">
-      <div class="_toollist-data">
-        <h4>Pinwand</h4>
-        <p>Eine Forumsdiskussion in den Kurs einbetten, um jedem die Möglichkeit zu geben, mitzudiskutieren. (z.B. für Feedback)</p>
-      </div>
-    </label>
   </div>
   <button class="push-right _btn _btn--primary" onclick="newItem()">Auswählen</button>
 </div>
@@ -212,7 +198,7 @@
     if(!type) return;
     $.ajax({
       method: "POST",
-      url: "/c/{{ course.id }}/branch/{{ branch.id }}/add",
+      url: "/c/{{ course.id }}/branch/{{ branch.id }}/new-item",
       contentType: "application/json; charset=utf-8",
       data: JSON.stringify({
         "parent": 0,
