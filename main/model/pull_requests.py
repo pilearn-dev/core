@@ -32,52 +32,161 @@ class Branch:
 
     def getMenu(self):
         menu = self.getCourse().getMenu()
-        new_menu = self.applyMenuOverrides(menu, 0, 0)
+        new_menu = self.applyMenuOverrides(menu)
+        for item in new_menu:
+            item["children"] = sorted(item["children"], key=lambda x: x["unit_order"])
+            #print [(x["title"], x["unit_order"]) for x in item["children"]]
         new_menu = sorted(new_menu, key=lambda x: x["unit_order"])
         return new_menu
 
-    def applyMenuOverrides(self, menu, pu, po):
+    def applyMenuOverrides(self, menu):
         new_menu = []
-        change_requests = self.getOverrides(pu,po)
         for item in menu:
-            for change_request_id in range(len(change_requests)):
-                change_request = change_requests[change_request_id]
-
-                if change_request["overrides"] == item["id"]:
-
-                    item["title"] = change_request["title"]
-                    item["overrides"] = change_request["id"]
-                    item["order"] = change_request["unit_order"]
-                    item["children"] = sorted(self.applyMenuOverrides(self.applyMenuOverrides(item["children"], None, change_request["id"]), item["id"], None), key=lambda x: x["unit_order"])
-
-                    item["changed"] = bool(change_request["changed"])
-                    item["created"] = False
-
-                    new_menu.append(item)
-
-                    del change_requests[change_request_id]
-                    break
-            else:
-                item.update({
+            item.update({
+                "changed": False,
+                "created": False,
+                "overrides": None
+            })
+            for subitem in item["children"]:
+                subitem.update({
                     "changed": False,
                     "created": False,
                     "overrides": None
                 })
-                item["children"] = sorted(self.applyMenuOverrides(item["children"], item["id"], None), key=lambda x: x["unit_order"])
-                new_menu.append(item)
+            new_menu.append(item)
 
-        for leftover_request in change_requests:
-            new_menu += [{
-                "id": None,
-                "title": leftover_request["title"],
-                "availible": True,
-                "children": self.applyMenuOverrides([], None, leftover_request["id"]),
-                "type": leftover_request["type"],
-                "unit_order": leftover_request["unit_order"],
-                "changed": False,
-                "created": True,
-                "overrides": leftover_request["id"]
-            }]
+
+        change_requests = self.getOverrides()
+        last_round_changes = -1
+        while last_round_changes != 0:
+            while None in change_requests:
+                del change_requests[change_requests.index(None)]
+            last_round_changes = 0
+            for request_id in range(len(change_requests)):
+                request = change_requests[request_id]
+                if request["overrides"]:
+                    index = 0
+                    for unit in new_menu:
+                        if unit["id"] == request["overrides"]:
+                            unit["title"] = request["title"]
+                            unit["content"] = request["content"]
+                            unit["unit_order"] = request["unit_order"]
+                            unit["changed"] = bool(request["changed"])
+                            unit["created"] = bool(request["created"])
+                            unit["overrides"] = request["id"]
+
+                            if 0 == request["parent_unit"] and not request["parent_override"]:
+                                change_requests[request_id] = None
+                                last_round_changes += 1
+                                break
+                            elif request["parent_override"]:
+                                for tunit in new_menu:
+                                    if tunit["overrides"] == request["parent_override"]:
+                                        tunit["children"] += [unit]
+                                        change_requests[request_id] = None
+                                        del new_menu[index]
+                                        last_round_changes += 1
+                                        break
+                            else:
+                                for tunit in new_menu:
+                                    if tunit["id"] == request["parent_unit"]:
+                                        tunit["children"] += [unit]
+                                        change_requests[request_id] = None
+                                        del new_menu[index]
+                                        last_round_changes += 1
+                                        break
+
+                        subindex = 0
+                        for subunit in unit["children"]:
+                            if subunit["id"] == request["overrides"]:
+                                subunit["title"] = request["title"]
+                                subunit["content"] = request["content"]
+                                subunit["unit_order"] = request["unit_order"]
+                                subunit["changed"] = bool(request["changed"])
+                                subunit["created"] = bool(request["created"])
+                                subunit["overrides"] = request["id"]
+
+                                if unit["id"] == request["parent_unit"] and not request["parent_override"]:
+                                    change_requests[request_id] = None
+                                    last_round_changes += 1
+                                    break
+                                elif request["parent_override"]:
+                                    for tunit in new_menu:
+                                        if tunit["overrides"] == request["parent_override"]:
+                                            tunit["children"] += [subunit]
+                                            change_requests[request_id] = None
+                                            del new_menu[index]["children"][subindex]
+                                            last_round_changes += 1
+                                            break
+                                elif request["parent_unit"]:
+                                    for tunit in new_menu:
+                                        if tunit["id"] == request["parent_unit"]:
+                                            tunit["children"] += [subunit]
+                                            change_requests[request_id] = None
+                                            del new_menu[index]["children"][subindex]
+                                            last_round_changes += 1
+                                            break
+                                else:
+                                    new_menu += [subunit]
+                                    change_requests[request_id] = None
+                                    del new_menu[index]["children"][subindex]
+                                    last_round_changes += 1
+                                    break
+                            subindex += 1
+                        else:
+                            index += 1
+                            continue
+                        break
+                else:
+                    item = [{
+                        "id": None,
+                        "title": request["title"],
+                        "availible": True,
+                        "children": [],
+                        "type": request["type"],
+                        "unit_order": request["unit_order"],
+                        "changed": bool(request["changed"]),
+                        "created": bool(request["created"]),
+                        "overrides": request["id"]
+                    }]
+                    if request["parent_unit"] != 0:
+                        for unit in new_menu:
+                            if unit["id"] == request["parent_unit"]:
+                                unit["children"] += item
+                                change_requests[request_id] = None
+                                last_round_changes += 1
+                                break
+
+                            for subunit in unit["children"]:
+                                if subunit["id"] == request["parent_unit"]:
+                                    subunit["children"] += item
+                                    change_requests[request_id] = None
+                                    last_round_changes += 1
+                                    break
+                            else:
+                                continue
+                            break
+                    elif request["parent_override"] != 0:
+                        for unit in new_menu:
+                            if unit["overrides"] == request["parent_override"]:
+                                unit["children"] += item
+                                change_requests[request_id] = None
+                                last_round_changes += 1
+                                break
+
+                            for subunit in unit["children"]:
+                                if subunit["overrides"] == request["parent_override"]:
+                                    subunit["children"] += item
+                                    change_requests[request_id] = None
+                                    last_round_changes += 1
+                                    break
+                            else:
+                                continue
+                            break
+                    else:
+                        new_menu += item
+                        change_requests[request_id] = None
+                        last_round_changes += 1
 
         return new_menu
 
@@ -144,7 +253,7 @@ class Branch:
             cur.execute("SELECT * FROM branch_overrides WHERE branch=? AND overrides=?", (self.id, unit_id))
             return cur.fetchone()
         except lite.Error as e:
-            return None
+            return False
         finally:
             if con:
                 con.close()

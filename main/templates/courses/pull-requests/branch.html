@@ -39,7 +39,7 @@
     <div class="p3">
       <h2>Menü</h2>
       <nav class="_nav _nav-v">
-        <a href="/c/{{ course.id }}/edit" class="-active f-bold mb3">Übersicht</a>
+        <a href="/c/{{ course.id }}/branch/{{ branch.id }}" class="-active f-bold mb3">Übersicht</a>
         {% for element in branch.getMenu() if element.availible %}
         <a href="/c/{{ course.id }}/branch/{{ branch.id }}/item/{{ element.id if element.id else '-' }}/{{ element.overrides if element.overrides else '-' }}">
           {% if element.created %}

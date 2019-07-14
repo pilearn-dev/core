@@ -204,15 +204,27 @@ window.addEventListener("load", function() {
     var HTML5DnD = new objHTML5DnD;
 
     function submitOrder() {
-      $.ajax({
-        url: "/c/"+COURSE_ID+"/edit/reorder",
-        method: "POST",
-        contentType: "application/json; charset=utf-8",
-        data: JSON.stringify(getOrder('#reorder')),
-        success: function( r ) {
-          window.location.href = "/c/"+COURSE_ID+"/edit"
-        }
-      });
+      if(typeof BRANCH_ID != "undefined") {
+        $.ajax({
+          url: "/c/"+COURSE_ID+"/branch/" + BRANCH_ID + "/reorder",
+          method: "POST",
+          contentType: "application/json; charset=utf-8",
+          data: JSON.stringify(getOrder('#reorder')),
+          success: function( r ) {
+            window.location.href = "/c/"+COURSE_ID+"/branch/" + BRANCH_ID;
+          }
+        });
+      } else {
+        $.ajax({
+          url: "/c/"+COURSE_ID+"/edit/reorder",
+          method: "POST",
+          contentType: "application/json; charset=utf-8",
+          data: JSON.stringify(getOrder('#reorder')),
+          success: function( r ) {
+            window.location.href = "/c/"+COURSE_ID+"/edit"
+          }
+        });
+      }
     }
     window.submitOrder = submitOrder;
     HTML5DnD.parse();

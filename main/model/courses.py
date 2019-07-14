@@ -411,7 +411,7 @@ class Courses:
                         "availible": bool(dy["availible"]),
                         "type": dy["type"],
                         "children": [],
-                        "unit_order": dd["unit_order"]
+                        "unit_order": dy["unit_order"]
                     })
                 d.append(dx)
             return d

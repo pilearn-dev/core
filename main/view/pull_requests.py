@@ -49,7 +49,7 @@ def course_single_branch(id, course_id,course_label=None):
     if not (branch.getDetail("author") == cuser.id or cuser.isMod()) or cuser.isDisabled() or branch.getDetail("course_id") != course.id:
         abort(404)
 
-    return render_template('courses/pull-requests/branch.html', title="Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch, _encoder=base64.b64encode)
+    return render_template('courses/pull-requests/branch.html', title="Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch)
 
 def branch_item(unit_id, override_id, branch_id, course_id,course_label=None):
     if not mcourses.Courses.exists(course_id):
@@ -93,7 +93,7 @@ def branch_item(unit_id, override_id, branch_id, course_id,course_label=None):
             data["type"] = override["type"]
         data["content"] = json.loads(override["content"])
 
-    return render_template('courses/pull-requests/item/' + data["type"] + '.html', title="Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch, _encoder=base64.b64encode, data=data, unit_id=unit_id, override_id=override_id)
+    return render_template('courses/pull-requests/item/' + data["type"] + '.html', title="Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch, data=data, unit_id=unit_id, override_id=override_id)
 
 def branch_update_item(unit_id, override_id, branch_id, course_id,course_label=None):
     if not mcourses.Courses.exists(course_id):
@@ -184,7 +184,7 @@ def branch_new_item(branch_id, course_id,course_label=None):
     course = mcourses.Courses(course_id)
     cuser = muser.getCurrentUser()
     if course.getLabel() != course_label and request.method != "POST":
-        return redirect(url_for("branch_revert_override", branch_id=branch_id, course_id=course_id, course_label=course.getLabel(), override_id=override_id))
+        return redirect(url_for("branch_new_item", branch_id=branch_id, course_id=course_id, course_label=course.getLabel()))
     if not mpull_requests.Branch.exists(branch_id):
         abort(404)
     branch = mpull_requests.Branch(branch_id)
@@ -202,6 +202,96 @@ def branch_new_item(branch_id, course_id,course_label=None):
 
     return url_for("branch_item", branch_id=branch_id, course_id=course_id, course_label=course.getLabel(), unit_id="-", override_id=x)
 
+def branch_unit_reorder(branch_id, course_id,course_label=None):
+    if not mcourses.Courses.exists(course_id):
+        abort(404)
+    course = mcourses.Courses(course_id)
+    cuser = muser.getCurrentUser()
+    if course.getLabel() != course_label and request.method != "POST":
+        return redirect(url_for("branch_unit_reorder", branch_id=branch_id, course_id=course_id, course_label=course.getLabel()))
+    if not mpull_requests.Branch.exists(branch_id):
+        abort(404)
+    branch = mpull_requests.Branch(branch_id)
+
+    if request.method == "POST":
+        datar = (request.json)
+        for item in datar:
+            unit_id, override_id = item["id"].split("/")
+
+            data = _mkdata(unit_id, override_id, course_id, branch)
+
+            unit_id = int(unit_id) if unit_id != "-" else 0
+            if data["parent_unit"] != 0 or data["parent_override"] != 0 or data["unit_order"] != item["order"]:
+                data["parent_unit"] = 0
+                data["parent_override"] = 0
+                data["unit_order"] = item["order"]
+
+                data["content"] = json.dumps(data["content"])
+                branch.updateOrMakeOverride(unit_id, override_id, data)
+
+
+            for subitem in item["subitems"]:
+                sub_unit_id, sub_override_id = subitem["id"].split("/")
+                data = _mkdata(sub_unit_id, sub_override_id, course_id, branch)
+
+                sub_unit_id = int(sub_unit_id) if sub_unit_id != "-" else 0
+                parent_unit, parent_override = unit_id, int(override_id) if override_id != "-" else 0
+
+                if data["parent_unit"] != parent_unit or data["parent_override"] != parent_override or data["unit_order"] != subitem["order"]:
+                    data["parent_unit"] = parent_unit
+                    data["parent_override"] = parent_override
+                    data["unit_order"] = subitem["order"]
+
+                    data["content"] = json.dumps(data["content"])
+                    branch.updateOrMakeOverride(sub_unit_id, sub_override_id, data)
+
+        return "ok"
+    else:
+        return render_template('courses/pull-requests/reorder.html', title="Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch)
+
+def _mkdata(unit_id, override_id, course_id, branch):
+    if unit_id == "-":
+        data = {
+            "title": "",
+            "type": "",
+            "content": None,
+            "parent_unit": 0,
+            "parent_override": 0,
+            "unit_order": 0
+        }
+    else:
+        unit_id = int(unit_id)
+        unit = mcourses.Units(unit_id)
+        if not unit or unit.getDetail("courseid") != course_id:
+            abort(404)
+
+        data = {
+            "title": unit.getTitle(),
+            "type": unit.getType(),
+            "content": unit.getJSON(),
+            "parent_unit": unit.getDetail("parent"),
+            "parent_override": 0,
+            "unit_order": unit.getDetail("unit_order")
+        }
+
+    if override_id != "-":
+        override_id = int(override_id)
+        override = branch.getSingleOverride(override_id)
+        if not override or (unit_id != "-" and override["overrides"] != unit_id) or override["branch"] != branch.id:
+            abort(404)
+        data["title"] = override["title"]
+
+        # Do not allow arbitrary changing the type
+        if not data["type"]:
+            data["type"] = override["type"]
+
+        data["content"] = override["content"]
+        data["parent_unit"] = override["parent_unit"]
+        data["parent_override"] = override["parent_override"]
+        data["unit_order"] = override["unit_order"]
+
+    return data
+
 def apply(app):
     app.route("/c/<int:id>/branches")(app.route("/course/<int:id>/<label>/branches")(course_branches))
     app.route("/c/<int:id>/branches/create", methods=["POST"])(app.route("/course/<int:id>/<label>/branches/create", methods=["POST"])(course_create_branch))
@@ -210,3 +300,4 @@ def apply(app):
     app.route("/c/<int:course_id>/branch/<int:branch_id>/update/<unit_id>/<override_id>", methods=["POST"])(app.route("/course/<int:course_id>/<course_label>/branch/<int:branch_id>/update/<unit_id>/<override_id>", methods=["POST"])(branch_update_item))
     app.route("/c/<int:course_id>/branch/<int:branch_id>/revert/<int:override_id>", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/branch/<int:branch_id>/revert/<int:override_id>", methods=["GET", "POST"])(branch_revert_override))
     app.route("/c/<int:course_id>/branch/<int:branch_id>/new-item", methods=["POST"])(app.route("/course/<int:course_id>/<course_label>/branch/<int:branch_id>/new-item", methods=["POST"])(branch_new_item))
+    app.route("/c/<int:course_id>/branch/<int:branch_id>/reorder", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/branch/<int:branch_id>/reorder", methods=["GET", "POST"])(branch_unit_reorder))
