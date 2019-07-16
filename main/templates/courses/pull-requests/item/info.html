@@ -5,67 +5,14 @@
 {% from "_course-header.html" import course_header %}
 {{ course_header(course, "pr", user) }}
 
-<div class="bg--primary-ll mt3 p2">
-  {% if branch.isAbandoned() %}
-  <div class="fs-base3 p1">Dieser Änderungsvorschlag wurde <strong>aufgegeben</strong>.</div>
-  {% elif not branch.getDetail("pull_request") %}
-  <div class="grid -full-center">
-    <div class="colbox-fill column12__sm column12__md">
-      <div class="fs-base3 p1">Dieser Änderungsvorschlag ist noch <strong>in Arbeit</strong>.</div>
-    </div>
-    <div class="colbox column12__sm column12__md">
-      <div class="_btnlist">
-        <button class="_btn _btn--primary">Vorschlag absenden</button>
-        <button class="_btn _btn--primary">Vorschlag aufgeben</button>
-      </div>
-    </div>
-  </div>
-  {% else %}
-  <div class="grid -full-center">
-    <div class="colbox-fill column12__sm column12__md">
-      <div class="fs-base3 p1">Dieser Änderungsvorschlag wurde abgesendet und wird jetzt entschieden.</div>
-    </div>
-    <div class="colbox column12__sm column12__md">
-      <div class="_btnlist">
-        <a href="/course/{{ course.id }}/{{ course.getLabel() }}/pull-request/{{ branch.getDetail("pull_request")}}" class="_btn _btn--primary">Zur Pull Request</a>
-      </div>
-    </div>
-  </div>
-  {% endif %}
-</div>
+{% include "courses/pull-requests/_header.html" %}
 
 
 <div class="grid -equal-columns">
   <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
     <div class="p3">
-      <h2>Menü</h2>
-      <nav class="_nav _nav-v">
-        <a href="/c/{{ course.id }}/branch/{{ branch.id }}" class="f-bold mb3">Übersicht</a>
-        {% for element in branch.getMenu() if element.availible %}
-        <a href="/c/{{ course.id }}/branch/{{ branch.id }}/item/{{ element.id if element.id else '-' }}/{{ element.overrides if element.overrides else '-' }}" {{ 'class="-active"'|safe if (element.id or "-") == unit_id and (element.overrides or "-") == override_id }}>
-          {% if element.created %}
-          <span class="col-success-ddd">&#9679;</span>
-          {% elif element.changed %}
-          <span class="col-warning-ddd">&#9679;</span>
-          {% endif %}
-          {{ element.title }}
-        </a>
-        {% if element.children %}
-        <nav class="_nav _nav-v">
-          {% for child in element.children if child.availible %}
-           <a href="/c/{{ course.id }}/branch/{{ branch.id }}/item/{{ child.id if child.id else '-' }}/{{ child.overrides if child.overrides else '-' }}" {{ 'class="-active"'|safe if (child.id or "-") == unit_id and (child.overrides or "-") == override_id }}>
-             {% if child.created %}
-             <span class="col-success-ddd">&#9679;</span>
-             {% elif child.changed %}
-             <span class="col-warning-ddd">&#9679;</span>
-             {% endif %}
-             {{ child.title }}
-           </a>
-          {% endfor %}
-        </nav>
-        {% endif %}
-        {% endfor %}
-      </nav>
+      {% set curpage_id = unit_id ~"/"~ override_id %}
+      {% include "courses/pull-requests/_menu.html" %}
     </div>
   </div>
   <div class="column9__lg column12 p3">

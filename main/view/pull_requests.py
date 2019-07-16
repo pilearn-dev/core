@@ -65,33 +65,7 @@ def branch_item(unit_id, override_id, branch_id, course_id,course_label=None):
     if not (branch.getDetail("author") == cuser.id or cuser.isMod()) or cuser.isDisabled() or branch.getDetail("course_id") != course.id:
         abort(404)
 
-    if unit_id == "-":
-        data = {
-            "title": "",
-            "type": "",
-            "content": None
-        }
-    else:
-        unit_id = int(unit_id)
-        unit = mcourses.Units(unit_id)
-        if not unit or unit.getDetail("courseid") != course_id:
-            abort(404)
-
-        data = {
-            "title": unit.getTitle(),
-            "type": unit.getType(),
-            "content": unit.getJSON()
-        }
-
-    if override_id != "-":
-        override_id = int(override_id)
-        override = branch.getSingleOverride(override_id)
-        if not override or (unit_id != "-" and override["overrides"] != unit_id) or override["branch"] != branch_id:
-            abort(404)
-        data["title"] = override["title"]
-        if not data["type"]:
-            data["type"] = override["type"]
-        data["content"] = json.loads(override["content"])
+    data = _mkdata(unit_id, override_id, course_id, branch)
 
     return render_template('courses/pull-requests/item/' + data["type"] + '.html', title="Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch, data=data, unit_id=unit_id, override_id=override_id)
 
@@ -109,45 +83,7 @@ def branch_update_item(unit_id, override_id, branch_id, course_id,course_label=N
     if not (branch.getDetail("author") == cuser.id or cuser.isMod()) or cuser.isDisabled() or branch.getDetail("course_id") != course.id:
         abort(404)
 
-    if unit_id == "-":
-        data = {
-            "title": "",
-            "type": "",
-            "content": None,
-            "parent_unit": 0,
-            "parent_override": 0,
-            "unit_order": 0
-        }
-    else:
-        unit_id = int(unit_id)
-        unit = mcourses.Units(unit_id)
-        if not unit or unit.getDetail("courseid") != course_id:
-            abort(404)
-
-        data = {
-            "title": unit.getTitle(),
-            "type": unit.getType(),
-            "content": unit.getJSON(),
-            "parent_unit": unit.getDetail("parent"),
-            "parent_override": 0,
-            "unit_order": unit.getDetail("unit_order")
-        }
-
-    if override_id != "-":
-        override_id = int(override_id)
-        override = branch.getSingleOverride(override_id)
-        if not override or (unit_id != "-" and override["overrides"] != unit_id) or override["branch"] != branch_id:
-            abort(404)
-        data["title"] = override["title"]
-
-        # Do not allow arbitrary changing the type
-        if not data["type"]:
-            data["type"] = override["type"]
-
-        data["content"] = override["content"]
-        data["parent_unit"] = override["parent_unit"]
-        data["parent_override"] = override["parent_override"]
-        data["unit_order"] = override["unit_order"]
+    data = _mkdata(unit_id, override_id, course_id, branch)
 
     data["title"] = request.json["title"]
     data["content"] = json.dumps(request.json["content"])
@@ -285,7 +221,7 @@ def _mkdata(unit_id, override_id, course_id, branch):
         if not data["type"]:
             data["type"] = override["type"]
 
-        data["content"] = override["content"]
+        data["content"] = json.loads(override["content"])
         data["parent_unit"] = override["parent_unit"]
         data["parent_override"] = override["parent_override"]
         data["unit_order"] = override["unit_order"]

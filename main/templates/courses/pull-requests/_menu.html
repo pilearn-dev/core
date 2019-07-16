@@ -1,0 +1,28 @@
+<h2>Menü</h2>
+<nav class="_nav _nav-v">
+  <a href="/c/{{ course.id }}/branch/{{ branch.id }}" class="{{ '-active' if curpage_id == 'overview' }} f-bold mb3">Übersicht</a>
+  {% for element in branch.getMenu() if element.availible %}
+  <a href="/c/{{ course.id }}/branch/{{ branch.id }}/item/{{ element.id if element.id else '-' }}/{{ element.overrides if element.overrides else '-' }}" {{ 'class="-active"'|safe if curpage_id == ((element.id or "-") ~ "/" ~ (element.overrides or "-")) }}>
+    {% if element.created %}
+    <span class="col-success-ddd">&#9679;</span>
+    {% elif element.changed %}
+    <span class="col-warning-ddd">&#9679;</span>
+    {% endif %}
+    {{ element.title }}
+  </a>
+  {% if element.children %}
+  <nav class="_nav _nav-v">
+    {% for child in element.children if child.availible %}
+     <a href="/c/{{ course.id }}/branch/{{ branch.id }}/item/{{ child.id if child.id else '-' }}/{{ child.overrides if child.overrides else '-' }}" {{ 'class="-active"'|safe if curpage_id == ((child.id or "-") ~ "/" ~ (child.overrides or "-")) }}>
+       {% if child.created %}
+       <span class="col-success-ddd">&#9679;</span>
+       {% elif child.changed %}
+       <span class="col-warning-ddd">&#9679;</span>
+       {% endif %}
+       {{ child.title }}
+     </a>
+    {% endfor %}
+  </nav>
+  {% endif %}
+  {% endfor %}
+</nav>

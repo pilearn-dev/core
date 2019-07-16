@@ -1,0 +1,28 @@
+<div class="bg--primary-ll mt3 p2">
+  {% if branch.isAbandoned() %}
+  <div class="fs-base3 p1">Dieser Änderungsvorschlag wurde <strong>aufgegeben</strong>.</div>
+  {% elif not branch.getDetail("pull_request") %}
+  <div class="grid -full-center">
+    <div class="colbox-fill column12__sm column12__md">
+      <div class="fs-base3 p1">Dieser Änderungsvorschlag ist noch <strong>in Arbeit</strong>.</div>
+    </div>
+    <div class="colbox column12__sm column12__md">
+      <div class="_btnlist">
+        <a href="/course/{{ course.id }}/{{ course.getLabel() }}/branch/{{ branch.id }}/submit" class="_btn _btn--primary">Vorschlag absenden</a>
+        <a href="/course/{{ course.id }}/{{ course.getLabel() }}/branch/{{ branch.id }}/cancel" class="_btn _btn--primary">Vorschlag aufgeben</a>
+      </div>
+    </div>
+  </div>
+  {% else %}
+  <div class="grid -full-center">
+    <div class="colbox-fill column12__sm column12__md">
+      <div class="fs-base3 p1">Dieser Änderungsvorschlag wurde abgesendet und wird jetzt entschieden.</div>
+    </div>
+    <div class="colbox column12__sm column12__md">
+      <div class="_btnlist">
+        <a href="/course/{{ course.id }}/{{ course.getLabel() }}/pull-request/{{ branch.getDetail("pull_request")}}" class="_btn _btn--primary">Zur Pull Request</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
