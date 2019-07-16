@@ -429,8 +429,22 @@ class PullRequest:
     def getCourse(self):
         return mcourses.Courses(self.getDetail("course_id"))
 
+    def getBranch(self):
+        return Branch(self.getDetail("branch_id"))
+
     def getAuthor(self):
         return muser.User.safe(self.getDetail("author"))
+
+    def isHiddenAsSpam(self):
+        return bool(self.getDetail("hide_as_spam"))
+
+    def getCreationDate(self):
+        dt = self.getDetail("proposal_date")
+        return [dt, ctimes.stamp2german(dt), ctimes.stamp2shortrelative(dt, False)]
+
+    def getTitle(self): return self.getDetail("title")
+    def getDescription(self): return self.getDetail("description")
+    def getState(self): return self.getDetail("decision")
 
     def getInfo(self):
         try:
@@ -450,6 +464,7 @@ class PullRequest:
                 "description": data['description'],
                 "decision": data['decision'],
                 "decision_date": data['decision_date'],
+                "proposal_date": data['proposal_date'],
                 "hide_as_spam": data['hide_as_spam']
             }
         except lite.Error as e:
@@ -494,7 +509,7 @@ class PullRequest:
             con = lite.connect('databases/courses.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("INSERT INTO pull_requests (author, branch_id, course_id, title, description, decision, decision_date, hide_as_spam) VALUES (?, ?, ?, ?, ?, 0, 0, 0)", (user_id, branch_id, course_id, title, description))
+            cur.execute("INSERT INTO pull_requests (author, branch_id, course_id, title, description, decision, decision_date, hide_as_spam, proposal_date) VALUES (?, ?, ?, ?, ?, 0, 0, 0, ?)", (user_id, branch_id, course_id, title, description, time.time()))
             data = con.commit()
             return Branch(cur.lastrowid)
         except lite.Error as e:

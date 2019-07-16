@@ -200,9 +200,27 @@ def branch_submit(branch_id, course_id,course_label=None):
         print branch.calculateRepDelta()
         pr = mpull_requests.PullRequest.new(course.id, branch.id, cuser.id, request.json["title"], request.json["description"])
         branch.setDetail("pull_request", pr.id)
-        return jsonify({"url": ""})
+        return jsonify({"url": url_for("course_single_pr", id=pr.id, course_id=course.id, course_label=course.getLabel())})
     else:
         return render_template('courses/pull-requests/submit.html', title="Neues Pull Request zu Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch)
+
+
+def course_single_pr(id, course_id,course_label=None):
+    if not mcourses.Courses.exists(course_id):
+        abort(404)
+    course = mcourses.Courses(course_id)
+    cuser = muser.getCurrentUser()
+    if course.getLabel() != course_label and request.method != "POST":
+        return redirect(url_for("course_single_pr", id=id, course_id=course_id, course_label=course.getLabel()))
+    if not mpull_requests.PullRequest.exists(id):
+        abort(404)
+    pr = mpull_requests.PullRequest(id)
+    branch = pr.getBranch()
+
+    if pr.isHiddenAsSpam() and not cuser.isLoggedIn():
+        abort(404)
+
+    return render_template('courses/pull-requests/pr.html', title="PR #" + str(pr.id) + u" für " + course.getTitle(), thispage="courses", course=course, pr=pr, branch=branch)
 
 def _mkdata(unit_id, override_id, course_id, branch):
     if unit_id == "-":
@@ -258,3 +276,5 @@ def apply(app):
     app.route("/c/<int:course_id>/branch/<int:branch_id>/reorder", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/branch/<int:branch_id>/reorder", methods=["GET", "POST"])(branch_unit_reorder))
 
     app.route("/c/<int:course_id>/branch/<int:branch_id>/submit", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/branch/<int:branch_id>/submit", methods=["GET", "POST"])(branch_submit))
+
+    app.route("/c/<int:course_id>/pull-request/<int:id>")(app.route("/course/<int:course_id>/<course_label>/pull-request/<int:id>")(course_single_pr))
