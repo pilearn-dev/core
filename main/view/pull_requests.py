@@ -67,7 +67,10 @@ def branch_item(unit_id, override_id, branch_id, course_id,course_label=None):
 
     data = _mkdata(unit_id, override_id, course_id, branch)
 
-    return render_template('courses/pull-requests/item/' + data["type"] + '.html', title="Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch, data=data, unit_id=unit_id, override_id=override_id)
+    if branch.getDetail("pull_request"):
+        return render_template('courses/pull-requests/item.static/' + data["type"] + '.html', title="Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch, data=data, unit_id=unit_id, override_id=override_id, int=int)
+    else:
+        return render_template('courses/pull-requests/item/' + data["type"] + '.html', title="Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch, data=data, unit_id=unit_id, override_id=override_id)
 
 def branch_update_item(unit_id, override_id, branch_id, course_id,course_label=None):
     if not mcourses.Courses.exists(course_id):
@@ -79,6 +82,8 @@ def branch_update_item(unit_id, override_id, branch_id, course_id,course_label=N
     if not mpull_requests.Branch.exists(branch_id):
         abort(404)
     branch = mpull_requests.Branch(branch_id)
+
+    if branch.getDetail("pull_request"): abort(404)
 
     if not (branch.getDetail("author") == cuser.id or cuser.isMod()) or cuser.isDisabled() or branch.getDetail("course_id") != course.id:
         abort(404)
@@ -104,6 +109,8 @@ def branch_revert_override(override_id, branch_id, course_id,course_label=None):
         abort(404)
     branch = mpull_requests.Branch(branch_id)
 
+    if branch.getDetail("pull_request"): abort(404)
+
     if not (branch.getDetail("author") == cuser.id or cuser.isMod()) or cuser.isDisabled() or branch.getDetail("course_id") != course.id:
         abort(404)
 
@@ -124,6 +131,8 @@ def branch_new_item(branch_id, course_id,course_label=None):
     if not mpull_requests.Branch.exists(branch_id):
         abort(404)
     branch = mpull_requests.Branch(branch_id)
+
+    if branch.getDetail("pull_request"): abort(404)
 
     if not (branch.getDetail("author") == cuser.id or cuser.isMod()) or cuser.isDisabled() or branch.getDetail("course_id") != course.id:
         abort(404)
@@ -148,6 +157,8 @@ def branch_unit_reorder(branch_id, course_id,course_label=None):
     if not mpull_requests.Branch.exists(branch_id):
         abort(404)
     branch = mpull_requests.Branch(branch_id)
+
+    if branch.getDetail("pull_request"): abort(404)
 
     if request.method == "POST":
         datar = (request.json)
@@ -195,6 +206,8 @@ def branch_submit(branch_id, course_id,course_label=None):
     if not mpull_requests.Branch.exists(branch_id):
         abort(404)
     branch = mpull_requests.Branch(branch_id)
+
+    if branch.getDetail("pull_request"): abort(404)
 
     if request.method == "POST":
         print branch.calculateRepDelta()

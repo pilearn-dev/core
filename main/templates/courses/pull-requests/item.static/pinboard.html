@@ -1,0 +1,24 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "pr", user) }}
+
+{% include "courses/pull-requests/_header.html" %}
+
+
+<div class="grid -equal-columns">
+  <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
+    <div class="p3">
+      {% set curpage_id = unit_id ~"/"~ override_id %}
+      {% include "courses/pull-requests/_menu.html" %}
+    </div>
+  </div>
+  <div class="column9__lg column12 p3">
+
+    <div class="_alert _alert-danger">Pinwände können in Pull Requests nicht bearbeitet werden. Hier hat sich also nichts verändert!</div>
+
+    <a href="/c/{{ course.id }}/u/{{ unit_id }}" class="_btn _btn--primary _btn-lg" target="_blank">Zur Originalseite</a>
+
+  </div>
+</div>
+{% endblock %}

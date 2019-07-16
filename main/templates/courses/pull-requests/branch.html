@@ -17,9 +17,11 @@
      <div class="grid -equal-columns">
       <div class="column8 column12__sm p2">
           <h1>Übersicht über die Kursmodule</h1>
+          {% if not branch.getDetail("pull_request") %}
           <a href="/c/{{ course.id }}/branch/{{ branch.id }}/reorder" class="_btn push-right _btn--primary _btn-lighter">Anordnung ändern</a>
           <button onclick="PiJS.dialog.resetposition($('#newitem_dialog').removeClass('hide'));" class="_btn push-right _btn--primary">Hinzufügen</button>
           <div class="push-reset"></div>
+          {% endif %}
           <table class="table" style="width: 100%">
               <tr>
                   <th>Typ</th>
@@ -43,10 +45,18 @@
                   {% endif %}
                   <td><a href="/c/{{ course.id }}/branch/{{ branch.id }}/item/{{ element.id if element.id else '-' }}/{{ element.overrides if element.overrides else '-' }}">{{ element.title }}</a></td>
                   <td>
+                    {% if not branch.getDetail("pull_request") %}
                     {% if element.created %}
                     <span class="_badge _badge-s-success">erstellt <a href="/c/{{ course.id }}/branch/{{ branch.id }}/revert/{{ element.overrides if element.overrides else '-' }}" class="_badge-revoke">&times;</a></span>
                     {% elif element.changed %}
                     <span class="_badge _badge-s-warning">verändert <a href="/c/{{ course.id }}/branch/{{ branch.id }}/revert/{{ element.overrides if element.overrides else '-' }}" class="_badge-revoke">&times;</a></span>
+                    {% endif %}
+                    {% else %}
+                    {% if element.created %}
+                    <span class="_badge _badge-s-success">erstellt</span>
+                    {% elif element.changed %}
+                    <span class="_badge _badge-s-warning">verändert</span>
+                    {% endif %}
                     {% endif %}
                   </td>
               </tr>
@@ -68,10 +78,18 @@
                     {% endif %}
                     <td>&mdash;<a href="/c/{{ course.id }}/branch/{{ branch.id }}/item/{{ child.id if child.id else '-' }}/{{ child.overrides if child.overrides else '-' }}">{{ child.title }}</a></td>
                     <td>
+                      {% if not branch.getDetail("pull_request") %}
                       {% if child.created %}
                       <span class="_badge _badge-s-success">erstellt <a href="/c/{{ course.id }}/branch/{{ branch.id }}/revert/{{ child.overrides if child.overrides else '-' }}" class="_badge-revoke">&times;</a></span>
                       {% elif child.changed %}
                       <span class="_badge _badge-s-warning">verändert <a href="/c/{{ course.id }}/branch/{{ branch.id }}/revert/{{ child.overrides if child.overrides else '-' }}" class="_badge-revoke">&times;</a></span>
+                      {% endif %}
+                      {% else %}
+                      {% if child.created %}
+                      <span class="_badge _badge-s-success">erstellt</span>
+                      {% elif child.changed %}
+                      <span class="_badge _badge-s-warning">verändert</span>
+                      {% endif %}
                       {% endif %}
                     </td>
                 </tr>
@@ -79,10 +97,11 @@
               {% endif %}
               {% endfor %}
           </table>
+          {% if not branch.getDetail("pull_request") %}
           <a href="/c/{{ course.id }}/branch/{{ branch.id }}/reorder" class="_btn push-right _btn--primary _btn-lighter">Anordnung ändern</a>
           <button onclick="PiJS.dialog.resetposition($('#newitem_dialog').removeClass('hide'));" class="_btn push-right _btn--primary">Hinzufügen</button>
           <div class="push-reset"></div>
-          <div class="push-reset"></div>
+          {% endif %}
       </div>
       <div class="column4 p2 column12__sm">
 
@@ -107,7 +126,7 @@
     </div>
    </div>
  </div>
-
+{% if not branch.getDetail("pull_request") %}
  <div class="_dialog hide" id="newitem_dialog">
   <a href="#!" onclick="$('#newitem_dialog').addClass('hide')" class="_xbtn _dialog-xbtn">&times;</a>
   <h3>Neue Seite hinzufügen</h3>
@@ -159,5 +178,5 @@
     });
   }
 </script>
-
+{% endif %}
 {% endblock %}

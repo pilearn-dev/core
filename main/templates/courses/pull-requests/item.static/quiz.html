@@ -1,0 +1,86 @@
+{% extends "layout_new.html" %}
+{% set autoSave = user.getPref("autoSave", False) == "1" %}
+{% block body %}
+<link rel="stylesheet" href="/static/ps/polyskript.css">
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "pr", user) }}
+
+{% include "courses/pull-requests/_header.html" %}
+
+
+<div class="grid -equal-columns">
+  <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
+    <div class="p3">
+      {% set curpage_id = unit_id ~"/"~ override_id %}
+      {% include "courses/pull-requests/_menu.html" %}
+    </div>
+  </div>
+  <div class="column9__lg column12 p3">
+
+    {% for i in data.content %}
+     {% if i.type == "heading" %}
+       <h1>{{ i.data.text }}</h1>
+     {% elif i.type == "info-text" %}
+       {{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
+     {% elif i.type == "separator" %}
+       <hr>
+     {% elif i.type == "warnbox" %}
+       <div class="warning">{{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}</div>
+     {% elif i.type == "quote" %}
+       <blockquote>{{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}</blockquote>
+     {% elif i.type == "image" %}
+       <a href="{{ i.data.source }}"><img src="{{ i.data.source }}"></a>
+     {% elif i.type == "multiple-choice" %}{% set max = int(i.data.points) %}
+     <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
+        <div class="push-right"><span class="_badge _badge-s-black">{{ max }} Pkt.</span></div>
+        <div class="fs-subheading">
+          {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
+        </div>
+        {% set masterloop = loop %}
+        {% for c in i.data.choices %}
+          <div class="p1">
+            <input type="radio" disabled name="quiz-question-{{ masterloop.index }}" id="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" value="{{ loop.index-1 }}" class="form-radio" {% if c.startswith("*") %} checked{% endif %}>
+            <label for="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" class="form form-inline">
+              {% if c.startswith("*") %} <span class="_badge _badge-s-success push-right">richtig</span>{% endif %}
+               {%if c.startswith("*")%}{%set c=c[1:]%}{%endif%}
+              {{ c }}
+            </label>
+          </div>
+        {% endfor %}
+      </div>
+     {% elif i.type == "multiple-answer" %}{% set max = int(i.data.points) %}
+     <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
+        <div class="push-right"><span class="_badge _badge-s-black">{{ max }} Pkt.</span></div>
+        <div class="fs-subheading">
+          {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
+        </div>
+        {% set masterloop = loop %}
+        {% for c in i.data.choices %}
+          <div class="p1">
+            <input type="checkbox" disabled name="quiz-question-{{ masterloop.index }}" id="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" value="{{ loop.index-1 }}" class="form-checkbox" {% if c.startswith("*") %} checked{% endif %}>
+            <label for="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" class="form form-inline">
+              {% if c.startswith("*") %} <span class="_badge _badge-s-success push-right">richtig</span>{% endif %}
+               {%if c.startswith("*")%}{%set c=c[1:]%}{%endif%}
+              {{ c }}
+            </label>
+          </div>
+        {% endfor %}
+      </div>
+     {% elif i.type == "text-answer" %}{% set max = i.data.points %}
+     <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
+        <div class="push-right"><span class="_badge _badge-s-black">{{ max }} Pkt.</span></div>
+        <div class="fs-subheading">
+          {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
+        </div>
+        <div class="p1">
+          <input class="form" id="quiz-question-{{ loop.index }}-answer" disabled>
+          <p class="form-validation"><strong>akzeptiert werden:</strong> {% for _ in i.data.correct %}{% if not loop.index == 1 %}, {% endif %}{{ _ }}{% endfor %}
+        </div>
+      </div>
+     {% endif %}
+    {% endfor %}
+
+  </div>
+</div>
+
+{% endblock %}
