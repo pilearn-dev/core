@@ -1,28 +1,19 @@
-<div class="bg--primary-ll mt3 p2">
-  {% if branch.isAbandoned() %}
-  <div class="fs-base3 p1">Dieser Änderungsvorschlag wurde <strong>aufgegeben</strong>.</div>
-  {% elif not branch.getDetail("pull_request") %}
+<div class="bg--primary-dddd b-r1 col-white p1 mt3">
   <div class="grid -full-center">
     <div class="colbox-fill column12__sm column12__md">
-      <div class="fs-base3 p1">Dieser Änderungsvorschlag ist noch <strong>in Arbeit</strong>.</div>
+      <div class="fs-base3 p1 px3 py2 py0__lg">Branch #{{ branch.id }} zum Kurs {{ course.getTitle() }}</div>
     </div>
     <div class="colbox column12__sm column12__md">
       <div class="_btnlist">
-        <a href="/course/{{ course.id }}/{{ course.getLabel() }}/branch/{{ branch.id }}/submit" class="_btn _btn--primary">Vorschlag absenden</a>
-        <a href="/course/{{ course.id }}/{{ course.getLabel() }}/branch/{{ branch.id }}/cancel" class="_btn _btn--primary">Vorschlag aufgeben</a>
+      {% if branch.isAbandoned() %}
+        <a href="/course/{{ course.id }}/{{ course.getLabel() }}/pull-request/{{ branch.getDetail("pull_request")}}" class="_btn _btn--primary _btn-on-dark _btn-lighter" disabled>(verworfen)</a>
+      {% elif not branch.getDetail("pull_request") %}
+          <a href="/course/{{ course.id }}/{{ course.getLabel() }}/branch/{{ branch.id }}/submit" class="_btn _btn--primary _btn-on-dark _btn-lighter">Neue Pull Request</a>
+          <a href="/course/{{ course.id }}/{{ course.getLabel() }}/branch/{{ branch.id }}/cancel" class="_btn _btn--primary _btn-on-dark _btn-outline">Branch verwerfen</a>
+      {% else %}
+        <a href="/course/{{ course.id }}/{{ course.getLabel() }}/pull-request/{{ branch.getDetail("pull_request")}}" class="_btn _btn--primary _btn-on-dark _btn-lighter">Zur Pull Request</a>
+      {% endif %}
       </div>
     </div>
   </div>
-  {% else %}
-  <div class="grid -full-center">
-    <div class="colbox-fill column12__sm column12__md">
-      <div class="fs-base3 p1">Dieser Änderungsvorschlag wurde abgesendet und wird jetzt entschieden.</div>
-    </div>
-    <div class="colbox column12__sm column12__md">
-      <div class="_btnlist">
-        <a href="/course/{{ course.id }}/{{ course.getLabel() }}/pull-request/{{ branch.getDetail("pull_request")}}" class="_btn _btn--primary">Zur Pull Request</a>
-      </div>
-    </div>
-  </div>
-  {% endif %}
 </div>

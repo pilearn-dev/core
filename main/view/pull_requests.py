@@ -185,6 +185,25 @@ def branch_unit_reorder(branch_id, course_id,course_label=None):
     else:
         return render_template('courses/pull-requests/reorder.html', title="Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch)
 
+def branch_submit(branch_id, course_id,course_label=None):
+    if not mcourses.Courses.exists(course_id):
+        abort(404)
+    course = mcourses.Courses(course_id)
+    cuser = muser.getCurrentUser()
+    if course.getLabel() != course_label and request.method != "POST":
+        return redirect(url_for("branch_submit", branch_id=branch_id, course_id=course_id, course_label=course.getLabel()))
+    if not mpull_requests.Branch.exists(branch_id):
+        abort(404)
+    branch = mpull_requests.Branch(branch_id)
+
+    if request.method == "POST":
+        print branch.calculateRepDelta()
+        pr = mpull_requests.PullRequest.new(course.id, branch.id, cuser.id, request.json["title"], request.json["description"])
+        branch.setDetail("pull_request", pr.id)
+        return jsonify({"url": ""})
+    else:
+        return render_template('courses/pull-requests/submit.html', title="Neues Pull Request zu Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch)
+
 def _mkdata(unit_id, override_id, course_id, branch):
     if unit_id == "-":
         data = {
@@ -237,3 +256,5 @@ def apply(app):
     app.route("/c/<int:course_id>/branch/<int:branch_id>/revert/<int:override_id>", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/branch/<int:branch_id>/revert/<int:override_id>", methods=["GET", "POST"])(branch_revert_override))
     app.route("/c/<int:course_id>/branch/<int:branch_id>/new-item", methods=["POST"])(app.route("/course/<int:course_id>/<course_label>/branch/<int:branch_id>/new-item", methods=["POST"])(branch_new_item))
     app.route("/c/<int:course_id>/branch/<int:branch_id>/reorder", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/branch/<int:branch_id>/reorder", methods=["GET", "POST"])(branch_unit_reorder))
+
+    app.route("/c/<int:course_id>/branch/<int:branch_id>/submit", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/branch/<int:branch_id>/submit", methods=["GET", "POST"])(branch_submit))

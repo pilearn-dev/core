@@ -1,0 +1,54 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "pr", user) }}
+
+{% include "courses/pull-requests/_header.html" %}
+
+
+<div class="grid -equal-columns">
+  <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
+    <div class="p3">
+      {% include "courses/pull-requests/_menu.html" %}
+    </div>
+  </div>
+  <div class="column9__lg column12 bs2-light p3">
+    <h1>Neue Pull Request</h1>
+    <p class="p-lead">Erstelle eine Pull Request, um deine Änderungsvorschläge zu veröffentlichen. Das Kursteam kann dann entscheiden, ob der Vorschlag angenommen oder abgelehnt wird.</p>
+
+    <label for="title" class="form">Name der Pull Request</label>
+    <div class="fs-caption">Gebe deiner Pull Request einen möglichst ausdrucksstarken Namen, wie z.B. "Antworten zu Beispielen ausführlicher gestaltet"</div>
+
+    <input id="title" class="form">
+
+    <label for="description" class="form">Beschreibung der Pull Request</label>
+    <div class="fs-caption">Erkläre, welche Änderungen du warum gemacht hast. Eine nachvollziehbare Erklärung erhöht die Wahrscheinlichkeit einer Annahme.</div>
+
+    <textarea id="description" class="form"></textarea>
+
+    <button class="_btn _btn--primary" id="submit">Neues Pull Request erstellen</button>
+    <a class="_btn _btn-on-light _btn--primary" href="/c/{{ course.id }}/branch/{{ branch.id }}">Abbrechen</a>
+  </div>
+
+  <script>
+    $("#submit").on("click", function() {
+      $("#submit").addClass("-loading").text("Speichere...");
+      $.ajax({
+        method: "POST",
+        url: "/c/{{ course.id }}/branch/{{ branch.id }}/submit",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({
+          "title": $("#title").val(),
+          "description": $("#description").val()
+        }),
+        success: function( result ) {
+          window.location.href = result.url;
+        },
+        error: function() {
+          $("#submit").removeClass("-loading").text("Fehler beim Speichern");
+        }
+      });
+    })
+  </script>
+</div>
+{% endblock %}

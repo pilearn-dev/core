@@ -190,6 +190,24 @@ class Branch:
 
         return new_menu
 
+    def calculateRepDelta(self):
+        score = 0
+        changes = self.getOverrides()
+        for change in changes:
+            if change["created"]:
+                score += 10
+            else:
+                unit = mcourses.Units(change["overrides"])
+                if unit.getTitle() != change["title"]:
+                    score += 1
+                if json.loads(unit.getDetail("content")) != json.loads(change["content"]):
+                    score += 5
+                    if len(unit.getDetail("content")) <= 2 * len(change["content"]):
+                        score += 5
+        self.setDetail("delta_factor", score)
+        return score
+
+
     def getCourse(self):
         return mcourses.Courses(self.getDetail("course_id"))
 
@@ -372,6 +390,111 @@ class Branch:
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO branches (author, course_id, pull_request, abandoned, abandoned_date, decision, decision_date, hide_as_spam, delta_factor) VALUES (?, ?, NULL, 0, 0, 0, 0, 0, 0)", (user_id, course_id))
+            data = con.commit()
+            return Branch(cur.lastrowid)
+        except lite.Error as e:
+            return None
+        finally:
+            if con:
+                con.close()
+
+
+
+
+
+
+class PullRequest:
+
+    def __init__(self, id):
+        self.id = id
+        self.__data = self.getInfo()
+
+    def getDetail(self, d):
+        return self.__data[d]
+
+    def setDetail(self, d, v):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("UPDATE pull_requests SET "+d+"=? WHERE id=?", (v, self.id))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def getCourse(self):
+        return mcourses.Courses(self.getDetail("course_id"))
+
+    def getAuthor(self):
+        return muser.User.safe(self.getDetail("author"))
+
+    def getInfo(self):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM pull_requests WHERE id=?", (self.id, ))
+            data = cur.fetchone()
+            if data is None:
+                raise ValueError("PullRequest not found with id " + str(self.id))
+            return {
+                "id": data['id'],
+                "author": data['author'],
+                "branch_id": data['branch_id'],
+                "course_id": data['course_id'],
+                "title": data['title'],
+                "description": data['description'],
+                "decision": data['decision'],
+                "decision_date": data['decision_date'],
+                "hide_as_spam": data['hide_as_spam']
+            }
+        except lite.Error as e:
+            raise e
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def exists(cls, id):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM pull_requests WHERE id=?", (id,))
+            data = cur.fetchone()
+            return data is not None
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def getByCourse(cls, course_id):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT id FROM pull_requests WHERE course_id=?", (course_id,))
+            data = cur.fetchone()
+            return PullRequest(data["id"]) if data is not None else None
+        except lite.Error as e:
+            return None
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def new(cls, course_id, branch_id, user_id, title, description):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("INSERT INTO pull_requests (author, branch_id, course_id, title, description, decision, decision_date, hide_as_spam) VALUES (?, ?, ?, ?, ?, 0, 0, 0)", (user_id, branch_id, course_id, title, description))
             data = con.commit()
             return Branch(cur.lastrowid)
         except lite.Error as e:
