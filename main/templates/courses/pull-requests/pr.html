@@ -7,20 +7,21 @@
 <div class="grid">
     <div class="column9 column12__sm p2">
         <div class="p3">
-            <h1 class="mb0"><a class="anchor-dark fs-subtitle" href="#!">#{{ pr.id }}</a> {{ pr.getTitle() }}</h1>
+            <h1 class="mb0"><a class="anchor-dark fs-subtitle" href="">#{{ pr.id }}</a> {{ pr.getTitle() }}</h1>
             <p class="mt0 mb3">betrifft <a class="fs-base3" href="/c/{{ course.id }}/branch/{{ branch.id }}">Branch #{{ branch.id }}</a></p>
 
             {{ (pr.getDescription().replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
 
             <a href="/c/{{ course.id }}/branch/{{ branch.id }}" class="_btn _btn-lg _btn--primary">Änderungen sehen</a>
         </div>
+        {% if pr.getState() == 0 %}
         {% if user.isMod() or course.getCourseRole(user) >= 3 %}
         <div class="_card _card-white mt5 mx0">
             <div class="_card-title _card-subtitle bg-dark-lll col-black-l">
-                <a class="push-right" href="#!">Hilfe?</a>
+                <a class="push-right" data-toggle="#pr-decision-help" data-toggle-class="hide" href="#!">Hilfe?</a>
                 Entscheide über diese Pull Request!
             </div>
-            <div class="_card-content hide">
+            <div class="_card-content hide" id="pr-decision-help">
                 <p>Nimm Pull Requests an, die ...</p>
                 <ul>
                     <li>Fehler korrigieren,</li>
@@ -38,10 +39,23 @@
             </div>
             <div class="_card-footer">
                 <div class="_btnlist">
-                    <button class="_btn _btn--primary">Annehmen und anwenden</button>
-                    <button class="_btn _btn--primary _btn-outline">Ablehnen</button>
-                    <button class="_btn _btn--primary _btn-on-light">Ablehnen (missbräuchlich)</button>
+                    <button class="_btn _btn--primary" onclick="decide(this, 1, false)">Annehmen und anwenden</button>
+                    <button class="_btn _btn--primary _btn-outline" onclick="decide(this, -1, false)">Ablehnen</button>
+                    <button class="_btn _btn--primary _btn-on-light" onclick="decide(this, -1, true)">Ablehnen (missbräuchlich)</button>
                 </div>
+            </div>
+        </div>
+        {% endif %}
+        {% elif pr.getState() == 1 %}
+        <div class="_alert _alert-success m3">
+            <div class="fs-subheading">
+                Diese Pull Request war <strong class="col-success-ddd">hilfreich</strong> und wurde angewendet.
+            </div>
+        </div>
+        {% else %}
+        <div class="_alert _alert-danger m3">
+            <div class="fs-subheading">
+                Diese Pull Request war <strong class="col-danger-ddd">nicht hilfreich</strong> und wurde abgelehnt.
             </div>
         </div>
         {% endif %}
@@ -63,15 +77,20 @@
 </div>
 
 <script>
-  function createPR(_this) {
+  function decide(_this, decision, as_abuse) {
     $.ajax({
       method: "POST",
-      url: "/course/{{ course.id }}/{{ course.getLabel() }}/branches/create",
+      url: "/course/{{ course.id }}/{{ course.getLabel() }}/pull-request/{{ pr.id }}/add-decision",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        decision: decision,
+        as_abuse: as_abuse
+      }),
       success: function( result ) {
         window.location.reload();
       },
       error: function() {
-        PiJS.warnbox.error("Fehler beim Erstellen der PR", $(_this).parent());
+        PiJS.warnbox.error("Fehler beim Bearbeiten der PR", $(_this).parent());
       }
     });
   }

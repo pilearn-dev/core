@@ -190,6 +190,37 @@ class Branch:
 
         return new_menu
 
+    def apply(self):
+        change_requests = self.getOverrides()
+        last_round_changes = -1
+        while last_round_changes != 0:
+            while None in change_requests:
+                del change_requests[change_requests.index(None)]
+            last_round_changes = 0
+
+            for change in change_requests:
+                if change["overrides"]:
+                    if change["parent_override"] and not change["parent_unit"]:
+                        continue
+                    unit = mcourses.Units(change["overrides"])
+                    unit.setDetail("title", change["title"])
+                    unit.setDetail("content", change["content"])
+                    unit.setDetail("parent", change["parent_unit"])
+                    unit.setDetail("unit_order", change["unit_order"])
+                else:
+                    if change["parent_override"] and not change["parent_unit"]:
+                        continue
+                    unit = mcourses.Units.new(self.getDetail("course_id"), change["content"], change["type"], change["parent_unit"])
+                    unit = mcourses.Units(unit)
+                    unit.setDetail("title", change["title"])
+                    unit.setDetail("unit_order", change["unit_order"])
+                    unit.setDetail("availible", 1)
+
+                    for chr in change_requests:
+                        if chr is None: continue
+                        if chr["parent_override"] == change["id"]:
+                            chr["parent_unit"] = unit.id
+
     def calculateRepDelta(self):
         score = 0
         changes = self.getOverrides()

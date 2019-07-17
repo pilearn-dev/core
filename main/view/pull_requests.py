@@ -235,6 +235,49 @@ def course_single_pr(id, course_id,course_label=None):
 
     return render_template('courses/pull-requests/pr.html', title="PR #" + str(pr.id) + u" für " + course.getTitle(), thispage="courses", course=course, pr=pr, branch=branch)
 
+def course_decide_pr(id, course_id,course_label=None):
+    if not mcourses.Courses.exists(course_id):
+        abort(404)
+    course = mcourses.Courses(course_id)
+    cuser = muser.getCurrentUser()
+    if course.getLabel() != course_label and request.method != "POST":
+        return redirect(url_for("course_single_pr", id=id, course_id=course_id, course_label=course.getLabel()))
+    if not mpull_requests.PullRequest.exists(id):
+        abort(404)
+    pr = mpull_requests.PullRequest(id)
+    branch = pr.getBranch()
+
+    if pr.isHiddenAsSpam() and not cuser.isLoggedIn() or pr.getDetail("course_id") != course.id:
+        abort(404)
+
+    if pr.getState() != 0:
+        abort(404)
+
+    if not(cuser.isMod() or course.getCourseRole(cuser) >= 3):
+        abort(403)
+
+    if request.json["decision"] not in range(-1, 2):
+        abort(400)
+
+    if request.json["as_abuse"] not in [True, False]:
+        abort(400)
+
+    pr.setDetail("decision", request.json["decision"])
+    pr.setDetail("decision_date", time.time())
+    pr.setDetail("hide_as_spam", request.json["as_abuse"])
+
+    branch.setDetail("decision", request.json["decision"])
+    branch.setDetail("decision_date", time.time())
+    branch.setDetail("hide_as_spam", request.json["as_abuse"])
+
+    if request.json["decision"] == 1:
+        au = branch.getAuthor()
+        au.setReputationChange("pr", u"[Pull Request #"+str(pr.id)+ u" für " + course.getTitle() + "](/c/"+str(course.id)+"/pull-request/" + str(pr.id) + ")", branch.getDetail("delta_factor"))
+        au.regetRep()
+        branch.apply()
+
+    return "ok"
+
 def _mkdata(unit_id, override_id, course_id, branch):
     if unit_id == "-":
         data = {
@@ -291,3 +334,4 @@ def apply(app):
     app.route("/c/<int:course_id>/branch/<int:branch_id>/submit", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/branch/<int:branch_id>/submit", methods=["GET", "POST"])(branch_submit))
 
     app.route("/c/<int:course_id>/pull-request/<int:id>")(app.route("/course/<int:course_id>/<course_label>/pull-request/<int:id>")(course_single_pr))
+    app.route("/c/<int:course_id>/pull-request/<int:id>/add-decision", methods=["POST"])(app.route("/course/<int:course_id>/<course_label>/pull-request/<int:id>/add-decision", methods=["POST"])(course_decide_pr))

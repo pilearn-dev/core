@@ -15,7 +15,8 @@ class User:
         "forum_vote": "Beitragsbewertung",
         "forum_accept": "Beitrag akzeptiert",
         "enroll": "Neuer Kursbesucher",
-        "winter": "Winter 2018"
+        "winter": "Winter 2018",
+        "pr": "Pull Request"
     }
 
     labels = {
