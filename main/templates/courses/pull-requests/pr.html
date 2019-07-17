@@ -47,16 +47,16 @@
         </div>
         {% endif %}
         {% elif pr.getState() == 1 %}
-        <div class="_alert _alert-success m3">
-            <div class="fs-subheading">
-                Diese Pull Request war <strong class="col-success-ddd">hilfreich</strong> und wurde angewendet.
-            </div>
+        <div class="content-warning m3">
+            <p>
+                Diese Pull Request war <strong>hilfreich</strong> und wurde angewendet.
+            </p>
         </div>
         {% else %}
-        <div class="_alert _alert-danger m3">
-            <div class="fs-subheading">
-                Diese Pull Request war <strong class="col-danger-ddd">nicht hilfreich</strong> und wurde abgelehnt.
-            </div>
+        <div class="content-warning m3">
+            <p>
+                Diese Pull Request war <strong>nicht hilfreich</strong> und wurde abgelehnt.
+            </p>
         </div>
         {% endif %}
     </div>
