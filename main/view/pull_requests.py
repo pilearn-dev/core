@@ -230,7 +230,7 @@ def course_single_pr(id, course_id,course_label=None):
     pr = mpull_requests.PullRequest(id)
     branch = pr.getBranch()
 
-    if pr.isHiddenAsSpam() and not cuser.isLoggedIn():
+    if pr.isHiddenAsSpam() and not cuser.isLoggedIn() or pr.getDetail("course_id") != course.id:
         abort(404)
 
     return render_template('courses/pull-requests/pr.html', title="PR #" + str(pr.id) + u" für " + course.getTitle(), thispage="courses", course=course, pr=pr, branch=branch)
