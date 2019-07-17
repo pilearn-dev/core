@@ -22,10 +22,10 @@
         <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/edit"{% if current_page == "edit" %} class="-active"{% endif %}>Bearbeiten</a>
         {% endif %}
         <a href="/f/{{ forum.id }}"{% if current_page == "forum" %} class="-active"{% endif %}>Forum</a>
-        {% if course.getCourseRole(user) >= 3 %}
-        <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/pull-requests"{% if current_page == "pr" %} class="-active"{% endif %}>Pull Requests</a>
+        {% if course.getCourseRole(user) >= 3 %}{% set prc = course.getActivePRCount() %}
+        <a href="/course/{{ course.id }}/{{ course.getLabel() }}/pull-requests"{% if current_page == "pr" %} class="-active"{% endif %}>Pull Requests{% if prc %}<span class="_badge _badge-tabitem">{{ prc }}</span>{% endif %}</a>
         {% else %}
-        <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/branches"{% if current_page == "pr" %} class="-active"{% endif %}>Pull Requests</a>
+        <a href="/course/{{ course.id }}/{{ course.getLabel() }}/branches"{% if current_page == "pr" %} class="-active"{% endif %}>Pull Requests</a>
         {% endif %}
         {% if course.getCourseRole(user) == 4 or user.isMod() %}
         <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/admin"{% if current_page == "admin" %} class="-active"{% endif %}>Verwaltung</a>
@@ -54,8 +54,8 @@
       <a href="/course/{{ course.id }}/{{ course.getLabel() }}/edit"{% if current_page == "edit" %} class="-active"{% endif %}>Bearbeiten</a>
       {% endif %}
       <a href="/forum/{{ course.id }}/{{ course.getLabel() }}"{% if current_page == "forum" %} class="-active"{% endif %}>Forum</a>
-      {% if course.getCourseRole(user) >= 3 %}
-      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/pull-requests"{% if current_page == "pr" %} class="-active"{% endif %}>Pull Requests</a>
+      {% if course.getCourseRole(user) >= 3 %}{% set prc = course.getActivePRCount() %}
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/pull-requests"{% if current_page == "pr" %} class="-active"{% endif %}>Pull Requests{% if prc %}<span class="_badge _badge-tabitem">{{ prc }}</span>{% endif %}</a>
       {% else %}
       <a href="/course/{{ course.id }}/{{ course.getLabel() }}/branches"{% if current_page == "pr" %} class="-active"{% endif %}>Pull Requests</a>
       {% endif %}

@@ -52,6 +52,19 @@ class Courses:
         import forum as mforum
         return mforum.Forum(self.id)
 
+    def getActivePRCount(self):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT Count(*) FROM pull_requests WHERE decision=0 AND course_id=? AND hide_as_spam=0", (self.id,))
+            return cur.fetchone()[0]
+        except lite.Error as e:
+            return 0
+        finally:
+            if con:
+                con.close()
+
     @classmethod
     def getCourseList(cls):
         try:
