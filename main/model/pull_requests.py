@@ -216,6 +216,8 @@ class Branch:
                     unit.setDetail("unit_order", change["unit_order"])
                     unit.setDetail("availible", 1)
 
+                    self.mapOverrideToUnit(change["id"], unit.id)
+
                     for chr in change_requests:
                         if chr is None: continue
                         if chr["parent_override"] == change["id"]:
@@ -235,6 +237,10 @@ class Branch:
                     score += 5
                     if len(unit.getDetail("content")) <= 2 * len(change["content"]):
                         score += 5
+        if score > 50:
+            score = 50
+        if score < 2:
+            score = 2
         self.setDetail("delta_factor", score)
         return score
 
@@ -276,6 +282,20 @@ class Branch:
             return cur.fetchone()
         except lite.Error as e:
             return None
+        finally:
+            if con:
+                con.close()
+
+    def mapOverrideToUnit(self, override_id, unit_id):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("UPDATE branch_overrides SET overrides=? WHERE id=?", (unit_id, override_id))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
         finally:
             if con:
                 con.close()
@@ -400,12 +420,15 @@ class Branch:
                 con.close()
 
     @classmethod
-    def getByCourseAndUser(cls, course_id, user_id):
+    def getByCourseAndUser(cls, course_id, user_id, limit_to_active=False):
         try:
             con = lite.connect('databases/courses.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT id FROM branches WHERE course_id=? AND author=?", (course_id, user_id))
+            if limit_to_active:
+                cur.execute("SELECT id FROM branches WHERE course_id=? AND author=? AND decision=0 AND abandoned=0", (course_id, user_id))
+            else:
+                cur.execute("SELECT id FROM branches WHERE course_id=? AND author=?", (course_id, user_id))
             data = cur.fetchone()
             return Branch(data["id"]) if data is not None else None
         except lite.Error as e:

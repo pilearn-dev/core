@@ -14,7 +14,7 @@ def course_branches(id,label=None):
     if not cuser.isLoggedIn() or cuser.isDisabled():
         abort(404)
 
-    existing_branch = mpull_requests.Branch.getByCourseAndUser(course.id, cuser.id)
+    existing_branch = mpull_requests.Branch.getByCourseAndUser(course.id, cuser.id, True)
     if existing_branch:
         return redirect(url_for("course_single_branch", course_id=id, course_label=course.getLabel(), id=existing_branch.id))
 
@@ -28,7 +28,7 @@ def course_create_branch(id,label=None):
     if not cuser.isLoggedIn() or cuser.isDisabled():
         abort(404)
 
-    existing_branch = mpull_requests.Branch.getByCourseAndUser(course.id, cuser.id)
+    existing_branch = mpull_requests.Branch.getByCourseAndUser(course.id, cuser.id, True)
     if existing_branch:
         abort(400)
 
@@ -210,7 +210,10 @@ def branch_submit(branch_id, course_id,course_label=None):
     if branch.getDetail("pull_request"): abort(404)
 
     if request.method == "POST":
-        print branch.calculateRepDelta()
+        if course.getCourseRole(cuser) < 3:
+            branch.calculateRepDelta()
+        else:
+            branch.setDetail("delta_factor", 0)
         pr = mpull_requests.PullRequest.new(course.id, branch.id, cuser.id, request.json["title"], request.json["description"])
         branch.setDetail("pull_request", pr.id)
         return jsonify({"url": url_for("course_single_pr", id=pr.id, course_id=course.id, course_label=course.getLabel())})
