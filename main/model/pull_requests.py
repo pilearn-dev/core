@@ -562,6 +562,25 @@ class PullRequest:
                 con.close()
 
     @classmethod
+    def getByUser(cls, user_id, limit_to_active_state):
+        try:
+            con = lite.connect('databases/courses.db')
+            cur = con.cursor()
+            if limit_to_active_state is True:
+                cur.execute("SELECT id FROM pull_requests WHERE author=? AND decision=0", (user_id,))
+            elif limit_to_active_state is False:
+                cur.execute("SELECT id FROM pull_requests WHERE author=? AND decision!=0", (user_id,))
+            else:
+                cur.execute("SELECT id FROM pull_requests WHERE author=?", (user_id,))
+            data = cur.fetchall()
+            return [PullRequest(d[0]) for d in data]
+        except lite.Error as e:
+            return []
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
     def new(cls, course_id, branch_id, user_id, title, description):
         try:
             con = lite.connect('databases/courses.db')
