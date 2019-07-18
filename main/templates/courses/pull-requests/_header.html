@@ -11,7 +11,7 @@
     <div class="colbox column12__sm column12__md">
       <div class="_btnlist">
       {% if branch.isAbandoned() %}
-        <a href="/course/{{ course.id }}/{{ course.getLabel() }}/pull-request/{{ branch.getDetail("pull_request")}}" class="_btn _btn--primary _btn-on-dark _btn-lighter" disabled>(verworfen)</a>
+        <span class="p2 col-dark-lll">(verworfen)</span>
       {% elif not branch.getDetail("pull_request") %}
           <a href="/course/{{ course.id }}/{{ course.getLabel() }}/branch/{{ branch.id }}/submit" class="_btn _btn--primary _btn-on-dark _btn-lighter">Neue Pull Request</a>
           <a href="/course/{{ course.id }}/{{ course.getLabel() }}/branch/{{ branch.id }}/cancel" class="_btn _btn--primary _btn-on-dark _btn-outline">Branch verwerfen</a>

@@ -67,7 +67,7 @@ def branch_item(unit_id, override_id, branch_id, course_id,course_label=None):
 
     data = _mkdata(unit_id, override_id, course_id, branch)
 
-    if branch.getDetail("pull_request"):
+    if branch.getDetail("pull_request") or branch.isAbandoned():
         return render_template('courses/pull-requests/item.static/' + data["type"] + '.html', title="Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch, data=data, unit_id=unit_id, override_id=override_id, int=int)
     else:
         return render_template('courses/pull-requests/item/' + data["type"] + '.html', title="Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch, data=data, unit_id=unit_id, override_id=override_id)
@@ -83,7 +83,7 @@ def branch_update_item(unit_id, override_id, branch_id, course_id,course_label=N
         abort(404)
     branch = mpull_requests.Branch(branch_id)
 
-    if branch.getDetail("pull_request"): abort(404)
+    if branch.getDetail("pull_request") or branch.isAbandoned(): abort(404)
 
     if not (branch.getDetail("author") == cuser.id or cuser.isMod()) or cuser.isDisabled() or branch.getDetail("course_id") != course.id:
         abort(404)
@@ -109,7 +109,7 @@ def branch_revert_override(override_id, branch_id, course_id,course_label=None):
         abort(404)
     branch = mpull_requests.Branch(branch_id)
 
-    if branch.getDetail("pull_request"): abort(404)
+    if branch.getDetail("pull_request") or branch.isAbandoned(): abort(404)
 
     if not (branch.getDetail("author") == cuser.id or cuser.isMod()) or cuser.isDisabled() or branch.getDetail("course_id") != course.id:
         abort(404)
@@ -132,7 +132,7 @@ def branch_new_item(branch_id, course_id,course_label=None):
         abort(404)
     branch = mpull_requests.Branch(branch_id)
 
-    if branch.getDetail("pull_request"): abort(404)
+    if branch.getDetail("pull_request") or branch.isAbandoned(): abort(404)
 
     if not (branch.getDetail("author") == cuser.id or cuser.isMod()) or cuser.isDisabled() or branch.getDetail("course_id") != course.id:
         abort(404)
@@ -158,7 +158,7 @@ def branch_unit_reorder(branch_id, course_id,course_label=None):
         abort(404)
     branch = mpull_requests.Branch(branch_id)
 
-    if branch.getDetail("pull_request"): abort(404)
+    if branch.getDetail("pull_request") or branch.isAbandoned(): abort(404)
 
     if request.method == "POST":
         datar = (request.json)
@@ -207,7 +207,7 @@ def branch_submit(branch_id, course_id,course_label=None):
         abort(404)
     branch = mpull_requests.Branch(branch_id)
 
-    if branch.getDetail("pull_request"): abort(404)
+    if branch.getDetail("pull_request") or branch.isAbandoned(): abort(404)
 
     if request.method == "POST":
         if course.getCourseRole(cuser) < 3:
@@ -219,6 +219,26 @@ def branch_submit(branch_id, course_id,course_label=None):
         return jsonify({"url": url_for("course_single_pr", id=pr.id, course_id=course.id, course_label=course.getLabel())})
     else:
         return render_template('courses/pull-requests/submit.html', title="Neues Pull Request zu Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch)
+
+def branch_cancel(branch_id, course_id,course_label=None):
+    if not mcourses.Courses.exists(course_id):
+        abort(404)
+    course = mcourses.Courses(course_id)
+    cuser = muser.getCurrentUser()
+    if course.getLabel() != course_label and request.method != "POST":
+        return redirect(url_for("branch_submit", branch_id=branch_id, course_id=course_id, course_label=course.getLabel()))
+    if not mpull_requests.Branch.exists(branch_id):
+        abort(404)
+    branch = mpull_requests.Branch(branch_id)
+
+    if branch.getDetail("pull_request") or branch.isAbandoned(): abort(404)
+
+    if request.method == "POST":
+        branch.setDetail("abandoned", 1)
+        branch.setDetail("abandoned_date", time.time())
+        return jsonify({"url": url_for("course_single_branch", id=branch.id, course_id=course.id, course_label=course.getLabel())})
+    else:
+        return render_template('courses/pull-requests/cancel.html', title="Verwerfen: Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch)
 
 
 def course_prs(course_id,course_label=None):
@@ -348,6 +368,7 @@ def apply(app):
     app.route("/c/<int:course_id>/branch/<int:branch_id>/reorder", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/branch/<int:branch_id>/reorder", methods=["GET", "POST"])(branch_unit_reorder))
 
     app.route("/c/<int:course_id>/branch/<int:branch_id>/submit", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/branch/<int:branch_id>/submit", methods=["GET", "POST"])(branch_submit))
+    app.route("/c/<int:course_id>/branch/<int:branch_id>/cancel", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/branch/<int:branch_id>/cancel", methods=["GET", "POST"])(branch_cancel))
 
     app.route("/c/<int:course_id>/pull-requests")(app.route("/course/<int:course_id>/<course_label>/pull-requests")(course_prs))
     app.route("/c/<int:course_id>/pull-request/<int:id>")(app.route("/course/<int:course_id>/<course_label>/pull-request/<int:id>")(course_single_pr))

@@ -17,7 +17,7 @@
      <div class="grid -equal-columns">
       <div class="column8 column12__sm p2">
           <h1>Übersicht über die Kursmodule</h1>
-          {% if not branch.getDetail("pull_request") %}
+          {% if not branch.getDetail("pull_request") and not branch.isAbandoned %}
           <a href="/c/{{ course.id }}/branch/{{ branch.id }}/reorder" class="_btn push-right _btn--primary _btn-lighter">Anordnung ändern</a>
           <button onclick="PiJS.dialog.resetposition($('#newitem_dialog').removeClass('hide'));" class="_btn push-right _btn--primary">Hinzufügen</button>
           <div class="push-reset"></div>
@@ -45,7 +45,7 @@
                   {% endif %}
                   <td><a href="/c/{{ course.id }}/branch/{{ branch.id }}/item/{{ element.id if element.id else '-' }}/{{ element.overrides if element.overrides else '-' }}">{{ element.title }}</a></td>
                   <td>
-                    {% if not branch.getDetail("pull_request") %}
+                    {% if not branch.getDetail("pull_request") and not branch.isAbandoned %}
                     {% if element.created %}
                     <span class="_badge _badge-s-success">erstellt <a href="/c/{{ course.id }}/branch/{{ branch.id }}/revert/{{ element.overrides if element.overrides else '-' }}" class="_badge-revoke">&times;</a></span>
                     {% elif element.changed %}
@@ -78,7 +78,7 @@
                     {% endif %}
                     <td>&mdash;<a href="/c/{{ course.id }}/branch/{{ branch.id }}/item/{{ child.id if child.id else '-' }}/{{ child.overrides if child.overrides else '-' }}">{{ child.title }}</a></td>
                     <td>
-                      {% if not branch.getDetail("pull_request") %}
+                      {% if not branch.getDetail("pull_request") and not branch.isAbandoned %}
                       {% if child.created %}
                       <span class="_badge _badge-s-success">erstellt <a href="/c/{{ course.id }}/branch/{{ branch.id }}/revert/{{ child.overrides if child.overrides else '-' }}" class="_badge-revoke">&times;</a></span>
                       {% elif child.changed %}
@@ -97,7 +97,7 @@
               {% endif %}
               {% endfor %}
           </table>
-          {% if not branch.getDetail("pull_request") %}
+          {% if not branch.getDetail("pull_request") and not branch.isAbandoned %}
           <a href="/c/{{ course.id }}/branch/{{ branch.id }}/reorder" class="_btn push-right _btn--primary _btn-lighter">Anordnung ändern</a>
           <button onclick="PiJS.dialog.resetposition($('#newitem_dialog').removeClass('hide'));" class="_btn push-right _btn--primary">Hinzufügen</button>
           <div class="push-reset"></div>
@@ -126,7 +126,7 @@
     </div>
    </div>
  </div>
-{% if not branch.getDetail("pull_request") %}
+{% if not branch.getDetail("pull_request") and not branch.isAbandoned %}
  <div class="_dialog hide" id="newitem_dialog">
   <a href="#!" onclick="$('#newitem_dialog').addClass('hide')" class="_xbtn _dialog-xbtn">&times;</a>
   <h3>Neue Seite hinzufügen</h3>
