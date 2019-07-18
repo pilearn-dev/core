@@ -4,6 +4,11 @@
 {% from "_course-header.html" import course_header %}
 {{ course_header(course, "pr", user) }}
 
+<div class="_nav _nav-t _nav-right _nav-t-smaller m2">{% set prc = course.getActivePRCount() %}
+  <a href="/course/{{ course.id }}/{{ course.getLabel() }}/branches">Branches</a>
+  <a href="/course/{{ course.id }}/{{ course.getLabel() }}/pull-requests" class="-active">Pull Requests{% if prc %}<span class="_badge _badge-tabitem">{{ prc }}</span>{% endif %}</a>
+</div>
+
 <div class="grid">
     <div class="column9 column12__sm p2">
         <div class="p3">

@@ -4,6 +4,11 @@
 {% from "_course-header.html" import course_header %}
 {{ course_header(course, "pr", user) }}
 
+<div class="_nav _nav-t _nav-right _nav-t-smaller m2">{% set prc = course.getActivePRCount() %}
+  <a href="/course/{{ course.id }}/{{ course.getLabel() }}/branches" class="-active">Branches</a>
+  <a href="/course/{{ course.id }}/{{ course.getLabel() }}/pull-requests">Pull Requests{% if prc %}<span class="_badge _badge-tabitem">{{ prc }}</span>{% endif %}</a>
+</div>
+
 <div class="p5 m5 ta-c">
     <p class="fs-heading">Du möchtest diesen Kurs verbessern?</p>
     <p class="fs-base3">Dann kannst du eine Pull Request mit konkreten Änderungsvorschlägen (Branch) stellen. Nebenbei kannst du auch Reputation erhalten (2 bis 50 Punkte)</p>

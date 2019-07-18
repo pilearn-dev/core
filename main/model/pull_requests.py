@@ -543,16 +543,20 @@ class PullRequest:
                 con.close()
 
     @classmethod
-    def getByCourse(cls, course_id):
+    def getByCourse(cls, course_id, limit_to_active_state):
         try:
             con = lite.connect('databases/courses.db')
-            con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT id FROM pull_requests WHERE course_id=?", (course_id,))
-            data = cur.fetchone()
-            return PullRequest(data["id"]) if data is not None else None
+            if limit_to_active_state is True:
+                cur.execute("SELECT id FROM pull_requests WHERE course_id=? AND decision=0", (course_id,))
+            elif limit_to_active_state is False:
+                cur.execute("SELECT id FROM pull_requests WHERE course_id=? AND decision!=0", (course_id,))
+            else:
+                cur.execute("SELECT id FROM pull_requests WHERE course_id=?", (course_id,))
+            data = cur.fetchall()
+            return [PullRequest(d[0]) for d in data]
         except lite.Error as e:
-            return None
+            return []
         finally:
             if con:
                 con.close()

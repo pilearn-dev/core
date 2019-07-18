@@ -221,6 +221,19 @@ def branch_submit(branch_id, course_id,course_label=None):
         return render_template('courses/pull-requests/submit.html', title="Neues Pull Request zu Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch)
 
 
+def course_prs(course_id,course_label=None):
+    if not mcourses.Courses.exists(course_id):
+        abort(404)
+    course = mcourses.Courses(course_id)
+    cuser = muser.getCurrentUser()
+    if course.getLabel() != course_label and request.method != "POST":
+        return redirect(url_for("course_prs", course_id=course_id, course_label=course.getLabel()))
+
+    open_prs, closed_prs = mpull_requests.PullRequest.getByCourse(course.id, True), mpull_requests.PullRequest.getByCourse(course.id, False)
+
+    return render_template('courses/pull-requests/prs.html', title=u"Pull Requests für " + course.getTitle(), thispage="courses", course=course, open_prs=open_prs, closed_prs=closed_prs)
+
+
 def course_single_pr(id, course_id,course_label=None):
     if not mcourses.Courses.exists(course_id):
         abort(404)
@@ -336,5 +349,6 @@ def apply(app):
 
     app.route("/c/<int:course_id>/branch/<int:branch_id>/submit", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/branch/<int:branch_id>/submit", methods=["GET", "POST"])(branch_submit))
 
+    app.route("/c/<int:course_id>/pull-requests")(app.route("/course/<int:course_id>/<course_label>/pull-requests")(course_prs))
     app.route("/c/<int:course_id>/pull-request/<int:id>")(app.route("/course/<int:course_id>/<course_label>/pull-request/<int:id>")(course_single_pr))
     app.route("/c/<int:course_id>/pull-request/<int:id>/add-decision", methods=["POST"])(app.route("/course/<int:course_id>/<course_label>/pull-request/<int:id>/add-decision", methods=["POST"])(course_decide_pr))
