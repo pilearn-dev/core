@@ -29,7 +29,15 @@
      {% elif i.type == "quote" %}
        <blockquote>{{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}</blockquote>
      {% elif i.type == "image" %}
-       <a href="{{ i.data.source }}"><img src="{{ i.data.source }}"></a>
+     <figure>
+       <img src="{{ i.data.source }}" alt="{{ i.data.description }}">
+       {% if i.data.description %}
+       <figcaption class="f-bold" role="contentinfo">{{ i.data.description }}</figcaption>
+       {% endif %}
+       {% if i.data.legal %}
+       <figcaption role="note">{{ i.data.legal }}</figcaption>
+       {% endif %}
+     </figure>
      {% elif i.type == "multiple-choice" %}{% set max = int(i.data.points) %}
      <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
         <div class="push-right"><span class="_badge _badge-s-black">{{ max }} Pkt.</span></div>

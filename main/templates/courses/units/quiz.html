@@ -66,11 +66,21 @@
               {% elif i.type == "separator" %}
                 <hr>
               {% elif i.type == "warnbox" %}
-                <div class="warning">{{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}</div>
+                <div class="_alert _alert-warning">{{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}</div>
               {% elif i.type == "quote" %}
                 <blockquote>{{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}</blockquote>
               {% elif i.type == "image" %}
-                <a href="{{ i.data.source }}"><img src="{{ i.data.source }}"></a>
+              <div>
+              <figure>
+                <img src="{{ i.data.source }}" alt="{{ i.data.description }}">
+                {% if i.data.description %}
+                <figcaption class="f-bold" role="contentinfo">{{ i.data.description }}</figcaption>
+                {% endif %}
+                {% if i.data.legal %}
+                <figcaption role="note">{{ i.data.legal }}</figcaption>
+                {% endif %}
+              </figure>
+              </div>
               {% elif i.type == "multiple-choice" %}{% set sum = eval_data.result[""~loop.index].sum %}{% set max = int(i.data.points) %}{% if (""~sum).endswith(".0") %}{% set sum=int(sum) %}{% endif %}
               <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
                  <div class="push-right"><span class="_badge _badge-s-black">{{ (""~sum).replace(".",",") }} / {{ max }} Pkt.</span></div>
@@ -132,8 +142,18 @@
                <div class="warning">{{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}</div>
              {% elif i.type == "quote" %}
                <blockquote>{{ (i.data.text.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}</blockquote>
-             {% elif i.type == "image" %}
-               <a href="{{ i.data.source }}"><img src="{{ i.data.source }}"></a>
+               {% elif i.type == "image" %}
+               <div>
+               <figure>
+                 <img src="{{ i.data.source }}" alt="{{ i.data.description }}">
+                 {% if i.data.description %}
+                 <figcaption class="f-bold" role="contentinfo">{{ i.data.description }}</figcaption>
+                 {% endif %}
+                 {% if i.data.legal %}
+                 <figcaption role="note">{{ i.data.legal }}</figcaption>
+                 {% endif %}
+               </figure>
+               </div>
              {% elif i.type == "multiple-choice" %}
              <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
               <div class="push-right"><span class="_badge _badge-s-info">{{ i.data.points }} Pkt.</span></div>

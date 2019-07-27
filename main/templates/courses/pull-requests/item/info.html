@@ -17,8 +17,8 @@
   </div>
   <div class="column9__lg column12 p3">
 
-    <a href="#!" class="_btn _btn-dark _btn-outline _btn-lg" onclick="prompt('Der Quelltext dieser Seite ist: ', JSON.stringify(ps.data));">Exportieren</a>
-    <a href="#!" class="_btn _btn-dark _btn-outline _btn-lg" onclick="x=JSON.parse(prompt('Bitte Quelltext einfügen: ', '{}'));if(x) {ps.data=x;ps._update()}">Importieren</a>
+    <a href="#!" class="_btn _btn-dark _btn-outline _btn-lg" onclick="prompt('Der Quelltext dieser Seite ist: ', JSON.stringify(Respectable.data));">Exportieren</a>
+    <a href="#!" class="_btn _btn-dark _btn-outline _btn-lg" onclick="x=JSON.parse(prompt('Bitte Quelltext einfügen: ', '{}'));if(x) {Respectable.data=x;Respectable._update()}">Importieren</a>
 
     <button class="_btn _btn--primary push-right _btn-lg js--savebtn" onclick="save()">Speichern</button>
 
@@ -29,15 +29,17 @@
     {% endif %}
     <div class="push-reset"></div>
     <input class="form ta-c" style="font-size: 2.5em; font-weight: bold;" id="title" value="{{ data.title }}">
-    <div id="polyskript-master" class="polyskript">
-      <div class="preview">
-      </div>
+    <div class="js--respectable">
     </div>
-    <script src="/static/ps/model-info.js" charset="utf-8"></script>
-    <script src="/static/ps/polyskript.js" charset="utf-8"></script>
+    <script src="/static/new_js/pilearn.markdown.js" charset="utf-8"></script>
+    <script src="/static/new_js/pilearn.editor.js" charset="utf-8"></script>
+    <script src="/static/new_js/respectable.js" charset="utf-8"></script>
+    <script src="/static/new_js/respectable.model-info.js" charset="utf-8"></script>
     <script>
-     ps = new Polyskript({{ data.content|tojson }});
-     ps.show();
+      Respectable = new RespectableEditor(".js--respectable");
+      Respectable.loadModel(MODEL);
+      Respectable.loadContent({{ data.content|tojson }});
+      Respectable.init();
 
      override_id = "{{ override_id if override_id else '-' }}";
 
@@ -49,7 +51,7 @@
          contentType: "application/json; charset=utf-8",
          data: JSON.stringify({
            "title": $("#title").val(),
-           "content": ps.data
+           "content": Respectable.data
          }),
          success: function( result ) {
            override_id = result.override_id
