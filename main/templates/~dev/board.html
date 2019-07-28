@@ -57,6 +57,9 @@
         <h3>Angezeigte Nachricht</h3>
         <textarea id="off_note">{{ offline_notification }}</textarea>
         <button onclick="update_ON()">Speichern</button>
+        <hr>
+        <h3>Vollständige Zugriffssperre</h3>
+        <button onclick="activate_inaccessile_mode()">Aktivieren</button>
       </div>
       <div class="pent-item">
         <h2>SQL ausführen</h2>
@@ -146,6 +149,12 @@
       function toggle_beta() {
         $post("~dev/beta", {}, function(r) {
           this.checked = JSON.parse(r)
+        })
+      }
+      function activate_inaccessile_mode() {
+        if(!confirm("Dies wird die Seite in einen Offline-Modus schalten, in dem sich niemand mehr anmelden kann/zugreifen kann. Zum Deaktivieren muss Apache neu gestartet werden.")) return;
+        $post("~dev/inaccessible", {}, function(r) {
+          window.location.reload();
         })
       }
       function new_beta_token() {

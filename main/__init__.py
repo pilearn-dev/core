@@ -49,6 +49,8 @@ pivers = json.loads(f.read())
 f.close()
 __version__ = pivers["main"]
 
+IS_INACCESSIBLE = False
+
 @app.context_processor
 def prepare_template_context():
     user = muser.getCurrentUser()
@@ -93,6 +95,10 @@ def prepare_request():
         return count
 
     g.countNotifications = countNotifications
+
+    if IS_INACCESSIBLE and not request.path.startswith("/static"):
+        session.pop('login', None)
+        return render_template("inaccessible.html"), 503
 
     if IS_OFFLINE and request.values.get("beta_auth") == BETA_TOKEN or request.values.get("beta_key")==BETA_AUTH_KEY:
         resp = redirect(url_for("index"))
@@ -196,6 +202,16 @@ def __dev_offline():
     f.write(json.dumps(pidata))
     f.close()
     return json.dumps(IS_OFFLINE)
+
+@app.route("/~dev/inaccessible", methods=['POST'])
+def __dev_inaccessible():
+    global IS_INACCESSIBLE
+    cuser = muser.getCurrentUser()
+    if not cuser.isDev():
+        abort(404)
+
+    IS_INACCESSIBLE = not IS_INACCESSIBLE
+    return json.dumps(IS_INACCESSIBLE)
 
 @app.route("/~dev/beta", methods=['POST'])
 def __dev_beta():
