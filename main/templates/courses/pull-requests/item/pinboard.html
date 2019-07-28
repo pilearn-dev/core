@@ -1,0 +1,23 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "pr", user) }}
+
+{% include "courses/pull-requests/_header.html" %}
+
+
+<div class="grid -equal-columns">
+  <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
+    <div class="p3">
+      {% set curpage_id = unit_id ~"/"~ override_id %}
+      {% include "courses/pull-requests/_menu.html" %}
+    </div>
+  </div>
+  <div class="column9__lg column12 p3">
+
+    <p>Das tut uns jetzt furchtbar leid, aber Pinwände können leider nicht über Pull Requests/Branches bearbeitet werden. Du kannst allerdings zum <a href="/f/{{ course.id }}">Kursforum</a> gehen und dort den eingebetteten Beitrag suchen und bearbeiten.</p>
+
+  </div>
+</div>
+
+{% endblock %}

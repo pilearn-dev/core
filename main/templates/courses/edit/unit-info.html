@@ -1,7 +1,6 @@
 {% extends "layout_new.html" %}
 {% set autoSave = user.getPref("autoSave", False) == "1" %}
 {% block body %}
-<link rel="stylesheet" href="/static/ps/polyskript.css">
 {% from "_course-header.html" import course_header %}
 {{ course_header(course, "edit", user) }}
 
@@ -33,8 +32,8 @@
     </div>
    </div>
    <div class="column9__lg column12 bs2-light p3">
-      <a href="#!" class="_btn _btn-dark _btn-outline _btn-lg" onclick="prompt('Der Quelltext dieser Seite ist: ', JSON.stringify(ps.data));">Exportieren</a>
-      <a href="#!" class="_btn _btn-dark _btn-outline _btn-lg" onclick="x=JSON.parse(prompt('Bitte Quelltext einfügen: ', '{}'));if(x) {ps.data=x;ps._update()}">Importieren</a>
+      <a href="#!" class="_btn _btn-dark _btn-outline _btn-lg" onclick="prompt('Der Quelltext dieser Seite ist: ', JSON.stringify(Respectable.data));">Exportieren</a>
+      <a href="#!" class="_btn _btn-dark _btn-outline _btn-lg" onclick="x=JSON.parse(prompt('Bitte Quelltext einfügen: ', '{}'));if(x) {Respectable.data=x;Respectable._update()}">Importieren</a>
 
       <button class="_btn _btn--primary push-right _btn-lg js--savebtn" onclick="save()">Speichern</button>
 
@@ -50,15 +49,17 @@
       {% endif %}
       <div class="push-reset"></div>
       <input class="form ta-c" style="font-size: 2.5em; font-weight: bold;" id="title" value="{{ data.getTitle() }}">
-      <div id="polyskript-master" class="polyskript">
-        <div class="preview">
-        </div>
+      <div class="js--respectable">
       </div>
-      <script src="/static/ps/model-info.js" charset="utf-8"></script>
-      <script src="/static/ps/polyskript.js" charset="utf-8"></script>
+      <script src="/static/new_js/pilearn.markdown.js" charset="utf-8"></script>
+      <script src="/static/new_js/pilearn.editor.js" charset="utf-8"></script>
+      <script src="/static/new_js/respectable.js" charset="utf-8"></script>
+      <script src="/static/new_js/respectable.model-info.js" charset="utf-8"></script>
       <script>
-       ps = new Polyskript({{ data.getJSON()|tojson }});
-       ps.show()
+        Respectable = new RespectableEditor(".js--respectable");
+        Respectable.loadModel(MODEL);
+        Respectable.loadContent({{ data.getJSON()|tojson }});
+        Respectable.init();
 
        function save() {
          $(".js--savebtn").addClass("-loading").text("Speichere...");
@@ -69,7 +70,7 @@
            data: JSON.stringify({
              "title": $("#title").val(),
              "availible": $(".js--active").hasClass("-active"),
-             "content": ps.data
+             "content": Respectable.data
            }),
            success: function( result ) {
              $(".js--savebtn").removeClass("-loading").text("Gespeichert.");
