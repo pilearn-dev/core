@@ -1,12 +1,14 @@
 {% extends "layout_new.html" %}
 {% block body %}
-<div class="p3">
+<div class="p6 p3__sm">
   <div class="grid">
-    <div class="column4 column3__md hide__sm p4">
-      <div class="col--primary-dd p2 ta-c f-bold fs-display3">403</div>
+    <div class="colbox hide__sm p3">
+      <svg viewBox="0 0 48 48" width="20em" height="20em">
+        <path d="M24,12 l16,24 l-32,0 z M24,20 v8 m0,2 v3" fill="transparent" stroke-width="3" />
+      </svg>
     </div>
-    <div class="column8 column9__md column12__sm p2">
-      <h1>Zugriff verweigert</h1>
+    <div class="colbox-fill p3">
+      <h1 class="fs-display2">Zugriff verweigert</h1>
       <p class="p-lead">Oh nein! Auf diese Seite darfst du nicht zugreifen.</p>
       <p>Momentan ist es dir nicht erlaubt auf diese Seite zuzugreifen. Das kann verschiedene Ursachen haben:</p>
       <ul>
@@ -16,7 +18,7 @@
         <li>Du hast noch nicht genug <a href="/help/model/reputation">Reputation</a>, um auf diese Seite zuzugreifen. (Du hast {{ user.getReputation() }} Reputation)</li>
         <li>Nur Eingeweihte dürfen auf diese Seite zugreifen (Moderatoren, Kursadmins, ...)</li>
       </ul>
-      <p>Wenn du der Meinung bist, dass du auf diese Seite zugreifen können solltest, melde dies <a href="/f/0">im globalen Forum</a> mit dem Tag <em>Fehler</em>.</p>
+      <p>Wenn du der Meinung bist, dass du auf diese Seite zugreiffen können solltest, melde dies <a href="/f/0">im globalen Forum</a> mit dem Tag <a href="/f/0/tagged/fehler" class="_badge _badge-tag">fehler</a>.</p>
     </div>
   </div>
 </div>

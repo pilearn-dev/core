@@ -1,13 +1,16 @@
 {% extends "layout_new.html" %}
 {% block body %}
-<div class="p3">
+<div class="p6 p3__sm">
   <div class="grid">
-    <div class="column4 column3__md hide__sm p4">
-      <div class="col--primary-dd p2 ta-c f-bold fs-display">404</div>
+    <div class="colbox hide__sm p3">
+      <svg viewBox="0 0 48 48" width="20em" height="20em">
+        <circle cx="20" cy="20" r="14" stroke-width="3" fill="transparent" />
+        <path d="M30,30 l12,12 M14,14 l12,12 M26,14 l-12,12" fill="transparent" stroke-width="3" />
+      </svg>
     </div>
-    <div class="column8 column9__md column12__sm p2">
-      <h1>Seite nicht gefunden</h1>
-      <p class="p-lead">Oh nein! Die angeforderte Seite kann nicht gefunden werden.</p>
+    <div class="colbox-fill p3">
+      <h1 class="fs-display2">Seite nicht gefunden</h1>
+      <p class="p-lead">Oh nein! Die gesuchte Seite kann nicht gefunden werden.</p>
       <p>Vielleicht existierte diese Seite nie oder der Inhalt wurde gelöscht oder ist andersweitig nicht verfügbar.</p>
       <p>Du kannst ...</p>
       <ul>
@@ -18,7 +21,7 @@
         <li>die <a href="/topics">Liste der Themenbereiche</a> anschauen oder</li>
         <li>alle <a href="/courses/search">Kurse durchsuchen</a>.</li>
       </ul>
-      <p>Wenn du der Meinung bist, dass hier etwas fehlt, melde dies <a href="/f/0">im globalen Forum</a> mit dem Tag <em>Fehler</em>.</p>
+      <p>Wenn du der Meinung bist, dass hier etwas fehlt, melde dies <a href="/f/0">im globalen Forum</a> mit dem Tag <a href="/f/0/tagged/fehler" class="_badge _badge-tag">fehler</a>.</p>
     </div>
   </div>
 </div>
