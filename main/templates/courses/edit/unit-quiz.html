@@ -33,8 +33,7 @@
     </div>
    </div>
    <div class="column9__lg column12 bs2-light p3">
-      <a href="#!" class="_btn _btn-dark _btn-outline _btn-lg" onclick="prompt('Der Quelltext dieser Seite ist: ', JSON.stringify(Respectable.data));">Exportieren</a>
-      <a href="#!" class="_btn _btn-dark _btn-outline _btn-lg" onclick="x=JSON.parse(prompt('Bitte Quelltext einfügen: ', '{}'));if(x) {Respectable.data=x;Respectable._update()}">Importieren</a>
+      <a href="#!" class="_btn _btn-dark _btn-outline _btn-lg" onclick="$('.js--export-dialog-export').val(JSON.stringify(Respectable.data));$('#export_dialog').removeClass('hide')">Inhalt übertragen</a>
 
       <button class="_btn _btn--primary push-right _btn-lg js--savebtn" onclick="save()">Speichern</button>
 
@@ -96,5 +95,36 @@
        }
      </script>
    </div>
+ </div>
+
+ <div class="_dialog _dialog-backdrop _dialog-small hide" id="export_dialog">
+  <a href='#!' onclick="$('#export_dialog').addClass('hide')" class='_xbtn _dialog-xbtn'>&times</a>
+  <h3>Inhalt der Seite übertragen</h3>
+  <div class="js--export-dialog-page">
+   <div class="_nav _nav-h">
+     <a href="#!" class="-active">Exportieren</a>
+     <a href="#!" data-toggle=".js--export-dialog-page" data-toggle-class="hide">Importieren</a>
    </div>
+   <div class="p2">
+     <p>Kopiere den Quelltext dieser Seite und füge ihn auf der Seite ein, zu der du den Inhalt übertragen möchtest.</p>
+     <p class="fs-caption">Tipp: Markiere alles und nutze die Tastenkombination <kbd>Strg</kbd>+<kbd>C</kbd></p>
+
+     <textarea class="form form-large js--export-dialog-export f-mono" readonly></textarea>
+   </div>
+  </div>
+  <div class="js--export-dialog-page hide">
+   <div class="_nav _nav-h">
+     <a href="#!" data-toggle=".js--export-dialog-page" data-toggle-class="hide">Exportieren</a>
+     <a href="#!" class="-active">Importieren</a>
+   </div>
+   <div class="p2">
+     <p>Füge den Quelltext der Seite, von der du die Inhalte übertragen möchtest, hier ein.</p>
+     <p class="fs-caption">Tipp: Nutze dafür die Tastenkombination <kbd>Strg</kbd>+<kbd>V</kbd></p>
+
+     <textarea class="form form-large js--export-dialog-import f-mono"></textarea>
+
+     <button class="_btn _btn--primary" onclick="Respectable.data = JSON.parse($('.js--export-dialog-import').val()); Respectable._update(); $('#export_dialog').addClass('hide')">Importieren</button>
+   </div>
+  </div>
+</div>
 {% endblock %}

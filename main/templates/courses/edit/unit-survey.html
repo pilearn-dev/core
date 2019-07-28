@@ -32,9 +32,6 @@
     </div>
    </div>
    <div class="column9__lg column12 bs2-light p3">
-      <a href="#!" class="_btn _btn-dark _btn-outline _btn-lg" onclick="prompt('Der Quelltext dieser Seite ist: ', JSON.stringify(ps.data));">Exportieren</a>
-      <a href="#!" class="_btn _btn-dark _btn-outline _btn-lg" onclick="x=JSON.parse(prompt('Bitte Quelltext einfügen: ', '{}'));if(x) {ps.data=x;ps._update()}">Importieren</a>
-
       <button class="_btn _btn--primary push-right _btn-lg js--savebtn" onclick="save()">Speichern</button>
 
       {% if data.isDisabled() %}
