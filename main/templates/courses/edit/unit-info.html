@@ -58,6 +58,7 @@
       <script>
         Respectable = new RespectableEditor(".js--respectable");
         Respectable.loadModel(MODEL);
+        original_data = {{ data.getJSON()|tojson }};
         Respectable.loadContent({{ data.getJSON()|tojson }});
         Respectable.init();
 
@@ -74,6 +75,7 @@
            }),
            success: function( result ) {
              $(".js--savebtn").removeClass("-loading").text("Gespeichert.");
+             original_data = Respectable.data;
              setTimeout(function() {
                $(".js--savebtn").text("Speichern");
              }, 1200);
@@ -88,6 +90,10 @@
        setInterval(function(){save();}, 30000);
        {% endif %}
 
+      window.onbeforeunload = function() {
+        if(JSON.stringify(Respectable.data) != JSON.stringify(original_data))
+          return "Seite wurde nicht gespeichert.";
+      }
      </script>
    </div>
    </div>

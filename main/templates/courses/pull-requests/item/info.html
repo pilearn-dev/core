@@ -70,6 +70,10 @@
      setInterval(function(){save();}, 30000);
      {% endif %}
 
+     window.onbeforeunload = function() {
+       if(JSON.stringify(Respectable.data) != JSON.stringify(original_data))
+         return "Seite wurde nicht gespeichert.";
+     }
    </script>
 
   </div>
