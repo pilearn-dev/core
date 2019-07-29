@@ -59,6 +59,7 @@
         Respectable = new RespectableEditor(".js--respectable");
         Respectable.loadModel(MODEL);
         Respectable.loadCustomEditor("QuizInputList", QuizInputListEditor);
+        original_data = {{ data.getJSON()|tojson }};
         Respectable.loadContent({{ data.getJSON()|tojson }});
         Respectable.init();
 
@@ -75,6 +76,7 @@
            }),
            success: function( result ) {
              $(".js--savebtn").removeClass("-loading").text("Gespeichert.");
+             original_data = JSON.parse(JSON.stringify(Respectable.data));
              setTimeout(function() {
                $(".js--savebtn").text("Speichern");
              }, 1200);
