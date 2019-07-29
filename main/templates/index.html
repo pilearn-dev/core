@@ -6,19 +6,23 @@
 <div class="_banner _banner--primary _banner-strong">
     <div class="single-fluid">
         <div class="grid">
-            <div class="column8 column12__sm p2">
+            <div class="column8 column12__sm p6">
                 <h1 class="fs-display2">Willkommen bei &pi;-Learn!</h1>
-                <p class="fs-heading">π-Learn ist eine Community-gesteuerte Open Learning Webseite. Das heißt, jeder Benutzer kann sein Wissen in Form von Kursen und Forenbeiträgen mit anderen teilen.</p>
-                <p class="fs-heading">Alle Inhalte werden frei veröffentlicht und können von allen angesehen werden, aber so richtig Spaß macht es erst, wenn man sich anmeldet.</p>
+                <p class="fs-heading">Auf &pi;-Learn werden kostenlose, frei verfügbare Online-Kurse von einer offenen Internet-Community angeboten: Jeder kann sein Wissen in Kursen und Kursforen mit anderen teilen.</p>
+                <p class="fs-heading">Alle Inhalte sind auch für nicht angemeldete Benutzer zugänglich, aber so richtig Spaß macht es erst, wenn man sich anmeldet.</p>
+                <div class="fs-subheading">
+                <a href="/register" class="_btn _btn-xl _btn-on-dark _btn--primary _btn-lighter">Registrieren</a>
+                <a href="/login" class="_btn _btn-xl _btn-on-dark _btn--primary _btn-outline">Anmelden</a>
+                </div>
             </div>
-            <div class="column4 column12__sm p2">
-              <h1>Registrieren</h1>
+            <div class="column4 column12__sm p8">
+              <h1>Neu hier?</h1>
               <form action="/auth/register" method="POST">
                 <input id="register_email" class="form" name="email" type="email" placeholder="E-Mail-Adresse">
                 <input id="register_username" class="form" name="realname" placeholder="Benutzername">
                 <input id="register_password" class="form" name="password" type="password" placeholder="Passwort">
                 <input type="hidden" name="login_provider" value="local_account">
-                <button class="_btn _btn-xl _btn--primary _btn-on-dark _btn-lighter" type="submit">Registrieren</button>
+                <button class="_btn _btn-lg _btn--primary _btn-on-dark _btn-lighter" type="submit">Registrieren</button>
               </form>
               <p class="anchor-white col-dark-lll fs-caption">Wenn du dich registrierst, erklärst du dich mit den <a href="/help/legal/terms">Nutzungsbedingungen</a> und der <a href="/help/legal/data-info">Datenschutzerklärung</a> einverstanden.</p>
 
@@ -27,7 +31,7 @@
     </div>
 </div>
 <div class="_banner _banner--primary">
-    <div class="single-fluid">
+    <div class="single-fluid p4">
         <div class="grid ta-c -equal-columns">
             <div class="column4__lg br1s br--primary-d br0s__sm column12 p6">
               <h1 class="fs-subtitle"><strong>Kurse</strong> – zu verschiedenen Themen</h1>
@@ -42,10 +46,10 @@
               <img src="/static/img/tour/community-review.svg" alt="">
             </div>
         </div>
-        <div class="grid">
+        <div class="grid fs-base3">
             <div>
-                <a href="/courses" class="_btn _btn-xl _btn--primary">Kurse ansehen</a>
-                <a href="/tour" class="_btn _btn-xl _btn--primary">Mehr erfahren</a>
+                <a href="/courses" class="_btn _btn-xl _btn--primary m3">Kurse ansehen</a>
+                <a href="/tour" class="_btn _btn-xl _btn--primary m3">Mehr erfahren</a>
             </div>
         </div>
     </div>
