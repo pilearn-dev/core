@@ -74,3 +74,40 @@ CREATE TABLE courses (
     activation_time INT,
     invalidated TINYINT
 )
+;create table branches (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  author INT,
+  course_id INT,
+  pull_request INT NULL,
+  abandoned BOOLEAN,
+  abandoned_date INT,
+  decision TINYINT,
+  decision_date INT,
+  hide_as_spam BOOLEAN,
+  delta_factor SMALLINT
+)
+;create table pull_requests (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  author INT,
+  branch_id INT,
+  course_id INT,
+  title VARCHAR(150),
+  description TEXT (1050),
+  proposal_date INT,
+  decision TINYINT,
+  decision_date INT,
+  hide_as_spam BOOLEAN
+)
+;create table branch_overrides (
+  id INTEGER PRIMARY KEY,
+  branch INT,
+  overrides INT NULL,
+  parent_unit INT NULL,
+  parent_override INT NULL,
+  title VARCHAR(150),
+  content TEXT,
+  type VARCHAR(25),
+  unit_order INT,
+  changed BOOLEAN,
+  created BOOLEAN
+)

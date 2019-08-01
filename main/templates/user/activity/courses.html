@@ -16,6 +16,7 @@
         {% if data.id == user.id or user.isMod() %}
         <a {% if request.values.get("view", "offered") == "enrolled" %}class="-active"{% endif %} href="?page=courses&view=enrolled">Besuchte Kurse</a>
         {% endif %}
+        <a {% if request.values.get("view", "offered") == "pull-requests" %}class="-active"{% endif %} href="?page=courses&view=pull-requests">Pull Requests ({{ prs|length }})</a>
       </div>
     </div>
     <div class="column9 column12__sm p2">
@@ -88,6 +89,20 @@
           </a>
         {% endfor %}
       </div>
+      {% elif request.values.get("view", "offered") == "pull-requests" %}
+      <div class="col-dark fs-display2 push-right f-bold">{{ prs|length }}</div>
+      <h2 class="mt6 m2">Pull Requests</h2>
+        <div class="_list">
+          {% for pr in prs %}{% set state = pr.getState() %}{% set course = pr.getCourse() %}
+            <a href="/course/{{ course.id }}/{{ course.getLabel() }}/pull-request/{{ pr.id }}" class="_list-item">
+                <span class="d-b col-dark-ddd">{{ course.getTitle() }}</span>
+                <span class="fs-base3 d-b my1">#{{ pr.id }}: {{ pr.getTitle() }}</span>
+                <div>{% if state == 0 %}<span class="_badge mr1 _badge-vote _badge-vote-filled--primary">offen</span>{% elif state == 1 %}<span class="_badge mr1 _badge-vote _badge-vote-filled-success">angenommen</span>{% else %}<span class="_badge mr1 _badge-vote _badge-vote-filled-danger">abgelehnt</span>{% endif %} {{ pr.getCreationDate()[2] }} von {{ pr.getAuthor().getHTMLName()|safe }}</div>
+            </a>
+          {% else %}
+            <p class="p-lead">Es sieht so aus, als ob es hier noch keine Pull Requests gibt.</p>
+          {% endfor %}
+        </div>
       {% endif %}
     </div>
   </div>

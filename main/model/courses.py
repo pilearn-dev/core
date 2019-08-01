@@ -52,6 +52,19 @@ class Courses:
         import forum as mforum
         return mforum.Forum(self.id)
 
+    def getActivePRCount(self):
+        try:
+            con = lite.connect('databases/courses.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT Count(*) FROM pull_requests WHERE decision=0 AND course_id=? AND hide_as_spam=0", (self.id,))
+            return cur.fetchone()[0]
+        except lite.Error as e:
+            return 0
+        finally:
+            if con:
+                con.close()
+
     @classmethod
     def getCourseList(cls):
         try:
@@ -399,7 +412,8 @@ class Courses:
                     "title": dd["title"],
                     "availible": bool(dd["availible"]),
                     "children": [],
-                    "type": dd["type"]
+                    "type": dd["type"],
+                    "unit_order": dd["unit_order"]
                 }
                 cur.execute("SELECT * FROM units WHERE courseid=? AND parent=? ORDER BY unit_order, id", (self.id, dd["id"]))
                 ddd = cur.fetchall()
@@ -408,7 +422,9 @@ class Courses:
                         "id": dy["id"],
                         "title": dy["title"],
                         "availible": bool(dy["availible"]),
-                        "type": dy["type"]
+                        "type": dy["type"],
+                        "children": [],
+                        "unit_order": dy["unit_order"]
                     })
                 d.append(dx)
             return d
@@ -580,7 +596,8 @@ class Units:
                 "content": data['content'],
                 "type": data['type'],
                 "parent": data['parent'],
-                "availible": bool(data['availible'])
+                "availible": bool(data['availible']),
+                "unit_order": data["unit_order"]
             }
         except lite.Error as e:
             #raise lite.Error from e

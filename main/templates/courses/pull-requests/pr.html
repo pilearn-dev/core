@@ -1,0 +1,103 @@
+{% set needs_mathjax=True %}
+{% extends "layout_new.html" %}
+{% block body %}
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "pr", user) }}
+
+<div class="_nav _nav-t _nav-right _nav-t-smaller m2">{% set prc = course.getActivePRCount() %}
+  <a href="/course/{{ course.id }}/{{ course.getLabel() }}/branches">Branches</a>
+  <a href="/course/{{ course.id }}/{{ course.getLabel() }}/pull-requests" class="-active">Pull Requests{% if prc %}<span class="_badge _badge-tabitem">{{ prc }}</span>{% endif %}</a>
+</div>
+
+<div class="grid">
+    <div class="column9 column12__sm p2">
+        <div class="p3">
+            <h1 class="mb0"><a class="anchor-dark fs-subtitle" href="">#{{ pr.id }}</a> {{ pr.getTitle() }}</h1>
+            <p class="mt0 mb3">betrifft <a class="fs-base3" href="/c/{{ course.id }}/branch/{{ branch.id }}">Branch #{{ branch.id }}</a></p>
+
+            {{ (pr.getDescription().replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
+
+            <a href="/c/{{ course.id }}/branch/{{ branch.id }}" class="_btn _btn-lg _btn--primary">Änderungen sehen</a>
+        </div>
+        {% if pr.getState() == 0 %}
+        {% if user.isMod() or course.getCourseRole(user) >= 3 %}
+        <div class="_card _card-white mt5 mx0">
+            <div class="_card-title _card-subtitle bg-dark-lll col-black-l">
+                <a class="push-right" data-toggle="#pr-decision-help" data-toggle-class="hide" href="#!">Hilfe?</a>
+                Entscheide über diese Pull Request!
+            </div>
+            <div class="_card-content hide" id="pr-decision-help">
+                <p>Nimm Pull Requests an, die ...</p>
+                <ul>
+                    <li>Fehler korrigieren,</li>
+                    <li>gute Verweise zu weiterführendem Material hinzufügen,</li>
+                    <li>Erklärungen ergänzen oder verständlicher machen oder</li>
+                    <li>den Kurs allgemein besser oder verständlicher machen.</li>
+                </ul>
+                <p>Lehne Pull Requests ab, die ...</p>
+                <ul>
+                    <li>hauptsächlich neue Fehler einbauen,</li>
+                    <li>grundwegs falsch sind oder</li>
+                    <li>den Kurs nicht besser machen.</li>
+                </ul>
+                <p>Lehne Pull Requests als missbräuchlich ab, die nur als Test dienen oder Werbung einbauen.</p>
+            </div>
+            <div class="_card-footer">
+                <div class="_btnlist">
+                    <button class="_btn _btn--primary" onclick="decide(this, 1, false)">Annehmen und anwenden</button>
+                    <button class="_btn _btn--primary _btn-outline" onclick="decide(this, -1, false)">Ablehnen</button>
+                    <button class="_btn _btn--primary _btn-on-light" onclick="decide(this, -1, true)">Ablehnen (missbräuchlich)</button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% elif pr.getState() == 1 %}
+        <div class="content-warning m3">
+            <p>
+                Diese Pull Request war <strong>hilfreich</strong> und wurde angewendet.
+            </p>
+        </div>
+        {% else %}
+        <div class="content-warning m3">
+            <p>
+                Diese Pull Request war <strong>nicht hilfreich</strong> und wurde abgelehnt.
+            </p>
+        </div>
+        {% endif %}
+    </div>
+    <div class="column3 column12__sm">
+        <dl>
+            <dt>eingereicht</dt>{% set dt = pr.getCreationDate() %}
+            <dd title="{{ dt[1] }}">{{ dt[2] }}</dd>
+            <dt>von</dt>
+            <dd><a href="{{ pr.getDetail("author") }}">{{ pr.getAuthor().getHTMLName()|safe }}</a></dd>
+            <dt>bringt an Reputation</dt>
+            <dd class="py1"><span class="_badge _badge-s-success">+{{ branch.getDetail("delta_factor") }}<span></dd>
+            <dt>Status</dt>
+            <dd>{% set state = pr.getState() %}
+              {% if state == 0 %}offen{% elif state == 1 %}angenommen{% else %}abgelehnt{% endif %}
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<script>
+  function decide(_this, decision, as_abuse) {
+    $.ajax({
+      method: "POST",
+      url: "/course/{{ course.id }}/{{ course.getLabel() }}/pull-request/{{ pr.id }}/add-decision",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        decision: decision,
+        as_abuse: as_abuse
+      }),
+      success: function( result ) {
+        window.location.reload();
+      },
+      error: function() {
+        PiJS.warnbox.error("Fehler beim Bearbeiten der PR", $(_this).parent());
+      }
+    });
+  }
+</script>
+{% endblock %}

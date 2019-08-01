@@ -1,0 +1,59 @@
+{% set needs_mathjax=True %}
+{% extends "layout_new.html" %}
+{% block body %}
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "pr", user) }}
+
+<div class="_nav _nav-t _nav-right _nav-t-smaller m2">{% set prc = course.getActivePRCount() %}
+  <a href="/course/{{ course.id }}/{{ course.getLabel() }}/branches">Branches</a>
+  <a href="/course/{{ course.id }}/{{ course.getLabel() }}/pull-requests" class="-active">Pull Requests{% if prc %}<span class="_badge _badge-tabitem">{{ prc }}</span>{% endif %}</a>
+</div>
+
+<div class="p3">
+    <h1 class="mb0">Pull Requests für den Kurs {{ course.getTitle() }}</h1>
+
+    <div class="_card">
+      <div class="_card-header">
+          <div class="_btnlist _btnlist-close push-right">
+              <button class="_btn _btn--primary" onclick="createPR();">Neue Branch</button>
+          </div>
+          <div class="_btnlist _btnlist-close">
+              <a href="?filter=open" class="_btn {{ '-active' if request.values.get('filter', 'open') == 'open' }} _btn-outline"><span class="_badge _badge-btn">{{ open_prs|length }}</span>Offene</a>
+              <a href="?filter=closed" class="_btn {{ '-active' if request.values.get('filter', 'open') == 'closed' }} _btn-outline"><span class="_badge _badge-btn">{{ closed_prs|length }}</span>Geschlossene</a>
+          </div>
+      </div>
+      <div class="_card-content p1">
+        {% if request.values.get('filter', 'open') == 'open' %}
+        {% set prs = open_prs %}
+        {% else %}
+        {% set prs = closed_prs %}
+        {% endif %}
+          <div class="_list">
+            {% for pr in prs %}{% set state = pr.getState() %}
+              <a href="/course/{{ course.id }}/{{ course.getLabel() }}/pull-request/{{ pr.id }}" class="_list-item">
+                  <div class="_list-heading my1">#{{ pr.id }}: {{ pr.getTitle() }}</div>
+                  <div>{% if state == 0 %}<span class="_badge mr1 _badge-vote _badge-vote-filled--primary">offen</span>{% elif state == 1 %}<span class="_badge mr1 _badge-vote _badge-vote-filled-success">angenommen</span>{% else %}<span class="_badge mr1 _badge-vote _badge-vote-filled-danger">abgelehnt</span>{% endif %} {{ pr.getCreationDate()[2] }} von {{ pr.getAuthor().getHTMLName()|safe }}</div>
+              </a>
+            {% else %}
+              <p class="p-lead">Es sieht so aus, als ob es hier noch keine Pull Requests gibt.</p>
+            {% endfor %}
+          </div>
+      </div>
+  </div>
+</div>
+
+<script>
+  function createPR(_this) {
+    $.ajax({
+      method: "POST",
+      url: "/course/{{ course.id }}/{{ course.getLabel() }}/branches/create",
+      success: function( result ) {
+        window.location.href = "/course/{{ course.id }}/{{ course.getLabel() }}/branches";
+      },
+      error: function() {
+        PiJS.warnbox.error("Fehler beim Erstellen der PR", $(_this).parent());
+      }
+    });
+  }
+</script>
+{% endblock %}

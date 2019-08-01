@@ -1,0 +1,44 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "pr", user) }}
+
+{% include "courses/pull-requests/_header.html" %}
+
+
+<div class="grid -equal-columns">
+  <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
+    <div class="p3">
+      {% include "courses/pull-requests/_menu.html" %}
+    </div>
+  </div>
+  <div class="column9__lg column12 bs2-light p3">
+    <h1>Branch verwerfen</h1>
+    <p class="p-lead">Verwerfe deine Branch, wenn du doch keine Änderungen mehr durchführen möchtest oder die Probleme sich erledigt haben.</p>
+
+    <button class="_btn _btn--primary" id="submit">Branch verwerfen</button>
+    <a class="_btn _btn-on-light _btn--primary" href="/c/{{ course.id }}/branch/{{ branch.id }}">Abbrechen</a>
+  </div>
+
+  <script>
+    $("#submit").on("click", function() {
+      $("#submit").addClass("-loading").text("Verwerfe...");
+      $.ajax({
+        method: "POST",
+        url: "/c/{{ course.id }}/branch/{{ branch.id }}/cancel",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({
+          "title": $("#title").val(),
+          "description": $("#description").val()
+        }),
+        success: function( result ) {
+          window.location.href = result.url;
+        },
+        error: function() {
+          $("#submit").removeClass("-loading").text("Fehler beim Verwerfen");
+        }
+      });
+    })
+  </script>
+</div>
+{% endblock %}

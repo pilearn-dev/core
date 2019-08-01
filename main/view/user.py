@@ -1,6 +1,6 @@
 # coding: utf-8
 from flask import request, session, redirect, url_for, abort, render_template, jsonify
-from model import privileges as mprivileges, tags as mtags, user as muser, reviews as mreviews, forum as mforum, post_templates as mposttemplates, courses as mcourses, badges as mbadges, proposal as mproposal
+from model import privileges as mprivileges, tags as mtags, user as muser, reviews as mreviews, forum as mforum, post_templates as mposttemplates, courses as mcourses, badges as mbadges, proposal as mproposal, pull_requests as mpull_requests
 from controller import num as cnum, times as ctimes
 
 import markdown as md
@@ -116,7 +116,7 @@ def user_activity_page(id, name=None):
                 return render_template("user/activity/summary.html", data=user, thispage="user", title=u"Aktivität " + user.getHTMLName(False), courses=mcourses.Courses)
 
             elif request.values.get("page", "summary") == "courses":
-                return render_template("user/activity/courses.html", data=user, thispage="user", title="Kurse von " + user.getHTMLName(False), mcourses=mcourses.Courses, mproposals=mproposal.Proposal)
+                return render_template("user/activity/courses.html", data=user, thispage="user", title="Kurse von " + user.getHTMLName(False), mcourses=mcourses.Courses, mproposals=mproposal.Proposal, prs=mpull_requests.PullRequest.getByUser(user.id, None))
 
             elif request.values.get("page", "summary") == "forum":
                 return render_template("user/activity/forum.html", data=user, thispage="user", title=u"Forenbeiträge von " + user.getHTMLName(False), mquestions=mforum.Article, manswers=mforum.Answer, mquestion=lambda x:mforum.Article(x))
