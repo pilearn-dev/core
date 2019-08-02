@@ -1,0 +1,44 @@
+{% extends "layout_new.html" %}
+{% block body %}
+<div class="p3">
+  <h1 class="mb0">Benutzer</h1>
+
+  <div class="_nav _nav-t _nav-small _nav-right mb5">
+    <a href="?tab=reputation" class="{{ '-active' if request.values.get("tab", "reputation") == "reputation" }}">Höchste Reputation</a>
+    <a href="?tab=new" class="{{ '-active' if request.values.get("tab", "reputation") == "new" }}">Neuste Benutzer</a>
+    <a href="?tab=moderators" class="{{ '-active' if request.values.get("tab", "reputation") == "moderators" }}">Moderatoren</a>
+    {% if user.isMod() %}
+    <a href="?tab=mod.suspended" class="{{ '-active' if request.values.get("tab", "reputation") == "mod.suspended" }}">&diams; Gesperrte</a>
+    {% endif %}
+  </div>
+  {% if request.values.get("tab", "reputation") == "moderators" %}
+    <p>Bei &pi;-Learn werden, sobald die Seite genug Aktivität hat, von der Community Moderatoren gewählt. Moderatoren erhalten außerordentliche Rechte, um Probleme zu lösen, für die die Community nicht die Werkzeuge hat.</p>
+    <p>Dies sind unsere Moderatoren:</p>
+  {% elif request.values.get("tab", "reputation") == "mod.suspended" and user.isMod() %}
+    <div class="behaviour-warning">Diese Benutzer wurden wegen Regelverletzung zeitweise gesperrt.</div>
+  {% endif %}
+  <div class="grid -no-center">
+    {% for u in users.fetchOverviewList(request.values.get("tab", "reputation"), request.values.get("page", 1), request.values.get("size", 10), user.isMod()) %}
+    <div class="colbox225 p3">
+      {% if request.values.get("tab", "reputation") == "mod.suspended" and user.isMod() %}
+      {{ user_card(u, level="nia", superverb="gesperrt", supertime=u.getBanReason()) }}
+      {% else %}
+      {{ user_card(u) }}
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="column12 p3">
+      <p class="p-lead">Kein Benutzerkonto in dieser Auswahl gefunden.</p>
+    </div>
+    {% endfor %}
+
+  </div>
+  <div class="horizontal-list p1">
+    <div class="_btnlist">
+      <a class="_btn _btn-xs _btn-dark _btn-outline" href="?tab={{ request.values.get("tab", "reputation") }}&size=10">10</a>
+      <a class="_btn _btn-xs _btn-dark _btn-outline" href="?tab={{ request.values.get("tab", "reputation") }}&size=20">20</a>
+      <a class="_btn _btn-xs _btn-dark _btn-outline" href="?tab={{ request.values.get("tab", "reputation") }}&size=50">50</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

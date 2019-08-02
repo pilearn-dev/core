@@ -15,7 +15,7 @@ def msg_new_thread(user):
     if request.method == "GET":
         tpl = mmodmsg.getTemplates()
 
-        return render_template('modmsg/new-thread.html', title=u"Benutzer kontaktieren", thispage="users", u=u, templates=tpl)
+        return render_template('modmsg/new-thread.html', title=u"Benutzer kontaktieren", thispage="user", u=u, templates=tpl)
     elif request.method == "POST":
         try:
             template, message, suspend, suspension_reason, suspension_length = \
@@ -80,9 +80,9 @@ def msg_view_single(user, thread_id):
     if thread.getDetail("contacted_user") != int(user) or (not cuser.isMod() and thread.getDetail("contacted_user") != cuser.id):
         abort(404)
     if request.values.get("mod", False) and cuser.isMod():
-        return render_template('modmsg/view_single_mod.html', title=u"[mod] Nachrichtenverlauf", thispage="users", thread=thread)
+        return render_template('modmsg/view_single_mod.html', title=u"[mod] Nachrichtenverlauf", thispage="user", thread=thread)
 
-    return render_template('modmsg/view_single.html', title=u"Nachrichtenverlauf", thispage="users", thread=thread)
+    return render_template('modmsg/view_single.html', title=u"Nachrichtenverlauf", thispage="user", thread=thread)
 
 def msg_add_response(user, thread_id):
     cuser = muser.getCurrentUser()

@@ -133,12 +133,12 @@
   <div class="_headbar-site" id="site-bar">
       <div class="single-fluid _headbar-fluid">
         <div class="_headbar-site-brand">
-          {{ site_label|safe }}
+          <a href="/">{{ site_label|safe }}</a>
         </div>
         <div class="_headbar-site-nav">
-            <a href="/"{% if thispage == "index" %} class="-active"{% endif %}>Startseite</a>
+          <a href="/courses"{% if thispage == "courses" %} class="-active"{% endif %}>Kurse</a>
             <a href="/f/0"{% if thispage == "forum" %} class="-active"{% endif %}>Forum</a>
-            <a href="/courses"{% if thispage == "courses" %} class="-active"{% endif %}>Kurse</a>
+            <a href="/users"{% if thispage == "user" %} class="-active"{% endif %}>Benutzer</a>
         </div>
       </div>
     </div>

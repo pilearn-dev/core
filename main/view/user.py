@@ -8,6 +8,9 @@ import markdown as md
 from sha1 import sha1
 import json, time
 
+def user_index():
+    return render_template('user/index.html', title=u"Benutzer", thispage="user", users=muser.User)
+
 def user_page(id, name=None):
     try:
         id = int(id)
@@ -500,6 +503,7 @@ def user_deletion_carried_out_page():
 
 
 def apply(app):
+    app.route('/u')(app.route('/users')(user_index))
     app.route('/u/<id>')(app.route('/user/<id>')(app.route('/user/<id>/<name>')(user_page)))
     app.route('/u/<id>/del')(app.route('/user/<id>/<name>/delete')(user_del_page))
     app.route('/user/<id>/delete', methods=["POST"])(delete_user)

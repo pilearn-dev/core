@@ -9,7 +9,7 @@ PiJS.extend("topbar", {
     {"title": "Startseite", "url": "/"},
     {"title": "Forum", "url": "/f/0"},
     {"title": "Kurse", "url": "/courses"},
-    {"title": "Moderation", "url": "/review"}
+    {"title": "Benutzer", "url": "/users"}
   ],
   init: function() {
     $(PiJS.topbar.classes.menu).on("click", function () {
