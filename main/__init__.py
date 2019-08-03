@@ -38,6 +38,7 @@ BETA_TOKEN = pidata["beta_token"]
 BETA_AUTH_KEY = pidata["register_key"]
 HAS_MATHJAX = pidata["mathjax"]
 SENTRY_ERROR_LOGGING = pidata["sentry_error_logging"]
+MATOMO_SITE_ID = pidata["matomo_site_id"]
 if SENTRY_ERROR_LOGGING:
     sentry_sdk.init(
         dsn=pidata["sentry_logging_key"],
@@ -81,7 +82,8 @@ def prepare_template_context():
         "cssid": md5(__version__),
         "num2suff": cnum.num2suff,
         "has_mathjax": HAS_MATHJAX,
-        "needs_mathjax": False
+        "needs_mathjax": False,
+        "matomo_site_id": MATOMO_SITE_ID
     }
 
 @app.before_request

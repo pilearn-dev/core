@@ -38,8 +38,9 @@
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML"></script>
   {% endif %}
 
+  {% if matomo_site_id %}
   <!-- Matomo -->
-<script type="text/javascript">
+  <script type="text/javascript">
   var _paq = window._paq || [];
   /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
   _paq.push(['trackPageView']);
@@ -47,12 +48,13 @@
   (function() {
     var u="//analytics.velja.de/";
     _paq.push(['setTrackerUrl', u+'matomo.php']);
-    _paq.push(['setSiteId', '1']);
+    _paq.push(['setSiteId', '{{ matomo_site_id }}']);
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
     g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
   })();
-</script>
-<!-- End Matomo Code -->
+  </script>
+  <!-- End Matomo Code -->
+  {% endif %}
 </head>
 <body>
   <header class="_header _header-sm _header-bordered p-st">
@@ -189,7 +191,9 @@
         </div>
         <div class="column12 p1">
           <p>Diese Webseite nutzt die &pi;-Learn-Software in der Version {{ __version__ }}. Design, System und Logo &copy; &pi;-Learn</p>
-          <p class="o5">&pi;-Learn nutzt statt den üblichen externen Anbietern die datenschutzfreundliche Alternative <a href="https://matomo.org">Matomo</a>, um Statistiken zu Seitenaufrufen zu erhalten. Wenn du das nicht möchtest, kannst du <a href="https://analytics.velja.de/index.php?module=CoreAdminHome&action=optOut&language=de&backgroundColor=ffffff&fontColor=5f5f5f&fontSize=16px&fontFamily=%22Source%20Sans%20Pro%22%2C%22Open%20Sans%22%2C%22Helvetica%20Neue%22%2CHelvetica%2CArial%2Csans-serif">hier</a> deine Zustimmung widerrufen.</p>
+          {% if matomo_site_id %}
+          <p class="o5">&pi;-Learn nutzt statt den üblichen externen Anbietern die datenschutzfreundliche Alternative <a href="https://matomo.org">Matomo</a>, um Statistiken zu Seitenaufrufen zu erhalten. Wenn du das nicht möchtest, kannst du <a href="https://analytics.velja.de/index.php?module=CoreAdminHome&action=optOut&language=de&backgroundColor=ffffff&fontColor=5f5f5f&fontSize=16px&fontFamily=%22Source%20Sans%20Pro%22%2C%22Open%20Sans%22%2C%22Helvetica%20Neue%22%2CHelvetica%2CArial%2Csans-serif">hier</a> der Speicherung widersprechen.</p>
+          {% endif %}
         </div>
     </div>
     </footer>
