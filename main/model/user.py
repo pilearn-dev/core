@@ -35,10 +35,10 @@ class User:
         self.__data = self.getInfo()
 
     def isDev(self):
-        return bool(self.getDetail("is_team"))
+        return bool(self.getDetail("is_dev"))
 
     def isTeam(self):
-        return bool(self.getDetail("is_dev"))
+        return bool(self.getDetail("is_team"))
 
     def isAdmin(self):
         return self.isMod()
