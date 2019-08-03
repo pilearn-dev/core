@@ -6,41 +6,80 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-site-verification" content="vSvlVOqzIXqIPAJHn1n2sHTbfLF-7TipRxK_T4jokls" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="description" content="{% block meta_description %}π-Learn ist eine Community-gesteuerte Open Learning Webseite. Das heißt, jeder Benutzer kann sein Wissen in Form von Kursen und Forenbeiträgen mit anderen teilen. Alle Inhalte werden frei veröffentlicht und können von allen angesehen werden, aber so richtig Spaß macht es erst, wenn man sich anmeldet.{% endblock %}">
   <title>&pi;-Learn &ndash; {{ title|safe }}</title>
   <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+
+  <link rel="icon" type="image/svg+xml" href="/static/img/logo_pi-learn.svg" sizes="any">
+  <link rel="apple-touch-icon" type="image/svg+xml" href="/static/img/logo_pi-learn.svg" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="/static/img/logo_pi-learn.svg" sizes="32x32">
+  <link rel="icon" type="image/svg+xml" href="/static/img/logo_pi-learn.svg" sizes="96x96">
+
   <link rel="stylesheet" href="/static/new_css/framework.css">
   <link rel="stylesheet" href="/static/fa/css/font-awesome.min.css">
+
   <script src="/static/new_js/jquery.min.js" charset="utf-8"></script>
   <script src="/static/new_js/pilearn.js" charset="utf-8"></script>
   <script src="/static/new_js/pilearn.topbar.js" charset="utf-8"></script>
+
+  {% if needs_mathjax and has_mathjax %}
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      extensions: ["tex2jax.js"],
+      jax: ["input/TeX", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [ [':(','):'] ],
+        displayMath: [ ['::(',')::'] ],
+        processEscapes: true
+      },
+      "HTML-CSS": { fonts: ["TeX"] }
+    });
+  </script>
+  <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML"></script>
+  {% endif %}
+
+  {% if matomo_site_id %}
+  <!-- Matomo -->
+  <script type="text/javascript">
+  var _paq = window._paq || [];
+  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//analytics.velja.de/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '{{ matomo_site_id }}']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+  })();
+  </script>
+  <!-- End Matomo Code -->
+  {% endif %}
 </head>
 <body>
   <header class="_header _header-sm _header-bordered p-st">
     <div class="single-fluid d-f _header-container">
-      <nav class="_header-items hide__lg">
+      <nav class="_header-items hide__lg hide__md">
         <a class="_header-icon js--topbar-menu" href="#!">
           <svg width="3em" height="3em" viewbox="0 0 48 48">
-            <path d="M6,8 h36 v7 h-36 z M6,21 h36 v7 h-36 z M6,34 h36 v7 h-36 z" fill="transparent" stroke-width="1" />
-            <path d="M5.5,15 h37 M5.5,28 h37 M5.5,41 h37" fill="transparent" stroke-width="2.5" />
+            <path d="M6,8 h36 v7 h-36 z M6,21 h36 v7 h-36 z M6,34 h36 v7 h-36 z" />
           </svg>
         </a>
       </nav>
-      <a class="_header-brand pl2 pr2" href="#!"><img src="/static/img/logo_pi-learn.svg"><span class="hide__sm">&pi;-Learn</span></a>
+      <a class="_header-brand pl2 pr2" href="/"><img src="/static/img/logo_pi-learn.svg"><span class="hide__sm">&pi;-Learn</span></a>
       <div class="_header-spacer"></div>
       <nav class="_header-items">
         {% if user.isMod() %}
         <a href="/tools" class="_header-icon hide__sm" title="Werkzeuge -- Besondere Funktionen und Bemerkenswerte Beiträge -- Nur für Moderatoren">
           <svg width="3em" height="3em" viewbox="0 0 48 48">
-            <path d="M24,8 l12,16 l-12,16 l-12-16 z" fill="transparent" stroke-width="1" />
-            <path d="M12,24 l12,16 l12,-16" fill="transparent" stroke-width="3" />
+            <path d="M24,8 l12,16 l-12,16 l-12-16 z" />
           </svg>
         </a>
         {% endif %}
         {% if user.may("forum_reviewEdits") or user.may("course_reviewEdits") %}{% set revC = review.getReviewCountState(user) %}
         <a href="/review" class="_header-icon hide__md hide__sm" title="Moderation -- Überprüfe Beiträge auf dieser Seite und entscheide, wie mit diesen weiter zu verfahren ist.">
           <svg width="3em" height="3em" viewbox="0 0 48 48">
-            <path d="M6,8 h16 v7 h-16 z M6,21 h16 v7 h-16 z M6,34 h16 v7 h-16 z" fill="transparent" stroke-width="1" />
-            <path d="M5.5,15 h17 M5.5,28 h17 M5.5,41 h17" fill="transparent" stroke-width="2.5" />
+            <path d="M6,8 h16 v7 h-16 z M6,21 h16 v7 h-16 z M6,34 h16 v7 h-16 z" />
             <g transform="scale(0.5) translate(50 0)">
               <path d="M6,32 l10,10 l26,-26 l-5,-5 l-21,21 l-5,-5 z" stroke-width="1" />
             </g>
@@ -55,6 +94,11 @@
           <a href="/u/{{ user.id }}" title="Eigenes Benutzerprofil" class="_header-mix  js--topbar-user">
             {% if user.getDetail("profile_image") %}
               <img src="{{ user.getDetail("profile_image") }}" class="_header-img mr2__lg mr0" aria-hidden="true">
+            {% else %}
+            <svg class="_header-img mr2__lg mr0" aria-hidden="true" viewBox="0 0 48 48" width="2em" height="2em">
+              <path d="M18,6 l16,0 l0,16 l-16,0 z M32,22 l10,20 l-32,0 l10,-20" fill="transparent" stroke-width="1" />
+              <path d="M18,22 l16,0 M10,42 l32,0" fill="transparent" stroke-width="3" />
+            </svg>
             {% endif %}
             <span class="_badge _badge-score hide__md hide__sm">{{ user.getReputation() }}</span>
             {% for type in user.getBadgeBreakdown() %}
@@ -66,48 +110,61 @@
           <a class="_header-icon p-r js--topbar-inbox" id="notification-trigger" href="#!" title="Posteingang: Du hast {% if notificationCount == 0 %}keine{% elif notificationCount == 1 %}eine{% else %}{{ notificationCount }}{%endif%} neue Nachrichten">
             {% if notificationCount != 0 %}<span class="_badge _badge-s-danger -wbd p-a xa-r__sp ya-t__sp">{{ notificationCount }}</span>{% endif %}
             <svg width="3em" height="3em" viewbox="3 3 45 45">
-              <path d="M6,12 h36 v24 h-36 z" fill="transparent" stroke-width="1" />
-              <path d="M6,36 h36" fill="transparent" stroke-width="4" />
-              <path d="M6,12 l18,12 l18,-12" fill="transparent" stroke-width="2" />
+              <path d="M6,12 l18,12 l18,-12 z M6,16 v20 h36 v-20 l-18,12 z" />
             </svg>
           </a>
 
           {% set delta = user.getRepDelta() %}
-          {% set badges = user.hasUnknownBadges() %}
+          {% set unknow_badges = user.hasUnknownBadges() %}
           <a class="_header-icon p-r js--topbar-rep-audit" id="repscreen-trigger" href="#!" title="Auszeichnungen: Du hast {% if delta == 0 %}keine{% else %}eine{%endif%} Änderung deiner Reputation. Du hast{% if not badges %}keine{%endif%} neue{% if not badges %}n{%endif%} Abzeichen.">
             {% if delta > 0 %}<span class="_badge _badge-s-success -wbd p-a xa-r__sp ya-t__sp">+{{ num2suff(delta) }}</span>{% endif %}
-            {% if badges %}<span class="_badge _badge-dot-success -wbd p-a xa-r__sp ya-b__sp">neue Abzeichen</span>{% endif %}
+            {% if unknow_badges %}<span class="_badge _badge-dot-success -wbd p-a xa-r__sp ya-b__sp">neue Abzeichen</span>{% endif %}
             <svg width="3em" height="3em" viewbox="3 3 45 45">
-              <path d="M14,10 q0,15 8,15 M34,10 q0,15 -8,15 M14,10 h20 M22,25 v10 M26,25 v10 M22,35 h-8 v4 h20 v-4 z" fill="transparent" stroke-width="1" />
-              <path d="M14,11 q0,15 8,15 M34,10 q0,15 -8,15 M13.5,40 h21" fill="transparent" stroke-width="2" />
+              <circle cx="24" cy="18" r="8" stroke-width="4" fill="transparent" />
+              <circle cx="24" cy="18" r="12" stroke-width="2" fill="transparent" />
+              <path d="M35,24 l8,15 l-8,0 l-5.6,6.6 l-8,-15" fill="transparent" stroke-width="2" />
             </svg>
           </a>
         {% else %}
-          <a href="/login">anmelden</a>
+          <a href="/register" class="_header-btn _btn _btn--primary">Registrieren</a>
+          <a href="/login" class="_header-btn _btn _btn--primary _btn-lighter">Anmelden</a>
         {% endif %}
       </nav>
     </div>
   </header>
-  <div class="col-white bg--primary p3 bb3s bb--primary-dd" id="site-bar">
-    <div class="grid single-fluid -full-center">
-      <div class="column6__lg"><h1 class="m0 fs-subtitle f-brand">{{ (site_label|markdown)[3:-4] }}</h1></div>
-      <nav class="_nav _nav-h hide__sm hide__md _nav-right column6 col-white">
-        <a href="/"{% if thispage == "index" %} class="-active"{% endif %}>Startseite</a>
-        <a href="/f/0"{% if thispage == "forum" %} class="-active"{% endif %}>Forum</a>
-        <a href="/courses"{% if thispage == "courses" %} class="-active"{% endif %}>Kurse</a>
-      </nav>
+  <div class="_headbar-site" id="site-bar">
+      <div class="single-fluid _headbar-fluid">
+        <div class="_headbar-site-brand">
+          <a href="/">{{ site_label|safe }}</a>
+        </div>
+        <div class="_headbar-site-nav">
+          <a href="/courses"{% if thispage == "courses" %} class="-active"{% endif %}>Kurse</a>
+            <a href="/f/0"{% if thispage == "forum" %} class="-active"{% endif %}>Forum</a>
+            <a href="/users"{% if thispage == "user" %} class="-active"{% endif %}>Benutzer</a>
+        </div>
+      </div>
     </div>
-  </div>
  {% if global_notification != "" %}
     {% for subnote in global_notification.split("\n_____\n") %}
-        <div class="_banner _banner-warning">
+        <div class="_banner _banner-warning _banner-strong mb1">
             <div class="single-fluid">
                 {{ subnote }}
             </div>
         </div>
     {% endfor %}
   {% endif %}
+  {% for featured_announcement in featured_announcements if not request.cookies.get("hide-hero-announcement-"~featured_announcement.id, False) %}
+  <div class="_banner _banner-dark mb1 p1" id="banner:{{ featured_announcement.id }}">
+      <div class="single-fluid grid">
+        <p class="colbox-fill my2">{{ featured_announcement.getTitle() }}</p><div class="colbox al-r"><button onclick="K=this;$.ajax({url:'/hide-hero',method:'POST', data:JSON.stringify({'hero':'announcement-{{ featured_announcement.id }}'}),
+        contentType: 'application/json; charset=utf-8',success:function(){K.parentNode.parentNode.parentNode.style.display='none';}});" class="_btn _btn-dark _btn-on-light">&times;</button></div></div>
+  </div>
+  {% endfor %}
+  {% if pattern=="individual" %}
+    <main>
+  {% else %}
     <main class="container single-fluid">
+  {% endif %}
       {% block body %}{% endblock %}
     </main>
     <footer class="bg--primary-lll col-black anchor-dark mt3 mt1__sm">
@@ -130,30 +187,38 @@
         </div>
         <div class="column12__sm column3 p1">
           <h4 class="p1 fs-base2 f-caps f-bold col--primary-ddd">Über uns</h4>
-          <a class="d-b m1" href="https://twitter.com/@pi_learn">Twitter</a>
-          <a class="d-b m1" href="/about/mission">Mission</a>
+          <a class="d-b m1" href="/tour">Website-Tour</a>
           <a class="d-b m1" href="/about/team">Unser Team</a>
-          <a class="d-b m1" href="/about/apply">Mitmachen</a>
+          <a class="d-b m1" href="https://twitter.com/@pi_learn">Twitter</a>
         </div>
         <div class="column12__sm column3 pt3 p1">
-          <img class="push-right p2" alt="Creative Commons BY-SA (mit Namensnennung, Weitergabe unter gleichen Bedingungen)" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png">
+          <img class="p1" alt="Creative Commons BY-SA (mit Namensnennung, Weitergabe unter gleichen Bedingungen)" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png">
           <p>Texte und Bilder aus Kursen und Foren verfügbar unter <a href="https://creativecommons.org/licenses/by-sa/3.0/de/">CC-BY-SA</a> zur Verfügung.</p>
           <p>Alle anderen Inhalte sind urheberrechtlich geschützt.</p>
         </div>
         <div class="column12 p1">
           <p>Diese Webseite nutzt die &pi;-Learn-Software in der Version {{ __version__ }}. Design, System und Logo &copy; &pi;-Learn</p>
-        </div>
+          {% if matomo_site_id %}
+          <p class="o5">&pi;-Learn nutzt statt den üblichen externen Anbietern die datenschutzfreundliche Alternative <a href="https://matomo.org">Matomo</a>, um Statistiken zu Seitenaufrufen zu erhalten. Wenn du das nicht möchtest, kannst du <a href="https://analytics.velja.de/index.php?module=CoreAdminHome&action=optOut&language=de&backgroundColor=ffffff&fontColor=5f5f5f&fontSize=16px&fontFamily=%22Source%20Sans%20Pro%22%2C%22Open%20Sans%22%2C%22Helvetica%20Neue%22%2CHelvetica%2CArial%2Csans-serif">hier</a> der Speicherung widersprechen.</p>
+          {% endif %}
         </div>
     </div>
     </footer>
     {% if not (user.isLoggedIn() or request.cookies.get("hide-hero-login-request", False)) %}
-        <div class="_banner _banner--primary _banner-strong _banner-bottom _banner-with-decoration">
+        <div class="_banner _banner--primary _banner-strong _banner-bottom" id="banner:login-request">
             <div class="single-fluid grid">
-              <p class="column9 column12__sm">Willst du auch mitmachen und dein Wissen teilen?</p><div class="column3 column12__sm al-r"><a href="/login" class="_btn _btn--primary _btn-lighter">Registrieren</a><a href="#!" onclick="K=this;$post('hide-hero', {'hero':'login-request'}, function(){K.parentNode.style.display='none';})" class="_btn _btn--primary _btn-on-dark">&times;</a></div></div>
+              <p class="column9 column12__sm">Willst du auch mitmachen und dein Wissen teilen?</p><div class="column3 column12__sm al-r"><a href="/login" class="_btn _btn--primary _btn-on-dark _btn-lighter">Registrieren</a><a href="#!" onclick="K=this;$.ajax({url:'/hide-hero',method:'POST', data:JSON.stringify({'hero':'login-request'}),
+              contentType: 'application/json; charset=utf-8',success:function(){K.parentNode.parentNode.parentNode.style.display='none';}});" class="_btn _btn--primary _btn-on-dark">&times;</a></div></div>
         </div>
     {% endif %}
     <script>
       PiJS.topbar.init();
     </script>
+    {% if user.isMod() %}
+    <script src="/static/new_js/moderator.js" charset="utf-8"></script>
+    {% endif %}
+    {% if user.getPref("darkTheme", False) == "1" %}
+    <style>._headbar-site,.container, footer, ._dialog{filter:invert(100%)}._headbar-site img,.container img{filter:invert(100%)}html{background-color:#000 !important}</style>
+    {% endif %}
 </body>
 </html>

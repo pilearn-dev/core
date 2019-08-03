@@ -5,7 +5,7 @@ from flask import Flask, request, session, redirect, url_for, abort, render_temp
 import secrets, random
 
 from main.controller import md, num as cnum
-from main.model import privileges as mprivileges, tags as mtags, user as muser, reviews as mreviews
+from main.model import privileges as mprivileges, tags as mtags, user as muser, reviews as mreviews, forum as mforum
 from model import Election, Nomination, Question, Vote
 import traceback as tb, json
 
@@ -19,11 +19,20 @@ f = open("pidata.json", "r")
 pidata = json.loads(f.read())
 f.close()
 SITE_LABEL = pidata["label"]
+SENTRY_ERROR_LOGGING = pidata["sentry_error_logging"]
+MATOMO_SITE_ID = pidata["matomo_site_id"]
+if SENTRY_ERROR_LOGGING:
+    sentry_sdk.init(
+        dsn=pidata["sentry_logging_key"],
+        integrations=[FlaskIntegration()]
+    )
 
 f = open("version.json", "r")
 pivers = json.loads(f.read())
 f.close()
 __version__ = pivers["election"]
+
+IS_INACCESSIBLE = False
 
 @app.context_processor
 def prepare_template_context():
@@ -36,6 +45,13 @@ def prepare_template_context():
 
     g.random_number = random.randint
     g.num2suff = cnum.num2suff
+
+    if SENTRY_ERROR_LOGGING:
+        with sentry_sdk.configure_scope() as scope:
+            scope.user = {
+                "id": user.id,
+                "username": user.getHTMLName(False)
+            }
 
     def countNotifications(notif):
         count = 0
@@ -55,7 +71,9 @@ def prepare_template_context():
         "is_offline": False,
         "site_label": SITE_LABEL,
         "__version__": __version__,
-        "num2suff": cnum.num2suff
+        "num2suff": cnum.num2suff,
+        "matomo_site_id": MATOMO_SITE_ID,
+        "featured_announcements": mforum.ForumAnnouncement.byForumFeatured(0)
     }
 
 @app.before_request
@@ -66,7 +84,7 @@ def prepare_request():
 
 @app.route('/')
 def index():
-    return render_template("list.html", title=u"Wahlen", thispage="elections", data=Election.getAll())
+    return render_template("list.html", title=u"Wahlen", thispage="elections", data=Election.getAll(), Nomination=Nomination)
 
 @app.route('/<int:id>')
 def vote(id):

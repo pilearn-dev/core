@@ -1,6 +1,8 @@
 {% extends "layout.html" %}
 {% block body %}
-    <h2 class="bigheading">Wahlen</h2>
+    <h1>Wahlen</h1>
+    <p>Bei π-Learn werden, sobald die Seite genug Aktivität hat, von der Community Moderatoren gewählt. Moderatoren erhalten außerordentliche Rechte, um Probleme zu lösen, für die die Community nicht die Werkzeuge hat.</p>
+    <p>Dies ist eine Übersicht über alle bisherigen und aktuellen Wahlen auf &pi;-Learn:</p>
     <div class="_datalist">
     {% for e in data %}
       <div class="_datalist-item">
@@ -16,7 +18,7 @@
           {% elif e.getState() == 5 %}
           Wahlphase
           {% elif e.getState() == 6 %}
-          Ergebnisse veröffentlicht
+          <a href="#!" onclick="$('#results-{{ e.id }}').toggleClass('hide');">Ergebnisse veröffentlicht</a>
           {% endif %}
         </div>
         <div class="_datalist-field fs-base3 ta-c">{{ e.getCandidates()|length }} <span class="fs-caption d-b">Kandidaten</span></div>
@@ -28,6 +30,17 @@
           {% endif %}
         </div>
       </div>
+      {% if e.getState() == 6 %}
+      <div class="_datalist-item-expansion hide" id="results-{{ e.id }}">
+        <p>Die Wahl ist beendet und die Stimmen wurden ausgezählt. Es wurden folgende Kandidaten gewählt:</p>
+        <div class="horizontal-list">
+        {% for c in Nomination.from_election(e.id) if c.isElected() %}
+        {{ user_card(c.getCandidate(), level="in") }}
+        {% endfor %}
+        </div>
+        <p>Die Ergebnisse können <a href="/election/{{ e.id }}/get-ballot-data/result.blt">hier</a> im .blt-Format heruntergeladen werden und z.B. mit <a href="https://github.com/Conservatory/openstv">OpenSTV</a> überprüft werden.</p>
+      </div>
+      {% endif %}
     {% endfor %}
     </div>
     {% if user.isDev() %}
