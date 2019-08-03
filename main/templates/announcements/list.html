@@ -28,9 +28,9 @@
         <span class="d-b col-dark-dd push-right">{{ a.getStart()[1] }}</span>
       {% endif %}
       {% if a.isShown() %}
-        <span class="d-b col-success-dd mb1">aktiv ({{ a.getShownFrom()[1] }} - {{ a.getShownUntil()[1] }})</span>
+        <span class="d-b col-success-dd mb1">{% if a.isFeaturedBanner() %}<i class="fa fa-arrow-circle-o-up"></i> {% endif %}aktiv ({{ a.getShownFrom()[1] }} - {{ a.getShownUntil()[1] }})</span>
       {% else %}
-        <span class="d-b col-danger-dd mb1">inaktiv ({{ a.getShownFrom()[1] }} - {{ a.getShownUntil()[1] }})</span>
+        <span class="d-b col-danger-dd mb1">{% if a.isFeaturedBanner() %}<i class="fa fa-arrow-circle-o-up"></i> {% endif %}inaktiv ({{ a.getShownFrom()[1] }} - {{ a.getShownUntil()[1] }})</span>
       {% endif %}
         <span class="d-b mb1 fs-base2 col-black">{{ a.getTitle() }}</span>
         <span class="d-b mb1">{{ a.getLink() }}</span>

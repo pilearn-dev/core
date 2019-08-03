@@ -44,7 +44,11 @@ def announcements_add(forum_id):
             event_until=dc(request.form["event_until"]) if request.form["event_until"] else None
         show_from=dc(request.form["shown_from"])
         show_until=dc(request.form["shown_until"])
-        mforum.ForumAnnouncement.createNew(f.id,title,link,show_from,show_until,event_from,event_until)
+        announcement = mforum.ForumAnnouncement.createNew(f.id,title,link,show_from,show_until,event_from,event_until)
+        if cuser.isDev() and f.id == 0:
+            is_featured_banner = request.form.has_key("is_featured_banner", False)
+            if is_featured_banner:
+                announcement.setDetail("is_featured_banner", True)
         return redirect(url_for("announcements_list", forum_id=f.id))
     else:
         return render_template("announcements/add.html", title=u"Ankündigungen", forum=f)
@@ -87,6 +91,13 @@ def announcements_edit(forum_id, announcement_id):
         an.setDetail("end_date",event_until)
         an.setDetail("show_from",show_from)
         an.setDetail("show_until",show_until)
+
+        if cuser.isDev() and f.id == 0:
+            is_featured_banner = request.form.has_key("is_featured_banner")
+            if is_featured_banner:
+                an.setDetail("is_featured_banner", True)
+            else:
+                an.setDetail("is_featured_banner", False)
 
         return redirect(url_for("announcements_list", forum_id=f.id))
     else:

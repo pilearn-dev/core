@@ -141,7 +141,8 @@ timestamp INT)
   start_date INT,
   end_date INT,
   show_from INT,
-  show_until INT
+  show_until INT,
+  is_featured_banner BOOLEAN
 );
 CREATE TABLE forum_tags (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

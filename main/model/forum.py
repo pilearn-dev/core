@@ -1608,7 +1608,7 @@ class Forum:
             if con:
                 con.close()
 
-    def getAnnouncements(self, user):
+    def getAnnouncements(self, user, ignore_featured=False):
         try:
             con = lite.connect('databases/courses.db')
             cur = con.cursor()
@@ -1621,9 +1621,9 @@ class Forum:
             if con:
                 con.close()
 
-        announcements = ForumAnnouncement.byForum(0)
+        announcements = ForumAnnouncement.byForum(0, ignore_featured=ignore_featured)
         for d in dl:
-            announcements += ForumAnnouncement.byForum(d[0])
+            announcements += ForumAnnouncement.byForum(d[0], ignore_featured=ignore_featured)
 
         return announcements
 
@@ -1930,6 +1930,9 @@ class ForumAnnouncement:
     def getLink(self):
         return self.getDetail("link")
 
+    def isFeaturedBanner(self):
+        return self.getDetail("is_featured_banner")
+
     def getInfo(self):
         try:
             con = lite.connect('databases/forum.db')
@@ -1947,7 +1950,8 @@ class ForumAnnouncement:
                 "start_date": data['start_date'],
                 "end_date": data['end_date'],
                 "show_from": data['show_from'],
-                "show_until": data['show_until']
+                "show_until": data['show_until'],
+                "is_featured_banner": data["is_featured_banner"]
             }
         except lite.Error as e:
             #raise lite.Error from e
@@ -1957,15 +1961,38 @@ class ForumAnnouncement:
                 con.close()
 
     @classmethod
-    def byForum(cls, forum_id, all=False):
+    def byForum(cls, forum_id, all=False, ignore_featured=False):
         try:
             con = lite.connect('databases/forum.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            if not all:
-                cur.execute("SELECT * FROM announcements WHERE forum=? AND show_from < ? and show_until > ?", (forum_id, time.time(), time.time()))
+            if ignore_featured:
+                if not all:
+                    cur.execute("SELECT * FROM announcements WHERE forum=? AND show_from < ? and show_until > ? AND is_featured_banner IS NOT 1", (forum_id, time.time(), time.time()))
+                else:
+                    cur.execute("SELECT * FROM announcements WHERE forum=? AND is_featured_banner IS NOT 1", (forum_id,))
             else:
-                cur.execute("SELECT * FROM announcements WHERE forum=?", (forum_id,))
+                if not all:
+                    cur.execute("SELECT * FROM announcements WHERE forum=? AND show_from < ? and show_until > ?", (forum_id, time.time(), time.time()))
+                else:
+                    cur.execute("SELECT * FROM announcements WHERE forum=?", (forum_id,))
+
+            data = cur.fetchall()
+            return [cls(_["id"]) for _ in data]
+        except lite.Error as e:
+            print(e)
+            return []
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def byForumFeatured(cls, forum_id):
+        try:
+            con = lite.connect('databases/forum.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM announcements WHERE forum=? AND show_from < ? and show_until > ? AND is_featured_banner=1", (forum_id, time.time(), time.time()))
             data = cur.fetchall()
             return [cls(_["id"]) for _ in data]
         except lite.Error as e:

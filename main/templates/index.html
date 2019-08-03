@@ -1,5 +1,5 @@
 {% set pattern="individual" %}
-{% set announcements = globalForum.getAnnouncements(user) %}
+{% set announcements = globalForum.getAnnouncements(user, ignore_featured=True) %}
 {% extends "layout_new.html" %}
 {% block body %}
 {% if not user.isLoggedIn() %}

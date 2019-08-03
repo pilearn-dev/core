@@ -11,6 +11,10 @@
   <p>von <input type="date" class="form form-inline" id="event_from" name="event_from"> bis <input id="has_end_date" name="has_end_date" class="form-checkbox" type="checkbox" checked onclick="if(!this.checked) {$('#event_until').val('').hide()} else {$('#event_until').show()}"> <input type="date" class="form form-inline" id="event_until" name="event_until"></p>
   <label for="title" class="form">Anzeige</label>
   <p>von <input type="date" class="form form-inline" id="shown_from" name="shown_from"> bis <input type="date" class="form form-inline" id="shown_until" name="shown_until"></p>
+  {% if forum.id == 0 and user.isDev() %}
+  <label for="is_featured_banner" class="form">Anzeige als Banner</label>
+  <label for="is_featured_banner" class="d-b my1"><input id="is_featured_banner" name="is_featured_banner" class="form-checkbox" type="checkbox"> Diese Ankündigung als Banner (wegklickbar) auf allen Seiten anzeigen</label>
+  {% endif %}
   <button type="submit" class="_btn _btn--primary">Hinzufügen</button>
   <a href="/announcements/{{ forum.id }}" class="_btn _btn-on-light">Abbrechen</a>
 </form>

@@ -146,13 +146,20 @@
     </div>
  {% if global_notification != "" %}
     {% for subnote in global_notification.split("\n_____\n") %}
-        <div class="_banner _banner-warning">
+        <div class="_banner _banner-warning _banner-strong mb1">
             <div class="single-fluid">
                 {{ subnote }}
             </div>
         </div>
     {% endfor %}
   {% endif %}
+  {% for featured_announcement in featured_announcements if not request.cookies.get("hide-hero-announcement-"~featured_announcement.id, False) %}
+  <div class="_banner _banner-dark mb1 p1" id="banner:{{ featured_announcement.id }}">
+      <div class="single-fluid grid">
+        <p class="colbox-fill my2">{{ featured_announcement.getTitle() }}</p><div class="colbox al-r"><button onclick="K=this;$.ajax({url:'/hide-hero',method:'POST', data:JSON.stringify({'hero':'announcement-{{ featured_announcement.id }}'}),
+        contentType: 'application/json; charset=utf-8',success:function(){K.parentNode.parentNode.parentNode.style.display='none';}});" class="_btn _btn-dark _btn-on-light">&times;</button></div></div>
+  </div>
+  {% endfor %}
   {% if pattern=="individual" %}
     <main>
   {% else %}

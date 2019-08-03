@@ -83,7 +83,8 @@ def prepare_template_context():
         "num2suff": cnum.num2suff,
         "has_mathjax": HAS_MATHJAX,
         "needs_mathjax": False,
-        "matomo_site_id": MATOMO_SITE_ID
+        "matomo_site_id": MATOMO_SITE_ID,
+        "featured_announcements": mforum.ForumAnnouncement.byForumFeatured(0)
     }
 
 @app.before_request
