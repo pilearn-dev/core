@@ -27,7 +27,10 @@
           <div class="p2 js--editor-preview hr-original"></div>
         </div>
         <h2 id="results-note">Einstellungen</h2>
-        <p>Aktuelle Phase:</p>
+        <p>Automatisch Phase auswählen. (Wechsel=19:00)</p>
+        <label for="election_start_date" class="form">Beginn des einmonatigen Abstimmungszyklus</label>
+        <input id="election_start_date" class="form" type="date" value="{{ election_start_date.date().__str__() }}">
+        <label class="form" for="state-selection">Aktuelle Phase:</label>
         <select id="state-selection" class="form">
           <option{% if vote_state==1 %} selected{% endif %} value="1">Ankündigungsphase</option>
           <option{% if vote_state==2 %} selected{% endif %} value="2">Nominationsphase</option>
@@ -60,11 +63,39 @@
               <code>{{ cnd.getDetail("name") }}.{{ cnd.id }}@pilearn.de</code>
               {% set annot = cnd.getAnnotations() %}
               <h3>Anmerkungen</h3>
-              <ul>
-              {% for a in annot %}
-                  <li class="{% if a.deleted %}bg-danger-lll{% endif %}">{{ a.content|markdown }}</li>
+              <table class="table">
+                <tr>
+                  <th class="annot-icon">Art</th>
+                  <th>Von</th>
+                  <th>Kommentar</th>
+                  <th>Zeit</th>
+                </tr>
+              {% for a in annot if (not a.deleted) %}
+                <tr>
+                  <th>
+                    {% if a.type == "custom" %}
+                      Anmerkung
+                    {% elif a.type == "ban" %}
+                      Sperrung
+                    {% elif a.type == "unban" %}
+                      Entsperrung
+                    {% elif a.type == "delete" %}
+                      Löschung
+                    {% elif a.type == "accessdata" %}
+                      PII-Zugriff
+                    {% elif a.type == "merge" %}
+                      Merge
+                    {% elif a.type == "message" %}
+                      &diams;-Nachricht
+                    {% endif %}
+                  </th>
+                  <td><a href="/u/{{ a.creator.id }}">{{ a.creator.getHTMLName()|safe }}</a></td>
+                  <td>{% if a.content=="auto" %}<span class="fs-base1 col-dark-d">(automatisch)</span>{% elif a.content=="manual" %}<span class="fs-base1 col-dark-d">(manuell)</span>{% else %}{{ a.content|markdown }}{% endif %}</td>
+                  <td><span title="{{ a.absolute_date }}">{{ a.relative_date }}</span></td>
+                </tr>
+              {% else %}
               {% endfor %}
-              </ul>
+              </table>
             </div>
           </div>
         {% endfor %}
@@ -81,7 +112,8 @@ function save_all() {
       "position": "Moderator",
       "message": $("#election-message").val(),
       "places": $("#places").val(),
-      "state": $("#state-selection").val()
+      "state": $("#state-selection").val(),
+      "election_start_date": $("#election_start_date").val()
     }),
     "contentType": "application/json; charset=utf-8",
     "success": function () {

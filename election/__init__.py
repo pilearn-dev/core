@@ -7,7 +7,7 @@ import secrets, random
 from main.controller import md, num as cnum
 from main.model import privileges as mprivileges, tags as mtags, user as muser, reviews as mreviews, forum as mforum
 from model import Election, Nomination, Question, Vote
-import traceback as tb, json
+import traceback as tb, json, datetime, time
 
 app = Flask(__name__)
 app.config.update(dict(
@@ -91,6 +91,9 @@ def vote(id):
     if not Election.exists(id):
         abort(404)
     e = Election(id)
+
+    e.updateByTime()
+
     cuser = muser.getCurrentUser()
     votes = Vote.from_user(e.id, cuser)
     if votes is not None:
@@ -113,7 +116,8 @@ def vote(id):
             "is1": lambda x:x == votes[0],
             "is2": lambda x:x == votes[1],
             "is3": lambda x:x == votes[2]
-        })
+        },
+        vote_scheduler=e.getScheduleDatetime)
 
 @app.route('/new')
 def new():
@@ -128,6 +132,7 @@ def edit(id):
     if not Election.exists(id):
         abort(404)
     e = Election(id)
+    e.updateByTime()
     cuser = muser.getCurrentUser()
     if not cuser.isDev():
         abort(404)
@@ -141,7 +146,8 @@ def edit(id):
         vote_state=e.getState(),
         vote_position=e.getPosition(),
         vote_id=id,
-        vote_candidate=e.getCandidates())
+        vote_candidate=e.getCandidates(),
+        election_start_date=e.getRelativeTime(0))
 
 @app.route('/<int:id>/get-ballot-data/<filename>', methods=["GET", "POST"])
 def get_ballot_data(id, filename=None):
@@ -183,6 +189,7 @@ def candidate(id):
     if not Election.exists(id):
         abort(404)
     e = Election(id)
+    e.updateByTime()
     cuser = muser.getCurrentUser()
     if request.method == "POST":
         if not Nomination.exists(id, cuser):
@@ -203,6 +210,7 @@ def api(id):
     if not Election.exists(id):
         abort(404)
     e = Election(id)
+    e.updateByTime()
     cuser = muser.getCurrentUser()
     command = request.json
     if not command.get("action", False):
@@ -234,6 +242,10 @@ def api(id):
         e.setDetail("message", command["message"])
         e.setDetail("places", command["places"])
         e.setDetail("state", command["state"])
+        date = command["election_start_date"]
+        date = datetime.datetime.strptime(command["election_start_date"], "%Y-%m-%d")
+        date = time.mktime(date.timetuple())
+        e.setDetail("election_start_date", date)
     elif action == "vote":
         v = Vote.from_user(e.id, cuser)
         if v == None:
@@ -244,7 +256,7 @@ def api(id):
             v.setThirdVote(command["candidate"])
         else:
             v.setSecondVote(command["candidate"])
-    elif action == "tally":
+    elif action == "tally" and cuser.isDev():
         if command["results"] == "":
             ids = []
         else:
@@ -258,7 +270,7 @@ def api(id):
                 c.setDetail("state", 0)
             if c.getCandidate().id in ids:
                 c.setDetail("state", 1)
-    elif action == "untally":
+    elif action == "untally" and cuser.isDev():
         cand = e.getCandidates()
         for c in cand:
             if c.getDetail("state") == 1:

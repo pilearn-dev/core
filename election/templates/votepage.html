@@ -192,6 +192,27 @@
             <dd>{{ vote_places }}</dd>
             <dt>Anzahl Kandidaten</dt>
             <dd>{{ vote_candidate|length }}</dd>
+
+            {% if vote_state <= 1 %}
+            <dt>Beginn Nominierungen</dt>
+            {% set ts = vote_scheduler(7) %}
+            <dd title="{{ ts[1] }}">{{ ts[2] }}</dd>
+            {% endif %}
+            {% if vote_state <= 2 %}
+            <dt>Beginn Interviewphase</dt>
+            {% set ts = vote_scheduler(14) %}
+            <dd title="{{ ts[1] }}">{{ ts[2] }}</dd>
+            {% endif %}
+            {% if vote_state <= 4 %}
+            <dt>Beginn Abstimmung</dt>
+            {% set ts = vote_scheduler(21) %}
+            <dd title="{{ ts[1] }}">{{ ts[2] }}</dd>
+            {% endif %}
+            {% if vote_state <= 5 %}
+            <dt>Ende Abstimmung</dt>
+            {% set ts = vote_scheduler(28) %}
+            <dd title="{{ ts[1] }}">{{ ts[2] }}</dd>
+            {% endif %}
           </dl>
         </div>
         <div class="_card _card-info">

@@ -5,7 +5,8 @@ import sqlite3 as lite
 from flask import request, session, url_for
 from sha1 import sha1
 from main.model import user as muser
-import time
+from main.controller import times as ctimes
+import time, datetime
 
 class Vote:
 
@@ -451,6 +452,39 @@ class Election:
             if con:
                 con.close()
 
+    def updateByTime(self):
+        state = self.getState()
+        now = datetime.datetime.now()
+        if state == 1 and self.getRelativeTime(7) < now:
+            self.setDetail("state", 2)
+            state = 2
+        if state == 2 and self.getRelativeTime(14) < now:
+            self.setDetail("state", 3)
+            state = 3
+        if state == 3 and self.getRelativeTime(19) < now:
+            self.setDetail("state", 4)
+            state = 4
+        if state == 4 and self.getRelativeTime(21) < now:
+            self.setDetail("state", 5)
+            state = 5
+        if state == 5 and self.getRelativeTime(28) < now:
+            self.setDetail("state", 6)
+            state = 6
+        self.__data = self.getInfo()
+
+
+    def getRelativeTime(self, days):
+        date_original = datetime.datetime.fromtimestamp(self.getDetail("election_start_date"))
+        date_proper = datetime.datetime(year=date_original.year,month=date_original.month,day=date_original.day, hour=19, minute=0, second=0)
+        delta = datetime.timedelta(days)
+        result = date_proper + delta
+        return result
+
+    def getScheduleDatetime(self, days):
+        date = self.getRelativeTime(days)
+        t = time.mktime(date.timetuple())
+        return [t, ctimes.stamp2german(t), ctimes.stamp2relative(t)]
+
     def getInfo(self):
         try:
             con = lite.connect('databases/election.db')
@@ -468,7 +502,8 @@ class Election:
                 "position": data['position'],
                 "state": data['state'],
                 "minvoterep": data["minvoterep"],
-                "mincandrep": data["mincandrep"]
+                "mincandrep": data["mincandrep"],
+                "election_start_date": data["election_start_date"]
             }
         except lite.Error as e:
             #raise lite.Error from e

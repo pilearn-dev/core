@@ -7,7 +7,8 @@ elections:
   state (tinyint) {1=announcement|2=nomination|3=interview|4=interval|5=election|6=results}
   minvoterep (int)
   mincandrep (int)
-// CREATE TABLE elections (id INTEGER PRIMARY KEY, title VARCHAR(250), message TEXT, places TINYINT, position VARCHAR(50), state TINYINT, minvoterep INT, mincandrep INT)
+  election_start_date (int)
+// CREATE TABLE elections (id INTEGER PRIMARY KEY, title VARCHAR(250), message TEXT, places TINYINT, position VARCHAR(50), state TINYINT, minvoterep INT, mincandrep INT, election_start_date INT)
 
 nominations:
   id (int)
