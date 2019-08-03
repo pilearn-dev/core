@@ -33,6 +33,7 @@
     {% endfor %}
 
   </div>
+  {% if request.values.get("tab", "reputation") != "moderators" %}
   <div class="horizontal-list p1">
     <div class="_btnlist">
       <a class="_btn _btn-xs _btn-dark _btn-outline" href="?tab={{ request.values.get("tab", "reputation") }}&size=10">10</a>
@@ -40,5 +41,6 @@
       <a class="_btn _btn-xs _btn-dark _btn-outline" href="?tab={{ request.values.get("tab", "reputation") }}&size=50">50</a>
     </div>
   </div>
+  {% endif %}
 </div>
 {% endblock %}
