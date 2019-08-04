@@ -107,7 +107,7 @@ def oauth_callback(provider):
             # but if it is not set, split the email address at the @.
             if (nickname is None or nickname == "") or (username is None or username == ""):
                 nickname = username = email.split('@')[0]
-            user = muser.User.register(username, "~~~~~oauth", nickname, email)
+            user = muser.User.register("~~~~~oauth", nickname, email)
             if user < 0:
                 return render_template('login.html', error="format", title="Anmelden", thispage="login")
             muser.User.from_id(user).setDetail("login_provider", "oauth:"+provider)
