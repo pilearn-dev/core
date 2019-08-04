@@ -46,7 +46,7 @@ def announcements_add(forum_id):
         show_until=dc(request.form["shown_until"])
         announcement = mforum.ForumAnnouncement.createNew(f.id,title,link,show_from,show_until,event_from,event_until)
         if cuser.isDev() and f.id == 0:
-            is_featured_banner = request.form.has_key("is_featured_banner", False)
+            is_featured_banner = request.form.has_key("is_featured_banner")
             if is_featured_banner:
                 announcement.setDetail("is_featured_banner", True)
         return redirect(url_for("announcements_list", forum_id=f.id))
