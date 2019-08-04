@@ -87,9 +87,9 @@ def duration2shorttext(dur):
 
 def dateforform(stamp):
     loct = t.localtime(stamp)
-    date = str(loct.tm_year).zfill(2) + "-" + \
+    date = str(loct.tm_year).zfill(4) + "-" + \
             str(loct.tm_mon).zfill(2) + "-" + \
-            str(loct.tm_mday)
+            str(loct.tm_mday).zfill(2)
     return date
 
 def stamp2german(stamp):
