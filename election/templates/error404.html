@@ -1,15 +1,28 @@
 {% extends "layout.html" %}
 {% block body %}
-    <div class="httperror">
-      <div class="img">
-        <img src="/static/img/error404.jpg">
-      </div>
-      <div>
-        <h2>Nicht gefunden</h2>
-        <p>Oh nein! Wir haben die von dir angegebene Adresse nicht gefunden. Versuche die Navigation zu verwenden, um auf &pi;-Learn zu navigieren.</p>
-        <p>Wenn du ganz sicher bist, dass diese Seite hier vorhanden sein sollte, und sie <b>nicht eventuell in der Zwischenzeit gelöscht worden ist</b>, melde diesen Fehler im <a href="/forum/0/global/list">globalen Forum</a> mit dem Tag <span class="tag">bug</span>.</p>
-        <hr>
-        <small>Fehlercode: <b>404</b></small>
-      </div>
+<div class="p6 p3__sm">
+  <div class="grid">
+    <div class="colbox hide__sm p3">
+      <svg viewBox="0 0 48 48" width="20em" height="20em">
+        <circle cx="20" cy="20" r="14" stroke-width="3" fill="transparent" />
+        <path d="M30,30 l12,12 M14,14 l12,12 M26,14 l-12,12" fill="transparent" stroke-width="3" />
+      </svg>
     </div>
+    <div class="colbox-fill p3">
+      <h1 class="fs-display2">Seite nicht gefunden</h1>
+      <p class="p-lead">Oh nein! Die gesuchte Seite kann nicht gefunden werden.</p>
+      <p>Vielleicht existierte diese Seite nie oder der Inhalt wurde gelöscht oder ist andersweitig nicht verfügbar.</p>
+      <p>Du kannst ...</p>
+      <ul>
+        {% if not user.isLoggedIn() %}
+        <li>dich <a href="/login">anmelden</a>,</li>
+        {% endif %}
+        <li>zur <a href="/">Startseite</a> gehen,</li>
+        <li>die <a href="/topics">Liste der Themenbereiche</a> anschauen oder</li>
+        <li>alle <a href="/courses/search">Kurse durchsuchen</a>.</li>
+      </ul>
+      <p>Wenn du der Meinung bist, dass hier etwas fehlt, melde dies <a href="/f/0">im globalen Forum</a> mit dem Tag <a href="/f/0/tagged/fehler" class="_badge _badge-tag">fehler</a>.</p>
+    </div>
+  </div>
+</div>
 {% endblock %}

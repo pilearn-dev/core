@@ -10,6 +10,7 @@
         <div class="_nav _nav-v">
           <a href="#primary-note">Hinweise</a>
           <a href="#results-note">Einstellungen</a>
+          <a href="#texts">Textvorschläge</a>
           <a href="#candidate-list">Kandidaten</a>
         </div>
         <dl>
@@ -45,6 +46,8 @@
         <textarea class="form form-small" placeholder="Hier Benutzercodes der Sieger (z.B. paulpidev.1@pilearn.de; durch Komma getrennt) einfügen" id="result-names-set"></textarea>
         <button onclick="calc_result()" class="_btn _btn--primary">Sieger ermitteln</button><button onclick="reset_result();" class="_btn _btn-danger _btn-on-light">Sieger zurücksetzen</button>
         {% endif %}
+        <h2 id="texts"><a href="/election/{{ vote_id }}/texts">Textvorschläge</a></h2>
+        <p>Diese Textvorschläge sollen dir helfen, Ankündigungen zu dieser Wahl im Forum zu posten.</p>
         <h2 id="candidate-list">Kandidaten</h2>
         <p>Folgende Benutzer stehen in dieser Wahl als Kandidaten zur Verfügung:</p>
         {% for c in vote_candidate %}

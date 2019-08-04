@@ -1,0 +1,57 @@
+{% extends "layout.html" %}
+{% block body %}
+<h1 class="fs-display1 ta-c">{{ e.getTitle() }}</h1>
+<p class="p-lead">Diese Templates kannst du für Forum-Ankündigungsbeiträge zu dieser Wahl verwenden.</p>
+
+<h2>Ankündigung der Wahl</h2>
+<input readonly class="form" value="Ankündigung {{ e.getTitle() }}">
+<textarea readonly class="form form-large">
+Hallo allerseits,
+
+das &pi;-Learn Team hat in Absprache mit dem Moderatoren-Team beschlossen, dass es an der Zeit ist, neue Moderatoren zu wählen.
+
+Die Wahl beginnt am {{ e.getScheduleDatetime(7)[1][:10] }} um 19 Uhr und dauert drei Wochen. Sie besteht aus drei Phasen:
+
+1. Nominationsphase &ndash; hier können interessierte Benutzer ihre Kandidatur erklären.
+2. Interviewphase &ndash; hier können alle Mitglieder der Community den Kandidaten Fragen stellen.
+3. Wahlphase &ndash; hier können alle Mitglieder der Community für drei der Kandidaten stimmen.
+
+Die Wahl nutzt das [Meek STV](https://de.wikipedia.org/wiki/%C3%9Cbertragbare_Einzelstimmgebung)-Verfahren. Das bedeutet, dass jeder eine erste, zweite und dritte Wahl angeben kann. Daraus ermitteln sich die Sieger.
+
+{% if e.getPlaces() == 1 %}In dieser Wahl suchen wir einen neuen Moderatoren.{% else %}In dieser Wahl suchen wir {{ e.getPlaces() }} neue Moderatoren.{% endif %}
+
+Wenn ihr Fragen zur Wahl habt, antwortet mit diesen auf diesen Beitrag.
+</textarea>
+
+<h2>Beginn der Nominationsphase</h2>
+<input readonly class="form" value="Beginn der {{ e.getTitle() }}">
+<textarea readonly class="form form-large">
+**Die {{ e.getTitle() }} hat begonnen.**
+
+Die Wahl dauert drei Wochen. Sie besteht aus drei Phasen:
+
+1. Nominationsphase &ndash; hier können interessierte Benutzer ihre Kandidatur erklären.
+2. Interviewphase &ndash; hier können alle Mitglieder der Community den Kandidaten Fragen stellen.
+3. Wahlphase &ndash; hier können alle Mitglieder der Community für drei der Kandidaten stimmen.
+
+Die Wahl nutzt das [Meek STV](https://de.wikipedia.org/wiki/%C3%9Cbertragbare_Einzelstimmgebung)-Verfahren. Das bedeutet, dass jeder eine erste, zweite und dritte Wahl angeben kann. Daraus ermitteln sich die Sieger.
+
+{% if e.getPlaces() == 1 %}In dieser Wahl suchen wir einen neuen Moderatoren.{% else %}In dieser Wahl suchen wir {{ e.getPlaces() }} neue Moderatoren.{% endif %}
+
+## **[Zur Wahlseite](/election/{{ e.id }})**
+</textarea>
+
+<h2>Ende der Wahl</h2>
+<input readonly class="form" value="Ergebnis der {{ e.getTitle() }}">
+<textarea readonly class="form form-large">
+Die {{ e.getTitle() }} ist vorbei. Die Stimmen wurden ausgezählt und wir begrüßen als neue Moderatoren:
+
+{% for c in Nomination.from_election(e.id) if c.isElected() %}{% set c = c.getCandidate() %}
+- [{{ c.getHTMLName(False) }}](/u/{{ c.id }})
+{% endfor %}
+
+Die Ergebnisse können [hier](/election/{{ e.id }}/get-ballot-data/result.blt) im .blt-Format heruntergeladen werden und z.B. mit [OpenSTV](https://github.com/Conservatory/openstv) überprüft werden.
+
+Herzlichen Glückwunsch an die Gewinner und vielen Dank an alle Beteiligten!
+</textarea>
+{% endblock %}

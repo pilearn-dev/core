@@ -138,7 +138,7 @@ def edit(id):
         abort(404)
     return render_template(
         "editpage.html",
-        title="[Bearbeiten]" + e.getTitle(),
+        title="Bearbeiten: " + e.getTitle(),
         thispage="elections",
         vote_name=e.getTitle(),
         vote_message=e.getMessage(),
@@ -148,6 +148,20 @@ def edit(id):
         vote_id=id,
         vote_candidate=e.getCandidates(),
         election_start_date=e.getRelativeTime(0))
+
+@app.route('/<int:id>/texts')
+def texts(id):
+    if not Election.exists(id):
+        abort(404)
+    e = Election(id)
+    e.updateByTime()
+    cuser = muser.getCurrentUser()
+    if not cuser.isDev():
+        abort(404)
+    return render_template(
+        "election-forum-templates.html",
+        title=u"Textvorschläge: " + e.getTitle(),
+        thispage="elections", e=e, Nomination=Nomination)
 
 @app.route('/<int:id>/get-ballot-data/<filename>', methods=["GET", "POST"])
 def get_ballot_data(id, filename=None):
