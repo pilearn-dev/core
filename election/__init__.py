@@ -9,6 +9,9 @@ from main.model import privileges as mprivileges, tags as mtags, user as muser, 
 from model import Election, Nomination, Question, Vote
 import traceback as tb, json, datetime, time
 
+import sentry_sdk
+from sentry_sdk.integrations.flask import FlaskIntegration
+
 app = Flask(__name__)
 app.config.update(dict(
     SECRET_KEY='S6b9ySuzI2Uv55aY3To8'
