@@ -885,7 +885,7 @@ class User:
             con = lite.connect('databases/user.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT * FROM user WHERE email=? AND (password=? OR password='') AND login_provider='local_account'", (email, sha1(password)))
+            cur.execute("SELECT user.* FROM user, login_methods WHERE login_methods.email=? AND (login_methods.password=? OR login_methods.password='') AND login_methods.provider='local_account' AND login_methods.user_id = user.id", (email, sha1(password)))
             data = cur.fetchone()
             if data is None:
                 return -3
@@ -909,7 +909,7 @@ class User:
             con = lite.connect('databases/user.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT * FROM user WHERE login_provider=? AND email=?", ("oauth:"+provider, email))
+            cur.execute("SELECT user.* FROM user, login_methods WHERE login_methods.provider=? AND login_methods.email=? AND login_methods.user_id = user.id", ("oauth:"+provider, email))
             data = cur.fetchone()
             if data is None:
                 return -3
@@ -936,8 +936,11 @@ class User:
             cur.execute(u"SELECT * FROM user WHERE email=?", (email,))
             if cur.fetchone():
                 return -3
-            cur.execute(u"INSERT INTO user (name, realname, email, password, banned, role, reputation, aboutme, login_provider, deleted, mergeto, labels, member_since) VALUES (?, ?, ?, ?, 0, 1, 1, '', 'local_account', 0, 0, '[]', ?)", (realname, realname, email, sha1(password), time.time()))
+            cur.execute(u"INSERT INTO user (name, realname, email, banned, role, reputation, aboutme, deleted, mergeto, labels, member_since) VALUES (?, ?, ?, 0, 1, 1, '', 0, 0, '[]', ?)", (realname, realname, email, time.time()))
             data = cur.lastrowid
+            if password is not None:
+                password = sha1(password)
+                cur.execute(u"INSERT INTO login_methods (user_id, provider, email, password) VALUES (?, ?, ?, ?)", (data, "local_account", email, password))
             con.commit()
             return data
         except lite.Error as e:

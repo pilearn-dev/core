@@ -78,7 +78,7 @@ def oauth_callback(provider):
     if provider == "google":
         resp = mauth.google.authorized_response()
         if resp is None:
-            return redirect("/oauth-error/google")
+            return redirect("/oauth-error/"+provider)
         session[provider+'_token'] = (resp['access_token'], '')
         me = mauth.google.get('userinfo')
         email = me.data["email"]
@@ -86,7 +86,7 @@ def oauth_callback(provider):
         username = re.sub("[^a-z0-9.-]", "", username)
         nickname = me.data["name"]
     if email is None:
-        return redirect('/oauth_error/google')
+        return redirect('/oauth_error/'+provider)
     # Look if the user already exists
     cuser = muser.getCurrentUser()
     if cuser.isLoggedIn():
@@ -107,7 +107,7 @@ def oauth_callback(provider):
             # but if it is not set, split the email address at the @.
             if (nickname is None or nickname == "") or (username is None or username == ""):
                 nickname = username = email.split('@')[0]
-            user = muser.User.register("~~~~~oauth", nickname, email)
+            user = muser.User.register(None, nickname, email)
             if user < 0:
                 return render_template('login.html', error="format", title="Anmelden", thispage="login")
             muser.User.from_id(user).setDetail("login_provider", "oauth:"+provider)
