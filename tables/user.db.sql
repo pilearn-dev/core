@@ -28,8 +28,6 @@ id INTEGER PRIMARY KEY AUTOINCREMENT,
 name VARCHAR(50),
 realname VARCHAR(100),
 email VARCHAR(100),
-login_provider VARCHAR(20),
-password VARCHAR(100),
 aboutme TEXT,
 deleted TINYINT,
 banned TINYINT,
@@ -50,10 +48,17 @@ profile_twitter VARCHAR(150),
 profile_projects TEXT,
 member_since INT
 )
-;INSERT INTO user (id, name, realname, email, login_provider, password, aboutme, deleted, banned, ban_reason, ban_end, frozen, role, reputation, suspension, labels, profile_image, last_login, last_email_change, last_password_reset) VALUES (-2,'system','𝕊𝕐𝕊𝕋𝔼𝕄','','none','','Hallo!\n\nIch führe alle automatisierten Aufgaben durch, die von unserem System erkannt werden.\n\n-----\n\nDein 𝕊𝕐𝕊𝕋𝔼𝕄-Benutzer',0,0,'',0,0,'user',0,'[]','[]','',0,0,0)
-;INSERT INTO user (id, name, realname, email, login_provider, password, aboutme, deleted, banned, ban_reason, ban_end, frozen, role, reputation, suspension, labels, profile_image, last_login, last_email_change, last_password_reset) VALUES (-1,'admin','𝔸𝔻𝕄𝕀ℕ','','none','','Hallo!\n\nIch führe alle Aufgaben durch, die durch einen Community-Entscheid herbeigeführt wurden, für die also keine einzelnen Benutzer zuständig sind. Weiterhin besitze ich die Community-Beiträge, die jeder bearbeiten kann, der Bearbeitungsvorschläge einreichen kann.\n\n-----\n\nDein 𝔸𝔻𝕄𝕀ℕ-Benutzer',0,0,'',0,0,'user',0,'[]','[]','',0,0,0)
-;INSERT INTO user (id, name, realname, email, login_provider, password, aboutme, deleted, banned, ban_reason, ban_end, frozen, role, reputation, suspension, labels, profile_image, last_login, last_email_change, last_password_reset) VALUES (1,'paulpidev','paulπdev','maus@paulstrobach.de','local_account','','',0,0,'',0,0,'team.dev',0,'[]','[]','',0,0,0)
-;INSERT INTO user (id, name, realname, email, login_provider, password, aboutme, deleted, banned, ban_reason, ban_end, frozen, role, reputation, suspension, labels, profile_image, last_login, last_email_change, last_password_reset) VALUES (2,'9hax','«real9hax»','083329@cryptmail.ddns.net','local_account','','',0,0,'',0,0,'team.dev',0,'[]','[]','',0,0,0)
+;CREATE TABLE login_methods (
+  id INTEGER PRIMARY KEY,
+  user_id INT,
+  provider VARCHAR(20),
+  email VARCHAR(100),
+  password VARCHAR(100),
+  last_used INT,
+  last_verified INT
+)
+
+;INSERT INTO user (id, name, realname, email, login_provider, password, aboutme, deleted, banned, ban_reason, ban_end, frozen, role, reputation, suspension, labels, profile_image, last_login, last_email_change, last_password_reset) VALUES (-1,'System','System','','none','','Hallo Welt!',0,0,'',0,0,2,0,'[]','[]','',0,0,0)
 
 
 ;CREATE TABLE role_table (
