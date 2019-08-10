@@ -9,14 +9,14 @@
   </div>
   <div class="column10__lg column12 p2">
     <div class="container single-fluid-tiny s1 p5">
-      <h1>Anmeldedaten ändern</h1>
-      <p>Bitte gib neue Anmeldedaten ein.</p>
+      <h1>Anmeldedaten hinzufügen</h1>
+      <p>Bitte gib die neuen Anmeldedaten ein.</p>
       {% if error == "not-match" %}
       <div class="_alert _alert-danger">Die Passwörter stimmen nicht überein.</div>
       {% endif %}
       <form action="" method="post">
         <label for="email" class="form">E-Mail-Adresse</label>
-        <input type="email" class="form" name="email" id="email" value="{{ method.email }}">
+        <input type="email" class="form" name="email" id="email" value="">
         <label for="password" class="form">Passwort</label>
         <input type="password" class="form" name="password" id="password">
         <label for="password-dupl" class="form">Passwort erneut eingeben</label>

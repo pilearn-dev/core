@@ -1,0 +1,21 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% set user_site = "edit" %}
+{% set user_edit_site = "login" %}
+{% include "user/_header.html" %}
+<div class="grid">
+  <div class="column2__lg column12 p2">
+    {% include "user/edit/_header.html" %}
+  </div>
+  <div class="column10__lg column12 p2">
+    <div class="container single-fluid-tiny s1 p5">
+      <h1>Anmeldedaten entfernen</h1>
+      <p class="p-lead">Willst du diese Anmeldeoption wirklich entfernen?</p>
+      <form action="" method="POST">
+        <button type="submit" class="_btn _btn-danger">Entfernen</button>
+        <a href="?page=login" class="_btn _btn-danger _btn-on-light">Abbrechen</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -810,6 +810,75 @@ class User:
         return COUNT
 
 
+    def loginMethod_getAll(self):
+        try:
+            con = lite.connect('databases/user.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT id, provider, email FROM login_methods WHERE user_id=?", (self.id,))
+            return map(dict,cur.fetchall())
+        except lite.Error as e:
+            return []
+        finally:
+            if con:
+                con.close()
+
+    def loginMethod_get(self, id):
+        try:
+            con = lite.connect('databases/user.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT id, provider, email FROM login_methods WHERE user_id=? AND id=?", (self.id,id))
+            return dict(cur.fetchone())
+        except lite.Error as e:
+            raise e
+        finally:
+            if con:
+                con.close()
+
+    def loginMethod_remove(self, id):
+        try:
+            con = lite.connect('databases/user.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("DELETE FROM login_methods WHERE id=? AND user_id=?", (id,self.id))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def loginMethod_change(self, id, new_email, new_passtoken):
+        try:
+            con = lite.connect('databases/user.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("UPDATE login_methods SET email=?, password=? WHERE id=? AND user_id=?", (new_email, new_passtoken, id, self.id))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
+    def loginMethod_add(self, type, email, passtoken):
+        try:
+            con = lite.connect('databases/user.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute(u"INSERT INTO login_methods (user_id, provider, email, password) VALUES (?, ?, ?, ?)", (self.id, type, email, passtoken))
+            con.commit()
+            return True
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
+
 
     @classmethod
     def getRoleTable(cls, role):

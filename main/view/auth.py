@@ -66,6 +66,11 @@ def logout():
     session.clear()
     return redirect(url_for('index'))
 
+def auth_reset():
+    user = muser.getCurrentUser()
+    session.clear()
+    return redirect(url_for('login'))
+
 def oauth_authorize(provider):
     if not muser.require_login() and request.form.get("override") != "true" and request.values.get("re-login") != "true":
         return redirect(url_for('index'))
@@ -92,8 +97,7 @@ def oauth_callback(provider):
     if cuser.isLoggedIn():
         user=muser.User.oauth_login(provider, email)
         if user < 0:
-            cuser.setDetail("login_provider", "oauth:"+provider)
-            cuser.setDetail("email", email)
+            cuser.loginMethod_add(provider, email, None)
             return redirect(url_for("user_edit_page", id=cuser.id, name=cuser.getDetail("name"), page="login"))
         elif user == cuser.id:
             return redirect("/")
@@ -110,9 +114,9 @@ def oauth_callback(provider):
             user = muser.User.register(None, nickname, email)
             if user < 0:
                 return render_template('login.html', error="format", title="Anmelden", thispage="login")
-            muser.User.from_id(user).setDetail("login_provider", "oauth:"+provider)
-    # Log in the user, by default remembering them for their next visit
-    # unless they log out.
+            user = muser.User.from_id(user)
+            user.loginMethod_add("oauth:"+provider, email, None)
+
     session['login'] = user
     session["login_time"] = time.time()
     return redirect(url_for('index'))
@@ -139,6 +143,8 @@ def apply(app, pidata2):
     def logout_redirect():
         return redirect(url_for("logout"))
     app.route('/auth/logout')(logout)
+
+    app.route('/auth/reset')(auth_reset)
 
     app.route('/auth/oauth-provider/<provider>', methods=["GET", "POST"])(oauth_authorize)
     app.route('/oauth2callback/<provider>')(oauth_callback)

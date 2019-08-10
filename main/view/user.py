@@ -72,20 +72,39 @@ def user_edit_page(id, name=None):
                     abort(403)
 
                 current_time=time.time()
-                if session.get("login_time", 0) + 10 * 60 <= current_time:
+                if session.get("login_time", 0) + 100 * 60 <= current_time:
                     return "<p>Das Zeitfenster zur Aktualisierung von Zugangsdaten ist abgelaufen. <a href='?page=login'>Den Anweisungen hier folgen.</a></p>", 403
-
-                if request.values.get("method") == "local_account":
+                if request.values.has_key("remove"):
                     if request.method == "POST":
-                        user.setDetail("login_provider", "local_account")
-                        user.setDetail("email", request.form["email"])
-                        user.setDetail("password", sha1(request.form["password"]))
+                        user.loginMethod_remove(request.values.get("remove"))
                         return redirect(url_for("user_edit_page", id=user.id, name=user.getDetail("name"), page="login"))
                     else:
-                        return render_template("user/edit/login-alter__local-account.html", data=user, thispage="user", title=u"Anmeldedaten aktualisieren für " + user.getHTMLName(False))
+                        return render_template("user/edit/login-alter__confirm-delete.html", data=user, thispage="user", title=u"Anmeldedaten aktualisieren für " + user.getHTMLName(False))
+                elif request.values.has_key("add"):
+                    if request.values.get("add") == "local_account":
+                        if request.method == "POST":
+                            if request.form["password"] != request.form["password-dupl"]:
+                                return render_template("user/edit/login-alter__add-local-account.html", data=user, thispage="user", title=u"Anmeldedaten hinzufügen für " + user.getHTMLName(False), error="not-match")
+                            user.loginMethod_add("local_account", request.form["email"], sha1(request.form["password"]))
+                            return redirect(url_for("user_edit_page", id=user.id, name=user.getDetail("name"), page="login"))
+                        else:
+                            return render_template("user/edit/login-alter__add-local-account.html", data=user, thispage="user", title=u"Anmeldedaten hinzufügen für " + user.getHTMLName(False))
 
-                elif request.values.get("method") == "oauth:google":
-                    return render_template("user/edit/login-alter__google.html", data=user, thispage="user", title=u"Anmeldedaten aktualisieren für " + user.getHTMLName(False))
+                    elif request.values.get("add") == "oauth:google":
+                        return render_template("user/edit/login-alter__google.html", data=user, thispage="user", title=u"Anmeldedaten aktualisieren für " + user.getHTMLName(False))
+                elif request.values.has_key("change"):
+                    method = user.loginMethod_get(request.values.get("change"))
+                    if method["provider"] == "local_account":
+                        if request.method == "POST":
+                            if request.form["password"] != request.form["password-dupl"]:
+                                return render_template("user/edit/login-alter__local-account.html", data=user, thispage="user", title=u"Anmeldedaten bearbeiten für " + user.getHTMLName(False), error="not-match", method=method)
+                            user.loginMethod_change(method["id"], request.form["email"], sha1(request.form["password"]))
+                            return redirect(url_for("user_edit_page", id=user.id, name=user.getDetail("name"), page="login"))
+                        else:
+                            return render_template("user/edit/login-alter__local-account.html", data=user, thispage="user", title=u"Anmeldedaten bearbeiten für " + user.getHTMLName(False), method=method)
+
+                    elif request.values.get("change") == "oauth:google":
+                        return render_template("user/edit/login-alter__google.html", data=user, thispage="user", title=u"Anmeldedaten aktualisieren für " + user.getHTMLName(False))
 
             elif request.values.get("page", "profile") == "delete":
                 return render_template("user/edit/delete.html", data=user, thispage="user", title=u"Konto löschen " + user.getHTMLName(False), current_time=time.time())
