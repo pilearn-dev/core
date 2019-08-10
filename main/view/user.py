@@ -343,6 +343,10 @@ def edit_user(id):
     data = request.json
 
     user_name = data["name"].strip()
+    if cuser.id == user.id or cuser.isDev():
+        email = data["email"]
+    else:
+        email = None
     profile_text = data["profile_text"]
     profile_image = data["profile_image"]
     profile_place = data["profile_place"]
@@ -361,6 +365,16 @@ def edit_user(id):
             errors.append(u"Der Benutzername ist zu kurz. Mindestens drei Zeichen erforderlich. (aktuell: %i)" % len(user_name))
         if 40 < len(user_name):
             errors.append(u"Der Benutzername ist zu lang. Höchstens 40 Zeichen möglich. (aktuell: %i)" % len(user_name))
+
+    if email is not None:
+        if "@" in email:
+            email_username, email_host = email.split("@")
+            if 75 > len(email_username) > 1 and 75 > len(email_host) > 4 and "." in email_host:
+                user.setDetail("email", email)
+            else:
+                errors.append(u"Die E-Mail-Adresse ist ungültig.")
+        else:
+            errors.append(u"Die E-Mail-Adresse ist ungültig.")
 
     if len(profile_text) <= 5000:
         user.setDetail("aboutme", profile_text)
