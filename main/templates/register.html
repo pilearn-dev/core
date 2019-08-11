@@ -1,42 +1,38 @@
 {% set pattern="individual" %}
 {% extends "layout_new.html" %}
 {% block body %}
-<div class="single-fluid-small grid p3">
-  <div class="column6 column8__md column12__sm p1" id="option-register">
-    <div class="container s3 p4">
-      <h1 class="fs-subtitle ta-c bb1 bb-s bb-dark-ll">Registrieren</h1>
-      <p>Erstelle ein neues Benutzerkonto für &pi;-Learn.</p>
-      <p>Du hast bereits ein Benutzerkonto? Dann brauchst du dich nur <a href="/auth/login">anzumelden</a>.</p>
-      {% if error == "not-found" %}
-        <div class="_alert _alert-danger">
-            Dieser Benutzeraccount wurde nicht gefunden.
-        </div>
-      {% elif error == "forbidden" %}
-        <div class="_alert _alert-danger">
-            Dieser Benutzeraccount wurde gelöscht. Du kannst dich nicht mit diesem Konto anmelden. Eventuell kann das Konto wiederhergestellt werden. Registriere dafür ein Konto mit den exakt gleichen Anmeldedaten.
-        </div>
-      {% elif error == "format" %}
-        <div class="_alert _alert-danger">
-            Das Format, das du für deine Benutzerdaten angegeben hast ist ungültig.
-        </div>
-      {% endif %}
-      <h2 class="fs-base3 col-dark-dd ta-c">Externe Dienste</h2>
-      <div class="grid">
-          <a href="/auth/oauth-provider/google" class="_btn _btn-service _btn-service-google">Google-Anmeldung</a>
-      </div>
-      <h2 class="fs-base3 col-dark-dd ta-c">&pi;-Learn-Konto</h2>
-      <form action="" method="POST">
-        <label for="register_email" class="form">E-Mail:</label>
-        <input id="register_email" class="form" name="email" type="email">
-        <label for="register_username" class="form">Benutzername:</label>
-        <input id="register_username" class="form" name="realname">
-        <label for="register_password" class="form">Passwort:</label>
-        <input id="register_password" class="form" name="password" type="password">
-        <input type="hidden" name="login_provider" value="local_account">
-        <button class="_btn _btn--primary" type="submit">Registrieren</button>
-      </form>
-      <p class="anchor-dark col-dark-d">Wenn du dich registrierst, erklärst du dich mit den <a href="/help/legal/terms">Nutzungsbedingungen</a> und der <a href="/help/legal/data-info">Datenschutzerklärung</a> einverstanden.</p>
+<div class="container single-fluid-tiny s3 p4">
+  <h1 class="fs-subtitle ta-c bb1 bb-s bb-dark-ll">Registrieren</h1>
+  <p>Erstelle ein neues Benutzerkonto für &pi;-Learn.</p>
+  <p>Du hast bereits ein Benutzerkonto? Dann brauchst du dich nur <a href="/auth/login">anzumelden</a>.</p>
+  {% if error == "not-found" %}
+    <div class="_alert _alert-danger">
+        Dieser Benutzeraccount wurde nicht gefunden.
     </div>
+  {% elif error == "forbidden" %}
+    <div class="_alert _alert-danger">
+        Dieser Benutzeraccount wurde gelöscht. Du kannst dich nicht mit diesem Konto anmelden. Eventuell kann das Konto wiederhergestellt werden. Registriere dafür ein Konto mit den exakt gleichen Anmeldedaten.
+    </div>
+  {% elif error == "format" %}
+    <div class="_alert _alert-danger">
+        Das Format, das du für deine Benutzerdaten angegeben hast ist ungültig.
+    </div>
+  {% endif %}
+  <h2 class="fs-base3 col-dark-dd ta-c">Externe Dienste</h2>
+  <div class="grid">
+      <a href="/auth/oauth-provider/google" class="_btn _btn-service _btn-service-google">Google-Anmeldung</a>
   </div>
+  <h2 class="fs-base3 col-dark-dd ta-c">&pi;-Learn-Konto</h2>
+  <form action="" method="POST">
+    <label for="register_email" class="form">E-Mail:</label>
+    <input id="register_email" class="form" name="email" type="email">
+    <label for="register_username" class="form">Benutzername:</label>
+    <input id="register_username" class="form" name="realname">
+    <label for="register_password" class="form">Passwort:</label>
+    <input id="register_password" class="form" name="password" type="password">
+    <input type="hidden" name="login_provider" value="local_account">
+    <button class="_btn _btn--primary" type="submit">Registrieren</button>
+  </form>
+  <p class="anchor-dark col-dark-d">Wenn du dich registrierst, erklärst du dich mit den <a href="/legal/terms">Nutzungsbedingungen</a> und der <a href="/legal/privacy">Datenschutzerklärung</a> einverstanden.</p>
 </div>
 {% endblock %}
