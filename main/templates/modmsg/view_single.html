@@ -60,14 +60,14 @@
 
 &lt;!-- Text hier einfügen --&gt;
 
-Viele Grüße,
+Viele Grüße{{ "  " }}
 {{ thread.getContacted().getDetail("realname") }}</textarea>
         {% else %}
         <textarea class="form form-large" id="qresponse" name="response">Hallo {{ thread.getContacted().getDetail("realname") }},
 
 &lt;!-- Text hier einfügen --&gt;
 
-Viele Grüße,
+Viele Grüße{{ "  " }}
 &pi;-Learn Moderatorenteam</textarea>
         {% endif %}
         <button class="_btn _btn--primary" type="submit">Absenden</button>
