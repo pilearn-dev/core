@@ -134,8 +134,19 @@ def h():
     data = sorted(data, key=lambda x:mprivileges.getOne(x["id"]))
     return render_template('help/privileges.html', data=data, title=u"Hilfe", thispage="help")
 
+def legal(): return render_template('legal/index.html', title=u"Hilfe", thispage="help")
+def legal_terms(): return render_template('legal/terms.html', title=u"Nutzungsbedingungen", thispage="help")
+def legal_privacy(): return render_template('legal/privacy.html', title=u"Datenschutz", thispage="help")
+def legal_warranty(): return render_template('legal/warranty.html', title=u"Haftung", thispage="help")
+
 def apply(app):
     app.route("/help/")(help_index)
     app.route("/help/category:<caturl>", methods=["GET", "POST"])(help_cathome)
     app.route("/help/new:<element>", methods=["GET", "POST"])(help_newelement)
     app.route("/help/<path:fullurl>", methods=["GET", "POST"])(help_any)
+
+
+    app.route("/legal")(legal)
+    app.route("/legal/terms")(legal_terms)
+    app.route("/legal/privacy")(legal_privacy)
+    app.route("/legal/warranty")(legal_warranty)
