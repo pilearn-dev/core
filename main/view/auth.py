@@ -97,7 +97,7 @@ def oauth_callback(provider):
     if cuser.isLoggedIn():
         user=muser.User.oauth_login(provider, email)
         if user < 0:
-            cuser.loginMethod_add(provider, email, None)
+            cuser.loginMethod_add("oauth:"+provider, email, None)
             return redirect(url_for("user_edit_page", id=cuser.id, name=cuser.getDetail("name"), page="login"))
         elif user == cuser.id:
             return redirect("/")
