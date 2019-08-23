@@ -250,10 +250,13 @@ def unit_show(unit_id,course_id,unit_label=None,course_label=None):
         abort(403)
     course.setLastVisitedUnitId(cuser, unit.id)
     if unit.getType() == "info":
+        if cuser.isLoggedIn() and not cuser.isDisabled(): unit.addViewData(cuser, None)
         return render_template('courses/units/info.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
     elif unit.getType() == "extvideo":
+        if cuser.isLoggedIn() and not cuser.isDisabled(): unit.addViewData(cuser, None)
         return render_template('courses/units/extvideo.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
     elif unit.getType() == "survey":
+        if cuser.isLoggedIn() and not cuser.isDisabled(): unit.addViewData(cuser, None)
         s = msurvey.Survey(unit.getJSON()["survey"])
         return render_template('courses/units/survey.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit, survey=s)
     elif unit.getType() == "quiz":
@@ -270,6 +273,7 @@ def unit_show(unit_id,course_id,unit_label=None,course_label=None):
             a = None
         else:
             a = mforum.Article(aid)
+            if cuser.isLoggedIn() and not cuser.isDisabled(): unit.addViewData(cuser, None)
         return render_template('courses/units/pinboard.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit, post=a)
     abort(500)
 
