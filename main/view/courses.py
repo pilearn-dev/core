@@ -1,8 +1,11 @@
 # coding: utf-8
-from flask import render_template, redirect, abort, url_for, request, jsonify
+from flask import render_template, redirect, abort, url_for, request, jsonify, make_response
 from model import privileges as mprivileges, courses as mcourses, user as muser, survey as msurvey, proposal as mproposal, forum as mforum
-from controller import query as cquery
+from controller import query as cquery, times as ctimes
 import json, time
+
+import pdfkit
+
 def courses_index():
     cuser = muser.getCurrentUser()
     course_list=mcourses.Courses.getCourseList()
@@ -452,6 +455,36 @@ def course_unit_reorder(id,label=None):
             return redirect(url_for("course_unit_reorder", id=id, label=course.getLabel()))
         return render_template('courses/edit/reorder.html', title="Kursmodule neu anordnen: " + course.getTitle(), thispage="courses", data=course)
 
+
+def course_result_confirmation_of_participation(id, label=None):
+    if not mcourses.Courses.exists(id):
+        abort(404)
+    course = mcourses.Courses(id)
+    cuser = muser.getCurrentUser()
+    if not course.isEnrolled(cuser) or cuser.isDisabled():
+        abort(404)
+
+    if course.getLabel() != label:
+        x = url_for("course_result_confirmation_of_participation", id=id, label=course.getLabel())
+
+    html = render_template("certificates/confirmation_of_participation.html", course_title=course.getTitle(), user_name=cuser.getDetail("realname"), now=ctimes.stamp2germandate(time.time()))
+
+    pdf = pdfkit.from_string(html, False, options={
+        "title": "Teilnahmeurkunde",
+        'margin-top': '0mm',
+        'margin-right': '0mm',
+        'margin-bottom': '0mm',
+        'margin-left': '0mm',
+        'encoding': "UTF-8",
+        'quiet': ''
+    })
+
+    http_response = make_response(pdf)
+    http_response.headers["Content-Type"] = "application/pdf"
+    return http_response
+
+
+
 def _validateCourse(title, shortdesc, longdesc, requirements):
     errors = []
 
@@ -495,3 +528,6 @@ def apply(app):
     app.route("/t/<name>")(app.route("/topic/<name>")(topic_view))
     app.route("/t/<name>/edit", methods=["GET", "POST"])(app.route("/topic/<name>/edit", methods=["GET", "POST"])(topic_edit))
     app.route("/c/<int:id>/edit/reorder", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/edit/reorder", methods=["GET", "POST"])(course_unit_reorder))
+
+
+    app.route("/c/<int:id>/result/participation", methods=["GET"])(app.route("/course/<int:id>/<label>/result/participation", methods=["GET"])(course_result_confirmation_of_participation))

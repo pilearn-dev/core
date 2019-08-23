@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Teilnahmeurkunde</title>
+
+        <style>
+            html { font-family: Arial, sans-serif;
+                   background-color: #ddd;
+                   height: 100%;
+                   padding: 1rem 0;
+                 }
+            body {
+                   max-width: 19cm;
+                   margin: 5rem auto;
+                   background-color: white;
+                 }
+            .header {
+                     background-color: #f6f6f6;
+                     padding: 3rem;
+                     text-align: center;
+                   }
+                .header img { max-width: 150px; max-height: 150px; }
+                .header h1  {
+                             font-size: 3rem;
+                             font-weight: bold;
+                             margin: 20px 0;
+                             color: #2559a9;
+                           }
+
+
+            .main {
+                   padding: 5rem;
+                   font-size: 25px;
+                   line-height: 2;
+                 }
+
+                .main .large {
+                              font-size: 1.25em;
+                              font-weight: bold;
+                              text-align: center;
+                              line-height: 1.5;
+                              margin: 0.5em 0;
+                            }
+
+
+            .footer {
+                     background-color: #f6f6f6;
+                     padding: 3rem;
+                     font-size: 0.9em;
+                   }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <img src="https://www.pilearn.de/static/img/logo_pi-learn.png">
+            <h1>Teilnahmebestätigung</h1>
+        </div>
+        <div class="main">
+            Hiermit bestätigen wir, dass
+            <div class="large">{{ user_name }}</div>
+            auf &pi;-Learn am Kurs
+            <div class="large">{{ course_title }}</div>
+            erfolgreich teilgenommen hat.
+        </div>
+        <div class="footer">
+            Erstellt auf &pi;-Learn am {{ now }}.
+        </div>
+    </body>
+</html>
