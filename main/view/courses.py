@@ -468,7 +468,7 @@ def course_result_confirmation_of_participation(id, label=None):
     if course.getLabel() != label:
         return redirect(url_for("course_result_confirmation_of_participation", id=id, label=course.getLabel()))
 
-    html = render_template("certificates/confirmation_of_participation.html", course_title=course.getTitle(), user_name=cuser.getDetail("realname"), now=ctimes.stamp2germandate(time.time()), cwd=os.getcwd().replace("\\", "/"))
+    html = render_template("certificates/confirmation_of_participation.html", course_title=course.getTitle(), user_name=cuser.getDetail("certificate_full_name"), now=ctimes.stamp2germandate(time.time()), cwd=os.getcwd().replace("\\", "/"))
 
     pdf = pdfkit.from_string(html, False, options={
         "title": "Teilnahmeurkunde",
