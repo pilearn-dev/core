@@ -435,6 +435,41 @@ class Courses:
             if con:
                 con.close()
 
+
+    # Returns the two view ratings for this user and course.
+    #
+    # 1) Reached score/Possible score for all quizzes
+    # 2) Visited pages/Availible pages for all units
+    def getViewRatings(self, user):
+        try:
+            con = lite.connect('databases/courses.db')
+            cur = con.cursor()
+            cur.execute("SELECT Count(*) FROM visits WHERE courseid=? AND userid=?", (self.id, user.id))
+            visited_pages = cur.fetchone()[0]
+
+            cur.execute("SELECT Count(*) FROM units WHERE courseid=? AND availible=1", (self.id,))
+            availible_pages = cur.fetchone()[0]
+
+            cur.execute("SELECT visits.data FROM visits, units WHERE visits.courseid=? AND visits.userid=? AND units.id=visits.unitid AND units.type='quiz'", (self.id, user.id))
+            quiz_max_score = 0
+            quiz_reached_score = 0
+            quiz_data = cur.fetchall()
+
+            for entry in quiz_data:
+                data = json.loads(entry[0])
+                quiz_max_score += data["max"]
+                quiz_reached_score += data["sum"]
+
+            return [
+                (100*quiz_reached_score / quiz_max_score) if quiz_max_score else 100,
+                (100*visited_pages / availible_pages) if availible_pages else 0
+            ]
+        except lite.Error as e:
+            return [None,None]
+        finally:
+            if con:
+                con.close()
+
     def getInfo(self):
         try:
             con = lite.connect('databases/courses.db')

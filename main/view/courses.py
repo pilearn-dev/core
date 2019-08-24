@@ -468,6 +468,11 @@ def course_result_confirmation_of_participation(id, label=None):
     if course.getLabel() != label:
         return redirect(url_for("course_result_confirmation_of_participation", id=id, label=course.getLabel()))
 
+    eligibility_criteria = course.getViewRatings(cuser)
+
+    if eligibility_criteria[0] < 80 or eligibility_criteria[1] < 80:
+        return u"Anforderungen nicht erfüllt: mind. 80%% besucht und mind. 80%% der Punkte bei Quizzen; du hast %i%% besucht und %i%% der Punkte" % (eligibility_criteria[1], eligibility_criteria[0])
+
     html = render_template("certificates/confirmation_of_participation.html", course_title=course.getTitle(), user_name=cuser.getDetail("certificate_full_name"), now=ctimes.stamp2germandate(time.time()), cwd=os.getcwd().replace("\\", "/"), course_id=course.id, user_id=cuser.id)
 
     pdf = pdfkit.from_string(html, False, options={
