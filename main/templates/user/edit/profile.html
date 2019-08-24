@@ -50,9 +50,20 @@
     </div>
     {% if data.id == user.id or user.isDev() %}
     <h4>Kontakt-Informationen (geheim)</h4>
-    <div class="p1">
-      <label for="email" class="form">E-Mail-Adresse</label>
-      <input id="email" type="email" class="form" value="{{ data.getDetail('email') }}">
+    <div class="horizontal-list">
+      <div class="p1">
+        <label for="email" class="form">E-Mail-Adresse</label>
+        <input id="email" type="email" class="form" value="{{ data.getDetail('email') }}">
+      </div>
+      <div class="p1">
+        <label for="certificate_full_name" class="form">Vollständiger Name</label>
+        {% if data.getDetail('certificate_full_name') == data.getDetail('realname') %}
+        <input id="certificate_full_name" class="form" placeholder="{{ data.getDetail('certificate_full_name') }}">
+        {% else %}
+        <input id="certificate_full_name" class="form" value="{{ data.getDetail('certificate_full_name') }}">
+        {% endif %}
+        <div class="fs-caption">(wird für Urkunden, etc. verwendet)</div>
+      </div>
     </div>
     {% endif %}
     <h4>Optionale Informationen (öffentlich)</h4>
@@ -161,6 +172,7 @@
         name: $("#user_name").val(),
         {% if data.id == user.id or user.isDev() %}
         email: $("#email").val(),
+        certificate_full_name: $("#certificate_full_name").val(),
         {% endif %}
         profile_image: $("#profile_image").attr("src"),
         profile_text: $("#profile_text").val(),

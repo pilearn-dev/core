@@ -345,8 +345,9 @@ def edit_user(id):
     user_name = data["name"].strip()
     if cuser.id == user.id or cuser.isDev():
         email = data["email"]
+        certificate_full_name = data["certificate_full_name"]
     else:
-        email = None
+        email = certificate_full_name = None
     profile_text = data["profile_text"]
     profile_image = data["profile_image"]
     profile_place = data["profile_place"]
@@ -365,6 +366,17 @@ def edit_user(id):
             errors.append(u"Der Benutzername ist zu kurz. Mindestens drei Zeichen erforderlich. (aktuell: %i)" % len(user_name))
         if 40 < len(user_name):
             errors.append(u"Der Benutzername ist zu lang. Höchstens 40 Zeichen möglich. (aktuell: %i)" % len(user_name))
+
+    if certificate_full_name is not None:
+        if len(certificate_full_name) == 0:
+            user.setDetail("certificate_full_name", user_name)
+        elif 6 <= len(certificate_full_name) <= 120:
+            user.setDetail("certificate_full_name", certificate_full_name)
+        else:
+            if 6 > len(certificate_full_name):
+                errors.append(u"Der Vollständige Name (für Urkunden, ...) ist zu kurz. Mindestens sechs Zeichen erforderlich. (aktuell: %i)" % len(certificate_full_name))
+            if 120 < len(certificate_full_name):
+                errors.append(u"Der Vollständige Name (für Urkunden, ...) ist zu lang. Höchstens 120 Zeichen möglich. (aktuell: %i)" % len(certificate_full_name))
 
     if email is not None:
         if "@" in email:
