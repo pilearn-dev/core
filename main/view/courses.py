@@ -2,7 +2,7 @@
 from flask import render_template, redirect, abort, url_for, request, jsonify, make_response
 from model import privileges as mprivileges, courses as mcourses, user as muser, survey as msurvey, proposal as mproposal, forum as mforum
 from controller import query as cquery, times as ctimes
-import json, time
+import json, time, os
 
 import pdfkit
 
@@ -464,10 +464,11 @@ def course_result_confirmation_of_participation(id, label=None):
     if not course.isEnrolled(cuser) or cuser.isDisabled():
         abort(404)
 
-    if course.getLabel() != label:
-        x = url_for("course_result_confirmation_of_participation", id=id, label=course.getLabel())
 
-    html = render_template("certificates/confirmation_of_participation.html", course_title=course.getTitle(), user_name=cuser.getDetail("realname"), now=ctimes.stamp2germandate(time.time()))
+    if course.getLabel() != label:
+        return redirect(url_for("course_result_confirmation_of_participation", id=id, label=course.getLabel()))
+
+    html = render_template("certificates/confirmation_of_participation.html", course_title=course.getTitle(), user_name=cuser.getDetail("realname"), now=ctimes.stamp2germandate(time.time()), cwd=os.getcwd().replace("\\", "/"))
 
     pdf = pdfkit.from_string(html, False, options={
         "title": "Teilnahmeurkunde",
