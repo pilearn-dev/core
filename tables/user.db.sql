@@ -46,7 +46,8 @@ profile_place VARCHAR(100),
 profile_website VARCHAR(150),
 profile_twitter VARCHAR(150),
 profile_projects TEXT,
-member_since INT
+member_since INT,
+certificate_full_name VARCHAR(150)
 )
 ;CREATE TABLE login_methods (
   id INTEGER PRIMARY KEY,

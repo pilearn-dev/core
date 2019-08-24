@@ -600,7 +600,8 @@ class User:
                         "website": data['profile_website'],
                         "twitter": data['profile_twitter'],
                         "projects": data['profile_projects'],
-                    }
+                    },
+                    "certificate_full_name": data['certificate_full_name']
                 }
             except lite.Error as e:
                 #raise lite.Error from e
