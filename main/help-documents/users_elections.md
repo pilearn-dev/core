@@ -1,1 +1,0 @@
-## [Hilfethemen](/help) / Benutzer / Wahlen

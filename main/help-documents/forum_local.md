@@ -1,1 +1,0 @@
-## [Hilfethemen](/help) / Foren / Kurs-Forum

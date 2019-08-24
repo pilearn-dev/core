@@ -1,7 +1,0 @@
-Client-ID:
-
-960981775265-3hi6ojngqgscglu9eu18is576ou05m8i.apps.googleusercontent.com
-
-Client-KEY:
-
-UnjG8VIDvIJdNWLWiO6SN648

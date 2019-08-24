@@ -1,9 +1,0 @@
-#mode:shell
-#prompt:">>>"
-in: <kw>print</kw>(<str>"Hallo Welt!"</str>)
-out: Hallo Welt
-in: name = <func>raw_input</func>(<str>"Name: "</str>)
-out: Name: <user>Max</user>
-in: <kw>print</kw>(<str>"Hallo, "</str>+name+<str>"!"</str>)
-
-<pre><code class="hay hay-mode-shell">&gt;&gt;&gt; <span class="hay-kw">print</span>(<span class="hay-str">&quot;Hallo Welt&quot;</span>)</code></pre>

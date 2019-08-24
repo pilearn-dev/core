@@ -1,5 +1,0 @@
-1 = active
-0 = successful
--1 = denied
--2 = deprecated
--3 = disputed
