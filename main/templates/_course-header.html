@@ -22,6 +22,9 @@
         <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/edit"{% if current_page == "edit" %} class="-active"{% endif %}>Bearbeiten</a>
         {% endif %}
         <a href="/f/{{ forum.id }}"{% if current_page == "forum" %} class="-active"{% endif %}>Forum</a>
+        {% if course.isEnrolled(user) %}
+        <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/result"{% if current_page == "results" %} class="-active"{% endif %}>Ergebnisse</a>
+        {% endif %}
         {% if course.getCourseRole(user) >= 3 %}{% set prc = course.getActivePRCount() %}
         <a href="/course/{{ course.id }}/{{ course.getLabel() }}/pull-requests"{% if current_page == "pr" %} class="-active"{% endif %}>Pull Requests{% if prc %}<span class="_badge _badge-tabitem">{{ prc }}</span>{% endif %}</a>
         {% else %}
@@ -54,6 +57,9 @@
       <a href="/course/{{ course.id }}/{{ course.getLabel() }}/edit"{% if current_page == "edit" %} class="-active"{% endif %}>Bearbeiten</a>
       {% endif %}
       <a href="/forum/{{ course.id }}/{{ course.getLabel() }}"{% if current_page == "forum" %} class="-active"{% endif %}>Forum</a>
+      {% if course.isEnrolled(user) %}
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/result"{% if current_page == "results" %} class="-active"{% endif %}>Ergebnisse</a>
+      {% endif %}
       {% if course.getCourseRole(user) >= 3 %}{% set prc = course.getActivePRCount() %}
       <a href="/course/{{ course.id }}/{{ course.getLabel() }}/pull-requests"{% if current_page == "pr" %} class="-active"{% endif %}>Pull Requests{% if prc %}<span class="_badge _badge-tabitem">{{ prc }}</span>{% endif %}</a>
       {% else %}

@@ -10,6 +10,9 @@
   <a href="/course/{{ data.id }}/{{ data.getLabel() }}/edit">Bearbeiten</a>
   {% endif %}
   <a href="/forum/{{ data.id }}/{{ data.getLabel() }}">Forum</a>
+  {% if data.isEnrolled(user) %}
+  <a href="/course/{{ data.id }}/{{ data.getLabel() }}/result">Ergebnisse</a>
+  {% endif %}
   {% if data.getCourseRole(user) >= 3 %}{% set prc = data.getActivePRCount() %}
   <a href="/course/{{ data.id }}/{{ data.getLabel() }}/pull-requests"{% if current_page == "pr" %} class="-active"{% endif %}>Pull Requests{% if prc %}<span class="_badge _badge-tabitem">{{ prc }}</span>{% endif %}</a>
   {% else %}
