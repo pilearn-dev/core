@@ -455,6 +455,20 @@ def course_unit_reorder(id,label=None):
             return redirect(url_for("course_unit_reorder", id=id, label=course.getLabel()))
         return render_template('courses/edit/reorder.html', title="Kursmodule neu anordnen: " + course.getTitle(), thispage="courses", data=course)
 
+def course_result(id, label=None):
+    if not mcourses.Courses.exists(id):
+        abort(404)
+    course = mcourses.Courses(id)
+    cuser = muser.getCurrentUser()
+    if not course.isEnrolled(cuser) or cuser.isDisabled():
+        abort(404)
+
+    if course.getLabel() != label:
+        return redirect(url_for("course_result", id=id, label=course.getLabel()))
+
+    CoP_ratings = eligibility_criteria = course.getViewRatings(cuser)
+
+    return render_template('courses/result.html', title=course.getTitle(), thispage="courses", course=course, CoP_ratings=CoP_ratings)
 
 def course_result_confirmation_of_participation(id, label=None):
     if not mcourses.Courses.exists(id):
@@ -535,5 +549,5 @@ def apply(app):
     app.route("/t/<name>/edit", methods=["GET", "POST"])(app.route("/topic/<name>/edit", methods=["GET", "POST"])(topic_edit))
     app.route("/c/<int:id>/edit/reorder", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/edit/reorder", methods=["GET", "POST"])(course_unit_reorder))
 
-
+    app.route("/c/<int:id>/result", methods=["GET"])(app.route("/course/<int:id>/<label>/result", methods=["GET"])(course_result))
     app.route("/c/<int:id>/result/participation", methods=["GET"])(app.route("/course/<int:id>/<label>/result/participation", methods=["GET"])(course_result_confirmation_of_participation))

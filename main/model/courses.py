@@ -461,8 +461,8 @@ class Courses:
                 quiz_reached_score += data["sum"]
 
             return [
-                (100*quiz_reached_score / quiz_max_score) if quiz_max_score else 100,
-                (100*visited_pages / availible_pages) if availible_pages else 0
+                int(100*quiz_reached_score / quiz_max_score) if quiz_max_score else 100,
+                int(100*visited_pages / availible_pages) if availible_pages else 0
             ]
         except lite.Error as e:
             return [None,None]
