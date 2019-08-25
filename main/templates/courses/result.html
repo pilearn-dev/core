@@ -11,17 +11,17 @@
     <div class="_card-content">
       <p class="p-lead">Wenn du mindestens 80% der Kursinhalte besucht hast und mindestens 80% der möglichen Punkte bei den Quizzen erzielt hast, erhältst du eine Teilnahmebestätigung.</p>
       <p>Besuchte Inhalte</p>
-      <div class="_progress-bar _progress-bar-{{ '-primary' if CoP_ratings[1] > 80 else 'danger' }}">
+      <div class="_progress-bar _progress-bar-{{ '-primary' if CoP_ratings[1] >= 80 else 'danger' }}">
         <div class="_progress-bar-slot" style="width: {{ CoP_ratings[1] }}%"></div>
         <div class="_progress-bar-label">{{ CoP_ratings[1] }}%</div>
       </div>
       <p>Ergebnis der Quizze</p>
-      <div class="_progress-bar _progress-bar-{{ '-primary' if CoP_ratings[0] > 80 else 'danger' }}">
+      <div class="_progress-bar _progress-bar-{{ '-primary' if CoP_ratings[0] >= 80 else 'danger' }}">
           <div class="_progress-bar-slot" style="width: {{ CoP_ratings[0] }}%"></div>
           <div class="_progress-bar-label">{{ CoP_ratings[0] }}%</div>
       </div>
     </div>
-    {% if CoP_ratings[0] > 80 and CoP_ratings[1] > 80 %}
+    {% if CoP_ratings[0] >= 80 and CoP_ratings[1] >= 80 %}
     <div class="_card-footer">
       <a href="/c/{{ course.id }}/result/participation" download="confirmation_of_participation.pdf" class="_btn _btn--primary _btn-lg">Teilnahmeurkunde erstellen</a>
     </div>
