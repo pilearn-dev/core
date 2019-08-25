@@ -372,27 +372,34 @@ vbadges.apply(app)
 vannouncements.apply(app)
 vabout.apply(app)
 
+@app.route("/404")
 @app.errorhandler(404)
-def error404(x):
+def error404(x=None):
     return render_template('error404.html', title="404 Nicht gefunden"), 404
 
 @app.errorhandler(405)
-def error405(x):
+def error405(x=None):
     return render_template('error405.html', title=u"405 Ungültiger Zugriff"), 405
 
+@app.route("/wp-login.php")
+@app.route("/backend")
+@app.route("/contao")
+@app.route("/wp-admin")
 @app.errorhandler(418)
-def error418(x):
+def error418(x=None):
     return render_template('error418.html', title=u"418 Der Kaffee ist alle"), 418
 
+@app.route("/forbidden")
 @app.errorhandler(403)
-def error403(x):
+def error403(x=None):
     return render_template('error403.html', title=u"403 Zugriff verboten"), 403
 
+@app.route("/error")
 @app.errorhandler(500)
 @app.errorhandler(502)
 @app.errorhandler(504)
 @app.errorhandler(505)
-def error500(x):
+def error500(x=None):
     data = tb.format_exc()
     data = data.decode("utf-8") # for python 2
     return render_template('error500.html', data=data, title="500 Server-Fehler"), 500
