@@ -1,0 +1,61 @@
+{% extends "layout_new.html" %}
+{% set autoSave = user.getPref("autoSave", False) == "1" %}
+{% block body %}
+<link rel="stylesheet" href="/static/ps/polyskript.css">
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "pr", user) }}
+
+{% include "courses/pull-requests/_header.html" %}
+
+
+<div class="grid -equal-columns">
+  <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
+    <div class="p3">
+      {% set curpage_id = unit_id ~"/"~ override_id %}
+      {% include "courses/pull-requests/_menu.html" %}
+    </div>
+  </div>
+  <div class="column9__lg column12 p3">
+    <button class="_btn _btn--primary push-right _btn-lg js--savebtn" onclick="save()">Speichern</button>
+    <div class="push-reset"></div>
+    <input class="form ta-c" style="font-size: 2.5em; font-weight: bold;" id="title" value="{{ data.title }}">
+    <p>Diese Seite zeigt eine Übersicht über untergeordnete Kursmodule an. (Syllabus) Du kannst einen Text über der Übersicht anzeigen lassen.</p>
+    <div class="js--editor js--editor:preview p2">
+      <textarea class="form js--editor-textarea" id="summary">{{ data.content }}</textarea>
+      <div class="p2 hr-original js--editor-preview"></div>
+    </div>
+    <script src="/static/new_js/pilearn.markdown.js" charset="utf-8"></script>
+    <script src="/static/new_js/pilearn.editor.js" charset="utf-8"></script>
+    <script>
+     PiJS.editor.init();
+
+     override_id = "{{ override_id if override_id else '-' }}";
+
+     function save() {
+       $(".js--savebtn").addClass("-loading").text("Speichere...");
+       $.ajax({
+         method: "POST",
+         url: "/c/{{ course.id }}/branch/{{ branch.id }}/update/{{ unit_id if unit_id else '-' }}/" + override_id,
+         contentType: "application/json; charset=utf-8",
+         data: JSON.stringify({
+           "title": $("#title").val(),
+           "content": $("#summary").val()
+         }),
+         success: function( result ) {
+           override_id = result.override_id
+           $(".js--savebtn").removeClass("-loading").text("Gespeichert.");
+           original_data = JSON.parse(JSON.stringify(Respectable.data));
+           setTimeout(function() {
+             $(".js--savebtn").text("Speichern");
+           }, 1200);
+         },
+         error: function() {
+           $(".js--savebtn").removeClass("-loading").text("Fehler beim Speichern");
+         }
+       });
+     }
+   </script>
+
+  </div>
+</div>
+{% endblock %}

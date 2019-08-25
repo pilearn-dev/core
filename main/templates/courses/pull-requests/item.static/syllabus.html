@@ -1,0 +1,61 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "pr", user) }}
+
+{% include "courses/pull-requests/_header.html" %}
+
+
+<div class="grid -equal-columns">
+  <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
+    <div class="p3">
+      {% set curpage_id = unit_id ~"/"~ override_id %}
+      {% include "courses/pull-requests/_menu.html" %}
+    </div>
+  </div>
+  <div class="column9__lg column12 p3">
+
+    <h1>{{ data.title }}</h1>
+     {{ (data.content.replace("\n", "\0")|striptags|markdown).replace("\0", "\n") }}
+    <h2>Übersicht</h2>
+    {% if data.parent_unit != 0 or data.parent_override != 0 %}
+    {% if user.isMod() or course.getCourseRole(user) >= 3 %}
+    <div class="fs-base3 f-bold col-danger-dd">Dieses Modul ist in der unteren Ebene und kann daher keine Kindelemente enthalten.</div>
+    {% endif %}
+    {% else %}
+    <table class="table" style="width: 100%">
+      <tr>
+        <th>Typ</th>
+        <th colspan="3">Modul</th>
+      </tr>
+      {% for element in branch.getMenu() if element.availible %}
+        {% if curpage_id == ((element.id or "-") ~ "/" ~ (element.overrides or "-")) and element.children %}
+          {% for child in element.children if child.availible %}
+          <tr>
+              {% if child.type == "info" %}
+              <td>Info</td>
+              {% elif child.type == "extvideo" %}
+              <td>Video</td>
+              {% elif child.type == "quiz" %}
+              <td>Quiz</td>
+              {% elif element.type == "syllabus" %}
+              <td>Übersicht</td>
+              {% elif child.type == "survey" %}
+              <td>Umfrage</td>
+              {% elif child.type == "pinboard" %}
+              <td>Pinwand</td>
+              {% else %}
+              <td></td>
+              {% endif %}
+              <td colspan="3" style="min-width: 80%"><a href="/c/{{ course.id }}/branch/{{ branch.id }}/item/{{ child.id if child.id else '-' }}/{{ child.overrides if child.overrides else '-' }}">{{ child.title }}</a></td>
+            </tr>
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
+      </table>
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock %}

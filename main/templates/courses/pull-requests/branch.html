@@ -36,6 +36,8 @@
                   <td>Video</td>
                   {% elif element.type == "quiz" %}
                   <td>Quiz</td>
+                  {% elif element.type == "syllabus" %}
+                  <td>Übersicht</td>
                   {% elif element.type == "survey" %}
                   <td>Umfrage</td>
                   {% elif element.type == "pinboard" %}
@@ -69,6 +71,8 @@
                     <td>Video</td>
                     {% elif child.type == "quiz" %}
                     <td>Quiz</td>
+                    {% elif child.type == "syllabus" %}
+                    <td>Übersicht</td>
                     {% elif child.type == "survey" %}
                     <td>Umfrage</td>
                     {% elif child.type == "pinboard" %}
@@ -152,6 +156,13 @@
       <div class="_toollist-data">
         <h4>Quiz</h4>
         <p>Wiederholung von gelernten Inhalten mit Multiple-Choice, Multiple-Answer und Textantwort-Fragen.</p>
+      </div>
+    </label>
+    <label class="_toollist-item" for="newitem_dialog-4">
+      <input type="radio" class="form-radio" id="newitem_dialog-4" value="syllabus" name="newitem_dialog">
+      <div class="_toollist-data">
+        <h4>Übersicht</h4>
+        <p>Eine Übersicht über untergeordnete Kursinhalte.</p>
       </div>
     </label>
   </div>

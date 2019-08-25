@@ -258,6 +258,9 @@ def unit_show(unit_id,course_id,unit_label=None,course_label=None):
     elif unit.getType() == "extvideo":
         if cuser.isLoggedIn() and not cuser.isDisabled(): unit.addViewData(cuser, None)
         return render_template('courses/units/extvideo.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
+    elif unit.getType() == "syllabus":
+        if cuser.isLoggedIn() and not cuser.isDisabled(): unit.addViewData(cuser, None)
+        return render_template('courses/units/syllabus.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
     elif unit.getType() == "survey":
         if cuser.isLoggedIn() and not cuser.isDisabled(): unit.addViewData(cuser, None)
         s = msurvey.Survey(unit.getJSON()["survey"])
@@ -303,6 +306,8 @@ def unit_edit(unit_id,course_id,unit_label=None,course_label=None):
             return render_template('courses/edit/unit-info.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
         elif unit.getType() == "extvideo":
             return render_template('courses/edit/unit-extvideo.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
+        elif unit.getType() == "syllabus":
+            return render_template('courses/edit/unit-syllabus.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
         elif unit.getType() == "survey":
             return render_template('courses/edit/unit-survey.html', title=course.getTitle() + " - " + unit.getTitle(), thispage="courses", course=course, data=unit)
         elif unit.getType() == "quiz":
@@ -392,7 +397,8 @@ def unit_new(course_id):
         "info":"[]",
         "quiz":"[]",
         "extvideo": '{"platform":"youtube", "embedcode": ""}',
-        "pinboard": '0'
+        "pinboard": '0',
+        "syllabus": ""
     }
     if request.json["type"] == "survey":
         s = msurvey.Survey.new(course.id, cuser.id)

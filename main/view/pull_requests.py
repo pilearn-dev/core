@@ -140,7 +140,8 @@ def branch_new_item(branch_id, course_id,course_label=None):
     empty_set = {
         "info":"[]",
         "quiz":"[]",
-        "extvideo": '{"platform":"youtube", "embedcode": ""}'
+        "extvideo": '{"platform":"youtube", "embedcode": ""}',
+        "syllabus": ''
     }
 
     x = branch.newUnitOverride("Neue Seite", empty_set[request.json["type"]], request.json["type"])
