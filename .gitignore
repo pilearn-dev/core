@@ -15,3 +15,4 @@ pidata.json
 !version.json
 *.pyc
 archive/*
+mailoutput/*
