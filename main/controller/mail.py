@@ -71,8 +71,6 @@ def render_email_html(text_old, contents):
 
 def send_textbased_email(to, subject, text, contents=None):
     senderaddr = 'nicht-antworten' + pidata["mail_configuration"]["addr_base"]
-    user = pidata["mail_configuration"]["user"]
-    pw = pidata["mail_configuration"]["password"]
 
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
@@ -96,7 +94,8 @@ def send_textbased_email(to, subject, text, contents=None):
         server.ehlo()
         server.starttls()
         server.ehlo()
-        server.login(user,pw)
+        print pidata["mail_configuration"]["password"]
+        server.login(pidata["mail_configuration"]["user"],bytearray(pidata["mail_configuration"]["password"], 'utf-8'))
         server.sendmail(senderaddr, to, msg.as_string())
         server.quit()
 
