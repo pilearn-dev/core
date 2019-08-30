@@ -49,7 +49,7 @@ class MDExtPostProcessor(Postprocessor):
         return new_lines
 
 def md_apply(app):
-    md = Markdown(app, extensions=["iconfonts(prefix=fa-, base=fa)", "markdownnofollow"])
+    md = Markdown(app, extensions=[])
 
     @md.extend()
     class ExtensionPostRegisterer(Extension):
