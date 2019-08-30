@@ -1,7 +1,7 @@
 # coding: utf-8
 from flask import render_template, redirect, abort, url_for, request
 from model import privileges as mprivileges, courses as mcourses, user as muser, proposal as mproposal
-from controller import query as cquery
+from controller import query as cquery, mail as cmail
 import json
 
 def proposal_show(id):
@@ -77,8 +77,22 @@ def proposal_accept(id):
     cuser = muser.getCurrentUser()
     if not cuser.isMod():
         abort(403)
+
     if proposal.getDetail("courseid") == 0:
         proposal.createCourse()
+        proposal = mproposal.Proposal(id)
+
+        owner = proposal.getProposer()
+
+        cmail.send_textbased_email(owner.getDetail("email"), u"Dein Kursvorschlag für '" + proposal.getTitle() + u"' war erfolgreich!", u"""Hallo %s,
+
+dein Kursvorschlag für einen Kurs
+
+## %s
+
+war erfolgreich. Du kannst jetzt den Kurs erstellen.
+
+{# Zum Kurs -> %s #}""" %(owner.getDetail("realname"), proposal.getTitle(), request.url_root + "c/" + str(proposal.getDetail("courseid"))))
     return "{ok}"
 
 def apply(app):
