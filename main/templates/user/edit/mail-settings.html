@@ -1,0 +1,70 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% set user_site = "edit" %}
+{% set user_edit_site = "email" %}
+{% include "user/_header.html" %}
+<div class="grid">
+  <div class="column2__lg column12 p2">
+    {% include "user/edit/_header.html" %}
+  </div>
+  <div class="column10__lg column12 p2">
+    <h1>E-Mail-Einstellungen</h1>
+    {% set communityMails = data.getPref("mail:community", False) == "1" %}
+    {% set researchMails = data.getPref("mail:research", False) == "1" %}
+    <p>Beachte: Die E-Mail-Einstellungen sind verzögert gespeichert, damit &pi;-Learn schneller ist. Es kann daher eine ganze Weile dauern, bis eine Veränderung auch auf anderen Geräten angezeigt wird. Um eine Aktualisierung zu erzwingen, musst du dich auf diesen ab- und wieder anmelden.</p>
+    <h2 class="p2 fs-base3 bg-dark-lll col-dark-ddd mb0 f-bold f-caps">Allgemeine Einstellungen</h2>
+    <div class="grid mb1">
+      <div class="p2 colbox-fill bg-dark-llll">
+        <h2 class="fs-base3 f-bold my1">Wichtige Konto-Informationen</h2>
+        <p>Wichtige Informationen zu deinem Benutzerkonto (z.B. Zurücksetzen des Passworts, Annahme eines Kursvorschlags, ...) werden wir dir <em>immer</em> zusenden.</p>
+      </div>
+      <div class="p4 colbox175">
+        <div class="_option-toggle">
+          <button class="_option _option-success -active"><i class="fa fa-lock"></i> Immer aktiv</button>
+        </div>
+      </div>
+    </div>
+    <div class="grid mb1">
+      <div class="p2 colbox-fill bg-dark-llll">
+        <h2 class="fs-base3 f-bold my1">Informationen zur Community</h2>
+        <p>Du kannst dich dafür entscheiden, Informationen zur Community (z.B. Meilensteine wie Erfolge, Auszeichnungen) per E-Mail zu erhalten.</p>
+      </div>
+      <div class="p4 colbox175">
+        <div class="_option-toggle">
+          <button class="_option _option-success {{ '-active' if communityMails }}" onclick="update_pref('mail:community', '1', function(){window.location.reload()})">Ja</button>
+          <button class="_option _option-danger {{ '-active' if not communityMails }}" onclick="update_pref('mail:community', '0', function(){window.location.reload()})">Nein</button>
+        </div>
+      </div>
+    </div>
+    <div class="grid mb1">
+      <div class="p2 colbox-fill bg-dark-llll">
+        <h2 class="fs-base3 f-bold my1">Einladungen zu Umfragen/Testversuchen</h2>
+        <p>Du kannst dich dafür entscheiden, per E-Mail Einladungen zu Umfragen oder Testversuchen im Zusammenhang mit &pi;-Learn zu erhalten.</p>
+      </div>
+      <div class="p4 colbox175">
+        <div class="_option-toggle">
+          <button class="_option _option-success {{ '-active' if researchMails }}" onclick="update_pref('mail:research', '1', function(){window.location.reload()})">Ja</button>
+          <button class="_option _option-danger {{ '-active' if not researchMails }}" onclick="update_pref('mail:research', '0', function(){window.location.reload()})">Nein</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function update_pref(key, val, scb) {
+    $.ajax({
+      method: "POST",
+      url: "/user/{{ data.id }}/preferences",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        key: key,
+        value: val
+      }),
+      success: function(r) {scb();},
+      error: function() {
+        alert("Verbindung fehlgeschlagen!");
+      }
+    })
+  }
+</script>
+{% endblock %}

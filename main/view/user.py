@@ -64,6 +64,9 @@ def user_edit_page(id, name=None):
             elif request.values.get("page", "profile") == "preferences":
                 return render_template("user/edit/preferences.html", data=user, thispage="user", title=u"Einstellungen für " + user.getHTMLName(False))
 
+            elif request.values.get("page", "profile") == "email":
+                return render_template("user/edit/mail-settings.html", data=user, thispage="user", title=u"E-Mail-Einstellungen für " + user.getHTMLName(False))
+
             elif request.values.get("page", "profile") == "dev" and cuser.isDev():
                 return render_template("user/edit/dev.html", data=user, thispage="user", title=u"Entwickleroptionen für " + user.getHTMLName(False), roles=muser.getRoles())
 
@@ -458,7 +461,7 @@ def preferences_for_user(id):
 
     data = request.json
 
-    VALID_PREFERENCES = ["darkTheme", "autoSave"]
+    VALID_PREFERENCES = ["darkTheme", "autoSave", "mail:community", "mail:research"]
 
     if data["key"] not in VALID_PREFERENCES:
         return jsonify({
