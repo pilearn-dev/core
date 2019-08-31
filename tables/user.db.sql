@@ -135,3 +135,11 @@ INSERT INTO user_roles (name, is_mod, is_dev, is_team) VALUES ("Normaler Benutze
   pref_key VARCHAR(50),
   value TEXT
 )
+;CREATE TABLE password_reset_requests (
+  id INTEGER PRIMARY KEY,
+  user_id INT,
+  login_method_id INT,
+  creation_date INT,
+  deletion_date INT,
+  verification_code VARCHAR(7)
+)
