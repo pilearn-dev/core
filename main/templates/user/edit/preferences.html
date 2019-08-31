@@ -12,6 +12,7 @@
     {% set darkTheme = data.getPref("darkTheme", False) == "1" %}
     {% set autoSave = data.getPref("autoSave", False) == "1" %}
     {% set pinnedNav = data.getPref("pinnedNav", False) == "1" %}
+    {% set betaTester = data.getPref("betaTester", False) == "1" %}
     <p>Beachte: Einstellungen sind verzögert gespeichert, damit &pi;-Learn schneller ist. Es kann daher eine ganze Weile dauern, bis eine Veränderung auch auf anderen Geräten angezeigt wird. Um eine Aktualisierung zu erzwingen, musst du dich auf diesen ab- und wieder anmelden.</p>
 
     <h2 class="p2 fs-base3 bg-dark-lll col-dark-ddd mb0 f-bold f-caps">Darstellung</h2>
@@ -50,6 +51,20 @@
         <div class="_option-toggle">
           <button class="_option _option-success {{ '-active' if autoSave }}" onclick="update_pref('autoSave', '1', function(){window.location.reload()})">Ja</button>
           <button class="_option _option-danger {{ '-active' if not autoSave }}" onclick="update_pref('autoSave', '0', function(){window.location.reload()})">Nein</button>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="p2 fs-base3 bg-dark-lll col-dark-ddd mb0 f-bold f-caps">Anderes</h2>
+    <div class="grid mb1">
+      <div class="p2 colbox-fill bg-dark-llll">
+        <h2 class="fs-base3 f-bold my1">Neue Funktionen testen</h2>
+        <p>Du wirst neue Funktionen, die eventuell noch nicht 100% funktionieren, eher sehen und testen können.</p>
+      </div>
+      <div class="p4 colbox175">
+        <div class="_option-toggle">
+          <button class="_option _option-success {{ '-active' if betaTester }}" onclick="update_pref('betaTester', '1', function(){window.location.reload()})">Ja</button>
+          <button class="_option _option-danger {{ '-active' if not betaTester }}" onclick="update_pref('betaTester', '0', function(){window.location.reload()})">Nein</button>
         </div>
       </div>
     </div>
