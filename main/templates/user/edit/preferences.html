@@ -11,15 +11,48 @@
     <h1>Einstellungen</h1>
     {% set darkTheme = data.getPref("darkTheme", False) == "1" %}
     {% set autoSave = data.getPref("autoSave", False) == "1" %}
+    {% set pinnedNav = data.getPref("pinnedNav", False) == "1" %}
     <p>Beachte: Einstellungen sind verzögert gespeichert, damit &pi;-Learn schneller ist. Es kann daher eine ganze Weile dauern, bis eine Veränderung auch auf anderen Geräten angezeigt wird. Um eine Aktualisierung zu erzwingen, musst du dich auf diesen ab- und wieder anmelden.</p>
-    <h2>Dunkelmodus</h2>
-    <p>Du kannst die Farben invertieren, und damit die Webseite in einen Modus mit dunkleren Farben schalten.</p>
-    <p>Status: <strong>{{ "an" if darkTheme else "aus" }}</strong></p>
-    <button class="_btn _btn--primary" onclick="update_pref('darkTheme', '{{ 0 if darkTheme else 1 }}', function(){window.location.reload()})">{{ "Ausschalten" if darkTheme else "Anschalten" }}</button>
-    <h2>Automatisches Speichern von Kursmodulen</h2>
-    <p>Wenn diese Einstellung aktiviert ist, wird der Kurseditor halbminütlich versuchen, die Inhalte zu speichern (Nur Infoseiten + Quizze)</p>
-    <p>Status: <strong>{{ "an" if autoSave else "aus" }}</strong></p>
-    <button class="_btn _btn--primary" onclick="update_pref('autoSave', '{{ 0 if autoSave else 1 }}', function(){window.location.reload()})">{{ "Ausschalten" if autoSave else "Anschalten" }}</button>
+
+    <h2 class="p2 fs-base3 bg-dark-lll col-dark-ddd mb0 f-bold f-caps">Darstellung</h2>
+    <div class="grid mb1">
+      <div class="p2 colbox-fill bg-dark-llll">
+        <h2 class="fs-base3 f-bold my1">Dunkelmodus</h2>
+        <p>Du kannst die Farben invertieren, und damit die Webseite in einen Modus mit dunkleren Farben schalten.</p>
+      </div>
+      <div class="p4 colbox175">
+        <div class="_option-toggle">
+          <button class="_option _option-success {{ '-active' if darkTheme }}" onclick="update_pref('darkTheme', '1', function(){window.location.reload()})">Ja</button>
+          <button class="_option _option-danger {{ '-active' if not darkTheme }}" onclick="update_pref('darkTheme', '0', function(){window.location.reload()})">Nein</button>
+        </div>
+      </div>
+    </div>
+    <div class="grid mb1">
+      <div class="p2 colbox-fill bg-dark-llll">
+        <h2 class="fs-base3 f-bold my1">Navigationsleiste anheften</h2>
+        <p>Du kannst die Navigationsleiste anheften, so dass sich diese mit der Seite mitbewegt, wenn du nach unten scrollst.</p>
+      </div>
+      <div class="p4 colbox175">
+        <div class="_option-toggle">
+          <button class="_option _option-success {{ '-active' if pinnedNav }}" onclick="update_pref('pinnedNav', '1', function(){window.location.reload()})">Ja</button>
+          <button class="_option _option-danger {{ '-active' if not pinnedNav }}" onclick="update_pref('pinnedNav', '0', function(){window.location.reload()})">Nein</button>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="p2 fs-base3 bg-dark-lll col-dark-ddd mb0 f-bold f-caps">Kurs-Einstellungen</h2>
+    <div class="grid mb1">
+      <div class="p2 colbox-fill bg-dark-llll">
+        <h2 class="fs-base3 f-bold my1">Automatisches Speichern von Kursmodulen</h2>
+        <p>Wenn diese Einstellung aktiviert ist, wird der Kurseditor halbminütlich versuchen, die Inhalte zu speichern (Nur Infoseiten und Quizze)</p>
+      </div>
+      <div class="p4 colbox175">
+        <div class="_option-toggle">
+          <button class="_option _option-success {{ '-active' if autoSave }}" onclick="update_pref('autoSave', '1', function(){window.location.reload()})">Ja</button>
+          <button class="_option _option-danger {{ '-active' if not autoSave }}" onclick="update_pref('autoSave', '0', function(){window.location.reload()})">Nein</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 <script>

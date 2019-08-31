@@ -57,7 +57,7 @@
   {% endif %}
 </head>
 <body>
-  <header class="_header _header-sm _header-bordered p-st">
+  <header class="_header _header-sm _header-bordered {{ 'p-st' if user.getPref('pinnedNav', False) == '1' }}">
     <div class="single-fluid d-f _header-container">
       <nav class="_header-items hide__lg hide__md">
         <a class="_header-icon js--topbar-menu" href="#!">
