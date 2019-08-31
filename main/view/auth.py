@@ -1,7 +1,7 @@
 # coding: utf-8
 from flask import render_template, redirect, abort, url_for, request, session
 from model import user as muser, auth as mauth
-from controller import query as cquery
+from controller import query as cquery, mail as cmail
 import json, time, re
 
 def login():
@@ -57,9 +57,42 @@ def register():
 def reset_password():
     error = False
     if request.method == 'POST':
-        data = muser.User.passwdreset(request.form['username'], request.form['email'])
-        error = "done"
+        data = muser.User.passwdreset_new_request(request.form['email'])
+        if data:
+
+            url = url_for("reset_password_verify", id=data[0], _external=True)
+
+            cmail.send_textbased_email(request.form['email'], u"Dein Passwort-Zurücksetz-Code", u"""Hallo,
+
+du hast eine Anfrage auf &pi;-Learn gesendet, um das Passwort für diese E-Mail-Adresse zurückzusetzen.
+
+Der Bestätigungscode dafür lautet:
+
+# %s
+
+Wenn du das Fenster bereits geschlossen hast, kannst du { hier klicken -> %s } oder diesen Link im Browser öffnen:
+
+%s
+
+Wenn diese Anfrage nicht von dir stammt, kannst du diese E-Mail einfach löschen.""" %(data[1], url, url))
+
+
+
+            return redirect(url)
+        error = "invalid"
     return render_template('passwordreset.html', error=error, title=u"Passwort zurücksetzen", thispage="login")
+
+def reset_password_verify(id):
+    if not muser.User.passwdreset_has_request(id):
+        abort(404)
+    error = False
+    if request.method == 'POST':
+        data = muser.User.passwdreset_run_request(id, request.form['key'].strip(), request.form['pw'])
+        if data:
+            error = "success"
+        else:
+            error = "invalid-code"
+    return render_template('passwordreset_verify.html', error=error, title=u"Passwort zurücksetzen", thispage="login")
 
 def logout():
     user = muser.getCurrentUser()
@@ -137,6 +170,7 @@ def apply(app, pidata2):
 
 
     app.route("/auth/password-reset", methods=['GET', 'POST'])(reset_password)
+    app.route("/auth/password-reset/verify/<int:id>", methods=['GET', 'POST'])(reset_password_verify)
 
 
     @app.route("/logout")

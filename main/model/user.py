@@ -6,7 +6,7 @@ from flask import request, session, url_for
 from sha1 import sha1,md5
 from model import privileges as mprivileges
 from controller import times as ctimes
-import time
+import time, random
 
 class User:
 
@@ -1054,16 +1054,52 @@ class User:
                 con.close()
 
     @classmethod
-    def passwdreset(cls, email):
+    def passwdreset_new_request(cls, email):
         try:
             con = lite.connect('databases/user.db')
-            con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("UPDATE user SET password='' WHERE email=?", (email,))
+            cur.execute("SELECT id, user_id FROM login_methods WHERE provider='local_account' AND email=?", (email,))
+            result = cur.fetchone()
+            if not result: return False
+            lm_id, user_id = result
+            code = (str(random.randint(0,999)).zfill(3) + " " + str(random.randint(0,999)).zfill(3))
+            cur.execute("INSERT INTO password_reset_requests (user_id, login_method_id, creation_date, deletion_date, verification_code) VALUES (?, ?, ?, NULL, ?)", (user_id, lm_id, time.time(), code))
+            con.commit()
+            return cur.lastrowid, code
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def passwdreset_has_request(cls, id):
+        try:
+            con = lite.connect('databases/user.db')
+            cur = con.cursor()
+            cur.execute("SELECT id FROM password_reset_requests WHERE id=? AND deletion_date IS NULL", (id,))
+            return cur.fetchone() is not None
+        except lite.Error as e:
+            return False
+        finally:
+            if con:
+                con.close()
+
+    @classmethod
+    def passwdreset_run_request(cls, id, code, new_pass):
+        try:
+            con = lite.connect('databases/user.db')
+            cur = con.cursor()
+            cur.execute("SELECT login_method_id, user_id FROM password_reset_requests WHERE id=? AND verification_code=?", (id,code))
+            result = cur.fetchone()
+            if not result: return False
+            lm_id, user_id = result
+
+            cur.execute("UPDATE login_methods SET password=? WHERE id=? AND user_id=?", (sha1(new_pass), lm_id,user_id))
+            cur.execute("UPDATE password_reset_requests SET deletion_date=? WHERE id=? AND verification_code=?", (time.time(),id,code))
             con.commit()
             return True
         except lite.Error as e:
-            print(e)
             return False
         finally:
             if con:
