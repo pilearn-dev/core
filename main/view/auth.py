@@ -19,10 +19,7 @@ def login():
             session['login'] = user_id
             session["login_time"] = time.time()
 
-            if muser.User.from_id(user_id).getDetail("password") == "":
-                return redirect(url_for('user_page', id=user_id))
-            else:
-                return redirect(url_for('index'))
+            return redirect(url_for('index'))
     return render_template('login.html', error=error, title="Anmelden", thispage="login")
 
 def register():
