@@ -10,8 +10,11 @@
   <div class="column10__lg column12 p2">
     <h1>Einstellungen</h1>
     {% set darkTheme = data.getPref("darkTheme", False) == "1" %}
-    {% set autoSave = data.getPref("autoSave", False) == "1" %}
     {% set pinnedNav = data.getPref("pinnedNav", False) == "1" %}
+
+    {% set autoSave = data.getPref("autoSave", False) == "1" %}
+    {% set hideHomeCourseRecommendations = data.getPref("gdpr:hideHomeCourseRecommendations", False) == "1" %}
+
     {% set betaTester = data.getPref("betaTester", False) == "1" %}
     <p>Beachte: Einstellungen sind verzögert gespeichert, damit &pi;-Learn schneller ist. Es kann daher eine ganze Weile dauern, bis eine Veränderung auch auf anderen Geräten angezeigt wird. Um eine Aktualisierung zu erzwingen, musst du dich auf diesen ab- und wieder anmelden.</p>
 
@@ -51,6 +54,20 @@
         <div class="_option-toggle">
           <button class="_option _option-success {{ '-active' if autoSave }}" onclick="update_pref('autoSave', '1', function(){window.location.reload()})">Ja</button>
           <button class="_option _option-danger {{ '-active' if not autoSave }}" onclick="update_pref('autoSave', '0', function(){window.location.reload()})">Nein</button>
+        </div>
+      </div>
+    </div>
+    <div class="grid mb1">
+      <div class="p2 colbox-fill bg-dark-llll">
+        <h2 class="fs-base3 f-bold my1">Keine persönlichen Kursempfehlungen auf Startseite</h2>
+        <p>Wenn diese Einstellung aktiviert ist, werden die vorgeschlagenen Kurse auf der Startseite nicht nur aus deinen "Lieblingsthemen" ausgewählt.</p>
+        <p>Dies blendet nicht die Kursvorschläge aus.</p>
+        <p>Dies hat möglicherweise keinen Effekt, wenn es nur wenige Kurse gibt, die ausgewählt werden können.</p>
+      </div>
+      <div class="p4 colbox175">
+        <div class="_option-toggle">
+          <button class="_option _option-success {{ '-active' if hideHomeCourseRecommendations }}" onclick="update_pref('gdpr:hideHomeCourseRecommendations', '1', function(){window.location.reload()})">Ja</button>
+          <button class="_option _option-danger {{ '-active' if not hideHomeCourseRecommendations }}" onclick="update_pref('gdpr:hideHomeCourseRecommendations', '0', function(){window.location.reload()})">Nein</button>
         </div>
       </div>
     </div>

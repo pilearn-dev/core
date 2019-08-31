@@ -58,7 +58,7 @@
 <div class="container single-fluid">
     <div class="p4">
         <h1 class="-better-sorted"><span class="i">Empfohlene Kurse</span></h1>
-        {% if not user.isLoggedIn() %}
+        {% if not user.isLoggedIn() or user.getPref("gdpr:hideHomeCourseRecommendations", False) == "1" %}
             {% set c = courses.getGlobalBeloved() %}
         {% else %}
             {% set c = courses.getRandomBeloved(user.id) %}
