@@ -1,7 +1,7 @@
 # coding: utf-8
 from flask import render_template, abort, request, redirect, url_for, jsonify
 from model import user as muser, modmsg as mmodmsg
-from controller import times as ctimes
+from controller import times as ctimes, mail as cmail
 
 import time
 
@@ -38,9 +38,26 @@ def msg_new_thread(user):
             message = prefix + message + suffix + postfix
 
             thread = mmodmsg.UserMsgThread.new(cuser.id, u.id)
-            URL = url_for("msg_view_single", user=u.id, thread_id=thread.id)
+            URL = url_for("msg_view_single", user=u.id, thread_id=thread.id, _external=True)
 
             mmodmsg.UserMsg.new(thread.id, cuser.id, u.id, message, template=template)
+
+            if suspend:
+                title = u"Sperrung auf π-Learn"
+                ban_line = u"\n\n~~Hinweis~~: Zusammen mit dieser Nachricht wurdest du für " + str(suspension_length) + u" Tage gesperrt."
+            else:
+                title = u"Neue Moderatorennachricht auf π-Learn"
+                ban_line = ""
+
+            if template != 0:
+                t = mmodmsg.getTemplateById(template)
+                tt = t["title"]
+                subject_line = "\n\n~~Betreff: " + tt + "~~"
+            else:
+                subject_line = ""
+
+            cmail.send_textbased_email(u.getDetail("email"), title, u"Hallo " + u.getDetail("realname") + u",\n\ndu hast eine ~~wichtige~~ neue Nachricht von einem Moderatoren erhalten, die du unbedingt durchlesen solltest." + subject_line + ban_line + u"\n\n.{# Zur Nachricht -> " + URL + "#}")
+
             if template != 0:
                 t = mmodmsg.getTemplateById(template)
                 tt = t["title"]
@@ -97,16 +114,20 @@ def msg_add_response(user, thread_id):
     if msgs[-1].getDetail("submitted_by") == cuser.id and not cuser.isMod():
         abort(403)
 
-    URL = url_for("msg_view_single", user=user, thread_id=thread_id)
+    URL = url_for("msg_view_single", user=user, thread_id=thread_id, _external=True)
 
     if cuser.id == thread.getDetail("contacted_user"):
         mmodmsg.UserMsg.new(thread.id, cuser.id, 0, request.form["response"])
         cu = thread.getInitiator()
         cu.notify("pm", "Neue Antwort zu privater Nachricht von " + cuser.getDetail("realname"), URL)
+
+        cmail.send_textbased_email(cu.getDetail("email"), u"Antwort auf Moderatorennachricht auf π-Learn", u"Hallo " + cu.getDetail("realname") + u",\n\nes gibt eine neue Antwort in einem privaten Nachrichtenverlauf, den du eröffnet hast.\n\n{# Zur Nachricht -> " + URL + u"#}")
     else:
         mmodmsg.UserMsg.new(thread.id, cuser.id, thread.getDetail("contacted_user"), request.form["response"])
         cu = thread.getContacted()
         cu.notify("pm", "Neue Antwort zu privater Nachricht", URL)
+
+        cmail.send_textbased_email(cu.getDetail("email"), u"Antwort auf Moderatorennachricht auf π-Learn", u"Hallo " + cu.getDetail("realname") + u",\n\nes gibt eine neue Antwort in einem privaten Nachrichtenverlauf zwischen dem Moderatorenteam und dir.\n\n{# Zur Nachricht -> " + URL + u"#}")
 
     return redirect(URL)
 
