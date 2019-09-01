@@ -1,7 +1,7 @@
 # coding: utf-8
 from flask import request, session, redirect, url_for, abort, render_template, jsonify
 from model import privileges as mprivileges, tags as mtags, user as muser, reviews as mreviews, forum as mforum, post_templates as mposttemplates
-from controller import num as cnum, times as ctimes
+from controller import num as cnum, times as ctimes, mail as cmail
 
 import markdown as md
 
@@ -10,57 +10,32 @@ import json, time
 import urllib, urllib2
 
 def helpdesk_page():
-    cuser = muser.getCurrentUser()
-    if cuser.isDev():
-        return redirect("https://support.pilearn.velja.de/admin")
-
     return render_template("helpdesk.html", title="Helpdesk", submit=bool(request.values.get("submit", False)))
 
 def helpdesk_submit():
     cuser = muser.getCurrentUser()
-    if cuser.isDev():
-        return redirect("https://support.pilearn.velja.de/admin")
     if not cuser.isLoggedIn():
         abort(404)
 
     rt = request.form.get("request-type")
     rc = request.form.get("description")
+    secure = rt.endswith("_")
+    if secure:
+        rt = rt[:-1]
+    rm = cuser.getDetail("email")
 
-    def encoded_dict(in_dict):
-        out_dict = {}
-        for k, v in in_dict.iteritems():
-            if isinstance(v, unicode):
-                v = v.encode('utf8')
-            elif isinstance(v, str):
-                # Must be encoded in UTF-8
-                v.decode('utf8')
-            out_dict[k] = v
-        return out_dict
+    id = str(int(time.time()))
 
-    data = urllib.urlencode(encoded_dict({
-        "staff": False,
-        "email": "pstrobach15@gmail.com",
-        "password": "12345678",
-        "userId": 9
-    }))
+    cmail.send_textbased_email("team@pilearn.de", u"HD #" + id + u" von Benutzer #" + str(cuser.id), u"Es gibt eine neue Support-Anfrage.\n\nTyp: " + rt + u"\n\nKommentar:\n\n" + rc + u"\n\n---\n\nAntwort an: " + rm + (" (mod)" if cuser.isMod() else "") + (" (team)" if cuser.isTeam() else ""))
 
-    r = urllib2.urlopen("https://support.pilearn.velja.de/api/user/login", data)
+    time.sleep(1)
 
-    print(r.getcode())
-    print(r.read())
+    if secure:
+        cmail.send_textbased_email(rm, "Support-Anfrage #"+id+" entgegengenommen", u"Hallo " + cuser.getDetail("realname") + u",\n\nwir haben deine Support-Anfrage vom Typ " + rt + u" entgegengenommen. Sie hat die Kennung #"+id+u".\n\nWenn du noch etwas hinzufügen möchtest, sende eine E-Mail mit dieser Kennung an team@pilearn.de.\n\nViele Grüße\n\n&pi;-Learn Team")
+    else:
+        cmail.send_textbased_email(rm, "Support-Anfrage #"+id+" entgegengenommen", u"Hallo " + cuser.getDetail("realname") + u",\n\nwir haben deine Support-Anfrage vom Typ " + rt + u" entgegengenommen. Sie hat die Kennung #"+id+u". Folgendes ist dein Kommentar:\n\n"+rc+u"\n\nWenn du noch etwas hinzufügen möchtest, sende eine E-Mail mit dieser Kennung an team@pilearn.de.\n\nViele Grüße\n\n&pi;-Learn Team")
 
-    data = urllib.urlencode(encoded_dict({
-        "title": rt + "- Benutzer #" + str(cuser.id),
-        "content": "<p><strong>Anfrage</strong>: " + rt + "</p><p><strong>Benutzer</strong>: <a href='https://www.pilearn.de/u/"+str(cuser.id)+"'>"+cuser.getHTMLName()+"</a></p><hr>"+md.markdown(rc),
-        "departmentId": 4,
-        "language": "german",
-        "email": unicode(cuser.getDetail("email")),
-        "images": 0
-    }))
-    r = urllib2.urlopen("https://support.pilearn.velja.de/api/ticket/create", data)
-    print(r.getcode())
-    print(r.read())
-    return "..."
+    return redirect(url_for("helpdesk_page", submit=True))
 
 def apply(app):
     app.route('/helpdesk')(helpdesk_page)
