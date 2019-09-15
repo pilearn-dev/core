@@ -398,7 +398,7 @@ def unit_new(course_id):
         "quiz":"[]",
         "extvideo": '{"platform":"youtube", "embedcode": ""}',
         "pinboard": '0',
-        "syllabus": ""
+        "syllabus": "\"\""
     }
     if request.json["type"] == "survey":
         s = msurvey.Survey.new(course.id, cuser.id)
