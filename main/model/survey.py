@@ -18,7 +18,7 @@ class Survey:
 
     def setDetail(self, d, v):
         try:
-            con = lite.connect('databases/survey.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE surveys SET "+d+"=? WHERE id=?", (v, self.id))
@@ -32,7 +32,7 @@ class Survey:
 
     def hasSubmission(self, cuser):
         try:
-            con = lite.connect('databases/survey.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM survey_responses WHERE survey_id=? AND responder_id=?", (self.id, cuser.id))
@@ -45,7 +45,7 @@ class Survey:
 
     def addSubmission(self, cuser, content):
         try:
-            con = lite.connect('databases/survey.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO survey_responses (survey_id, responder_id, content) VALUES (?,?,?)", (self.id, cuser.id, content))
@@ -60,7 +60,7 @@ class Survey:
 
     def getSubmissions(self):
         try:
-            con = lite.connect('databases/survey.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             cur.execute("SELECT content FROM survey_responses WHERE survey_id=?", (self.id,))
             data = cur.fetchall()
@@ -99,7 +99,7 @@ class Survey:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/survey.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM surveys WHERE id=?", (self.id, ))
@@ -125,7 +125,7 @@ class Survey:
     @classmethod
     def exists(cls, id):
         try:
-            con = lite.connect('databases/survey.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM surveys WHERE id=?", (id,))
@@ -140,7 +140,7 @@ class Survey:
     @classmethod
     def new(cls, forum_id, owner_id):
         try:
-            con = lite.connect('databases/survey.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO surveys (title, content, results, state, associated_forum, survey_owner) VALUES ('Neue Umfrage', '[]', '', 0, ?, ?)", (forum_id,owner_id))

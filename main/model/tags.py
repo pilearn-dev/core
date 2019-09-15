@@ -13,7 +13,7 @@ class ForumTag:
 
     def setDetail(self, d, v):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE forum_tags SET "+d+"=? WHERE id=?", (v, self.id))
@@ -47,7 +47,7 @@ class ForumTag:
 
     def addAssoc(self, article_id):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO forum_tag_associations (post_id, tag_id) VALUES (?, ?);", (article_id, self.id))
@@ -61,7 +61,7 @@ class ForumTag:
 
     def removeAssoc(self, article_id):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("DELETE FROM forum_tag_associations WHERE post_id=? AND tag_id=?;", (article_id, self.id))
@@ -75,7 +75,7 @@ class ForumTag:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM forum_tags WHERE id=?", (self.id, ))
@@ -101,7 +101,7 @@ class ForumTag:
     @classmethod
     def byName(cls, name, forum_id=None):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             if forum_id == "any":
@@ -128,7 +128,7 @@ class ForumTag:
     @classmethod
     def createNew(cls, name, forumID=None):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO forum_tags (forum_id, name, excerpt, deprecation_notice, redirects_to, applicable, mod_only) VALUES (?, ?, '', '', 0, 1, 0);", (forumID, name))
@@ -143,7 +143,7 @@ class ForumTag:
     @classmethod
     def exists(cls, id):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM forum_tags WHERE id=?", (id,))
@@ -159,7 +159,7 @@ class ForumTag:
     @classmethod
     def exists_name(cls, name):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM forum_tags WHERE name=?", (name,))

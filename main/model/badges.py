@@ -16,7 +16,7 @@ class Badge:
 
     def setDetail(self, d, v):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE badges SET "+d+"=? WHERE id=?", (v, self.id))
@@ -30,7 +30,7 @@ class Badge:
 
     def awardTo(self, user_id, data):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             cur.execute("INSERT INTO badge_associations (badgeid, userid, data, given_date, recognized) VALUES (?, ?, ?, strftime('%s','now'), 0)", (self.id,user_id, data))
             con.commit()
@@ -43,7 +43,7 @@ class Badge:
 
     def revokeFrom(self, user_id, ts):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             cur.execute("DELETE FROM badge_associations WHERE badgeid=? AND userid=? AND given_date=?", (self.id,user_id, ts))
             con.commit()
@@ -56,7 +56,7 @@ class Badge:
 
     def getAwardees(self):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             cur.execute("SELECT * FROM badge_associations WHERE badgeid=? ORDER BY given_date DESC", (self.id,))
             data = cur.fetchall()
@@ -80,7 +80,7 @@ class Badge:
 
     def getAwardeeCount(self):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             cur.execute("SELECT Count(*) FROM badge_associations WHERE badgeid=? ORDER BY given_date DESC", (self.id,))
             return cur.fetchone()[0]
@@ -96,7 +96,7 @@ class Badge:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM badges WHERE id=?", (self.id,))
@@ -121,7 +121,7 @@ class Badge:
     @classmethod
     def exists(cls, id):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM badges WHERE id=?", (id,))
@@ -136,7 +136,7 @@ class Badge:
     @classmethod
     def getAll(cls):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM badges ORDER BY id")
@@ -154,7 +154,7 @@ class Badge:
     @classmethod
     def byUser(cls, u):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT badges.*, badge_associations.given_date, badge_associations.data FROM badges, badge_associations WHERE badges.id=badge_associations.badgeid AND badge_associations.userid=? ORDER BY badge_associations.given_date DESC", (u.id,))

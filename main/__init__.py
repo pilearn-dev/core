@@ -133,7 +133,7 @@ def __dev_sql():
     if not cuser.isDev():
         abort(404)
 
-    if request.json["file"] in ["courses.db", "user.db", "forum.db", "election.db", "helpdesk.db", "survey.db", "helpcenter.db"] and request.json["sql"] != "":
+    if request.json["file"] in ["pilearn.db", "pilearn.db", "pilearn.db", "pilearn.db", "helpdesk.db", "pilearn.db", "pilearn.db"] and request.json["sql"] != "":
         file = request.json["file"]
         sql = request.json["sql"]
 
@@ -285,7 +285,7 @@ def __devanswrevman():
     else:
         data = request.json
         if data["action"] == "get":
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             cur.execute("SELECT id, type, editor, new_content, comment FROM answer_revisions WHERE id=?", (data["id"],))
             lr = cur.fetchone()
@@ -299,7 +299,7 @@ def __devanswrevman():
             }
             return json.dumps(lr)
         elif data["action"] == "update":
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             cur.execute("UPDATE answer_revisions SET type=?, editor=?, new_content=?, comment=? WHERE id=?", (data["data"]["type"], data["data"]["editor"], data["data"]["content"], data["data"]["comment"],data["id"],))
             con.commit()
@@ -315,7 +315,7 @@ def __devquesrevman():
     else:
         data = request.json
         if data["action"] == "get":
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             cur.execute("SELECT id, type, editor, new_content, new_title, new_tags, comment FROM article_revisions WHERE id=?", (data["id"],))
             lr = cur.fetchone()
@@ -331,7 +331,7 @@ def __devquesrevman():
             }
             return json.dumps(lr)
         elif data["action"] == "update":
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             cur.execute("UPDATE article_revisions SET type=?, editor=?, new_content=?, comment=?, new_title=?, new_tags=? WHERE id=?", (data["data"]["type"], data["data"]["editor"], data["data"]["content"], data["data"]["comment"],data["data"]["title"],data["data"]["tags"],data["id"]))
             con.commit()

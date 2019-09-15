@@ -18,7 +18,7 @@ class Branch:
 
     def setDetail(self, d, v):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE branches SET "+d+"=? WHERE id=?", (v, self.id))
@@ -255,7 +255,7 @@ class Branch:
 
     def getOverrides(self, parent_unit=None, parent_override=None):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             if parent_unit is not None and parent_override is not None:
@@ -275,7 +275,7 @@ class Branch:
 
     def getSingleOverride(self, id):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM branch_overrides WHERE id=?", (id,))
@@ -288,7 +288,7 @@ class Branch:
 
     def mapOverrideToUnit(self, override_id, unit_id):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE branch_overrides SET overrides=? WHERE id=?", (unit_id, override_id))
@@ -302,7 +302,7 @@ class Branch:
 
     def removeOverride(self, id):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("DELETE FROM branch_overrides WHERE id=?", (id,))
@@ -316,7 +316,7 @@ class Branch:
 
     def hasOverrideForUnit(self, unit_id):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM branch_overrides WHERE branch=? AND overrides=?", (self.id, unit_id))
@@ -329,7 +329,7 @@ class Branch:
 
     def updateOrMakeOverride(self, unit_id, override_id, data):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             if self.hasOverrideForUnit(unit_id) or override_id != "-":
@@ -364,7 +364,7 @@ class Branch:
             "unit_order": self.getMenu()[-1]["unit_order"]
         }
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO branch_overrides (branch, overrides, parent_unit, parent_override, title, content, type, unit_order, changed, created) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 1)", (self.id, None, data["parent_unit"], data["parent_override"], data["title"], data["content"], data["type"], data["unit_order"]))
@@ -379,7 +379,7 @@ class Branch:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM branches WHERE id=?", (self.id, ))
@@ -407,7 +407,7 @@ class Branch:
     @classmethod
     def exists(cls, id):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM branches WHERE id=?", (id,))
@@ -422,7 +422,7 @@ class Branch:
     @classmethod
     def getByCourseAndUser(cls, course_id, user_id, limit_to_active=False):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             if limit_to_active:
@@ -440,7 +440,7 @@ class Branch:
     @classmethod
     def new(cls, course_id, user_id):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO branches (author, course_id, pull_request, abandoned, abandoned_date, decision, decision_date, hide_as_spam, delta_factor) VALUES (?, ?, NULL, 0, 0, 0, 0, 0, 0)", (user_id, course_id))
@@ -468,7 +468,7 @@ class PullRequest:
 
     def setDetail(self, d, v):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE pull_requests SET "+d+"=? WHERE id=?", (v, self.id))
@@ -502,7 +502,7 @@ class PullRequest:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM pull_requests WHERE id=?", (self.id, ))
@@ -530,7 +530,7 @@ class PullRequest:
     @classmethod
     def exists(cls, id):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM pull_requests WHERE id=?", (id,))
@@ -545,7 +545,7 @@ class PullRequest:
     @classmethod
     def getByCourse(cls, course_id, limit_to_active_state):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             if limit_to_active_state is True:
                 cur.execute("SELECT id FROM pull_requests WHERE course_id=? AND decision=0", (course_id,))
@@ -564,7 +564,7 @@ class PullRequest:
     @classmethod
     def getByUser(cls, user_id, limit_to_active_state):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             if limit_to_active_state is True:
                 cur.execute("SELECT id FROM pull_requests WHERE author=? AND decision=0", (user_id,))
@@ -583,7 +583,7 @@ class PullRequest:
     @classmethod
     def new(cls, course_id, branch_id, user_id, title, description):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO pull_requests (author, branch_id, course_id, title, description, decision, decision_date, hide_as_spam, proposal_date) VALUES (?, ?, ?, ?, ?, 0, 0, 0, ?)", (user_id, branch_id, course_id, title, description, time.time()))

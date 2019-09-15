@@ -392,11 +392,11 @@ class FlagQueue:
             if con:
                 con.close()
 
-PostClosure = ReviewQueue("forum.db", "closure", 3)
-PostReopen = ReviewQueue("forum.db", "reopen", 3)
-PostDeletion = ReviewQueue("forum.db", "post_deletion", 3)
-AnswerDeletion = ReviewQueue("forum.db", "answer_deletion", 3)
-CustomQueue = FlagQueue("user.db", "custom")
+PostClosure = ReviewQueue("pilearn.db", "closure", 3)
+PostReopen = ReviewQueue("pilearn.db", "reopen", 3)
+PostDeletion = ReviewQueue("pilearn.db", "post_deletion", 3)
+AnswerDeletion = ReviewQueue("pilearn.db", "answer_deletion", 3)
+CustomQueue = FlagQueue("pilearn.db", "custom")
 
 def getReviewItemCount(u):
     return (PostClosure.getOpenCount(u) +

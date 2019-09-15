@@ -18,7 +18,7 @@ class HelpCategory:
 
     def setDetail(self, d, v):
         try:
-            con = lite.connect('databases/helpcenter.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE help_category SET "+d+"=? WHERE id=?", (v, self.id))
@@ -53,7 +53,7 @@ class HelpCategory:
 
     def getHomepage(self):
         try:
-            con = lite.connect('databases/helpcenter.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             DATA = []
@@ -72,7 +72,7 @@ class HelpCategory:
 
     def getFullpage(self):
         try:
-            con = lite.connect('databases/helpcenter.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM help_entry WHERE help_cat=? AND master_page=0 ORDER BY is_pinned DESC", (self.id,))
@@ -86,7 +86,7 @@ class HelpCategory:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/helpcenter.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM help_category WHERE id=?", (self.id, ))
@@ -113,7 +113,7 @@ class HelpCategory:
     @classmethod
     def exists(cls, id):
         try:
-            con = lite.connect('databases/helpcenter.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM help_category WHERE id=?", (id,))
@@ -128,7 +128,7 @@ class HelpCategory:
     @classmethod
     def exists_url(cls, url):
         try:
-            con = lite.connect('databases/helpcenter.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM help_category WHERE url_part=?", (url,))
@@ -143,7 +143,7 @@ class HelpCategory:
     @classmethod
     def from_url(cls, url):
         try:
-            con = lite.connect('databases/helpcenter.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM help_category WHERE url_part=?", (url,))
@@ -158,7 +158,7 @@ class HelpCategory:
     @classmethod
     def getAll(cls):
         try:
-            con = lite.connect('databases/helpcenter.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM help_category")
@@ -182,7 +182,7 @@ class HelpEntry:
 
     def setDetail(self, d, v):
         try:
-            con = lite.connect('databases/helpcenter.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE help_entry SET "+d+"=? WHERE id=?", (v, self.id))
@@ -229,7 +229,7 @@ class HelpEntry:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/helpcenter.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM help_entry WHERE id=?", (self.id, ))
@@ -263,7 +263,7 @@ class HelpEntry:
     @classmethod
     def exists(cls, id):
         try:
-            con = lite.connect('databases/helpcenter.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM help_entry WHERE id=?", (id,))
@@ -278,7 +278,7 @@ class HelpEntry:
     @classmethod
     def from_url(cls, url):
         try:
-            con = lite.connect('databases/helpcenter.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM help_entry WHERE url=?", (url,))
@@ -293,7 +293,7 @@ class HelpEntry:
     @classmethod
     def create_new(cls, cat, parent, title, url, tpl="default"):
         try:
-            con = lite.connect('databases/helpcenter.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO help_entry (master_page, active, template, help_cat, url_part, url, title, original_content, override_content, editable_by_admin, subpage_by_admin, is_deprecated, is_pinned, last_change, last_editor) VALUES (?, 1, ?, ?, ?, ?,?, '', '', 1, 1, 0, 0, 0, 0)", (parent,tpl,cat,url,url,title))
@@ -309,7 +309,7 @@ class HelpEntry:
     @classmethod
     def exists_url(cls, url):
         try:
-            con = lite.connect('databases/helpcenter.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM help_entry WHERE url=?", (url,))

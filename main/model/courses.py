@@ -17,7 +17,7 @@ class Courses:
 
     def setDetail(self, d, v):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE courses SET "+d+"=? WHERE id=?", (v, self.id))
@@ -54,7 +54,7 @@ class Courses:
 
     def getActivePRCount(self):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT Count(*) FROM pull_requests WHERE decision=0 AND course_id=? AND hide_as_spam=0", (self.id,))
@@ -68,7 +68,7 @@ class Courses:
     @classmethod
     def getCourseList(cls):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM courses WHERE state=1 ORDER BY id * RANDOM() DESC")
@@ -86,7 +86,7 @@ class Courses:
     @classmethod
     def getRandomBeloved(cls, uid):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM courses WHERE topicid IN (SELECT topics.id FROM topics, courses, enrollments WHERE courses.topicid=topics.id AND enrollments.courseid=courses.id AND enrollments.userid=? GROUP BY topics.id HAVING Count(*) >= 2) AND state=1 ORDER BY Random() LIMIT 3", (uid,))
@@ -104,7 +104,7 @@ class Courses:
     @classmethod
     def getGlobalBeloved(cls):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM (SELECT courses.id FROM courses, enrollments WHERE  courses.state=1 AND courses.id=enrollments.courseid GROUP BY courses.id HAVING Count(*)>=3 ORDER BY Count(*) DESC LIMIT 10) AS c ORDER BY Random() LIMIT 3")
@@ -122,7 +122,7 @@ class Courses:
     @classmethod
     def queryNum(cls, q, add):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT COUNT(id) FROM courses WHERE " + q, add)
@@ -136,7 +136,7 @@ class Courses:
     @classmethod
     def query(cls, q, add, from_, to):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM courses WHERE " + q + " LIMIT " + str(from_) + ", " + str(to), add)
@@ -154,7 +154,7 @@ class Courses:
     @classmethod
     def getFromUser(cls, u):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM courses WHERE id IN (SELECT courseid FROM enrollments WHERE userid=?)", (u.id,))
@@ -172,7 +172,7 @@ class Courses:
     @classmethod
     def getByUser(cls, u, toponly=False):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             if not toponly:
@@ -198,7 +198,7 @@ class Courses:
 
     def getByLine(self):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM enrollments WHERE courseid=? AND permission > 2 ORDER BY permission DESC, id ASC", (self.id,))
@@ -240,7 +240,7 @@ class Courses:
 
     def enroll(self, u):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO enrollments (courseid, userid, lastunitid, permission) VALUES (?, ?, 0, 1)", (self.id, u.id))
@@ -254,7 +254,7 @@ class Courses:
 
     def unenroll(self, u):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("DELETE FROM enrollments WHERE courseid=? AND userid=?", (self.id, u.id))
@@ -268,7 +268,7 @@ class Courses:
 
     def isEnrolled(self, u):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT courseid FROM enrollments WHERE courseid=? AND userid=? AND permission >= 1", (self.id, u.id))
@@ -281,7 +281,7 @@ class Courses:
 
     def getEnrolledCount(self):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             cur.execute("SELECT COUNT(id) FROM enrollments WHERE courseid=?", (self.id,))
             return cur.fetchone()[0]
@@ -293,7 +293,7 @@ class Courses:
 
     def getLastVisitedUnitId(self, u):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT lastunitid FROM enrollments WHERE courseid=? AND userid=?", (self.id, u.id))
@@ -307,7 +307,7 @@ class Courses:
 
     def setLastVisitedUnitId(self, u, id):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE enrollments SET lastunitid=? WHERE courseid=? AND userid=?", (id, self.id, u.id))
@@ -321,7 +321,7 @@ class Courses:
 
     def getFirstUnit(self, has_always_granted=False):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             if has_always_granted:
@@ -342,7 +342,7 @@ class Courses:
 
     def getCourseRole(self, u):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM enrollments WHERE courseid=? AND userid=?", (self.id, u.id))
@@ -358,7 +358,7 @@ class Courses:
 
     def setCourseRole(self, u, role):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE enrollments SET permission=? WHERE courseid=? AND userid=?", (role, self.id, u.id))
@@ -372,7 +372,7 @@ class Courses:
 
     def getEnrolledByPerm(self, perm):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM enrollments WHERE courseid=? AND permission=?", (self.id, perm))
@@ -386,7 +386,7 @@ class Courses:
 
     def getUnitsByType(self, type):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM units WHERE courseid=? AND type=? AND availible=1", (self.id,type))
@@ -400,7 +400,7 @@ class Courses:
 
     def getMenu(self):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM units WHERE courseid=? AND parent=0 ORDER BY unit_order, id", (self.id, ))
@@ -442,7 +442,7 @@ class Courses:
     # 2) Visited pages/Availible pages for all units
     def getViewRatings(self, user):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             cur.execute("SELECT Count(*) FROM visits WHERE courseid=? AND userid=?", (self.id, user.id))
             visited_pages = cur.fetchone()[0]
@@ -472,7 +472,7 @@ class Courses:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM courses WHERE id=?", (self.id, ))
@@ -499,7 +499,7 @@ class Courses:
     @classmethod
     def exists(cls, id):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM courses WHERE id=?", (id,))
@@ -522,7 +522,7 @@ class Units:
 
     def setDetail(self, d, v):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE units SET "+d+"=? WHERE id=?", (v, self.id))
@@ -558,7 +558,7 @@ class Units:
 
     def hasViewData(self, user):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM visits WHERE courseid=? AND unitid=? AND userid=?", (self.getDetail("courseid"), self.id, user.id))
@@ -572,7 +572,7 @@ class Units:
 
     def getViewData(self, user, as_json=False):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM visits WHERE courseid=? AND unitid=? AND userid=?", (self.getDetail("courseid"), self.id, user.id))
@@ -590,7 +590,7 @@ class Units:
     def addViewData(self, user, data):
         if not self.hasViewData(user):
             try:
-                con = lite.connect('databases/courses.db')
+                con = lite.connect('databases/pilearn.db')
                 con.row_factory = lite.Row
                 cur = con.cursor()
                 cur.execute("INSERT INTO visits (courseid, unitid, userid, data) VALUES (?, ?, ?, ?)", (self.getDetail("courseid"), self.id, user.id, data))
@@ -603,7 +603,7 @@ class Units:
                     con.close()
         else:
             try:
-                con = lite.connect('databases/courses.db')
+                con = lite.connect('databases/pilearn.db')
                 con.row_factory = lite.Row
                 cur = con.cursor()
                 cur.execute("UPDATE visits SET data=? WHERE courseid=? AND unitid=? AND userid=?", (data,self.getDetail("courseid"), self.id, user.id))
@@ -617,7 +617,7 @@ class Units:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM units WHERE id=?", (self.id, ))
@@ -643,7 +643,7 @@ class Units:
     @classmethod
     def exists(cls, id):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM units WHERE id=?", (id,))
@@ -658,7 +658,7 @@ class Units:
     @classmethod
     def new(cls, courseid,empty_set,type,parent):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             try:
@@ -687,7 +687,7 @@ class Topic:
 
     def setDetail(self, d, v):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE topics SET "+d+"=? WHERE id=?", (v, self.id))
@@ -701,7 +701,7 @@ class Topic:
     @classmethod
     def getTopicsList(cls):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM topics")
@@ -719,7 +719,7 @@ class Topic:
     @classmethod
     def getCourseList(cls, topic_name):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM courses WHERE topicid="+str(cls.from_name(topic_name).id))
@@ -751,7 +751,7 @@ class Topic:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM topics WHERE id=?", (self.id,))
@@ -775,7 +775,7 @@ class Topic:
     @classmethod
     def exists(cls, name):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM topics WHERE name=?", (name,))
@@ -790,7 +790,7 @@ class Topic:
     @classmethod
     def from_name(cls, name):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM topics WHERE name=?", (name,))
@@ -807,7 +807,7 @@ class Topic:
     @classmethod
     def getAll(cls):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM topics WHERE giveable=1")
@@ -825,7 +825,7 @@ class Topic:
     @classmethod
     def getTrueAll(cls):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM topics")

@@ -19,7 +19,7 @@ class UserUpload:
 
     def setDetail(self, d, v):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE user_uploads SET "+d+"=? WHERE id=?", (v, self.id))
@@ -33,7 +33,7 @@ class UserUpload:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM user_uploads WHERE id=?", (self.id, ))
@@ -57,7 +57,7 @@ class UserUpload:
     @classmethod
     def new(cls, user, file_path, file_size):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO user_uploads (user_id, file_path, removed_by, upload_at, file_size) VALUES (?, ?, 0, ?, ?)", (user.id, file_path, time.time(), file_size))
@@ -72,7 +72,7 @@ class UserUpload:
     @classmethod
     def exists(cls, id):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT count(*) AS c FROM user_uploads WHERE id=?", (id,))
@@ -86,7 +86,7 @@ class UserUpload:
     @classmethod
     def has_by_user(cls, user):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT count(*) AS c FROM user_uploads WHERE user_id=?", (user.id,))
@@ -100,7 +100,7 @@ class UserUpload:
     @classmethod
     def get_by_user(cls, user):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM user_uploads WHERE user_id=?", (user.id,))

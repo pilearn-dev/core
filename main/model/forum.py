@@ -24,7 +24,7 @@ class Answer:
 
     def addRevision(self, content, user, comment, review=-1):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO answer_revisions (forumID, answerID, articleID, editor, new_content, review_id, comment, type, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, 'edit', ?)", (self.getDetail("forumID"), self.id, self.getDetail("articleID"), user.id, content, review, comment, time.time()))
@@ -39,7 +39,7 @@ class Answer:
 
     def addRevComm(self, tp, user, comment):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO answer_revisions (forumID, answerID, articleID, editor, new_content, review_id, comment, type, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (self.getDetail("forumID"), self.id, self.getDetail("articleID"), user.id, self.getContent(), -1, comment, tp, time.time()))
@@ -57,7 +57,7 @@ class Answer:
 
     def getRevisionCount(self, x=False):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             if x:
@@ -73,7 +73,7 @@ class Answer:
 
     def getRevision(self, id):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             if id == "latest":
@@ -103,7 +103,7 @@ class Answer:
 
     def getRevisionById(self, id):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM answer_revisions WHERE answerID=? AND id=?", (self.id, id))
@@ -128,7 +128,7 @@ class Answer:
 
     def getAllRevisions(self):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM answer_revisions WHERE forumID=? AND articleID=? AND answerID=? ORDER BY id ASC", (self.getDetail("forumID"), self.getDetail("articleID"), self.id))
@@ -171,7 +171,7 @@ class Answer:
 
     def getUserVote(self, u):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT direction FROM score_votes WHERE target_type='answer' AND target_id=? AND user_id=?", (self.id, u.id))
@@ -189,7 +189,7 @@ class Answer:
         v = self.getUserVote(u)
         if v is None:
             try:
-                con = lite.connect('databases/forum.db')
+                con = lite.connect('databases/pilearn.db')
                 con.row_factory = lite.Row
                 cur = con.cursor()
                 cur.execute("INSERT INTO score_votes (user_id, direction, reputation, target_type, target_id, nullified) VALUES (?, ?, ?, 'answer', ?, 0)", (u.id, delta, 3*delta, self.id))
@@ -208,7 +208,7 @@ class Answer:
         else:
             if v == delta:
                 try:
-                    con = lite.connect('databases/forum.db')
+                    con = lite.connect('databases/pilearn.db')
                     con.row_factory = lite.Row
                     cur = con.cursor()
                     cur.execute("DELETE FROM score_votes WHERE user_id=? AND target_id=? AND target_type='answer'", (u.id, self.id))
@@ -226,7 +226,7 @@ class Answer:
                         con.close()
             else:
                 try:
-                    con = lite.connect('databases/forum.db')
+                    con = lite.connect('databases/pilearn.db')
                     con.row_factory = lite.Row
                     cur = con.cursor()
                     cur.execute("UPDATE score_votes SET direction=?, reputation=? WHERE user_id=? AND target_id=? AND target_type='answer'", (delta, 3*delta, u.id, self.id))
@@ -245,7 +245,7 @@ class Answer:
 
     def delvote(self, who, in_review_final=False):
         try:
-          con = lite.connect('databases/forum.db')
+          con = lite.connect('databases/pilearn.db')
           con.row_factory = lite.Row
           cur = con.cursor()
           cur.execute("INSERT INTO deletion_votes (postType, postId, voteOwner, voteCastDate, active) VALUES ('answer', ?, ?, ?, 1)", (self.id, who.id, time.time()))
@@ -281,7 +281,7 @@ class Answer:
 
     def getDelVotes(self):
         try:
-          con = lite.connect('databases/forum.db')
+          con = lite.connect('databases/pilearn.db')
           con.row_factory = lite.Row
           cur = con.cursor()
           cur.execute("SELECT Count(*) FROM deletion_votes WHERE postType='answer' AND postId=? AND active=1", (self.id, ))
@@ -295,7 +295,7 @@ class Answer:
 
     def undelvote(self, who, in_review_final=False):
           try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             qid = None
@@ -333,7 +333,7 @@ class Answer:
 
     def getUndelVotes(self):
         try:
-          con = lite.connect('databases/forum.db')
+          con = lite.connect('databases/pilearn.db')
           con.row_factory = lite.Row
           cur = con.cursor()
           cur.execute("SELECT Count(*) FROM undeletion_votes WHERE postType='answer' AND postId=? AND active=1", (self.id, ))
@@ -347,7 +347,7 @@ class Answer:
 
     def customflag(self, msg, who):
         try:
-          con = lite.connect('databases/user.db')
+          con = lite.connect('databases/pilearn.db')
           con.row_factory = lite.Row
           cur = con.cursor()
           qid = None
@@ -370,7 +370,7 @@ class Answer:
 
     def setDetail(self, d, v):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE answers SET "+d+"=? WHERE id=?", (v, self.id))
@@ -417,7 +417,7 @@ class Answer:
     def getModNotice(self):
         notice = self.getDetail("moderatorNotice")
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM post_notices WHERE id=?", (notice, ))
@@ -454,7 +454,7 @@ class Answer:
             return u"<strong>gelöscht</strong> aufgrund des Votums in einer Moderationsliste"
         elif del_reason == "vote":
             try:
-                con = lite.connect('databases/forum.db')
+                con = lite.connect('databases/pilearn.db')
                 con.row_factory = lite.Row
                 cur = con.cursor()
                 cur.execute("SELECT * FROM deletion_votes WHERE postId=? AND postType='answer' AND active=1 ORDER BY voteCastDate", (self.id, ))
@@ -491,7 +491,7 @@ class Answer:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM answers WHERE id=?", (self.id, ))
@@ -531,7 +531,7 @@ class Answer:
     @classmethod
     def exists(cls, forum_id, id=None):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             if id is not None:
@@ -550,7 +550,7 @@ class Answer:
     @classmethod
     def createNew(cls, forumID, articleID, content, user):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO answers (forumID, articleID, author, score, content, awardRep, awardBy, awardMessage, isAcceptedAnswer, frozen, frozenBy, frozenMessage, deleted, moderatorNotice) VALUES (?, ?, ?, 0, ?, 0, 0, '', 0, 0, 0, '', 0, '')", (forumID, articleID, user.id, content))
@@ -566,7 +566,7 @@ class Answer:
     @classmethod
     def getByUser(cls, user, deleted=False):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             if not deleted:
@@ -645,7 +645,7 @@ class Article:
 
     def addRevision(self, title, content, tags, user, comment, review=-1):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO article_revisions (forumID, articleID, new_title, editor, new_content, new_tags, review_id, comment, type, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'edit', ?)", (self.getDetail("forumID"), self.id, title, user.id, content, tags, review, comment, time.time()))
@@ -659,7 +659,7 @@ class Article:
 
     def addRevComm(self, tp, user, comment):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO article_revisions (forumID, articleID, new_title, editor, new_content, new_tags, review_id, comment, type, timestamp) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (self.getDetail("forumID"), self.id, self.getTitle(), user.id, self.getContent(), ("|".join(["["+i+"]" for i in self.getTags()])), -1, comment, tp, time.time()))
@@ -676,7 +676,7 @@ class Article:
 
     def getRevisionCount(self, x=False):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             if x:
@@ -692,7 +692,7 @@ class Article:
 
     def getRevision(self, id):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             if id == "latest":
@@ -725,7 +725,7 @@ class Article:
 
     def getRevisionById(self, id):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM article_revisions WHERE forumID=? AND articleID=? AND id=?", (self.getDetail("forumID"), self.id, id))
@@ -752,7 +752,7 @@ class Article:
 
     def getAllRevisions(self):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM article_revisions WHERE forumID=? AND articleID=? ORDER BY id ASC", (self.getDetail("forumID"), self.id))
@@ -794,7 +794,7 @@ class Article:
 
     def getUserVote(self, u):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT direction FROM score_votes WHERE target_type='article' AND target_id=? AND user_id=?", (self.id, u.id))
@@ -812,7 +812,7 @@ class Article:
         v = self.getUserVote(u)
         if v is None:
             try:
-                con = lite.connect('databases/forum.db')
+                con = lite.connect('databases/pilearn.db')
                 con.row_factory = lite.Row
                 cur = con.cursor()
                 cur.execute("INSERT INTO score_votes (user_id, direction, reputation, target_type, target_id, nullified) VALUES (?, ?, ?, 'article', ?, 0)", (u.id, delta, 3*delta, self.id))
@@ -831,7 +831,7 @@ class Article:
         else:
             if v == delta:
                 try:
-                    con = lite.connect('databases/forum.db')
+                    con = lite.connect('databases/pilearn.db')
                     con.row_factory = lite.Row
                     cur = con.cursor()
                     cur.execute("DELETE FROM score_votes WHERE user_id=? AND target_id=? AND target_type='article'", (u.id, self.id))
@@ -849,7 +849,7 @@ class Article:
                         con.close()
             else:
                 try:
-                    con = lite.connect('databases/forum.db')
+                    con = lite.connect('databases/pilearn.db')
                     con.row_factory = lite.Row
                     cur = con.cursor()
                     cur.execute("UPDATE score_votes SET direction=?, reputation=? WHERE user_id=? AND target_id=? AND target_type='article'", (delta, 3*delta, u.id, self.id))
@@ -870,7 +870,7 @@ class Article:
 
     def setDetail(self, d, v):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE articles SET "+d+"=? WHERE id=?", (v, self.id))
@@ -906,7 +906,7 @@ class Article:
 
     def getAccepted(self):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM answers WHERE forumID=? AND articleID=? AND isAcceptedAnswer=1", (self.getDetail("forumID"), self.id))
@@ -933,7 +933,7 @@ class Article:
         return self.getDetail("closed")
 
     def getClosureWarning(self, html=False):
-        con = lite.connect('databases/forum.db')
+        con = lite.connect('databases/pilearn.db')
         con.row_factory = lite.Row
         cur = con.cursor()
         cur.execute("SELECT * FROM closure_flags WHERE state=1 AND type='vote' AND item_id=?", (self.id,))
@@ -1044,7 +1044,7 @@ class Article:
     def getModNotice(self):
         notice = self.getDetail("moderatorNotice")
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM post_notices WHERE id=?", (notice, ))
@@ -1094,7 +1094,7 @@ class Article:
 
     def getAnswers(self):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             cur.execute("SELECT id FROM answers WHERE forumID=? AND articleID=? ORDER BY isAcceptedAnswer DESC, deleted ASC, score DESC, RANDOM()", (self.getDetail("forumID"), self.id))
             data = cur.fetchall()
@@ -1107,7 +1107,7 @@ class Article:
 
     def getAnswerCount(self):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT COUNT(id) FROM answers WHERE forumID=? AND articleID=? AND deleted=0", (self.getDetail("forumID"), self.id))
@@ -1138,7 +1138,7 @@ class Article:
             return u"<h3 class=\"m0 f-sans fs-subheading\">automatisch <strong>gelöscht</strong> wegen Inaktivität (DeleteInactiveClosed)</h3>"
         elif del_reason == "vote":
             try:
-                con = lite.connect('databases/forum.db')
+                con = lite.connect('databases/pilearn.db')
                 con.row_factory = lite.Row
                 cur = con.cursor()
                 cur.execute("SELECT * FROM deletion_votes WHERE postId=? AND postType='post' AND active=1 ORDER BY voteCastDate", (self.id, ))
@@ -1175,7 +1175,7 @@ class Article:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM articles WHERE id=?", (self.id, ))
@@ -1227,7 +1227,7 @@ class Article:
 
     def close(self, msg, who, in_review_final=False):
         try:
-          con = lite.connect('databases/forum.db')
+          con = lite.connect('databases/pilearn.db')
           con.row_factory = lite.Row
           cur = con.cursor()
           qid = None
@@ -1290,7 +1290,7 @@ class Article:
 
     def closeflag(self, msg, who):
         try:
-          con = lite.connect('databases/forum.db')
+          con = lite.connect('databases/pilearn.db')
           con.row_factory = lite.Row
           cur = con.cursor()
           qid = None
@@ -1313,7 +1313,7 @@ class Article:
 
     def delvote(self, who, in_review_final=False):
         try:
-          con = lite.connect('databases/forum.db')
+          con = lite.connect('databases/pilearn.db')
           con.row_factory = lite.Row
           cur = con.cursor()
           cur.execute("INSERT INTO deletion_votes (postType, postId, voteOwner, voteCastDate, active) VALUES ('post', ?, ?, ?, 1)", (self.id, who.id, time.time()))
@@ -1348,7 +1348,7 @@ class Article:
 
     def getDelVotes(self):
         try:
-          con = lite.connect('databases/forum.db')
+          con = lite.connect('databases/pilearn.db')
           con.row_factory = lite.Row
           cur = con.cursor()
           cur.execute("SELECT Count(*) FROM deletion_votes WHERE postType='post' AND postId=? AND active=1", (self.id, ))
@@ -1362,7 +1362,7 @@ class Article:
 
     def undelvote(self, who, in_review_final=False):
           try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             qid = None
@@ -1400,7 +1400,7 @@ class Article:
 
     def getUndelVotes(self):
         try:
-          con = lite.connect('databases/forum.db')
+          con = lite.connect('databases/pilearn.db')
           con.row_factory = lite.Row
           cur = con.cursor()
           cur.execute("SELECT Count(*) FROM undeletion_votes WHERE postType='post' AND postId=? AND active=1", (self.id, ))
@@ -1414,7 +1414,7 @@ class Article:
 
     def customflag(self, msg, who):
         try:
-          con = lite.connect('databases/user.db')
+          con = lite.connect('databases/pilearn.db')
           con.row_factory = lite.Row
           cur = con.cursor()
           qid = None
@@ -1437,7 +1437,7 @@ class Article:
 
     def reopen(self, who, in_review_final=False):
           try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             qid = None
@@ -1478,7 +1478,7 @@ class Article:
     @classmethod
     def exists(cls, forum_id, id=None):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             if id is not None:
@@ -1497,7 +1497,7 @@ class Article:
     @classmethod
     def createNew(cls, forumID, title, content, tags, user):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO articles (forumID, title, author, score, content, tags, awardRep, awardBy, awardMessage, awardStarted, awardEnded, hasAcceptedAnswer, pinned, frozen, frozenBy, frozenMessage, frozenAsLock, closed, closureReason, deleted, deletionReason, protected, protectionBy, moderatorNotice) VALUES (?, ?, ?, 0, ?, ?, 0, 0, '', 0, 0, 0, 0, 0, 0, '', 0, 0, '', 0, '', 0, 0, '')", (forumID, title, user.id, content, tags))
@@ -1513,7 +1513,7 @@ class Article:
     @classmethod
     def getAll(cls, deleted=True):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             if not deleted:
@@ -1532,7 +1532,7 @@ class Article:
     @classmethod
     def getByUser(cls, user, deleted=False):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             if not deleted:
@@ -1577,7 +1577,7 @@ class Forum:
 
     def getArticles(self, q=False, sort=False, tagged=None):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
 
@@ -1610,7 +1610,7 @@ class Forum:
 
     def getAnnouncements(self, user, ignore_featured=False):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             cur.execute("SELECT courseid FROM enrollments WHERE userid=?", (user.id, ))
             dl = cur.fetchall()
@@ -1629,7 +1629,7 @@ class Forum:
 
     def getClosureReasons(self, level=None):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
 
@@ -1681,7 +1681,7 @@ class Forum:
         if id == 0:
             return True
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM courses WHERE id=?", (id,))
@@ -1712,7 +1712,7 @@ class ForumComment:
 
     def setDetail(self, d, v):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE forum_comments SET "+d+"=? WHERE id=?", (v, self.id))
@@ -1745,7 +1745,7 @@ class ForumComment:
 
     def hasVote(self, user, type=None, validated_only=True):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             if not type:
                 if validated_only:
@@ -1768,7 +1768,7 @@ class ForumComment:
 
     def addVote(self, user, type, comment=None):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO comment_action (comment_id, user_id, action, comment, validated) VALUES (?, ?, ?, ?, 0)", (self.id, user, type, comment))
@@ -1782,7 +1782,7 @@ class ForumComment:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM forum_comments WHERE id=?", (self.id, ))
@@ -1812,7 +1812,7 @@ class ForumComment:
     @classmethod
     def byPost(cls, post_type, post_id, is_mod):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             if is_mod:
@@ -1831,7 +1831,7 @@ class ForumComment:
     @classmethod
     def createNew(cls, post_type, post_id, post_forum, author, content):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO forum_comments (post_type, post_id, post_forum, comment_score, comment_author, deleted, deletedby, annoyingness, creation_time, content) VALUES (?, ?, ?, 0, ?, 0, 0, 0, ?, ?)", (post_type, post_id, post_forum, author, time.time(), content))
@@ -1847,7 +1847,7 @@ class ForumComment:
     @staticmethod
     def getCommentCounts(post_type, post_id):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             cur.execute("SELECT COUNT(*), SUM(deleted), COUNT(*)-SUM(deleted) FROM forum_comments WHERE post_type=? AND post_id=?", (post_type, post_id))
             data = cur.fetchone()
@@ -1872,7 +1872,7 @@ class ForumAnnouncement:
 
     def setDetail(self, d, v):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE announcements SET "+d+"=? WHERE id=?", (v, self.id))
@@ -1935,7 +1935,7 @@ class ForumAnnouncement:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM announcements WHERE id=?", (self.id, ))
@@ -1963,7 +1963,7 @@ class ForumAnnouncement:
     @classmethod
     def byForum(cls, forum_id, all=False, ignore_featured=False):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             if ignore_featured:
@@ -1989,7 +1989,7 @@ class ForumAnnouncement:
     @classmethod
     def byForumFeatured(cls, forum_id):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM announcements WHERE forum=? AND show_from < ? and show_until > ? AND is_featured_banner=1", (forum_id, time.time(), time.time()))
@@ -2005,7 +2005,7 @@ class ForumAnnouncement:
     @classmethod
     def createNew(cls, forumID, title, link, show_from, show_until, start_date, end_date=None):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO announcements (forum, link, title, show_from, show_until, start_date, end_date) VALUES (?, ?, ?, ?, ?, ?, ?)", (forumID, link, title, show_from, show_until, start_date, end_date))
@@ -2021,7 +2021,7 @@ class ForumAnnouncement:
     @classmethod
     def exists(cls, id):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM announcements WHERE id=?", (id,))

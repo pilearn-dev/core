@@ -6,7 +6,7 @@
 """
 import sqlite3 as lite
 
-con = lite.connect('databases/user.db')
+con = lite.connect('databases/pilearn.db')
 
 def select_query (
         query_in_table,

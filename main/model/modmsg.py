@@ -16,7 +16,7 @@ class UserMsgThread:
 
     def setDetail(self, d, v):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE modmsg_threads SET "+d+"=? WHERE id=?", (v, self.id))
@@ -30,7 +30,7 @@ class UserMsgThread:
 
     def getMessages(self):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM modmsg_messages WHERE thread_id=?", (self.id,))
@@ -52,7 +52,7 @@ class UserMsgThread:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM modmsg_threads WHERE id=?", (self.id,))
@@ -75,7 +75,7 @@ class UserMsgThread:
     @classmethod
     def exists(cls, id):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM modmsg_threads WHERE id=?", (id,))
@@ -91,7 +91,7 @@ class UserMsgThread:
     @classmethod
     def new(cls, from_, to):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO modmsg_threads (initiated_by, last_activity, contacted_user, closed) VALUES (?, ?, ?, 0)", (from_, time.time(), to))
@@ -116,7 +116,7 @@ class UserMsg:
 
     def setDetail(self, d, v):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE modmsg_messages SET "+d+"=? WHERE id=?", (v, self.id))
@@ -154,7 +154,7 @@ class UserMsg:
         if tid == 0:
             return alt
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             cur.execute("SELECT title FROM modmsg_templates WHERE id=?", (tid,))
             data = cur.fetchone()
@@ -169,7 +169,7 @@ class UserMsg:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM modmsg_messages WHERE id=?", (self.id,))
@@ -195,7 +195,7 @@ class UserMsg:
     @classmethod
     def exists(cls, id):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM modmsg_messages WHERE id=?", (id,))
@@ -210,7 +210,7 @@ class UserMsg:
     @classmethod
     def new(cls, thread, submittor, receiver, content, template=0):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO modmsg_messages (thread_id, submitted_by, submission_time, message_receiver, content, suspension_length, template, closed_thread) VALUES (?, ?, ?, ?, ?, 0, ?, 0)", (thread, submittor,time.time(), receiver, content, template))
@@ -226,7 +226,7 @@ class UserMsg:
 
 def getTemplates():
     try:
-        con = lite.connect('databases/user.db')
+        con = lite.connect('databases/pilearn.db')
         cur = con.cursor()
         cur.execute("SELECT * FROM modmsg_templates WHERE may_be_used=1")
         RETURN_DATA = []
@@ -249,7 +249,7 @@ def getTemplates():
 
 def getTemplateById(id):
     try:
-        con = lite.connect('databases/user.db')
+        con = lite.connect('databases/pilearn.db')
         cur = con.cursor()
         cur.execute("SELECT * FROM modmsg_templates WHERE id=?", (id,))
 

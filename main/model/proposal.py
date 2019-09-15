@@ -18,7 +18,7 @@ class Proposal:
 
     def setDetail(self, d, v):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE proposals SET "+d+"=? WHERE id=?", (v, self.id))
@@ -32,7 +32,7 @@ class Proposal:
 
     def hasUserCommitment(self, user):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM commitments WHERE user_id=? AND proposal_id=? AND invalidated=0", (user.id,self.id))
@@ -47,7 +47,7 @@ class Proposal:
     def addUserCommitment(self, user):
         worth = self.getUsersScore(user)
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO commitments (proposal_id, course_id, user_id, worth, fulfilled, creation_time, activation_time, invalidated) VALUES (?, 0, ?, ?, 0, ?, 0, 0)", (self.id,user.id,worth,time.time()))
@@ -63,7 +63,7 @@ class Proposal:
 
     def createCourse(self):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO courses (topicid, title, shortdesc, longdesc, requirements, byline, sponsorid, state) VALUES (?, ?, ?, ?, ?, '', 0, 0)", (self.getDetail("topicid"), self.getDetail("title"), self.getDetail("shortdesc"), self.getDetail("longdesc"), self.getDetail("requirements")))
@@ -121,7 +121,7 @@ class Proposal:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM proposals WHERE id=?", (self.id,))
@@ -160,7 +160,7 @@ class Proposal:
     @classmethod
     def exists(cls, id):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM proposals WHERE id=?", (id,))
@@ -175,7 +175,7 @@ class Proposal:
     @classmethod
     def getAll(cls):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM proposals WHERE deleted=0")
@@ -193,7 +193,7 @@ class Proposal:
     @classmethod
     def byCourse(cls, courseid):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM proposals WHERE courseid=?", (courseid,))
@@ -208,7 +208,7 @@ class Proposal:
     @classmethod
     def byProposer(cls, proposer):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM proposals WHERE proposer=?", (proposer.id,))
@@ -226,7 +226,7 @@ class Proposal:
     @classmethod
     def getFeatured(cls):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM proposals WHERE deleted=0 AND declined=0 AND courseid=0 ORDER BY proposal_time ASC")
@@ -244,7 +244,7 @@ class Proposal:
     @classmethod
     def createNew(cls, topicid, title, shortdesc, longdesc, requirements, proposer):
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO proposals (topicid, title, shortdesc, longdesc, requirements, proposer, score, declined, decline_reason, deleted, delete_reason, courseid, proposal_time) VALUES (?, ?, ?, ?, ?, ?, 0, 0, '', 0, '', 0, ?)", (topicid, title, shortdesc, longdesc, requirements, proposer.id, time.time()))

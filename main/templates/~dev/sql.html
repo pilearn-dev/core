@@ -20,9 +20,9 @@
     <form action="/~dev/sql" method="post">
         <label for="sql_file">SQL-Datei</label>
         <select id="sql_file" name="sql_file">
-            <option{% if last_file == "courses.db" %} selected{% endif %}>courses.db</option>
-            <option{% if last_file == "user.db" %} selected{% endif %}>user.db</option>
-            <option{% if last_file == "forum.db" %} selected{% endif %}>forum.db</option>
+            <option{% if last_file == "pilearn.db" %} selected{% endif %}>pilearn.db</option>
+            <option{% if last_file == "pilearn.db" %} selected{% endif %}>pilearn.db</option>
+            <option{% if last_file == "pilearn.db" %} selected{% endif %}>pilearn.db</option>
         </select>
         <label for="sql_sql">SQL:</label>
         <pre><textarea id="sql_sql" name="sql_sql">{{ last_sql }}</textarea></pre>

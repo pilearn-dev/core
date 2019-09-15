@@ -117,7 +117,7 @@ class User:
             return session["preference:"+key]
 
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT value FROM user_preference_overrides WHERE user_id = ? AND pref_key=?", (self.id,key))
@@ -137,7 +137,7 @@ class User:
     def setPref(self, key, value):
         if self.id == -3: return False
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT value FROM user_preference_overrides WHERE user_id = ? AND pref_key=?", (self.id,key))
@@ -160,7 +160,7 @@ class User:
     def getRepDelta(self):
         if self.id == -3: return
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT SUM(amount) FROM reputation WHERE user_id = ? AND recognized=0", (self.id,))
@@ -177,7 +177,7 @@ class User:
     def hasUnknownBadges(self):
         if self.id == -3: return
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT Count(*) FROM badge_associations WHERE userid = ? AND recognized=0", (self.id,))
@@ -215,7 +215,7 @@ class User:
     def setDetail(self, d, v):
         if self.id == -3: return
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE user SET "+d+"=? WHERE id=?", (v, self.id))
@@ -230,7 +230,7 @@ class User:
     def setReputationChange(self, type, msg, amount):
         if self.id == -3: return
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO reputation (user_id, type, message, amount, recognized, given_date) VALUES (?, ?, ?, ?, 0, strftime('%s','now'))", (self.id, type, msg, amount))
@@ -248,7 +248,7 @@ class User:
     def regetRep(self, forall=False):
         if self.id == -3: return
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             if forall:
@@ -268,7 +268,7 @@ class User:
     def getReputationChanges(self):
         if self.id == -3: return []
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT *, Sum(amount) AS total_amount FROM reputation WHERE user_id=? GROUP BY given_date/3600, message HAVING total_amount!=0 ORDER BY given_date DESC, id DESC", (self.id, ))
@@ -292,7 +292,7 @@ class User:
     def getTopbarAwards(self):
         if self.id == -3: return []
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM (SELECT \"reputation\" AS type, SUM(amount) AS data, given_date, message AS label, Null AS class, recognized FROM reputation WHERE user_id=? GROUP BY given_date/3600, label, recognized HAVING data!=0 UNION ALL SELECT \"badge\" AS type, badge_associations.data AS data, badge_associations.given_date, badges.name AS label, badges.class AS class, badge_associations.recognized AS recognized FROM badges, badge_associations WHERE userid=? AND badge_associations.badgeid=badges.id) ORDER BY given_date DESC LIMIT 50", (self.id, self.id))
@@ -316,7 +316,7 @@ class User:
     def getUnknownReputationChanges(self):
         if self.id == -3: return []
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM reputation WHERE user_id=? AND recognized=0 ORDER BY id DESC", (self.id, ))
@@ -334,7 +334,7 @@ class User:
     def knowReputationChanges(self):
         if self.id == -3: return []
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE reputation SET recognized=1 WHERE user_id=? AND recognized=0", (self.id, ))
@@ -349,7 +349,7 @@ class User:
     def knowNewBadges(self):
         if self.id == -3: return []
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE badge_associations SET recognized=1 WHERE userid=? AND recognized=0", (self.id, ))
@@ -363,7 +363,7 @@ class User:
 
     def customflag(self, msg, who):
         try:
-          con = lite.connect('databases/user.db')
+          con = lite.connect('databases/pilearn.db')
           con.row_factory = lite.Row
           cur = con.cursor()
           qid = None
@@ -386,7 +386,7 @@ class User:
 
     def getAnnotations(self, order="id"):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             reverse = False
@@ -421,7 +421,7 @@ class User:
 
     def isReviewBanned(self, queue):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM reviewbans WHERE user_id=? AND invalidated=0 AND end_date>? AND queue=?", (self.id, time.time(), queue))
@@ -435,7 +435,7 @@ class User:
 
     def getReviewBanEnd(self, queue, asRelative=False):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM reviewbans WHERE user_id=? AND invalidated=0 AND end_date>? AND queue=?", (self.id, time.time(), queue))
@@ -451,7 +451,7 @@ class User:
 
     def imposeReviewBan(self, queue, by, msg):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM reviewbans WHERE user_id=? AND end_date>? AND invalidated=0 AND queue=? ORDER BY end_date DESC", (self.id, time.time() - (90 * 24 * 60 * 60), queue))
@@ -485,7 +485,7 @@ class User:
 
     def invalidateReviewBan(self, queue, by):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE reviewbans SET cancelled_by=?, invalidated=1 WHERE user_id=? AND invalidated=0 AND end_date>? AND queue=?", (by.id, self.id, time.time(), queue))
@@ -500,7 +500,7 @@ class User:
 
     def getReviewBanMessage(self, queue):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM reviewbans WHERE user_id=? AND invalidated=0 AND end_date>? AND queue=?", (self.id, time.time(), queue))
@@ -514,7 +514,7 @@ class User:
 
     def addAnnotation(self, type, msg, user, time):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO annotations (user_id, creator_id, creation_date, is_hidden, content, type) VALUES (?, ?, ?, 0, ?, ?)", (self.id, user.id, time, msg, type))
@@ -535,7 +535,7 @@ class User:
 
     def getBadgeBreakdown(self):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             cur.execute("SELECT Count(*), badges.class FROM badges, badge_associations WHERE badge_associations.badgeid=badges.id AND badge_associations.userid=? GROUP BY badges.class", (self.id, ))
             data = cur.fetchall()
@@ -550,7 +550,7 @@ class User:
 
     def editAnnotation(self, id, d, v):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE annotations SET "+d+"=? WHERE id=?", (v, id))
@@ -566,7 +566,7 @@ class User:
     def getInfo(self):
         if self.isLoggedIn():
             try:
-                con = lite.connect('databases/user.db')
+                con = lite.connect('databases/pilearn.db')
                 con.row_factory = lite.Row
                 cur = con.cursor()
                 cur.execute("SELECT user.*, user_roles.is_mod, user_roles.is_dev, user_roles.is_team FROM user, user_roles WHERE user.id=? AND user.role=user_roles.id", (self.id, ))
@@ -635,7 +635,7 @@ class User:
 
     def getNotifications(self):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM notifications WHERE user_id=?", (self.id, ))
@@ -669,7 +669,7 @@ class User:
 
     def notify(self, type,msg,url):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO notifications (user_id, type, message, link, visible) VALUES (?, ?, ?, ?, 2)", (self.id, type, msg, url))
@@ -684,7 +684,7 @@ class User:
 
     def getNotification(self, id):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM notifications WHERE id=?", (id, ))
@@ -699,7 +699,7 @@ class User:
 
     def hideNotification(self, id):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE notifications SET visible='0' WHERE id=?", (id, ))
@@ -713,7 +713,7 @@ class User:
 
     def hideNotifications(self):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE notifications SET visible='1' WHERE visible='2'")
@@ -730,7 +730,7 @@ class User:
     def getUserReached(self):
         if self.id == -3: return 0
         try:
-            con = lite.connect('databases/courses.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT Count(*) FROM enrollments As enr, courses, enrollments As own WHERE enr.courseid=courses.id AND own.courseid=courses.id AND own.permission=4 AND own.userid=?", (self.id, ))
@@ -744,7 +744,7 @@ class User:
 
     def getForumQuestionCount(self):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT Count(*) FROM articles WHERE deleted=0 AND author=?", (self.id,))
@@ -757,7 +757,7 @@ class User:
 
     def getForumAnswerCount(self):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT Count(*) FROM answers WHERE deleted=0 AND author=?", (self.id,))
@@ -770,7 +770,7 @@ class User:
 
     def getForumVoteCount(self):
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT Count(*) FROM score_votes WHERE nullified=0 AND user_id=?", (self.id,))
@@ -785,7 +785,7 @@ class User:
     def getFlagHelpfulTotal(self):
         COUNT = 0
         try:
-            con = lite.connect('databases/forum.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT Count(*) FROM (SELECT * FROM closure_flags WHERE state=1 AND flagger_id=? UNION SELECT * FROM reopen_flags WHERE state=1 AND flagger_id=? UNION SELECT * FROM post_deletion_flags WHERE state=1 AND flagger_id=? UNION SELECT * FROM post_undeletion_flags WHERE state=1 AND flagger_id=?) As tbl", (self.id,self.id,self.id,self.id))
@@ -797,7 +797,7 @@ class User:
                 con.close()
 
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT Count(*) FROM custom_flag WHERE state=1 AND flagger_id=?", (self.id,))
@@ -813,7 +813,7 @@ class User:
 
     def loginMethod_getAll(self):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id, provider, email FROM login_methods WHERE user_id=?", (self.id,))
@@ -826,7 +826,7 @@ class User:
 
     def loginMethod_get(self, id):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id, provider, email FROM login_methods WHERE user_id=? AND id=?", (self.id,id))
@@ -839,7 +839,7 @@ class User:
 
     def loginMethod_remove(self, id):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("DELETE FROM login_methods WHERE id=? AND user_id=?", (id,self.id))
@@ -853,7 +853,7 @@ class User:
 
     def loginMethod_change(self, id, new_email, new_passtoken):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE login_methods SET email=?, password=? WHERE id=? AND user_id=?", (new_email, new_passtoken, id, self.id))
@@ -867,7 +867,7 @@ class User:
 
     def loginMethod_add(self, type, email, passtoken):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute(u"INSERT INTO login_methods (user_id, provider, email, password) VALUES (?, ?, ?, ?)", (self.id, type, email, passtoken))
@@ -884,7 +884,7 @@ class User:
     @classmethod
     def getRoleTable(cls, role):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM role_table WHERE role=?", (role,))
@@ -952,7 +952,7 @@ class User:
     @classmethod
     def login(cls, email, password):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT user.* FROM user, login_methods WHERE login_methods.email=? AND (login_methods.password=? OR login_methods.password='') AND login_methods.provider='local_account' AND login_methods.user_id = user.id", (email, sha1(password)))
@@ -976,7 +976,7 @@ class User:
     @classmethod
     def oauth_login(cls, provider, email):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT user.* FROM user, login_methods WHERE login_methods.provider=? AND login_methods.email=? AND login_methods.user_id = user.id", ("oauth:"+provider, email))
@@ -1000,7 +1000,7 @@ class User:
     @classmethod
     def register(cls, password, realname, email):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute(u"SELECT * FROM user WHERE email=?", (email,))
@@ -1023,7 +1023,7 @@ class User:
     @classmethod
     def reset_deletion(cls, email, password):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute(u"UPDATE user SET deleted=0 WHERE email=? AND password=?", (email, sha1(password)))
@@ -1041,7 +1041,7 @@ class User:
     @classmethod
     def exists(cls, id):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM user WHERE id=?", (id,))
@@ -1056,7 +1056,7 @@ class User:
     @classmethod
     def passwdreset_new_request(cls, email):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             cur.execute("SELECT id, user_id FROM login_methods WHERE provider='local_account' AND email=?", (email,))
             result = cur.fetchone()
@@ -1075,7 +1075,7 @@ class User:
     @classmethod
     def passwdreset_has_request(cls, id):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             cur.execute("SELECT id FROM password_reset_requests WHERE id=? AND deletion_date IS NULL", (id,))
             return cur.fetchone() is not None
@@ -1088,7 +1088,7 @@ class User:
     @classmethod
     def passwdreset_run_request(cls, id, code, new_pass):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
             cur.execute("SELECT login_method_id, user_id FROM password_reset_requests WHERE id=? AND verification_code=?", (id,code))
             result = cur.fetchone()
@@ -1108,7 +1108,7 @@ class User:
     @classmethod
     def getByRole(cls, role):
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM user WHERE role=? AND banned=1", (role,))
@@ -1147,7 +1147,7 @@ class User:
             sql = "SELECT user.id FROM user WHERE deleted=0 AND mergeto=0 AND user.id>0 AND banned=1 ORDER BY ban_end DESC"
 
         try:
-            con = lite.connect('databases/user.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute(sql)
@@ -1174,7 +1174,7 @@ def getCurrentUser():
 
 def getRoles():
     try:
-        con = lite.connect('databases/user.db')
+        con = lite.connect('databases/pilearn.db')
         cur = con.cursor()
         cur.execute("SELECT id, name, is_mod, is_dev, is_team FROM user_roles ORDER BY id ASC")
         data = cur.fetchall()

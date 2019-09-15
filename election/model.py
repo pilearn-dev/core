@@ -17,7 +17,7 @@ class Vote:
     def setDetail(self, d, v):
         if self.id == -3: return
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE votes SET "+d+"=? WHERE id=?", (v, self.id))
@@ -66,7 +66,7 @@ class Vote:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM votes WHERE id=?", (self.id, ))
@@ -89,7 +89,7 @@ class Vote:
     @classmethod
     def from_user(cls, election_id, user):
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM votes WHERE election_id=? AND voter=?", (election_id, user.id))
@@ -108,7 +108,7 @@ class Vote:
     @classmethod
     def from_election(cls, election_id):
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM votes WHERE election_id=?", (election_id,))
@@ -125,7 +125,7 @@ class Vote:
     @classmethod
     def new(cls, election_id, user):
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO votes (election_id, voter, ballot) VALUES (?, ?, '{\"first\":0,\"second\":0,\"third\":0}')", (election_id, user.id))
@@ -171,7 +171,7 @@ class Question:
     def setDetail(self, d, v):
         if self.id == -3: return
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE questions SET "+d+"=? WHERE id=?", (v, self.id))
@@ -186,7 +186,7 @@ class Question:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM questions WHERE id=?", (self.id, ))
@@ -214,7 +214,7 @@ class Question:
     @classmethod
     def from_nomination(cls, election_id, nomination_id):
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM questions WHERE election_id=? AND nomination_id=?", (election_id, nomination_id))
@@ -234,7 +234,7 @@ class Question:
     @classmethod
     def new(cls, election_id, nomination_id, user, message, is_comm):
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO questions (election_id, nomination_id, is_community, content, answer, state, asked_date, author) VALUES (?, ?, ?, ?, '', 0, ?, ?)", (election_id, nomination_id, is_comm, message, int(time.time()), user.id))
@@ -276,7 +276,7 @@ class Nomination:
     def setDetail(self, d, v):
         if self.id == -3: return
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE nominations SET "+d+"=? WHERE id=?", (v, self.id))
@@ -290,7 +290,7 @@ class Nomination:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM nominations WHERE id=?", (self.id, ))
@@ -315,7 +315,7 @@ class Nomination:
     @classmethod
     def exists(cls, election_id, user):
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM nominations WHERE candidate=? AND election_id=?", (user.id, election_id))
@@ -330,7 +330,7 @@ class Nomination:
     @classmethod
     def from_election(cls, election_id):
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM nominations WHERE election_id=? ORDER BY state DESC", (election_id, ))
@@ -350,7 +350,7 @@ class Nomination:
     @classmethod
     def from_user(cls, election_id, user):
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id FROM nominations WHERE election_id=? AND candidate=?", (election_id, user.id))
@@ -367,7 +367,7 @@ class Nomination:
     @classmethod
     def new(cls, election_id, user, message):
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("INSERT INTO nominations (election_id, message, answer_score, candidate, state) VALUES (?, ?, 0, ?, 0)", (election_id, message, user.id))
@@ -415,7 +415,7 @@ class Election:
     def setDetail(self, d, v):
         if self.id == -3: return
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("UPDATE elections SET "+d+"=? WHERE id=?", (v, self.id))
@@ -430,7 +430,7 @@ class Election:
 
     def tallyVotes(self):
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT ballot, count(*) AS vc FROM votes WHERE election_id=? GROUP BY ballot", (self.id, ))
@@ -487,7 +487,7 @@ class Election:
 
     def getInfo(self):
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM elections WHERE id=?", (self.id, ))
@@ -515,7 +515,7 @@ class Election:
     @classmethod
     def new(cls):
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             STDTEXT = u"""Unser Konzept ist es, dass &pi;-Learn eine Community-kontrollierte Open Learning-Plattform sein soll. Dieses Konzept wird zum ersten durch die Reputation erfüllt, eine Punktzahl, die jedem Benutzer aufgrund der Qualität seiner Inhalte zugewiesen wird. Dieser Reputation entsprechen bestimmte Privilegien, mit denen die Benutzer helfen können, diese Seite zu verwalten.
@@ -536,7 +536,7 @@ Moderatoren verwalten und kontrollieren ("moderieren") die gesamte Webseite π-L
     @classmethod
     def exists(cls, id):
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM elections WHERE id=?", (id,))
@@ -551,7 +551,7 @@ Moderatoren verwalten und kontrollieren ("moderieren") die gesamte Webseite π-L
     @classmethod
     def getAll(cls):
         try:
-            con = lite.connect('databases/election.db')
+            con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT * FROM elections ORDER BY id DESC")

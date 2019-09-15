@@ -36,4 +36,4 @@ class NumericDistribution:
 
     def getArMed(self):
         return sum([(float(i)/len(self.__data)) for i in self.__data])
-ReputationDistribution = NumericDistribution("user.db", "user", "reputation", "deleted=0 AND banned=0")
+ReputationDistribution = NumericDistribution("pilearn.db", "user", "reputation", "deleted=0 AND banned=0")

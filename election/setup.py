@@ -4,7 +4,7 @@ import sys
 con = None
 
 try:
-    con = lite.connect('../databases/election.db')
+    con = lite.connect('../databases/pilearn.db')
     cur = con.cursor()
     cur.execute("CREATE TABLE elections (id INTEGER PRIMARY KEY, title VARCHAR(250), message TEXT, places TINYINT, position VARCHAR(50), state TINYINT, minvoterep INT, mincandrep INT)")
 

@@ -29,7 +29,7 @@ def assign_by_query (
     all_possible_awardees = cur.fetchall()
     con.close()
 
-    con = lite.connect('databases/user.db')
+    con = lite.connect('databases/pilearn.db')
     cur = con.cursor()
 
     cur.execute("SELECT id FROM badges WHERE internal_id=?", (badge_internal_id,))
