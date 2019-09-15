@@ -20,7 +20,7 @@ class Vote:
             con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("UPDATE votes SET "+d+"=? WHERE id=?", (v, self.id))
+            cur.execute("UPDATE election_votes SET "+d+"=? WHERE id=?", (v, self.id))
             con.commit()
             return True
         except lite.Error as e:
@@ -69,7 +69,7 @@ class Vote:
             con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT * FROM votes WHERE id=?", (self.id, ))
+            cur.execute("SELECT * FROM election_votes WHERE id=?", (self.id, ))
             data = cur.fetchone()
             if data is None:
                 return
@@ -92,7 +92,7 @@ class Vote:
             con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT id FROM votes WHERE election_id=? AND voter=?", (election_id, user.id))
+            cur.execute("SELECT id FROM election_votes WHERE election_id=? AND voter=?", (election_id, user.id))
             data = cur.fetchone()
             if data is None:
                 return None
@@ -111,7 +111,7 @@ class Vote:
             con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT id FROM votes WHERE election_id=?", (election_id,))
+            cur.execute("SELECT id FROM election_votes WHERE election_id=?", (election_id,))
             data = cur.fetchall()
             dn = list(map(lambda x:cls(x["id"]),data))
             return dn
@@ -128,7 +128,7 @@ class Vote:
             con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("INSERT INTO votes (election_id, voter, ballot) VALUES (?, ?, '{\"first\":0,\"second\":0,\"third\":0}')", (election_id, user.id))
+            cur.execute("INSERT INTO election_votes (election_id, voter, ballot) VALUES (?, ?, '{\"first\":0,\"second\":0,\"third\":0}')", (election_id, user.id))
             con.commit()
             return cls(cur.lastrowid)
         except lite.Error as e:
@@ -174,7 +174,7 @@ class Question:
             con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("UPDATE questions SET "+d+"=? WHERE id=?", (v, self.id))
+            cur.execute("UPDATE election_questions SET "+d+"=? WHERE id=?", (v, self.id))
             con.commit()
             return True
         except lite.Error as e:
@@ -189,7 +189,7 @@ class Question:
             con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT * FROM questions WHERE id=?", (self.id, ))
+            cur.execute("SELECT * FROM election_questions WHERE id=?", (self.id, ))
             data = cur.fetchone()
             if data is None:
                 return
@@ -217,7 +217,7 @@ class Question:
             con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT * FROM questions WHERE election_id=? AND nomination_id=?", (election_id, nomination_id))
+            cur.execute("SELECT * FROM election_questions WHERE election_id=? AND nomination_id=?", (election_id, nomination_id))
             data = cur.fetchall()
             dd = []
             for d in data:
@@ -237,7 +237,7 @@ class Question:
             con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("INSERT INTO questions (election_id, nomination_id, is_community, content, answer, state, asked_date, author) VALUES (?, ?, ?, ?, '', 0, ?, ?)", (election_id, nomination_id, is_comm, message, int(time.time()), user.id))
+            cur.execute("INSERT INTO election_questions (election_id, nomination_id, is_community, content, answer, state, asked_date, author) VALUES (?, ?, ?, ?, '', 0, ?, ?)", (election_id, nomination_id, is_comm, message, int(time.time()), user.id))
             con.commit()
             return cls(cur.lastrowid)
         except lite.Error as e:
