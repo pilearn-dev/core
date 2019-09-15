@@ -1,55 +1,58 @@
-<h2>Menü</h2>
-<nav class="_nav _nav-v _nav-v-extended">
-  {% for element in course.getMenu() if element.availible %}
-    {% if element.id == data.id %}
-    <a href="/c/{{ course.id }}/u/{{ element.id }}" class="-active">
-    {% else %}
-    <a href="/c/{{ course.id }}/u/{{ element.id }}">
-    {% endif %}
-      <div class="_nav-v-item-icon">
-        {% if element.type == "info" %}
-        <i class="fa fa-book"></i>
-        {% elif element.type == "quiz" %}
-        <i class="fa fa-puzzle-piece"></i>
-        {% elif element.type == "survey" %}
-        <i class="fa fa-star-half-empty"></i>
-        {% elif element.type == "syllabus" %}
-        <i class="fa fa-list"></i>
-        {% elif element.type == "extvideo" %}
-        <i class="fa fa-film"></i>
-        {% elif element.type == "pinboard" %}
-        <i class="fa fa-commenting-o"></i>
-        {% endif %}
-      </div>
-      {{ element.title }}
-    </a>
-  {% if element.children %}
+<button class="_btn _btn-dark hide__lg hide__md mb0 push-right" data-toggle="#course-unit-menu" data-toggle-class="hide__sm" data-toggle-self-class="-active"><i class="fa fa-bars"></i> Menü</button>
+<div id="course-unit-menu" class="hide__sm p3__sm b1s__sm b-dark-ll s2__sm">
+  <h2>Menü</h2>
   <nav class="_nav _nav-v _nav-v-extended">
-    {% for child in element.children if child.availible %}
-      {% if child.id == data.id %}
-      <a href="/c/{{ course.id }}/u/{{ child.id }}" class="-active">
+    {% for element in course.getMenu() if element.availible %}
+      {% if element.id == data.id %}
+      <a href="/c/{{ course.id }}/u/{{ element.id }}" class="-active">
       {% else %}
-      <a href="/c/{{ course.id }}/u/{{ child.id }}">
+      <a href="/c/{{ course.id }}/u/{{ element.id }}">
       {% endif %}
         <div class="_nav-v-item-icon">
-          {% if child.type == "info" %}
+          {% if element.type == "info" %}
           <i class="fa fa-book"></i>
-          {% elif child.type == "quiz" %}
+          {% elif element.type == "quiz" %}
           <i class="fa fa-puzzle-piece"></i>
-          {% elif child.type == "survey" %}
+          {% elif element.type == "survey" %}
           <i class="fa fa-star-half-empty"></i>
-          {% elif child.type == "syllabus" %}
+          {% elif element.type == "syllabus" %}
           <i class="fa fa-list"></i>
-          {% elif child.type == "extvideo" %}
+          {% elif element.type == "extvideo" %}
           <i class="fa fa-film"></i>
-          {% elif child.type == "pinboard" %}
+          {% elif element.type == "pinboard" %}
           <i class="fa fa-commenting-o"></i>
           {% endif %}
         </div>
-        {{ child.title }}
+        {{ element.title }}
       </a>
+    {% if element.children %}
+    <nav class="_nav _nav-v _nav-v-extended">
+      {% for child in element.children if child.availible %}
+        {% if child.id == data.id %}
+        <a href="/c/{{ course.id }}/u/{{ child.id }}" class="-active">
+        {% else %}
+        <a href="/c/{{ course.id }}/u/{{ child.id }}">
+        {% endif %}
+          <div class="_nav-v-item-icon">
+            {% if child.type == "info" %}
+            <i class="fa fa-book"></i>
+            {% elif child.type == "quiz" %}
+            <i class="fa fa-puzzle-piece"></i>
+            {% elif child.type == "survey" %}
+            <i class="fa fa-star-half-empty"></i>
+            {% elif child.type == "syllabus" %}
+            <i class="fa fa-list"></i>
+            {% elif child.type == "extvideo" %}
+            <i class="fa fa-film"></i>
+            {% elif child.type == "pinboard" %}
+            <i class="fa fa-commenting-o"></i>
+            {% endif %}
+          </div>
+          {{ child.title }}
+        </a>
+      {% endfor %}
+    </nav>
+    {% endif %}
     {% endfor %}
   </nav>
-  {% endif %}
-  {% endfor %}
-</nav>
+</div>
