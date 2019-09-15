@@ -5,6 +5,7 @@
 
   <div class="_nav _nav-t _nav-small _nav-right mb5">
     <a href="?tab=reputation" class="{{ '-active' if request.values.get("tab", "reputation") == "reputation" }}">Höchste Reputation</a>
+    <a href="?tab=courses" class="{{ '-active' if request.values.get("tab", "reputation") == "courses" }}">Meisten Kurse</a>
     <a href="?tab=new" class="{{ '-active' if request.values.get("tab", "reputation") == "new" }}">Neuste Benutzer</a>
     <a href="?tab=moderators" class="{{ '-active' if request.values.get("tab", "reputation") == "moderators" }}">Moderatoren</a>
     {% if user.isMod() %}

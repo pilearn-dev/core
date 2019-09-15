@@ -1125,8 +1125,8 @@ class User:
     @classmethod
     def fetchOverviewList(cls, filter, page=1, size=10, is_mod=False):
 
-        if filter not in ["reputation", "new", "moderators"]:
-            if not ( is_mod and filter in ["mod.suspended"]):
+        if filter not in ["reputation", "new", "moderators", "courses"]:
+            if not (is_mod and filter in ["mod.suspended"]):
                 filter = "reputation"
 
         size = int(str(size))
@@ -1141,6 +1141,8 @@ class User:
             sql = "SELECT user.id FROM user WHERE deleted=0 AND mergeto=0 AND id>0 ORDER BY reputation DESC LIMIT %i,%i" %(limit,size)
         elif filter == "new":
             sql = "SELECT user.id FROM user WHERE deleted=0 AND mergeto=0 AND id>0 ORDER BY id DESC LIMIT %i,%i" %(limit,size)
+        elif filter == "courses":
+            sql = "SELECT user.id FROM user, enrollments WHERE user.deleted=0 AND user.mergeto=0 AND user.id>0 AND enrollments.userid=user.id AND enrollments.permission >= 3 GROUP BY user.id ORDER BY Count(user.id) DESC, user.id DESC LIMIT %i,%i" %(limit,size)
         elif filter == "moderators":
             sql = "SELECT user.id FROM user, user_roles WHERE deleted=0 AND mergeto=0 AND user.id>0 AND user.role = user_roles.id AND user_roles.is_mod=1 AND user_roles.is_team=0 ORDER BY user.id DESC"
         elif filter == "mod.suspended":
