@@ -7,27 +7,7 @@
 <div class="grid -equal-columns">
   <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
     <div class="p3">
-      <h2>Menü</h2>
-      <nav class="_nav _nav-v">
-        {% for element in course.getMenu() if element.availible %}
-        {% if element.id == data.id %}
-        <a href="/c/{{ course.id }}/u/{{ element.id }}" class="-active">{{ element.title }}</a>
-        {% else %}
-        <a href="/c/{{ course.id }}/u/{{ element.id }}">{{ element.title }}</a>
-        {% endif %}
-        {% if element.children %}
-        <nav class="_nav _nav-v">
-          {% for child in element.children if child.availible %}
-           {% if child.id == data.id %}
-           <a href="/c/{{ course.id }}/u/{{ child.id }}" class="-active">{{ child.title }}</a>
-           {% else %}
-           <a href="/c/{{ course.id }}/u/{{ child.id }}">{{ child.title }}</a>
-           {% endif %}
-          {% endfor %}
-        </nav>
-        {% endif %}
-        {% endfor %}
-      </nav>
+      {% include "courses/_unit-nav.html" %}
     </div>
    </div>
    <div class="column9__lg column12 bs2-light">
