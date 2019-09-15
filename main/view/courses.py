@@ -545,7 +545,7 @@ def apply(app):
     app.route("/c/<int:id>/admin", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/admin", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/admin/<page>", methods=["GET", "POST"])(course_admin)))
     app.route("/c/<int:id>/enroll")(app.route("/course/<int:id>/<label>/enroll")(course_enroll))
     app.route("/c/<int:id>/start")(app.route("/course/<int:id>/<label>/start")(course_start))
-    app.route("/c/<int:course_id>/<int:unit_id>", methods=["GET", "POST"])(app.route("/c/<int:course_id>/u/<int:unit_id>", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/unit/<int:unit_id>/<unit_label>/show", methods=["GET", "POST"])(unit_show)))
+    app.route("/c/<int:course_id>/<int:unit_id>", methods=["GET", "POST"])(app.route("/c/<int:course_id>/u/<int:unit_id>", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/unit/<int:unit_id>/<unit_label>/show", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/unit/<int:unit_id>/<unit_label>", methods=["GET", "POST"])(unit_show))))
     app.route("/c/<int:id>/edit", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/edit", methods=["GET", "POST"])(course_edit_overview))
     app.route("/c/<int:course_id>/edit/unit/<int:unit_id>", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/edit/unit/<int:unit_id>/<unit_label>", methods=["GET", "POST"])(unit_edit))
     app.route("/c/<int:course_id>/u/<int:unit_id>/submit", methods=["POST"])(app.route("/course/<int:course_id>/<course_label>/unit/<int:unit_id>/<unit_label>/submit", methods=["POST"])(unit_submit))
