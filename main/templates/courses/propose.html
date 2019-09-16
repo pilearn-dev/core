@@ -10,12 +10,64 @@
 </div>
 <h1>Kurse vorschlagen</h1>
 {% if user.may("course_propose") %}
-<div class="_card">
-  <div class="_card-title _card-subtitle">
-      1. Informationen
-  </div>
-  <div class="_card-content js--slide1">
-       <p class="p-lead">Du möchtest einen Kurs anbieten?</p>
+<div class="p3">
+  <div class="p1 js--slide1">
+
+      <div class="_progress-stepped">
+        <div class="_progress-step -active">
+            <div class="_progress-step-symbolic">
+                <div class="_progress-step-symbolic.left"></div>
+                <div class="_progress-step-symbolic.center"></div>
+                <div class="_progress-step-symbolic.right"></div>
+            </div>
+            <div class="_progress-step-description">
+                <div class="fs-base3 f-bold">Informationen</div>
+            </div>
+        </div>
+        <div class="_progress-step">
+            <div class="_progress-step-symbolic">
+                <div class="_progress-step-symbolic.left"></div>
+                <div class="_progress-step-symbolic.center"></div>
+                <div class="_progress-step-symbolic.right"></div>
+            </div>
+            <div class="_progress-step-description">
+                <div class="fs-base3 f-bold">Allgemeine Daten</div>
+            </div>
+        </div>
+        <div class="_progress-step">
+            <div class="_progress-step-symbolic">
+                <div class="_progress-step-symbolic.left"></div>
+                <div class="_progress-step-symbolic.center"></div>
+                <div class="_progress-step-symbolic.right"></div>
+            </div>
+            <div class="_progress-step-description">
+                <div class="fs-base3 f-bold">Kursbeschreibung</div>
+            </div>
+        </div>
+        <div class="_progress-step">
+            <div class="_progress-step-symbolic">
+                <div class="_progress-step-symbolic.left"></div>
+                <div class="_progress-step-symbolic.center"></div>
+                <div class="_progress-step-symbolic.right"></div>
+            </div>
+            <div class="_progress-step-description">
+                <div class="fs-base3 f-bold">Materialien</div>
+            </div>
+        </div>
+        <div class="_progress-step">
+            <div class="_progress-step-symbolic">
+                <div class="_progress-step-symbolic.left"></div>
+                <div class="_progress-step-symbolic.center"></div>
+                <div class="_progress-step-symbolic.right"></div>
+            </div>
+            <div class="_progress-step-description">
+                <div class="fs-base3 f-bold">Absenden</div>
+            </div>
+        </div>
+      </div>
+
+      <div class="p5 bg-dark-llll">
+        <p class="p-lead">Du möchtest einen Kurs anbieten?</p>
 
       <p>Dann bist du hier genau richtig! Noch vier kleine Schritte und dann kann es mit deinem Kurs losgehen.</p>
 
@@ -27,17 +79,71 @@
         <li><strong>Beachte unsere <a href="/help/faq/course-hints" target="_blank">Hinweise zum Umfang und Inhalt eines &pi;-Learn-Kurses.</a></strong></li>
         <li><strong>Vermeide Fehler.</strong> Die Kursinformationen sollten (größtenteils) fehlerfrei sein. Überprüfe sie noch einmal vor dem Abschicken.</li>
       </ul>
-  </div>
-  <div class="_card-content js--slide1">
+    </div>
+    
       <div class="push-right">
           <button class="_btn _btn--primary _btn-lg" onclick="$('.js--slide1').addClass('hide');$('.js--slide2').removeClass('hide');">Weiter &raquo;</button>
       </div>
       <div class="push-reset"></div>
   </div>
-  <div class="_card-title _card-subtitle">
-      2. Allgemeine Daten
-  </div>
-  <div class="_card-content js--slide2 hide">
+
+
+
+  <div class="p1 js--slide2 hide">
+
+    <div class="_progress-stepped">
+      <div class="_progress-step -complete">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Informationen</div>
+          </div>
+      </div>
+      <div class="_progress-step -active">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Allgemeine Daten</div>
+          </div>
+      </div>
+      <div class="_progress-step">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Kursbeschreibung</div>
+          </div>
+      </div>
+      <div class="_progress-step">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Materialien</div>
+          </div>
+      </div>
+      <div class="_progress-step">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Absenden</div>
+          </div>
+      </div>
+    </div>
+
     <label class="form" for="title">Kurstitel</label>
     <input class="form" id="title">
     <label class="form" for="shortdesc">Kurzbeschreibung (Elevator pitch)</label>
@@ -48,58 +154,213 @@
     <label class="form" for="topic-{{ t.getName() }}"><input class="form-radio" type="radio" value="{{ t.id }}" name="topic" id="topic-{{ t.getName() }}"> <a class="_badge _badge-unit" href="/t/{{ t.getName() }}">{{ t.getTitle() }}</a> &ndash; {{ t.getExcerpt() }}</label>
     {% endfor %}
     </div>
-  </div>
-  <div class="_card-content js--slide2 hide">
+
       <div class="push-right">
           <button class="_btn _btn--primary _btn-lg _btn-outline" onclick="$('.js--slide2').addClass('hide');$('.js--slide1').removeClass('hide');">&laquo; Zurück</button>
           <button class="_btn _btn--primary _btn-lg" onclick="$('.js--slide2').addClass('hide');$('.js--slide3').removeClass('hide');">Weiter &raquo;</button>
       </div>
       <div class="push-reset"></div>
   </div>
-  <div class="_card-title _card-subtitle">
-      3. Detailbeschreibung
-  </div>
-  <div class="_card-content js--slide3 hide">
+
+
+
+  <div class="p1 js--slide3 hide">
+
+    <div class="_progress-stepped">
+      <div class="_progress-step -complete">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Informationen</div>
+          </div>
+      </div>
+      <div class="_progress-step -complete">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Allgemeine Daten</div>
+          </div>
+      </div>
+      <div class="_progress-step -active">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Kursbeschreibung</div>
+          </div>
+      </div>
+      <div class="_progress-step">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Materialien</div>
+          </div>
+      </div>
+      <div class="_progress-step">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Absenden</div>
+          </div>
+      </div>
+    </div>
+
     <label class="form" for="longdesc">Detailbeschreibung</label>
     <div class="js--editor js--editor:preview">
       <textarea class="form form-large js--editor-textarea" id="longdesc"></textarea>
       <div class="p2 js--editor-preview hr-original"></div>
     </div>
-  </div>
-  <div class="_card-content js--slide3 hide">
       <div class="push-right">
           <button class="_btn _btn--primary _btn-lg _btn-outline" onclick="$('.js--slide3').addClass('hide');$('.js--slide2').removeClass('hide');">&laquo; Zurück</button>
           <button class="_btn _btn--primary _btn-lg" onclick="$('.js--slide3').addClass('hide');$('.js--slide4').removeClass('hide');">Weiter &raquo;</button>
       </div>
       <div class="push-reset"></div>
   </div>
-  <div class="_card-title _card-subtitle">
-      4. Erforderliche Materialien
-  </div>
-  <div class="_card-content js--slide4 hide">
+
+
+
+  <div class="p1 js--slide4 hide">
+
+    <div class="_progress-stepped">
+      <div class="_progress-step -complete">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Informationen</div>
+          </div>
+      </div>
+      <div class="_progress-step -complete">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Allgemeine Daten</div>
+          </div>
+      </div>
+      <div class="_progress-step -complete">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Kursbeschreibung</div>
+          </div>
+      </div>
+      <div class="_progress-step -active">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Materialien</div>
+          </div>
+      </div>
+      <div class="_progress-step">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Absenden</div>
+          </div>
+      </div>
+    </div>
+
     <label class="form" for="requirements_form">Voraussetzungen</label>
     <div class="js--editor js--editor:preview">
       <textarea class="form form-large js--editor-textarea" id="requirements_form"></textarea>
       <div class="p2 js--editor-preview hr-original"></div>
     </div>
-  </div>
-  <div class="_card-content js--slide4 hide">
       <div class="push-right">
           <button class="_btn _btn--primary _btn-lg _btn-outline" onclick="$('.js--slide4').addClass('hide');$('.js--slide3').removeClass('hide');">&laquo; Zurück</button>
           <button class="_btn _btn--primary _btn-lg" onclick="$('.js--slide4').addClass('hide');$('.js--slide5').removeClass('hide');">Weiter &raquo;</button>
       </div>
       <div class="push-reset"></div>
   </div>
-  <div class="_card-title _card-subtitle">
-      5. Kursvorschlag absenden
-  </div>
-  <div class="_card-content js--slide5 hide">
+
+
+
+  <div class="p1 js--slide5 hide">
+
+    <div class="_progress-stepped">
+      <div class="_progress-step -complete">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Informationen</div>
+          </div>
+      </div>
+      <div class="_progress-step -complete">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Allgemeine Daten</div>
+          </div>
+      </div>
+      <div class="_progress-step -complete">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Kursbeschreibung</div>
+          </div>
+      </div>
+      <div class="_progress-step -complete">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Materialien</div>
+          </div>
+      </div>
+      <div class="_progress-step -active">
+          <div class="_progress-step-symbolic">
+              <div class="_progress-step-symbolic.left"></div>
+              <div class="_progress-step-symbolic.center"></div>
+              <div class="_progress-step-symbolic.right"></div>
+          </div>
+          <div class="_progress-step-description">
+              <div class="fs-base3 f-bold">Absenden</div>
+          </div>
+      </div>
+    </div>
+
     <p class="p-lead">Du bist jetzt bereit, den Kursvorschlag abzusenden!</p>
     <p>Als nächstes überprüfen wir, ob es sich überhaupt lohnt, so einen Kurs anzubieten. Da es schade für deinen Aufwand wäre, versuchen wir sicherzustellen, dass wenigstens ein paar Benutzer an deinem Kurs teilnehmen.</p>
     <p>Dafür wird dieser Vorschlag auf der Startseite angezeigt, mit der Bitte, dass Benutzer, die an diesem Kurs teilnehmen würden, dies durch einen Knopfdruck versprechen.</p>
     <p>Wenn innerhalb eines Monats genug Teilnehmer dies versprechen, wirst du informiert, dass du jetzt den Kurs bearbeiten kannst</p>
-  </div>
-  <div class="_card-content js--slide5 hide">
       <div class="push-right">
           <button class="_btn _btn--primary _btn-lg _btn-outline" onclick="$('.js--slide5').addClass('hide');$('.js--slide4').removeClass('hide');">&laquo; Zurück</button>
           <button class="_btn _btn--primary _btn-lg" onclick="propose();" id="submit-btn">Kursvorschlag absenden</button>
