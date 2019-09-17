@@ -7,7 +7,8 @@ CREATE TABLE courses (
     requirements text,
     byline varchar,
     sponsorid integer,
-    state integer
+    state integer,
+    picture_url VARCHAR(60)
 )
 
 ;CREATE TABLE enrollments (
