@@ -7,6 +7,7 @@
   <div class="column3 column12__sm p2">
     <div class="_nav _nav-v">
       <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/admin/identity">Identität</a>
+      <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/admin/picture">Bild</a>
       <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/admin/announcements" class="-active">Ankündigungen</a>
       <a href="/course/{{ forum.id }}/{{ forum.getLabel() }}/admin/membership">Benutzer</a>
       {% if forum.getCourse().getDetail("state") == 0 %}

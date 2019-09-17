@@ -1,6 +1,6 @@
 # coding: utf-8
 import os, json, re
-import secrets
+import secrets, random
 import sqlite3 as lite
 from flask import request, session, url_for
 from sha1 import sha1
@@ -32,9 +32,19 @@ class Courses:
     def getHash(self):
         return sha1("[id:" + str(self.id) + ",name:" + self.getTitle()+"]")[:15]
 
-    def getPattern(self):
+    def getPattern(self, use_large=False):
         course_hash = self.getHash()
-        pattern = "background: linear-gradient("
+        pattern = "background-image: "
+
+        picture_url = self.getDetail("picture_url")
+        if picture_url:
+            pattern = pattern[:-1]
+            if use_large:
+                pattern += "url(" + request.url_root + "static/CourseStockImages/" + picture_url + "?novalidate=" + str(random.randint(0,10000)) + "), "
+            else:
+                pattern += "url(" + request.url_root + "static/CourseStockImages_small/" + picture_url + "?novalidate=" + str(random.randint(0,10000)) + "), "
+
+        pattern +="linear-gradient("
 
         is_letter=(lambda x: x.lower() in "abcdefghijklmnopqrstuvxyz")
         get_direction=(lambda x: sum(map(ord, x)) % 360)
@@ -44,7 +54,7 @@ class Courses:
         else:
             pattern += str(get_direction(course_hash[-4:])) + "deg, #" + course_hash[1:7] + ", #" +  course_hash[8:14]
 
-        pattern += ");"
+        pattern += "); background-size: 100% auto;"
 
         return pattern
 
@@ -478,7 +488,7 @@ class Courses:
             cur.execute("SELECT * FROM courses WHERE id=?", (self.id, ))
             data = cur.fetchone()
             if data is None:
-                raise ValueError("Answer not found with id " + str(self.id))
+                raise ValueError("Course not found with id " + str(self.id))
             return {
                 "id": data['id'],
                 "topicid": data['topicid'],
@@ -488,7 +498,8 @@ class Courses:
                 "requirements": data['requirements'],
                 "byline": data['byline'],
                 "sponsorid": data['sponsorid'],
-                "state": data['state']
+                "state": data['state'],
+                "picture_url": data["picture_url"] or ""
             }
         except lite.Error as e:
             #raise lite.Error from e

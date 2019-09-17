@@ -8,6 +8,7 @@
   <div class="column3 column12__sm p2">
     <div class="_nav _nav-v">
       <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/identity" class="-active">Identität</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/picture">Bild</a>
       <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/announcements">Ankündigungen</a>
       <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/membership">Benutzer</a>
       {% if course.getDetail("state") == 0 %}

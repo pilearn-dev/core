@@ -1,0 +1,95 @@
+{% extends "layout_new.html" %}
+{% block body %}
+<script src="/static/new_js/pilearn.markdown.js"></script>
+<script src="/static/new_js/pilearn.editor.js"></script>
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "admin", user) }}
+<div class="grid">
+  <div class="column3 column12__sm p2">
+    <div class="_nav _nav-v">
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/identity">Identität</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/picture" class="-active">Bild</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/announcements">Ankündigungen</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/membership">Benutzer</a>
+      {% if course.getDetail("state") == 0 %}
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/publish">Veröffentlichen</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="column9 column12__sm p3">
+    <h1>Bild des Kurses</h1>
+
+    <div style="height: 350px; width: 600px;" id="patterny">&nbsp;</div>
+    {% set value = course.getDetail("picture_url") %}
+
+
+    <h2>Neues Bild setzen</h2>
+
+    <div class="_toollist">
+      <label class="_toollist-item" for="image-0-0">
+        <input type="radio" class="form-radio" id="image-0-0" value="" name="image" {{ 'checked' if value=="" }}>
+        <div class="_toollist-data">
+          <em>Kein Bild (automatisch generierter Farbverlauf)</em>
+        </div>
+      </label>
+
+      {% for directory in files %}
+      <h4>&rarr; <a href="#!" class="anchor-dark" data-toggle="#image-directory-{{ loop.index }}" data-toggle-class="hide">{{ directory[0] }}</a></h4>
+      {% set index = loop.index %}
+
+      <div class="hide" id="image-directory-{{ loop.index }}">
+
+      {% for file in directory[1] %}
+
+      <label class="_toollist-item" for="image-{{ index }}-{{ loop.index }}">
+        <input type="radio" class="form-radio" id="image-{{ index }}-{{ loop.index }}" value="{{ directory[0] + "/" + file }}" name="image" {{ 'checked' if directory[0] + "/" + value==file }}>
+        <div class="_toollist-data">
+          {{ file[:-4].replace("_", " ") }}
+        </div>
+      </label>
+
+      {% endfor %}
+
+      </div>
+
+      {% endfor %}
+    </div>
+
+    <button class="_btn _btn--primary _btn-lg" id="submit_btn">Kurs aktualisieren</button>
+
+    <div class="_warnbox p-s _warnbox-danger hide" id="save_errors"></div>
+    <div class="fs-caption p1 col-dark-dd">Die Bilder sind <strong>gemeinfreie</strong> von <a href="http://skuawk.com/">skuawk.com</a>.</div>
+  </div>
+</div>
+<script>
+  PiJS.editor.init();
+
+  $("#submit_btn").on("click", function() {
+    $("#save_success, #save_errors").addClass("hide");
+    $(this).attr("disabled", true);
+    $.ajax({
+      method: "POST",
+      url: "/course/{{ course.id }}/{{ course.getLabel() }}/admin/picture",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        picture_url: $("[name='image']:checked").val() || ""
+      }),
+      success: function(r) {
+        window.location.reload();
+      },
+      error: function() {
+        $("#submit_btn").attr("disabled", true);
+        wb = $("#save_errors");
+        wb.text("Die Verbindung zum Server konnte nicht hergestellt werden.")
+        wb.removeClass("hide");
+      }
+    })
+  })
+</script>
+<style media="screen">
+  #patterny {
+    box-shadow: 0 0 5px 5px rgba(255,255,255,0.3) inset;
+    {{ course.getPattern()|safe }}
+  }
+</style>
+{% endblock %}

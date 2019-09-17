@@ -2,7 +2,7 @@
 from flask import render_template, redirect, abort, url_for, request, jsonify, make_response
 from model import privileges as mprivileges, courses as mcourses, user as muser, survey as msurvey, proposal as mproposal, forum as mforum
 from controller import query as cquery, times as ctimes
-import json, time, os
+import json, time, os, re
 
 import pdfkit
 
@@ -146,6 +146,23 @@ def course_admin(id,label=None, page="identity"):
 
         else:
             return render_template('courses/admin/identity.html', title=course.getTitle(), thispage="courses", course=course)
+    elif page == "picture":
+        if request.method == "POST":
+
+            data = request.json
+
+            url = data["picture_url"].strip()
+            if url != "":
+                if not re.match("^[a-zA-Z]+\/[a-zA-Z_0-9+]+\.jpg$", url):
+                    url = ""
+
+            course.setDetail("picture_url", url)
+
+            return "true"
+        else:
+            directories = os.listdir(os.path.join(os.getcwd(),"main/static/CourseStockImages"))
+            files = [(i, os.listdir(os.path.join(os.getcwd(),"main/static/CourseStockImages",i))) for i in directories]
+            return render_template('courses/admin/picture.html', title=course.getTitle(), thispage="courses", course=course, files=files)
     elif page == "announcements":
         return render_template("announcements/list.html", title=course.getTitle(), forum=mforum.Forum(course.id), announcements=mforum.ForumAnnouncement.byForum(course.id, True), thispage="courses")
     elif page == "publish":
