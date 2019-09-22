@@ -101,7 +101,7 @@ def prepare_request():
                 if S.get("access-allow-password") != "1" or S.get("access-allow-password-value") != request.values.get("beta_key"):
                     abort(503)
 
-            resp = redirect(url_for("index"))
+            resp = redirect(request.path)
             resp.set_cookie("pi-beta-auth-token", token)
             return resp
 
