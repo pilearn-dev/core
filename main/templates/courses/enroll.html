@@ -1,0 +1,14 @@
+{% extends "layout_new.html" %}
+{% block body %}
+{% from "_course-header.html" import course_header %}
+{{ course_header(course, "admin", user) }}
+<div class="single-fluid-tiny my6 s3 container">
+  <h1>Benutzer einschreiben</h1>
+  <form action="" method="post">
+    <input type="number" class="form my3" name="id" placeholder="Benutzer-ID">
+    <label class="form my3" for="add_another"><input type="checkbox" class="form-checkbox" name="add_another" id="add_another"> Danach weitere einschreiben</label>
+    <button class="_btn _btn--primary" type="submit">Einschreiben</button>
+    <a href="{{ url_for("course_admin", id=course.id, label=course.getLabel(), page="membership") }}" class="_btn _btn-on-light">Abbrechen</a>
+  </form>
+</div>
+{% endblock %}

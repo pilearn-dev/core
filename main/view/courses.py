@@ -223,17 +223,31 @@ def course_enroll(id,label=None):
     if course.getLabel() != label:
         return redirect(url_for("course_enroll", id=id, label=course.getLabel()))
     cuser = muser.getCurrentUser()
-    if not course.isEnrolled(cuser):
-        course.enroll(cuser)
-        enrolled_count = course.getEnrolledCount()
-        if enrolled_count < 50:
+    if course.getCourseRole(cuser) == 4 or (cuser.isDev() and (course.isEnrolled(cuser) or course.getDetail("manual_enrollment"))):
+        if request.method == "POST":
+            user = muser.User.safe(request.form["id"])
+            if not user:
+                abort(400)
+            course.enroll(user)
+            if request.form.has_key("add_another"):
+                return redirect(url_for("course_enroll", id=id, label=label))
+            else:
+                return redirect(url_for("course_admin", id=id, label=label, page="membership"))
+        return render_template("courses/enroll.html", title="Benutzer einschreiben: " + course.getTitle(), thispage="courses", course=course)
+    elif not course.getDetail("manual_enrollment"):
+        if not course.isEnrolled(cuser):
+            course.enroll(cuser)
+            enrolled_count = course.getEnrolledCount()
             earners = course.getEnrolledByPerm(4) + course.getEnrolledByPerm(3)
-            for e in earners:
-                e.setDetail("reputation", 1+e.getInfo()["reputation"])
-                e.setReputationChange("enroll", "Kurs: ["+course.getTitle()+"](/c/"+str(course.id)+")", 1)
-    if course.getDetail("state") != 0:
-        return redirect(url_for("course_start", label=course.getLabel(), id=course.id))
-    return redirect(url_for("course_info", label=course.getLabel(), id=course.id))
+            if enrolled_count - len(earners) < 50:
+                for e in earners:
+                    e.setDetail("reputation", 1+e.getInfo()["reputation"])
+                    e.setReputationChange("enroll", "Kurs: ["+course.getTitle()+"](/c/"+str(course.id)+")", 1)
+        if course.getDetail("state") != 0:
+            return redirect(url_for("course_start", label=course.getLabel(), id=course.id))
+        return redirect(url_for("course_info", label=course.getLabel(), id=course.id))
+    else:
+        abort(403)
 
 def course_start(id,label=None):
     if not mcourses.Courses.exists(id):
@@ -560,7 +574,7 @@ def apply(app):
     app.route("/c/<int:id>")(app.route("/c/<int:id>/info")(app.route("/course/<int:id>/<label>/details")(app.route("/course/<int:id>/<label>")(course_info))))
     app.route("/c/<int:id>/proposal")(app.route("/course/<int:id>/<label>/proposal")(course_related_proposal))
     app.route("/c/<int:id>/admin", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/admin", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/admin/<page>", methods=["GET", "POST"])(course_admin)))
-    app.route("/c/<int:id>/enroll")(app.route("/course/<int:id>/<label>/enroll")(course_enroll))
+    app.route("/c/<int:id>/enroll", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/enroll", methods=["GET", "POST"])(course_enroll))
     app.route("/c/<int:id>/start")(app.route("/course/<int:id>/<label>/start")(course_start))
     app.route("/c/<int:course_id>/<int:unit_id>", methods=["GET", "POST"])(app.route("/c/<int:course_id>/u/<int:unit_id>", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/unit/<int:unit_id>/<unit_label>/show", methods=["GET", "POST"])(app.route("/course/<int:course_id>/<course_label>/unit/<int:unit_id>/<unit_label>", methods=["GET", "POST"])(unit_show))))
     app.route("/c/<int:id>/edit", methods=["GET", "POST"])(app.route("/course/<int:id>/<label>/edit", methods=["GET", "POST"])(course_edit_overview))
