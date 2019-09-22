@@ -156,11 +156,7 @@
   {% for featured_announcement in featured_announcements if not request.cookies.get("hide-hero-announcement-"~featured_announcement.id, False) %}
   <div class="_banner _banner-dark mb1 p1" id="banner:{{ featured_announcement.id }}">
       <div class="single-fluid grid">
-        {% if featured_announcement.getLink() %}
-        <p class="colbox-fill my2 m2__sm"><a href="{{ featured_announcement.getLink() }}" class="anchor-black">{{ featured_announcement.getTitle() }}</a></p>
-        {% else %}
-        <p class="colbox-fill my2 m2__sm">{{ featured_announcement.getTitle() }}</p>
-        {% endif %}
+        <p class="colbox-fill my2 m2__sm anchor--primary">{{ (featured_announcement.getTitle()|markdown)[3:-4] }}</p>
         <div class="colbox al-r"><button onclick="K=this;$.ajax({url:'/hide-hero',method:'POST', data:JSON.stringify({'hero':'announcement-{{ featured_announcement.id }}'}),
         contentType: 'application/json; charset=utf-8',success:function(){K.parentNode.parentNode.parentNode.style.display='none';}});" class="_btn _btn-dark _btn-on-light">&times;</button></div></div>
   </div>
