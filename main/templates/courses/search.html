@@ -27,7 +27,7 @@
           <label class="d-b p1" for="status-0"><input type="radio" class="form-radio" value="0" name="status" id="status-0"{% if request.values.get("status", "all")=="0" %} checked{% endif %}> nicht verfügbare Kurse</label>
           <label class="d-b p1" for="status-1"><input type="radio" class="form-radio" value="1" name="status" id="status-1"{% if request.values.get("status", "all")=="1" %} checked{% endif %}> verfügbare Kurse</label>
 
-          <label class="d-b p1 form" for="extended"><input type="checkbox" class="form-checkbox" value="1" name="extended" id="extended"{% if request.values.get("extended", "0")=="1" %} checked{% endif %}> Erweiterte Ansicht verwenden</label>
+          <label class="d-b p1 form" for="extended"><input type="checkbox" checked class="form-checkbox" value="1" name="extended" id="extended"{% if request.values.get("extended", "0")=="1" %} checked{% endif %}> Erweiterte Ansicht verwenden</label>
         </div>
       </div>
     </div>
@@ -90,12 +90,16 @@
           <p>{{ course.getShortdesc() }}</p>
         </div>
         <div class="_card-footer">
-          {% if (not user.isLoggedIn() and course.getDetail("state")!=0) or course.isEnrolled(user) %}
-            <a href="/course/{{ course.id }}/{{ course.getLabel() }}/start" class="_btn _btn--primary">Zum Kurs</a>
-          {% elif user.isLoggedIn() and course.getDetail("state")!=0 %}
-            <a href="/course/{{ course.id }}/{{ course.getLabel() }}/enroll" class="_btn _btn--primary">Einschreiben</a>
+          {% if course.getDetail("manual_enrollment") %}
+            <span class="_btn _btn--primary -active" disabled><i class="fa fa-lock"></i> Kurs zugriffsbeschränkt</span>
+          {% elif course.getDetail("state") == 0 %}
+            <span class="_btn _btn--primary -active" disabled><i class="fa fa-lock"></i> Kurs nicht verfügbar</span>
           {% else %}
-            <a href="#!" class="_btn _btn--primary -active" disabled>Nicht verfügbar</a>
+          {% if not user.isLoggedIn() or course.isEnrolled(user) %}
+            <a href="/course/{{ course.id }}/{{ course.getLabel() }}/start" class="_btn _btn--primary">Zum Kurs</a>
+          {% else %}
+            <a href="/course/{{ course.id }}/{{ course.getLabel() }}/enroll" class="_btn _btn--primary">Einschreiben</a>
+          {% endif %}
           {% endif %}
             <a href="/course/{{ course.id }}/{{ course.getLabel() }}" class="_btn _btn--primary _btn-on-light">Informationen</a>
         </div>

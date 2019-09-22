@@ -60,10 +60,16 @@
           <p>{{ course.getShortdesc() }}</p>
         </div>
         <div class="_card-footer">
+          {% if course.getDetail("manual_enrollment") %}
+            <span class="_btn _btn--primary -active" disabled><i class="fa fa-lock"></i> Kurs zugriffsbeschränkt</span>
+          {% elif course.getDetail("state") == 0 %}
+            <span class="_btn _btn--primary -active" disabled><i class="fa fa-lock"></i> Kurs nicht verfügbar</span>
+          {% else %}
           {% if not user.isLoggedIn() or course.isEnrolled(user) %}
             <a href="/course/{{ course.id }}/{{ course.getLabel() }}/start" class="_btn _btn--primary">Zum Kurs</a>
           {% else %}
             <a href="/course/{{ course.id }}/{{ course.getLabel() }}/enroll" class="_btn _btn--primary">Einschreiben</a>
+          {% endif %}
           {% endif %}
             <a href="/course/{{ course.id }}/{{ course.getLabel() }}" class="_btn _btn--primary _btn-on-light">Informationen</a>
         </div>

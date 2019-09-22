@@ -99,7 +99,7 @@ class Courses:
             con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT id FROM courses WHERE topicid IN (SELECT topics.id FROM topics, courses, enrollments WHERE courses.topicid=topics.id AND enrollments.courseid=courses.id AND enrollments.userid=? GROUP BY topics.id HAVING Count(*) >= 2) AND state=1 ORDER BY Random() LIMIT 3", (uid,))
+            cur.execute("SELECT id FROM courses WHERE topicid IN (SELECT topics.id FROM topics, courses, enrollments WHERE courses.topicid=topics.id AND enrollments.courseid=courses.id AND enrollments.userid=? GROUP BY topics.id HAVING Count(*) >= 2) AND state=1 AND manual_enrollment IS NOT 1 ORDER BY Random() LIMIT 3", (uid,))
             all = cur.fetchall()
             if all is None:
                 return []
@@ -117,7 +117,7 @@ class Courses:
             con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute("SELECT * FROM (SELECT courses.id FROM courses, enrollments WHERE  courses.state=1 AND courses.id=enrollments.courseid GROUP BY courses.id HAVING Count(*)>=3 ORDER BY Count(*) DESC LIMIT 10) AS c ORDER BY Random() LIMIT 3")
+            cur.execute("SELECT * FROM (SELECT courses.id FROM courses, enrollments WHERE  courses.state=1 AND courses.manual_enrollment IS NOT 1 AND courses.id=enrollments.courseid GROUP BY courses.id HAVING Count(*)>=3 ORDER BY Count(*) DESC LIMIT 10) AS c ORDER BY Random() LIMIT 3")
             all = cur.fetchall()
             if all is None:
                 return []
@@ -499,7 +499,8 @@ class Courses:
                 "byline": data['byline'],
                 "sponsorid": data['sponsorid'],
                 "state": data['state'],
-                "picture_url": data["picture_url"] or ""
+                "picture_url": data["picture_url"] or "",
+                "manual_enrollment": bool(data["manual_enrollment"])
             }
         except lite.Error as e:
             #raise lite.Error from e
