@@ -11,6 +11,8 @@ from main.model import privileges as mprivileges, tags as mtags, user as muser, 
 from model import Election, Nomination, Question, Vote
 import traceback as tb, json, datetime, time
 
+from main.sha1 import md5
+
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 

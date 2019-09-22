@@ -1,6 +1,9 @@
 # coding: utf-8
 import re, time
 import sqlite3 as lite
+
+from model.settings import Settings as S
+
 from model import user as muser, courses as mcourses
 from controller import times as ctimes, placeholder as cplaceholder
 import tags as mtags
@@ -1665,7 +1668,7 @@ class Forum:
                 "id": self.id,
                 "label":"global",
                 "name": "globales Forum",
-                "byline": u"für alle Fragen zu π-Learn selber und für Fehlermeldungen oder Verbesserungsideen"
+                "byline": u"für alle Fragen zu " + S.get("site-short-name") +" selber und für Fehlermeldungen oder Verbesserungsideen"
             }
 
     @classmethod

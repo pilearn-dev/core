@@ -522,7 +522,7 @@ class Election:
 
 Weiterhin wollen wir, dass jeder sein Wissen gleichberechtigt mit anderen teilen darf und vermeiden es daher, den Inhalt durch von uns beauftragte Benutzer zu moderieren. Statdessen soll dieser Auftrag von den Benutzern dieser Webseite selbst kommen. Darum halten wir bei Bedarf Wahlen ab, um Moderatoren zu ernenen. Diesen Moderatoren kommt eine besondere Verantwortung zu, da sie Zugriff auf die höchsten Privilegien erhalten.
 
-Moderatoren verwalten und kontrollieren ("moderieren") die gesamte Webseite π-Learn. Sie können dafür zum Beispiel Benutzer, die sich nicht an die Regeln halten, sperren oder sogar löschen."""
+Moderatoren verwalten und kontrollieren ("moderieren") diese Webseite. Sie können dafür zum Beispiel Benutzer, die sich nicht an die Regeln halten, sperren oder sogar löschen."""
             cur.execute("INSERT INTO elections (title, message, places, position, state, minvoterep, mincandrep) VALUES ('Unbestimmte Wahl', ?, 1, 'Benutzergruppe', 1, 50, 100)", (STDTEXT,))
             con.commit()
             return cur.lastrowid

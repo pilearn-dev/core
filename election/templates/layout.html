@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-site-verification" content="vSvlVOqzIXqIPAJHn1n2sHTbfLF-7TipRxK_T4jokls" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="description" content="{% block meta_description %}π-Learn ist eine Community-gesteuerte Open Learning Webseite. Das heißt, jeder Benutzer kann sein Wissen in Form von Kursen und Forenbeiträgen mit anderen teilen. Alle Inhalte werden frei veröffentlicht und können von allen angesehen werden, aber so richtig Spaß macht es erst, wenn man sich anmeldet.{% endblock %}">
-  <title>&pi;-Learn &ndash; {{ title|safe }}</title>
+  <meta name="description" content="{% block meta_description %}{{ site_name }} ist eine Community-gesteuerte Open Learning Webseite. Das heißt, jeder Benutzer kann sein Wissen in Form von Kursen und Forenbeiträgen mit anderen teilen. Alle Inhalte werden frei veröffentlicht und können von allen angesehen werden, aber so richtig Spaß macht es erst, wenn man sich anmeldet.{% endblock %}">
+  <title>{{ site_name }} &ndash; {{ title|safe }}</title>
   <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 
   <link rel="icon" type="image/svg+xml" href="/static/img/logo_pi-learn.svg" sizes="any">
@@ -135,7 +135,7 @@
   <div class="_headbar-site" id="site-bar">
       <div class="single-fluid _headbar-fluid">
         <div class="_headbar-site-brand">
-          <a href="/">{{ site_label|safe }}</a>
+          <a href="/">{{ site_label.replace("<", "{start}").replace(">", "{end}").replace("{start}", '<span class="_headbar-site-sub-brand">').replace("{end}", '</span>')|safe }}</a>
         </div>
         <div class="_headbar-site-nav">
           <a href="/courses"{% if thispage == "courses" %} class="-active"{% endif %}>Kurse</a>
@@ -144,15 +144,6 @@
         </div>
       </div>
     </div>
- {% if global_notification != "" %}
-    {% for subnote in global_notification.split("\n_____\n") %}
-        <div class="_banner _banner-warning _banner-strong mb1">
-            <div class="single-fluid">
-                {{ subnote }}
-            </div>
-        </div>
-    {% endfor %}
-  {% endif %}
   {% for featured_announcement in featured_announcements if not request.cookies.get("hide-hero-announcement-"~featured_announcement.id, False) %}
   <div class="_banner _banner-dark mb1 p1" id="banner:{{ featured_announcement.id }}">
       <div class="single-fluid grid">
