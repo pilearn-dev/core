@@ -126,15 +126,6 @@
     </div>
 <div id="notification-area" class="nav-overlay"></div>
 <div id="repscreen-area" class="nav-overlay"></div>
-{% if global_notification != "" %}
-    {% for subnote in global_notification.split("\n_____\n") %}
-        <div class="global-note">
-            <div class="note-center no-p">
-                {{ subnote|markdown }}
-            </div>
-        </div>
-    {% endfor %}
-{% endif %}
 {% if not user.isLoggedIn() and not request.cookies.get("hide-hero-login-request", False) %}
     <div class="hero">
         <div class="hero-center">

@@ -9,7 +9,7 @@
   </div>
   <div class="column6 column12__sm p1">
     <div class="container s3 p2">
-      {% if in_beta %}
+      {% if allow_password %}
       <h1 class="fs-subtitle ta-c bb1 bb-s bb-dark-ll">Zugriff erhalten.</h1>
       <p>Einen Zugriffs-Code eingeben, um Zugriff auf die Seite zu erhalten.</p>
       <form action="" method="post">
@@ -23,4 +23,7 @@
     </div>
   </div>
 </div>
+<style>
+  .js--featured-announcements { display: none; }
+</style>
 {% endblock %}

@@ -28,8 +28,8 @@
       extensions: ["tex2jax.js"],
       jax: ["input/TeX", "output/HTML-CSS"],
       tex2jax: {
-        inlineMath: [ [':(','):'] ],
-        displayMath: [ ['::(',')::'] ],
+        inlineMath: [ ['{{ mathjax_inline_delim[0] }}','{{ mathjax_inline_delim[1] }}'] ],
+        displayMath: [ ['{{ mathjax_block_delim[0] }}','{{ mathjax_block_delim[1] }}'] ],
         processEscapes: true
       },
       "HTML-CSS": { fonts: ["TeX"] }
@@ -38,7 +38,7 @@
   <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML"></script>
   {% endif %}
 
-  {% if matomo_site_id %}
+  {% if matomo_site_id != "" %}
   <!-- Matomo -->
   <script type="text/javascript">
   var _paq = window._paq || [];
@@ -135,7 +135,7 @@
   <div class="_headbar-site" id="site-bar">
       <div class="single-fluid _headbar-fluid">
         <div class="_headbar-site-brand">
-          <a href="/">{{ site_label|safe }}</a>
+          <a href="/">{{ site_label.replace("<", "{start}").replace(">", "{end}").replace("{start}", '<span class="_headbar-site-sub-brand">').replace("{end}", '</span>')|safe }}</a>
         </div>
         <div class="_headbar-site-nav">
           <a href="/courses"{% if thispage == "courses" %} class="-active"{% endif %}>Kurse</a>
@@ -144,17 +144,8 @@
         </div>
       </div>
     </div>
- {% if global_notification != "" %}
-    {% for subnote in global_notification.split("\n_____\n") %}
-        <div class="_banner _banner-warning _banner-strong mb1">
-            <div class="single-fluid">
-                {{ subnote }}
-            </div>
-        </div>
-    {% endfor %}
-  {% endif %}
   {% for featured_announcement in featured_announcements if not request.cookies.get("hide-hero-announcement-"~featured_announcement.id, False) %}
-  <div class="_banner _banner-dark mb1 p1" id="banner:{{ featured_announcement.id }}">
+  <div class="_banner _banner-dark mb1 p1 js--featured-announcements" id="banner:{{ featured_announcement.id }}">
       <div class="single-fluid grid">
         <p class="colbox-fill my2 m2__sm anchor--primary">{{ (featured_announcement.getTitle()|markdown)[3:-4] }}</p>
         <div class="colbox al-r"><button onclick="K=this;$.ajax({url:'/hide-hero',method:'POST', data:JSON.stringify({'hero':'announcement-{{ featured_announcement.id }}'}),
