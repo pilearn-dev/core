@@ -3,7 +3,7 @@
 {% block body %}
 <div class="container single-fluid-tiny s3 p4">
   <h1 class="fs-subtitle ta-c bb1 bb-s bb-dark-ll">Registrieren</h1>
-  <p>Erstelle ein neues Benutzerkonto für &pi;-Learn.</p>
+  <p>Erstelle ein neues Benutzerkonto für {{ site_name }}.</p>
   <p>Du hast bereits ein Benutzerkonto? Dann brauchst du dich nur <a href="/auth/login">anzumelden</a>.</p>
   {% if error == "not-found" %}
     <div class="_alert _alert-danger">
@@ -22,7 +22,7 @@
   <div class="grid">
       <a href="/auth/oauth-provider/google" class="_btn _btn-service _btn-service-google">Google-Anmeldung</a>
   </div>
-  <h2 class="fs-base3 col-dark-dd ta-c">&pi;-Learn-Konto</h2>
+  <h2 class="fs-base3 col-dark-dd ta-c">{{ site_short_name }}-Konto</h2>
   <form action="" method="POST">
     <label for="register_email" class="form">E-Mail:</label>
     <input id="register_email" class="form" name="email" type="email">

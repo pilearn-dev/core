@@ -58,6 +58,9 @@ def prepare_template_context():
                 "username": user.getHTMLName(False)
             }
 
+    g.site_name = S.get("site-name")
+    g.site_short_name = S.get("site-short-name")
+
     return {
         "user": user,
         "review": mreviews,

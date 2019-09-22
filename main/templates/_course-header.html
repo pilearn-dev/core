@@ -3,7 +3,7 @@
   {% if forum.id == 0 %}
     <div class="_headbar-course-name anchor-black"><a href="/f/0">globales Forum</a></div>
     <div class="_headbar-course-byline">
-      für alle Fragen zu &pi;-Learn selber und für Fehlermeldungen oder Verbesserungsideen
+      für alle Fragen zu {{ g.site_name }} selber und für Fehlermeldungen oder Verbesserungsideen
     </div>
   {% else %}
     {% set topic = forum.getTopic() %}

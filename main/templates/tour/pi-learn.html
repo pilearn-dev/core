@@ -1,8 +1,8 @@
 {% extends "layout_new.html" %}
 {% block meta_description %}π-Learn ist eine Community-gesteuerte Open Learning Webseite. Hier erfährst du, was das bedeutet.{% endblock %}
 {% block body %}
-<h1 class="ta-c fs-display2">Willkommen zu &pi;-Learn</h1>
-<p class="fs-subheading ta-c mt3 mb3">&pi;-Learn ist eine Community-gesteuerte Open Learning Plattform. Was bedeutet das? Finde es heraus!</p>
+<h1 class="ta-c fs-display2">Willkommen zu {{ site_name }}</h1>
+<p class="fs-subheading ta-c mt3 mb3">{{ site_name }} ist eine Community-gesteuerte Open Learning Plattform. Was bedeutet das? Finde es heraus!</p>
 <div class="mt8">
     <h2><span class="i">Kurse &ndash; zu verschiedenen Themen</span></h2>
     <div class="grid">
@@ -10,8 +10,8 @@
             <img src="/static/img/tour/courses.svg" alt="">
         </div>
         <div class="column12 column8__lg p3">
-            <p>Jeder kann an kostenlosen Online-Kursen teilnehmen. Alle Kurse auf &pi;-Learn sind unter einer freien Lizenz verfügbar und können ohne Einschränkungen weiterverwendet werden.</p>
-            <p>Es gibt Kurse zu diesen Themengebieten auf &pi;-Learn:</p>
+            <p>Jeder kann an kostenlosen Online-Kursen teilnehmen. Alle Kurse auf {{ site_name }} sind unter einer freien Lizenz verfügbar und können ohne Einschränkungen weiterverwendet werden.</p>
+            <p>Es gibt Kurse zu diesen Themengebieten auf {{ site_name }}:</p>
             <ul>
                 {% for t in topic.getAll() %}
                 <li><a class="_badge _badge-unit" href="/t/{{ t.getName() }}">{{ t.getTitle() }}</a> &ndash; {{ t.getExcerpt() }}</li>
@@ -36,7 +36,7 @@
             <img src="/static/img/tour/community-review.svg" alt="">
         </div>
         <div class="column12 column8__lg p3">
-            <p>Alle Benutzer können die Inhalte auf &pi;-Learn bewerten und schädliche Inhalte melden oder zur Löschung vorschlagen.</p>
+            <p>Alle Benutzer können die Inhalte auf {{ site_name }} bewerten und schädliche Inhalte melden oder zur Löschung vorschlagen.</p>
             <p>So wird eine durchgängig hohe Qualität durchgesetzt.</p>
             <p>Richtlinien dafür werden in einem <a href="#!">globalen Forum</a> entwickelt und dokumentiert.</p>
         </div>
@@ -113,7 +113,7 @@
                     <th class="ta-l p2">Kurse sperren</th>
                 </tr>
             </table>
-            <p>... und kannst so zusammen mit den Moderierenden zum Erfolg von &pi;-Learn beitragen.</p>
+            <p>... und kannst so zusammen mit den Moderierenden zum Erfolg von {{ site_name }} beitragen.</p>
         </div>
     </div>
 

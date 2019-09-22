@@ -13,7 +13,7 @@
     {% endif %}
   </div>
   {% if request.values.get("tab", "reputation") == "moderators" %}
-    <p>Bei &pi;-Learn werden, sobald die Seite genug Aktivität hat, von der Community Moderatoren gewählt. Moderatoren erhalten außerordentliche Rechte, um Probleme zu lösen, für die die Community nicht die Werkzeuge hat.</p>
+    <p>Bei {{ site_name }} werden, sobald die Seite genug Aktivität hat, von der Community Moderatoren gewählt. Moderatoren erhalten außerordentliche Rechte, um Probleme zu lösen, für die die Community nicht die Werkzeuge hat.</p>
     <p>Dies sind unsere Moderatoren:</p>
   {% elif request.values.get("tab", "reputation") == "mod.suspended" and user.isMod() %}
     <div class="behaviour-warning">Diese Benutzer wurden wegen Regelverletzung zeitweise gesperrt.</div>

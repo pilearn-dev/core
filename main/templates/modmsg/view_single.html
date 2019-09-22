@@ -13,14 +13,14 @@
       <dd title="{{ ct[1] }}">{{ ct[2] }}</dd>
     {% if msg.getDetail("message_receiver") == thread.getDetail("contacted_user") %}{% set c = msg.getReceiver() %}
       <dt>von</dt>
-      <dd>&pi;-Learn Moderatoren</dd>
+      <dd>{{ site_short_name }} Moderatoren</dd>
       <dt>an</dt>
       <dd><a href="/u/{{ c.id }}">{{ c.getHTMLName()|safe }}</a></dd>
     {% else %}{% set c = msg.getSubmitter() %}
       <dt>von</dt>
       <dd><a href="/u/{{ c.id }}">{{ c.getHTMLName()|safe }}</a></dd>
       <dt>an</dt>
-      <dd>&pi;-Learn Moderatoren</dd>
+      <dd>{{ site_short_name }} Moderatoren</dd>
     {% endif %}
     </dl>
   </div>

@@ -8,7 +8,7 @@
 <div class="p2">
   <h1 class="fs-subtitle">Neue Frage
   {% if forum.id == 0 %}
-    zu &pi;-Learn</h1>
+    zu {{ site_name }}</h1>
   {% else %}
     zum Kurs {{ forum.getTitle() }}</h1>
   {% endif %}
