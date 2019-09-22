@@ -8,7 +8,8 @@ CREATE TABLE courses (
     byline varchar,
     sponsorid integer,
     state integer,
-    picture_url VARCHAR(60)
+    picture_url VARCHAR(60),
+    manual_enrollment TINYINT
 )
 
 ;CREATE TABLE enrollments (
