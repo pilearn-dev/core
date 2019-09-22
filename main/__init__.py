@@ -185,6 +185,17 @@ def __devboard():
         abort(404)
     return render_template("~dev/board.html", title="Entwicklerboard", thispage="dev", offline_notification=S.get("access-private-notice"), beta_access_token=S.get("access-private-token"), is_offline=S.get("access-private") == "1")
 
+@app.route("/admin/settings", methods=["GET", "POST"])
+def admin_settings():
+    cuser = muser.getCurrentUser()
+    if not cuser.isDev():
+        abort(403)
+    if request.method == "GET":
+        return render_template("admin/settings.html", title="Administration: Seiten-Einstellungen", thispage="admin", S=S)
+    elif request.method == "POST":
+        S.set(request.json["key"], request.json["value"])
+        return "true"
+
 @app.route("/notification/<int:id>")
 def notification(id):
     cuser = muser.getCurrentUser()

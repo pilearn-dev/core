@@ -39,5 +39,27 @@ class SettingsBlueprint:
             if con:
                 con.close()
 
+    def getAllSettingsGrouped(self):
+        try:
+            con = lite.connect('databases/pilearn.db')
+            con.row_factory = lite.Row
+            cur = con.cursor()
+            cur.execute("SELECT * FROM settings ORDER BY setting_group")
+
+            result = []
+            last_group = ""
+
+            for setting in cur.fetchall():
+                if setting[0] != last_group:
+                    last_group = setting[0]
+                    result.append(["group", last_group])
+
+                result.append(["setting", setting])
+
+            return result
+        finally:
+            if con:
+                con.close()
+
 
 Settings = SettingsBlueprint()

@@ -1,0 +1,48 @@
+{% extends "layout_new.html" %}
+{% block body %}
+<h1>Einstellungen</h1>
+<p class="p-lead">Dies sind die administrativen Einstellungen für {{ site_short_name }}. Sie sind jedoch etwas verzögert gespeichert. Wundere dich daher nicht, wieso sie nicht sofort Auswirkung haben. Notfalls hilft es, den Server neu zu starten.</p>
+{% for item in S.getAllSettingsGrouped() %}
+{% if item[0] == "group" %}
+<h2 class="p2 fs-base3 bg-dark-lll col-dark-ddd mb0 f-bold f-caps">{{ item[1] }}</h2>
+{% else %}
+<div class="grid mb1">
+  <div class="p2 colbox-fill bg-dark-llll colbox400">
+    <h3 class="fs-base3 f-bold my1">{{ item[1].setting_key.replace("-", " ").capitalize() }}</h3>
+    <p>{{ item[1].setting_description }}</p>
+    <textarea class="form form-small" id="setting_{{ item[1].setting_key }}">{{ item[1].setting_value }}</textarea>
+    <button class="_btn _btn-sm _btn--primary" onclick="saveSetting('{{ item[1].setting_key }}', this);">Speichern</button>
+  </div>
+</div>
+{% endif %}
+{% endfor %}
+
+<script>
+  function saveSetting(key, btn) {
+    $btn = $(btn);
+    $btn.attr("disabled", "").addClass("-loading").text("Speichern ...");
+
+    $.ajax({
+      method: "POST",
+      url: "/admin/settings",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        key: key,
+        value: $("#setting_" + key).val()
+      }),
+      success: function(r) {
+        $btn.removeClass("-loading").removeAttr("disabled").text("Gespeichert.");
+        setTimeout(function() {
+          $btn.text("Speichern");
+        }, 1000);
+      },
+      error: function() {
+        $btn.removeClass("-loading _btn--primary").addClass("_btn-danger").removeAttr("disabled").text("Fehler ist aufgetreten.");
+        setTimeout(function() {
+          $btn.addClass("_btn--primary").removeClass("_btn-danger").text("Speichern");
+        }, 2000);
+      }
+    });
+  }
+</script>
+{% endblock %}
