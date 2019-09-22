@@ -1668,7 +1668,7 @@ class Forum:
                 "id": self.id,
                 "label":"global",
                 "name": "globales Forum",
-                "byline": u"für alle Fragen zu " + S.get("site-short-name") +" selber und für Fehlermeldungen oder Verbesserungsideen"
+                "byline": u"für alle Fragen zu " + S.get("site-short-name") + u" selber und für Fehlermeldungen oder Verbesserungsideen"
             }
 
     @classmethod

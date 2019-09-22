@@ -14,7 +14,8 @@ class SettingsBlueprint:
             cur = con.cursor()
             cur.execute("UPDATE settings SET setting_value=? WHERE setting_key=?", (v, k))
             con.commit()
-            del self.Cache[k]
+            if k in self.Cache.keys():
+                del self.Cache[k]
             return True
         finally:
             if con:

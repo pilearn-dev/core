@@ -94,15 +94,15 @@ def prepare_request():
         session.pop('login', None)
         return render_template("inaccessible.html"), 503
 
-    if S.get("access-private") == "1":
+    if S.get("access-private") == "1" and not request.path.startswith("/static/"):
         token = S.get("access-private-token")
         if token != request.cookies.get("pi-beta-auth-token"):
-            if token != request.values.get("beta_key"):
-                if not S.get("access-private-allow-password") == "1" or S.get("access-private-allow-password-value") != request.values.get("beta_auth"):
+            if token != request.values.get("beta_access_token"):
+                if S.get("access-allow-password") != "1" or S.get("access-allow-password-value") != request.values.get("beta_key"):
                     abort(503)
 
             resp = redirect(url_for("index"))
-            resp.set_cookie("pi-beta-auth-token", BETA_TOKEN)
+            resp.set_cookie("pi-beta-auth-token", token)
             return resp
 
     if not user.isLoggedIn():
