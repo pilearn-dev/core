@@ -27,13 +27,10 @@ app.config.update(dict(
     MAX_CONTENT_LENGTH = 4 * 1024 * 1024
 ))
 md.md_apply(app)
-f = open("pidata.json", "r")
-pidata = json.loads(f.read())
-f.close()
 
 if S.get("logging-errors-sentry-key"):
     sentry_sdk.init(
-        dsn=pidata["sentry_logging_key"],
+        dsn=S.get("logging-errors-sentry-key"),
         integrations=[FlaskIntegration()]
     )
 
@@ -66,7 +63,6 @@ def prepare_template_context():
         "review": mreviews,
         "user_messages": notifications,
         "privileges": mprivileges,
-        "global_notification": None,
         "is_offline": S.get("access-private") == "1",
         "site_label": S.get("site-label"),
         "site_name": S.get("site-name"),
@@ -171,16 +167,9 @@ def __dev_beta_token_new():
 
     tok = md5(str(time.time()))
     tok = "-".join(["".join(tok[i::5]) for i in range(4)])
-    BETA_TOKEN = tok
 
-    f = open("pidata.json", "r")
-    pidata = json.loads(f.read())
-    pidata["beta_token"] = BETA_TOKEN
-    f.close()
-    f = open("pidata.json", "w")
-    f.write(json.dumps(pidata))
-    f.close()
-    return BETA_TOKEN
+    S.set("access-private-token", tok)
+    return tok
 
 @app.route("/~dev/error/<int:x>")
 def __deverror(x):
@@ -211,7 +200,7 @@ def notification(id):
 def tour():
     return render_template("tour/pi-learn.html", title="Tour", topic=mcourses.Topic)
 
-vauth.apply(app, pidata)
+vauth.apply(app)
 vuser.apply(app)
 vreview.apply(app)
 vhelp.apply(app)

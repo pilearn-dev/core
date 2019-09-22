@@ -2,6 +2,8 @@
 
 from flask import Flask, request, session, redirect, url_for, abort, render_template, g, jsonify, Response
 
+from main.model.settings import Settings as S
+
 import secrets, random
 
 from main.controller import md, num as cnum
@@ -18,15 +20,9 @@ app.config.update(dict(
 ))
 md.md_apply(app)
 
-f = open("pidata.json", "r")
-pidata = json.loads(f.read())
-f.close()
-SITE_LABEL = pidata["label"]
-SENTRY_ERROR_LOGGING = pidata["sentry_error_logging"]
-MATOMO_SITE_ID = pidata["matomo_site_id"]
-if SENTRY_ERROR_LOGGING:
+if S.get("logging-errors-sentry-key") != "":
     sentry_sdk.init(
-        dsn=pidata["sentry_logging_key"],
+        dsn=S.get("logging-errors-sentry-key"),
         integrations=[FlaskIntegration()]
     )
 
@@ -34,8 +30,6 @@ f = open("version.json", "r")
 pivers = json.loads(f.read())
 f.close()
 __version__ = pivers["election"]
-
-IS_INACCESSIBLE = False
 
 @app.context_processor
 def prepare_template_context():
@@ -49,7 +43,7 @@ def prepare_template_context():
     g.random_number = random.randint
     g.num2suff = cnum.num2suff
 
-    if SENTRY_ERROR_LOGGING:
+    if S.get("logging-errors-sentry-key") != "":
         with sentry_sdk.configure_scope() as scope:
             scope.user = {
                 "id": user.id,
@@ -69,13 +63,18 @@ def prepare_template_context():
         "review": mreviews,
         "user_messages": notifications,
         "privileges": mprivileges,
-        "global_notification": "",
-        "in_beta": False,
-        "is_offline": False,
-        "site_label": SITE_LABEL,
+        "is_offline": S.get("access-private") == "1",
+        "site_label": S.get("site-label"),
+        "site_name": S.get("site-name"),
+        "site_short_name": S.get("site-short-name"),
         "__version__": __version__,
+        "cssid": md5(__version__),
         "num2suff": cnum.num2suff,
-        "matomo_site_id": MATOMO_SITE_ID,
+        "has_mathjax": S.get("enable-mathjax") == "1",
+        "mathjax_block_delim": S.get("enable-mathjax-tokens-block", "::( )::").split(" "),
+        "mathjax_inline_delim": S.get("enable-mathjax-tokens-inline", ":( ):").split(" "),
+        "needs_mathjax": False,
+        "matomo_site_id": S.get("logging-matomo-id"),
         "featured_announcements": mforum.ForumAnnouncement.byForumFeatured(0)
     }
 

@@ -154,7 +154,7 @@ def oauth_callback(provider):
 def get_google_oauth_token():
     return session.get('google_token')
 
-def apply(app, pidata2):
+def apply(app):
     @app.route("/login")
     def login_redirect():
         return redirect(url_for("login"))
