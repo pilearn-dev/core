@@ -1,0 +1,31 @@
+{% extends "layout_new.html" %}
+{% block body %}
+    <h1>SQL Ausführen</h1>
+    {% if lr %}
+    <h2>Letzte Abfrage</h2>
+    <div style="width: 100%; overflow: auto" class="p3 b1s b-dark-lll bl3s bl-dark-ddd">
+    <table class="table meta-table">
+      {% if columns %}
+      <tr>
+        {% for col in columns %}
+        <th>{{ col[0] }}</th>
+        {% endfor %}
+      </tr>
+      {% endif %}
+        {% for row in lr %}
+            <tr>
+                {% for column in row %}
+                    <td>{{ column }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+    </div>
+    {% endif %}
+    <h2>Neue Abfrage</h2>
+    <form action="" method="post">
+        <label for="sql_sql" class="form">SQL-Abfrage:</label>
+        <textarea class="form f-mono" id="sql_sql" name="sql">{{ request.form.get("sql", "") }}</textarea>
+        <button type="submit" class="_btn _btn--primary">Ausführen</button>
+    </form>
+{% endblock %}

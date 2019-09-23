@@ -8,7 +8,7 @@ from model.settings import Settings as S
 
 from controller import md, num as cnum
 from model import privileges as mprivileges, tags as mtags, user as muser, forum as mforum, proposal as mproposal, courses as mcourses, reviews as mreviews, post_templates as mpost_templates
-from view import auth as vauth, user as vuser, review as vreview, help as vhelp, courses as vcourses, forum as vforum, jsonapi as vjsonapi, survey as vsurvey, proposal as vproposal, tools as vtools, dialog as vdialog, modmsg as vmodmsg, helpdesk as vhelpdesk, upload, topbar as vtopbar, badges as vbadges, announcements as vannouncements, about as vabout, pull_requests as vpull_requests
+from view import auth as vauth, user as vuser, review as vreview, help as vhelp, courses as vcourses, forum as vforum, jsonapi as vjsonapi, survey as vsurvey, proposal as vproposal, tools as vtools, dialog as vdialog, modmsg as vmodmsg, helpdesk as vhelpdesk, upload, topbar as vtopbar, badges as vbadges, announcements as vannouncements, about as vabout, pull_requests as vpull_requests, admin as vadmin
 
 from sha1 import md5
 
@@ -125,31 +125,6 @@ def hide_hero():
     return resp
 
 
-@app.route("/~dev/sql", methods=['POST'])
-def __dev_sql():
-    cuser = muser.getCurrentUser()
-    if not cuser.isDev():
-        abort(404)
-
-    if request.json["file"] in ["pilearn.db", "pilearn.db", "pilearn.db", "pilearn.db", "helpdesk.db", "pilearn.db", "pilearn.db"] and request.json["sql"] != "":
-        file = request.json["file"]
-        sql = request.json["sql"]
-
-        try:
-            con = lite.connect('databases/'+file)
-            cur = con.cursor()
-            cur.execute(sql)
-            lr = cur.fetchall()
-            con.commit()
-        except lite.Error as e:
-            lr = [["Fehler:", str(e)]]
-        except lite.Warning as e:
-            lr = [["Achtung:", str(e)]]
-    else:
-        lr = [["Info", "Keine Abfrage gestartet"]]
-        file = sql = ""
-
-    return json.dumps(lr)
 
 @app.route("/~dev/inaccessible", methods=['POST'])
 def __dev_inaccessible():
@@ -188,17 +163,6 @@ def __devboard():
         abort(404)
     return render_template("~dev/board.html", title="Entwicklerboard", thispage="dev", offline_notification=S.get("access-private-notice"), beta_access_token=S.get("access-private-token"), is_offline=S.get("access-private") == "1")
 
-@app.route("/admin/settings", methods=["GET", "POST"])
-def admin_settings():
-    cuser = muser.getCurrentUser()
-    if not cuser.isDev():
-        abort(403)
-    if request.method == "GET":
-        return render_template("admin/settings.html", title="Administration: Seiten-Einstellungen", thispage="admin", S=S)
-    elif request.method == "POST":
-        S.set(request.json["key"], request.json["value"])
-        return "true"
-
 @app.route("/notification/<int:id>")
 def notification(id):
     cuser = muser.getCurrentUser()
@@ -215,6 +179,7 @@ def tour():
     return render_template("tour/pi-learn.html", title="Tour", topic=mcourses.Topic)
 
 vauth.apply(app)
+vadmin.apply(app)
 vuser.apply(app)
 vreview.apply(app)
 vhelp.apply(app)
