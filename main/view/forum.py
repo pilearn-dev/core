@@ -440,11 +440,11 @@ def forum_post_rollback(forum_id, post_id, rev, forum_label=None):
     except:
         abort(404)
     cuser = muser.getCurrentUser()
-    if not (cuser.may("forum_reviewEdits") or cuser.id == article.getAuthor().id):
-        abort(403)
     if mforum.Forum.exists(forum_id):
         if mforum.Article.exists(forum_id, post_id):
             article = mforum.Article(post_id)
+            if not (cuser.may("forum_reviewEdits") or cuser.id == article.getAuthor().id):
+                abort(403)
             forum = mforum.Forum.from_id(forum_id)
             if not article.mayBeSeen(cuser):
                 abort(404)
@@ -656,11 +656,11 @@ def forum_answer_rollback(forum_id, answer_id, rev, forum_label=None):
     except:
         abort(404)
     cuser = muser.getCurrentUser()
-    if not (cuser.may("forum_reviewEdits") or cuser.id == answer.getAuthor().id):
-        abort(403)
     if mforum.Forum.exists(forum_id):
         if mforum.Answer.exists(forum_id, answer_id):
             answer = mforum.Answer(answer_id)
+            if not (cuser.may("forum_reviewEdits") or cuser.id == answer.getAuthor().id):
+                abort(403)
             article = mforum.Article(answer.getDetail("articleID"))
             forum = mforum.Forum.from_id(forum_id)
             if not answer.mayBeSeen(cuser):
