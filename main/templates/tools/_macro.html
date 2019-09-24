@@ -6,7 +6,7 @@
     <li{% if page=="forum" %} class="active"{% endif %}><a href="/tools/forum/flags">Forum</a></li>
     <li{% if page=="user" %} class="active"{% endif %}><a href="/tools/user/flags"{% if not user.isMod() %} disabled{% endif %}>Benutzer</a></li>
     {#<li{% if page=="review" %} class="active"{% endif %}><a href="/tools/review">Moderation</a></li>#}
-    <li{% if page=="settings" %} class="active"{% endif %}><a href="/~dev/board" target="_blank"{% if not user.isDev() %} disabled{% endif %}>Einstellungen</a></li>
+    <li{% if page=="settings" %} class="active"{% endif %}><a href="/admin" target="_blank"{% if not user.isDev() %} disabled{% endif %}>Administration</a></li>
   </ul>
 </div>
 {% endmacro %}
