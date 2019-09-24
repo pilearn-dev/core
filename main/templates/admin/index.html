@@ -1,0 +1,21 @@
+{% extends "layout_new.html" %}
+{% block body %}
+<div class="p4">
+  <h1 class="h-underlined">Administrations-Zentrum von {{ site_name }}</h1>
+
+  <div class="_card my3">
+    <div class="_card-content p4">
+      <h3>SQL ausführen</h3>
+      <p>Du kannst SQL auf der {{ site_name }}-Datenbank ausführen.</p>
+    </div>
+    <div class="_card-footer p2"><a class="_btn _btn-lg _btn--primary" href="/admin/sql">Öffnen</a></div>
+  </div>
+  <div class="_card my3">
+    <div class="_card-content p4">
+      <h3>Einstellungen</h3>
+      <p>Diese Seite konfigurieren. Sehr viele Möglichkeiten!</p>
+    </div>
+    <div class="_card-footer p2"><a class="_btn _btn-lg _btn--primary" href="/admin/settings">Öffnen</a></div>
+  </div>
+</div>
+{% endblock %}
