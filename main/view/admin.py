@@ -33,18 +33,26 @@ def admin_sql():
 
     if request.method == "POST":
         sql = request.form["sql"]
+        is_bulk = request.form.has_key("is_bulk")
 
         try:
             con = lite.connect('databases/pilearn.db')
             cur = con.cursor()
-            cur.execute(sql)
-            lr = cur.fetchall()
-            columns = cur.description
+            if not is_bulk:
+                cur.execute(sql)
+                lr = cur.fetchall()
+                columns = cur.description
+                if not lr:
+                    columns = None
+                    lr = [["Success:", sql], ["Rows affected:", cur.rowcount], ["Last row:", cur.lastrowid]]
+            else:
+                cur.executescript(sql)
+                lr = [["Success:", sql], ["Rows affected:", cur.rowcount], ["Last row:", cur.lastrowid]]
             con.commit()
         except lite.Error as e:
-            lr = [["Fehler:", str(e)]]
+            lr = [["Error:", str(e)]]
         except lite.Warning as e:
-                lr = [["Achtung:", str(e)]]
+                lr = [["Warning:", str(e)]]
 
     return render_template("admin/sql.html", title=u"Administration: SQL ausführen", lr=lr, columns=columns)
 

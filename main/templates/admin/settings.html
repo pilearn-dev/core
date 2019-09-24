@@ -1,6 +1,8 @@
 {% extends "layout_new.html" %}
 {% block body %}
-<h1>Einstellungen</h1>
+
+<div class="p4">
+  <h1 class="h-underlined"><a href="/admin">Administration</a>: Einstellungen</h1>
 <p class="p-lead">Dies sind die administrativen Einstellungen für {{ site_short_name }}. Sie sind jedoch etwas verzögert gespeichert. Wundere dich daher nicht, wieso sie nicht sofort Auswirkung haben. Notfalls hilft es, den Server neu zu starten.</p>
 {% for item in S.getAllSettingsGrouped() %}
 {% if item[0] == "group" %}
@@ -16,6 +18,7 @@
 </div>
 {% endif %}
 {% endfor %}
+</div>
 
 <script>
   function saveSetting(key, btn) {

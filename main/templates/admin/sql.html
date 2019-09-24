@@ -1,9 +1,10 @@
 {% extends "layout_new.html" %}
 {% block body %}
-    <h1>SQL Ausführen</h1>
+<div class="p4">
+  <h1 class="h-underlined"><a href="/admin">Administration</a>: SQL ausführen</h1>
     {% if lr %}
-    <h2>Letzte Abfrage</h2>
-    <div style="width: 100%; overflow: auto" class="p3 b1s b-dark-lll bl3s bl-dark-ddd">
+    <h2 class="p2 bg-dark-lll mb0">Letzte Abfrage</h2>
+    <div style="width: 100%; height: 400px; overflow: auto" class="p3 b1s b-dark-lll s2">
     <table class="table meta-table">
       {% if columns %}
       <tr>
@@ -22,10 +23,11 @@
     </table>
     </div>
     {% endif %}
-    <h2>Neue Abfrage</h2>
+    <h2 class="p2 bg-dark-lll mb0">Neue Abfrage</h2>
     <form action="" method="post">
-        <label for="sql_sql" class="form">SQL-Abfrage:</label>
-        <textarea class="form f-mono" id="sql_sql" name="sql">{{ request.form.get("sql", "") }}</textarea>
-        <button type="submit" class="_btn _btn--primary">Ausführen</button>
+        <textarea class="form f-mono b-r0 my0" name="sql">{{ request.form.get("sql", "") }}</textarea>
+        <label for="is_bulk" class="form m2"><input type="checkbox" class="form-checkbox" id="is_bulk" name="is_bulk" {{ 'checked' if request.form.has_key("is_bulk") }}> Dies ist eine Massenabfrage. (Kann keine Ergebnisse anzeigen)</label>
+        <button type="submit" class="_btn _btn-lg _btn--primary">Ausführen</button>
     </form>
+</div>
 {% endblock %}
