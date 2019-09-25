@@ -359,7 +359,7 @@ def edit_user(id):
     profile_projects = data["profile_projects"]
 
     errors = []
-    if 3 <= len(user_name) <= 40 and u"♦" not in user_name:
+    if 3 <= len(user_name) <= 30 and u"♦" not in user_name:
         user.setDetail("realname", user_name)
         user.setDetail("name", user_name)
     else:
@@ -367,8 +367,8 @@ def edit_user(id):
             errors.append(u"Der Benutzername darf das ♦-Zeichen nicht enthalten!")
         if 3 > len(user_name):
             errors.append(u"Der Benutzername ist zu kurz. Mindestens drei Zeichen erforderlich. (aktuell: %i)" % len(user_name))
-        if 40 < len(user_name):
-            errors.append(u"Der Benutzername ist zu lang. Höchstens 40 Zeichen möglich. (aktuell: %i)" % len(user_name))
+        if 30 < len(user_name):
+            errors.append(u"Der Benutzername ist zu lang. Höchstens 30 Zeichen möglich. (aktuell: %i)" % len(user_name))
 
     if certificate_full_name is not None:
         if len(certificate_full_name) == 0:

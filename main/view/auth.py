@@ -31,7 +31,14 @@ def register():
                 if llin == -4:
                     data = muser.User.reset_deletion(request.form['email'], request.form['password'])
                 else:
-                    data = muser.User.register(request.form['password'], request.form['realname'], request.form['email'])
+                    data = muser.User.register(request.form['password'], time.time(), request.form['email'])
+                    datao = muser.User.from_id(data)
+                    datao.setDetail("name", "benutzer-" + str(datao.id))
+                    datao.setDetail("realname", "benutzer-" + str(datao.id))
+                    user_name = request.form['realname']
+                    if 3 <= len(user_name) <= 30 and u"♦" not in user_name:
+                        datao.setDetail("realname", user_name)
+                        datao.setDetail("name", user_name)
                 if data == -3:
                     error = "forbidden"
                 else:
