@@ -1,9 +1,12 @@
 # coding: utf-8
-from flask import render_template, redirect, abort, url_for, request
+from flask import Blueprint, render_template, redirect, abort, url_for, request
 from model import privileges as mprivileges, courses as mcourses, user as muser, proposal as mproposal
 from controller import query as cquery, mail as cmail
 import json
 
+proposal = Blueprint('proposal', __name__)
+
+@proposal.route("/<id>")
 def proposal_show(id):
     if not mproposal.Proposal.exists(id):
         abort(404)
@@ -13,6 +16,7 @@ def proposal_show(id):
         abort(404)
     return render_template('proposal/show.html', title=u"Kursvorschlag: " + data.getTitle(), thispage="course", data=data)
 
+@proposal.route("/<id>/delete", methods=["POST"])
 def proposal_delete(id):
     if not mproposal.Proposal.exists(id):
         abort(404)
@@ -25,6 +29,7 @@ def proposal_delete(id):
     proposal.setDetail("delete_reason", data["reason"])
     return "{ok}"
 
+@proposal.route("/<id>/undelete", methods=["POST"])
 def proposal_undelete(id):
     if not mproposal.Proposal.exists(id):
         abort(404)
@@ -36,6 +41,7 @@ def proposal_undelete(id):
     proposal.setDetail("delete_reason", "")
     return "{ok}"
 
+@proposal.route("/<id>/close", methods=["POST"])
 def proposal_close(id):
     if not mproposal.Proposal.exists(id):
         abort(404)
@@ -48,6 +54,7 @@ def proposal_close(id):
     proposal.setDetail("decline_reason", data["reason"])
     return "{ok}"
 
+@proposal.route("/<id>/unclose", methods=["POST"])
 def proposal_unclose(id):
     if not mproposal.Proposal.exists(id):
         abort(404)
@@ -59,6 +66,7 @@ def proposal_unclose(id):
     proposal.setDetail("decline_reason", "")
     return "{ok}"
 
+@proposal.route("/<id>/commit", methods=["POST"])
 def proposal_commit(id):
     if not mproposal.Proposal.exists(id):
         abort(404)
@@ -70,6 +78,7 @@ def proposal_commit(id):
         proposal.addUserCommitment(cuser)
     return "{ok}"
 
+@proposal.route("/<id>/accept", methods=["POST"])
 def proposal_accept(id):
     if not mproposal.Proposal.exists(id):
         abort(404)
@@ -94,12 +103,3 @@ war erfolgreich. Du kannst jetzt den Kurs erstellen.
 
 {# Zum Kurs -> %s #}""" %(owner.getDetail("realname"), proposal.getTitle(), request.url_root + "c/" + str(proposal.getDetail("courseid"))))
     return "{ok}"
-
-def apply(app):
-    app.route("/course/proposal/<id>")(proposal_show)
-    app.route("/course/proposal/<id>/close", methods=["POST"])(proposal_close)
-    app.route("/course/proposal/<id>/unclose", methods=["POST"])(proposal_unclose)
-    app.route("/course/proposal/<id>/delete", methods=["POST"])(proposal_delete)
-    app.route("/course/proposal/<id>/undelete", methods=["POST"])(proposal_undelete)
-    app.route("/course/proposal/<id>/commit", methods=["POST"])(proposal_commit)
-    app.route("/course/proposal/<id>/accept", methods=["POST"])(proposal_accept)

@@ -1,5 +1,5 @@
 # coding: utf-8
-from flask import request, session, redirect, url_for, abort, render_template, jsonify, g
+from flask import Blueprint, request, session, redirect, url_for, abort, render_template, jsonify, g
 from model import privileges as mprivileges, tags as mtags, user as muser, reviews as mreviews, forum as mforum, post_templates as mposttemplates
 from controller import num as cnum, times as ctimes
 
@@ -8,6 +8,9 @@ import markdown as md
 from sha1 import sha1
 import json, time, pprint
 
+topbar = Blueprint('topbar', __name__)
+
+@topbar.route('/inbox')
 def topbar_inbox():
     TYPES = {
       "helpdesk": "Helpdesk",
@@ -21,6 +24,7 @@ def topbar_inbox():
     cuser.hideNotifications()
     return render_template("topbar/inbox.html", types=TYPES)
 
+@topbar.route('/rep-audit')
 def topbar_repaudit():
     cuser = muser.getCurrentUser()
     dat = []
@@ -39,9 +43,11 @@ def topbar_repaudit():
         return b
     return render_template("topbar/rep-audit.html", data=dat, now=time.time(), changed=changed)
 
+@topbar.route('/user-info')
 def topbar_user_info():
     return render_template("topbar/user-info.html")
 
+@topbar.route('/Update')
 def topbar_update():
     cuser = muser.getCurrentUser()
     return jsonify({
@@ -49,9 +55,3 @@ def topbar_update():
         "reputation": cuser.getRepDelta(),
         "messages": g.countNotifications(cuser.getNotifications())
     })
-
-def apply(app):
-    app.route('/topbar/inbox')(topbar_inbox)
-    app.route('/topbar/user-info')(topbar_user_info)
-    app.route('/topbar/rep-audit')(topbar_repaudit)
-    app.route('/topbar/Update')(topbar_update)
