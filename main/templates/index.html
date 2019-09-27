@@ -7,24 +7,24 @@
     <div class="single-fluid">
         <div class="grid">
             <div class="column8 column12__sm p6">
-                <h1 class="fs-display2">Willkommen bei {{ site_name }}!</h1>
-                <p class="fs-heading">Auf {{ site_name }} werden kostenlose, frei verfügbare Online-Kurse von einer offenen Internet-Community angeboten: Jeder kann sein Wissen in Kursen und Kursforen mit anderen teilen.</p>
-                <p class="fs-heading">Alle Inhalte sind auch für nicht angemeldete Benutzer zugänglich, aber so richtig Spaß macht es erst, wenn man sich anmeldet.</p>
+                <h1 class="fs-display2">{{ _('Willkommen bei %(site_name)s!', site_name=site_name) }}</h1>
+                <p class="fs-heading">{{ _('Auf %(site_name)s werden kostenlose, frei verfügbare Online-Kurse von einer offenen Internet-Community angeboten: Jeder kann sein Wissen in Kursen und Kursforen mit anderen teilen.', site_name=site_name) }}</p>
+                <p class="fs-heading">{{ _('Alle Inhalte sind auch für nicht angemeldete Benutzer zugänglich, aber so richtig Spaß macht es erst, wenn man sich anmeldet.') }}</p>
                 <div class="fs-subheading">
-                <a href="/register" class="_btn _btn-xl _btn-on-dark _btn--primary _btn-lighter">Registrieren</a>
-                <a href="/login" class="_btn _btn-xl _btn-on-dark _btn--primary _btn-outline">Anmelden</a>
+                <a href="/register" class="_btn _btn-xl _btn-on-dark _btn--primary _btn-lighter">{{ _('Registrieren') }}</a>
+                <a href="/login" class="_btn _btn-xl _btn-on-dark _btn--primary _btn-outline">{{ _('Anmelden') }}</a>
                 </div>
             </div>
             <div class="column4 column12__sm p8">
-              <h1>Neu hier?</h1>
+              <h1>{{ _('Neu hier?') }}</h1>
               <form action="/auth/register" method="POST">
-                <input id="register_email" class="form" name="email" type="email" placeholder="E-Mail-Adresse">
-                <input id="register_username" class="form" name="realname" placeholder="Benutzername">
-                <input id="register_password" class="form" name="password" type="password" placeholder="Passwort">
+                <input id="register_email" class="form" name="email" type="email" placeholder="{{ _('E-Mail-Adresse') }}">
+                <input id="register_username" class="form" name="realname" placeholder="{{ _('Benutzername') }}">
+                <input id="register_password" class="form" name="password" type="password" placeholder="{{ _('Passwort') }}">
                 <input type="hidden" name="login_provider" value="local_account">
-                <button class="_btn _btn-lg _btn--primary _btn-on-dark _btn-lighter" type="submit">Registrieren</button>
+                <button class="_btn _btn-lg _btn--primary _btn-on-dark _btn-lighter" type="submit">{{ _('Registrieren') }}</button>
               </form>
-              <p class="anchor-white col-dark-lll fs-caption">Wenn du dich registrierst, erklärst du dich mit den <a href="/legal/terms">Nutzungsbedingungen</a> und der <a href="/legal/privacy">Datenschutzerklärung</a> einverstanden.</p>
+              <p class="anchor-white col-dark-lll fs-caption">{{ _('Wenn du dich registrierst, erklärst du dich mit den %(terms_link)s und der %(privacy_link)s einverstanden', terms_link='<a href="/legal/terms">'|safe + _('Nutzungsbedingungen') + '</a>'|safe, privacy_link='<a href="/legal/privacy">'|safe + _('Datenschutzerklärung') + '</a>'|safe) }}.</p>
 
             </div>
         </div>
@@ -34,22 +34,22 @@
     <div class="single-fluid p4">
         <div class="grid ta-c -equal-columns">
             <div class="column4__lg br1s br--primary-d br0s__sm column12 p6">
-              <h1 class="fs-subtitle"><strong>Kurse</strong> – zu verschiedenen Themen</h1>
+              <h1 class="fs-subtitle">{{ _('<strong>Kurse</strong> – zu verschiedenen Themen') }}</h1>
               <img src="/static/img/tour/courses.svg" alt="">
             </div>
             <div class="column4__lg br1s br--primary-d br0s__sm column12 p6">
-              <h1 class="fs-subtitle"><strong>Jeder</strong> kann Inhalte einbringen</h1>
+              <h1 class="fs-subtitle">{{ _('<strong>Jeder</strong> kann Inhalte einbringen') }}</h1>
               <img src="/static/img/tour/contents.svg" alt="">
             </div>
             <div class="column4__lg column12 p6">
-              <h1 class="fs-subtitle">Die <strong>Community</strong> kontrolliert die Inhalte</h1>
+              <h1 class="fs-subtitle">{{ _('Die <strong>Community</strong> kontrolliert die Inhalte') }}</h1>
               <img src="/static/img/tour/community-review.svg" alt="">
             </div>
         </div>
         <div class="grid fs-base3">
             <div>
-                <a href="/courses" class="_btn _btn-xl _btn--primary m3">Kurse ansehen</a>
-                <a href="/tour" class="_btn _btn-xl _btn--primary m3">Mehr erfahren</a>
+                <a href="/courses" class="_btn _btn-xl _btn--primary m3">{{ _('Kurse ansehen') }}</a>
+                <a href="/tour" class="_btn _btn-xl _btn--primary m3">{{ _('Mehr erfahren') }}</a>
             </div>
         </div>
     </div>
@@ -57,7 +57,7 @@
 {% endif %}
 <div class="container single-fluid">
     <div class="p4">
-        <h1 class="-better-sorted"><span class="i">Empfohlene Kurse</span></h1>
+        <h1 class="-better-sorted"><span class="i">{{ _('Empfohlene Kurse') }}</span></h1>
         {% if not user.isLoggedIn() or user.getPref("gdpr:hideHomeCourseRecommendations", False) == "1" %}
             {% set c = courses.getGlobalBeloved() %}
         {% else %}
@@ -84,17 +84,17 @@
                 </div>
                 <div class="_card-footer">
                   {% if course.getDetail("manual_enrollment") %}
-                    <span class="_btn _btn--primary -active" disabled><i class="fa fa-lock"></i> Kurs zugriffsbeschränkt</span>
+                    <span class="_btn _btn--primary -active" disabled><i class="fa fa-lock"></i> {{ _('Kurs zugriffsbeschränkt') }}</span>
                   {% elif course.getDetail("state") == 0 %}
-                    <span class="_btn _btn--primary -active" disabled><i class="fa fa-lock"></i> Kurs nicht verfügbar</span>
+                    <span class="_btn _btn--primary -active" disabled><i class="fa fa-lock"></i> {{ _('Kurs nicht verfügbar') }}</span>
                   {% else %}
                   {% if not user.isLoggedIn() or course.isEnrolled(user) %}
-                    <a href="/course/{{ course.id }}/{{ course.getLabel() }}/start" class="_btn _btn--primary">Zum Kurs</a>
+                    <a href="/course/{{ course.id }}/{{ course.getLabel() }}/start" class="_btn _btn--primary">{{ _('Zum Kurs') }}</a>
                   {% else %}
-                    <a href="/course/{{ course.id }}/{{ course.getLabel() }}/enroll" class="_btn _btn--primary">Einschreiben</a>
+                    <a href="/course/{{ course.id }}/{{ course.getLabel() }}/enroll" class="_btn _btn--primary">{{ _('Einschreiben') }}</a>
                   {% endif %}
                   {% endif %}
-                    <a href="/course/{{ course.id }}/{{ course.getLabel() }}" class="_btn _btn--primary _btn-on-light">Informationen</a>
+                    <a href="/course/{{ course.id }}/{{ course.getLabel() }}" class="_btn _btn--primary _btn-on-light">{{ _('Informationen') }}</a>
                 </div>
               </div>
             </div>
@@ -107,9 +107,9 @@
     {% else %}
         <div class="column7__lg column12 p5">
     {% endif %}
-            <h1 class="-better-sorted"><span class="i">Kurse finden</span></h1>
+            <h1 class="-better-sorted"><span class="i">{{ _('Kurse finden') }}</span></h1>
             <div class="p3">
-                <p class="p-lead">Du kannst unsere <a href="/topics">Themen</a> durchstöbern ...</p>
+                <p class="p-lead">{{ _('Du kannst unsere %(topic_link)s durchstöbern ...', topic_link='<a href="/topics">'|safe + _('Themen') + '</a>'|safe) }}</p>
                 <div class="horizontal-list p3">
                     {% for t in topics.getAll() %}
                     <div class="p1">
@@ -118,21 +118,21 @@
                     {% endfor %}
                 </div>
                 <form action="/course/search" method="GET">
-                    <label for="coursesearch" class="form">... oder nach Kursen suchen</label>
+                    <label for="coursesearch" class="form">{{ _('... oder nach Kursen suchen') }}</label>
                     <div class="grid p2">
                         <div class="colbox-fill">
                             <input class="form" id="coursesearch" name="title">
                         </div>
                         <div class="p1">
-                            <button class="_btn _btn--primary" type="submit">Suchen</button>
+                            <button class="_btn _btn--primary" type="submit">{{ _("Suchen") }}</button>
                         </div>
                     </div>
                 </form>
             </div>
             {% set courseProposals = _proposal.getFeatured() %}
             {% if courseProposals|length > 0 %}
-            <h1 class="-better-sorted"><span class="i">Ideen für Kurse</span></h1>
-            <p>Diese Kurse wurden von Benutzern vorgeschlagen. Wähle die aus, die dich interessieren und unterstütze sie, indem du erklärst, dass du an ihnen teilnehmen möchtest.</p>
+            <h1 class="-better-sorted"><span class="i">{{ _('Ideen für Kurse') }}</span></h1>
+            <p>{{ _('Diese Kurse wurden von Benutzern vorgeschlagen. Wähle die aus, die dich interessieren und unterstütze sie, indem du erklärst, dass du an ihnen teilnehmen möchtest.') }}</p>
             <div class="_list">
             {% for proposal in courseProposals %}
                 <a class="_list-item fs-base1 _list-item-keepcolor" href="/course/proposal/{{proposal.id}}">{% set ct=proposal.getCreationTime() %}
@@ -146,7 +146,7 @@
         </div>
         {% if announcements|length > 0 %}
         <div class="column5__lg column12 p4">
-            <h1 class="-better-sorted"><span class="i">Ankündigungen</span></h1>
+            <h1 class="-better-sorted"><span class="i">{{ _('Ankündigungen') }}</span></h1>
             <div class="_list">
                 {% for a in announcements %}
                 <a class="_list-item fs-base1 _list-item-keepcolor" href="{{ a.getLink() }}">
@@ -156,9 +156,9 @@
                       <span class="d-b col-dark-dd push-right">{{ a.getStart()[1] }}</span>
                     {% endif %}
                     {% if a.getDetail("forum") == 0 %}
-                    <span class="d-b col-dark-dd mb1">Globale Ankündigung</span>
+                    <span class="d-b col-dark-dd mb1">{{ _('Globale Ankündigung') }}</span>
                     {% else %}
-                    <span class="d-b col-dark-dd mb1">Kurs: {{ a.getForum().getTitle() }}</span>
+                    <span class="d-b col-dark-dd mb1">{{ _('Kurs') }}: {{ a.getForum().getTitle() }}</span>
                     {% endif %}
                     <span class="d-b mb1 fs-base2">{{ a.getTitle() }}</span>
                 </a>

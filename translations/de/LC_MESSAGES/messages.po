@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-09-27 20:33+0200\n"
+"POT-Creation-Date: 2019-09-27 22:08+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -17,6 +17,153 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.7.0\n"
+
+#: ../main/templates/index.html:10
+#, python-format
+msgid "Willkommen bei %(site_name)s!"
+msgstr ""
+
+#: ../main/templates/index.html:11
+#, python-format
+msgid ""
+"Auf %(site_name)s werden kostenlose, frei verfügbare Online-Kurse von "
+"einer offenen Internet-Community angeboten: Jeder kann sein Wissen in "
+"Kursen und Kursforen mit anderen teilen."
+msgstr ""
+
+#: ../main/templates/index.html:12
+msgid ""
+"Alle Inhalte sind auch für nicht angemeldete Benutzer zugänglich, aber so"
+" richtig Spaß macht es erst, wenn man sich anmeldet."
+msgstr ""
+
+#: ../main/templates/index.html:14 ../main/templates/index.html:25
+#: ../main/templates/layout_new.html:129 ../main/templates/layout_new.html:202
+msgid "Registrieren"
+msgstr ""
+
+#: ../main/templates/index.html:15 ../main/templates/layout_new.html:130
+msgid "Anmelden"
+msgstr ""
+
+#: ../main/templates/index.html:19
+msgid "Neu hier?"
+msgstr ""
+
+#: ../main/templates/index.html:21
+msgid "E-Mail-Adresse"
+msgstr ""
+
+#: ../main/templates/index.html:22
+msgid "Benutzername"
+msgstr ""
+
+#: ../main/templates/index.html:23
+msgid "Passwort"
+msgstr ""
+
+#: ../main/templates/index.html:27
+#, python-format
+msgid ""
+"Wenn du dich registrierst, erklärst du dich mit den %(terms_link)s und "
+"der %(privacy_link)s einverstanden"
+msgstr ""
+
+#: ../main/templates/index.html:27
+msgid "Nutzungsbedingungen"
+msgstr ""
+
+#: ../main/templates/index.html:27
+msgid "Datenschutzerklärung"
+msgstr ""
+
+#: ../main/templates/index.html:37
+msgid "<strong>Kurse</strong> – zu verschiedenen Themen"
+msgstr ""
+
+#: ../main/templates/index.html:41
+msgid "<strong>Jeder</strong> kann Inhalte einbringen"
+msgstr ""
+
+#: ../main/templates/index.html:45
+msgid "Die <strong>Community</strong> kontrolliert die Inhalte"
+msgstr ""
+
+#: ../main/templates/index.html:51
+msgid "Kurse ansehen"
+msgstr ""
+
+#: ../main/templates/index.html:52
+msgid "Mehr erfahren"
+msgstr ""
+
+#: ../main/templates/index.html:60
+msgid "Empfohlene Kurse"
+msgstr ""
+
+#: ../main/templates/index.html:87
+msgid "Kurs zugriffsbeschränkt"
+msgstr ""
+
+#: ../main/templates/index.html:89
+msgid "Kurs nicht verfügbar"
+msgstr ""
+
+#: ../main/templates/index.html:92
+msgid "Zum Kurs"
+msgstr ""
+
+#: ../main/templates/index.html:94
+msgid "Einschreiben"
+msgstr ""
+
+#: ../main/templates/index.html:97
+msgid "Informationen"
+msgstr ""
+
+#: ../main/templates/index.html:110
+msgid "Kurse finden"
+msgstr ""
+
+#: ../main/templates/index.html:112
+#, python-format
+msgid "Du kannst unsere %(topic_link)s durchstöbern ..."
+msgstr ""
+
+#: ../main/templates/index.html:112
+msgid "Themen"
+msgstr ""
+
+#: ../main/templates/index.html:121
+msgid "... oder nach Kursen suchen"
+msgstr ""
+
+#: ../main/templates/index.html:127
+msgid "Suchen"
+msgstr ""
+
+#: ../main/templates/index.html:134
+msgid "Ideen für Kurse"
+msgstr ""
+
+#: ../main/templates/index.html:135
+msgid ""
+"Diese Kurse wurden von Benutzern vorgeschlagen. Wähle die aus, die dich "
+"interessieren und unterstütze sie, indem du erklärst, dass du an ihnen "
+"teilnehmen möchtest."
+msgstr ""
+
+#: ../main/templates/index.html:149
+msgid "Ankündigungen"
+msgstr ""
+
+#: ../main/templates/index.html:159
+msgid "Globale Ankündigung"
+msgstr ""
+
+#: ../main/templates/index.html:161
+msgid "Kurs"
+msgstr ""
 
 #: ../main/templates/layout_new.html:9
 #, python-format
@@ -76,14 +223,6 @@ msgstr ""
 
 #: ../main/templates/layout_new.html:119
 msgid "Neue Abzeichen"
-msgstr ""
-
-#: ../main/templates/layout_new.html:129 ../main/templates/layout_new.html:202
-msgid "Registrieren"
-msgstr ""
-
-#: ../main/templates/layout_new.html:130
-msgid "Anmelden"
 msgstr ""
 
 #: ../main/templates/layout_new.html:141 ../main/templates/layout_new.html:168
@@ -178,4 +317,94 @@ msgstr ""
 #: ../main/templates/layout_new.html:202
 msgid "Willst du auch mitmachen und dein Wissen teilen?"
 msgstr ""
+
+#~ msgid "Willkommen bei %(site_name)s!"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Auf %(site_name)s werden kostenlose, frei "
+#~ "verfügbare Online-Kurse von einer "
+#~ "offenen Internet-Community angeboten: Jeder"
+#~ " kann sein Wissen in Kursen und "
+#~ "Kursforen mit anderen teilen."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Alle Inhalte sind auch für nicht "
+#~ "angemeldete Benutzer zugänglich, aber so "
+#~ "richtig Spaß macht es erst, wenn "
+#~ "man sich anmeldet."
+#~ msgstr ""
+
+#~ msgid "Neu hier?"
+#~ msgstr ""
+
+#~ msgid "E-Mail-Adresse"
+#~ msgstr ""
+
+#~ msgid "Benutzername"
+#~ msgstr ""
+
+#~ msgid "Passwort"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Wenn du dich registrierst, erklärst du"
+#~ " dich mit den %(terms_link)s und der"
+#~ " %(privacy_link)s einverstanden"
+#~ msgstr ""
+
+#~ msgid "Nutzungsbedingungen"
+#~ msgstr ""
+
+#~ msgid "Datenschutzerklärung"
+#~ msgstr ""
+
+#~ msgid "<strong>Kurse</strong> – zu verschiedenen Themen"
+#~ msgstr ""
+
+#~ msgid "<strong>Jeder</strong> kann Inhalte einbringen"
+#~ msgstr ""
+
+#~ msgid "Die <strong>Community</strong> kontrolliert die Inhalte"
+#~ msgstr ""
+
+#~ msgid "Kurse ansehen"
+#~ msgstr ""
+
+#~ msgid "Mehr erfahren"
+#~ msgstr ""
+
+#~ msgid "Empfohlene Kurse"
+#~ msgstr ""
+
+#~ msgid "Kurs zugriffsbeschränkt"
+#~ msgstr ""
+
+#~ msgid "Kurs nicht verfügbar"
+#~ msgstr ""
+
+#~ msgid "Zum Kurs"
+#~ msgstr ""
+
+#~ msgid "Einschreiben"
+#~ msgstr ""
+
+#~ msgid "Informationen"
+#~ msgstr ""
+
+#~ msgid "Kurse finden"
+#~ msgstr ""
+
+#~ msgid "Du kannst unsere %(topic_link)s durchstöbern ..."
+#~ msgstr ""
+
+#~ msgid "Themen"
+#~ msgstr ""
+
+#~ msgid "... oder nach Kursen suchen"
+#~ msgstr ""
+
+#~ msgid "Suchen"
+#~ msgstr ""
 
