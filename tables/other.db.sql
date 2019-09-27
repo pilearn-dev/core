@@ -8,6 +8,7 @@ INSERT INTO settings VALUES
 ('Identität', 'site-name', 'π-Learn', 'Der Name der Seite in reiner Textform'),
 ('Identität', 'site-short-name', 'π-Learn', 'Der Name der Seite in reiner Textform (Kurzform)'),
 ('Identität', 'site-label', 'π-Learn', 'Der Name der Seite, wie er in der Navigationsleiste ausgegeben wird (<x> enthält Attribute, wie z.B. beta)'),
+('Identität', 'site-language', 'de', 'Die Sprache der Seite (de/en)'),
 
 ('Logging', 'logging-errors-sentry-key', 'https://36ab18e688374a98aed8a511c414a9e3@sentry.io/1461987', 'Der geheime Schlüssel für das Sentry.io Fehleranalyse-Tool'),
 ('Logging', 'logging-matomo-id', '1', 'Die Nummer der Seite im Matomo-Analytics-Tool'),

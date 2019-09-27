@@ -20,6 +20,8 @@ import re, json, time
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
+from flask_babel import Babel
+
 app = Flask(__name__)
 
 app.config.update(dict(
@@ -27,6 +29,7 @@ app.config.update(dict(
     MAX_CONTENT_LENGTH = 4 * 1024 * 1024
 ))
 md.md_apply(app)
+babel = Babel(app)
 
 if S.get("logging-errors-sentry-key"):
     sentry_sdk.init(
@@ -80,6 +83,10 @@ def prepare_template_context():
         "matomo_site_id": S.get("logging-matomo-id"),
         "featured_announcements": mforum.ForumAnnouncement.byForumFeatured(0)
     }
+
+@babel.localeselector
+def babel_select_language():
+    return S.get("feature-language", "de")
 
 @app.before_request
 def prepare_request():
