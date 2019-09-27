@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-site-verification" content="vSvlVOqzIXqIPAJHn1n2sHTbfLF-7TipRxK_T4jokls" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <meta name="description" content="{% block meta_description %}{{ site_name }} ist eine Community-gesteuerte Open Learning Webseite. Das heißt, jeder Benutzer kann sein Wissen in Form von Kursen und Forenbeiträgen mit anderen teilen. Alle Inhalte werden frei veröffentlicht und können von allen angesehen werden, aber so richtig Spaß macht es erst, wenn man sich anmeldet.{% endblock %}">
+  <meta name="description" content="{% block meta_description %}{{ _('%(site_name)s ist eine Community-gesteuerte Open Learning Webseite. Das heißt, jeder Benutzer kann sein Wissen in Form von Kursen und Forenbeiträgen mit anderen teilen. Alle Inhalte werden frei veröffentlicht und können von allen angesehen werden, aber so richtig Spaß macht es erst, wenn man sich anmeldet.', site_name=site_name) }}{% endblock %}">
   <title>{{ site_name }} &ndash; {{ title|safe }}</title>
   <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
 
@@ -70,14 +70,14 @@
       <div class="_header-spacer"></div>
       <nav class="_header-items">
         {% if user.isMod() %}
-        <a href="/tools" class="_header-icon hide__sm" title="Werkzeuge -- Besondere Funktionen und Bemerkenswerte Beiträge -- Nur für Moderatoren">
+        <a href="/tools" class="_header-icon hide__sm" title="{{ _('Werkzeuge') }}">
           <svg width="3em" height="3em" viewbox="0 0 48 48">
             <path d="M24,8 l12,16 l-12,16 l-12-16 z" />
           </svg>
         </a>
         {% endif %}
         {% if user.may("forum_reviewEdits") or user.may("course_reviewEdits") %}{% set revC = review.getReviewCountState(user) %}
-        <a href="/review" class="_header-icon hide__md hide__sm" title="Moderation -- Überprüfe Beiträge auf dieser Seite und entscheide, wie mit diesen weiter zu verfahren ist.">
+        <a href="/review" class="_header-icon hide__md hide__sm" title="{{ _('Moderation') }}">
           <svg width="3em" height="3em" viewbox="0 0 48 48">
             <path d="M6,8 h16 v7 h-16 z M6,21 h16 v7 h-16 z M6,34 h16 v7 h-16 z" />
             <g transform="scale(0.5) translate(50 0)">
@@ -91,7 +91,7 @@
         {% endif %}
         {% if user.isLoggedIn() %}
 
-          <a href="/u/{{ user.id }}" title="Eigenes Benutzerprofil" class="_header-mix  js--topbar-user">
+          <a href="/u/{{ user.id }}" title="{{ _('Eigenes Benutzerprofil') }}" class="_header-mix  js--topbar-user">
             {% if user.getDetail("profile_image") %}
               <img src="{{ user.getDetail("profile_image") }}" class="_header-img mr2__lg mr0" aria-hidden="true">
             {% else %}
@@ -100,14 +100,14 @@
               <path d="M18,22 l16,0 M10,42 l32,0" fill="transparent" stroke-width="3" />
             </svg>
             {% endif %}
-            <span class="_badge _badge-score hide__md hide__sm">{{ user.getReputation() }}</span>
+            <span class="_badge _badge-score hide__md hide__sm" title="{{ _('Reputation') }}">{{ user.getReputation() }}</span>
             {% for type in user.getBadgeBreakdown() %}
             <span class="_badge _badge-score _badge-score-{{ type[1] }} hide__md hide__sm"><span class="_badge-icon"></span>{{ type[0] }}</span>
             {% endfor %}
           </a>
 
           {% set notificationCount = g.countNotifications(user_messages) %}
-          <a class="_header-icon p-r js--topbar-inbox" id="notification-trigger" href="#!" title="Posteingang: Du hast {% if notificationCount == 0 %}keine{% elif notificationCount == 1 %}eine{% else %}{{ notificationCount }}{%endif%} neue Nachrichten">
+          <a class="_header-icon p-r js--topbar-inbox" id="notification-trigger" href="#!" title="{{ _('Posteingang') }}: {% if notificationCount == 0 %}{{ _('Keine ungelesenen Nachrichten') }}{% elif notificationCount == 1 %}{{ _('1 ungelesene Nachricht') }}{% else %}{{ _('%(notification_count)i ungelesenen Nachrichten', notification_count=notificationCount) }}{% endif %}">
             {% if notificationCount != 0 %}<span class="_badge _badge-s-danger -wbd p-a xa-r__sp ya-t__sp">{{ notificationCount }}</span>{% endif %}
             <svg width="3em" height="3em" viewbox="3 3 45 45">
               <path d="M6,12 l18,12 l18,-12 z M6,16 v20 h36 v-20 l-18,12 z" />
@@ -116,7 +116,7 @@
 
           {% set delta = user.getRepDelta() %}
           {% set unknow_badges = user.hasUnknownBadges() %}
-          <a class="_header-icon p-r js--topbar-rep-audit" id="repscreen-trigger" href="#!" title="Auszeichnungen: Du hast {% if delta == 0 %}keine{% else %}eine{%endif%} Änderung deiner Reputation. Du hast{% if not badges %}keine{%endif%} neue{% if not badges %}n{%endif%} Abzeichen.">
+          <a class="_header-icon p-r js--topbar-rep-audit" id="repscreen-trigger" href="#!" title="{{ _('Auszeichnungen') }}: {% if delta == 0 %}{{ _('Keine kürzliche Änderung deiner Reputation') }}{% else %}{{ _('Kürzliche Änderung der Reputation: %(amount)i', amount=dleta) }}{% endif %}{% if badges %}, {{ _('Neue Abzeichen') }}{% endif %}">
             {% if delta > 0 %}<span class="_badge _badge-s-success -wbd p-a xa-r__sp ya-t__sp">+{{ num2suff(delta) }}</span>{% endif %}
             {% if unknow_badges %}<span class="_badge _badge-dot-success -wbd p-a xa-r__sp ya-b__sp">neue Abzeichen</span>{% endif %}
             <svg width="3em" height="3em" viewbox="3 3 45 45">
@@ -126,8 +126,8 @@
             </svg>
           </a>
         {% else %}
-          <a href="/register" class="_header-btn _btn _btn--primary">Registrieren</a>
-          <a href="/login" class="_header-btn _btn _btn--primary _btn-lighter">Anmelden</a>
+          <a href="/register" class="_header-btn _btn _btn--primary">{{ _('Registrieren') }}</a>
+          <a href="/login" class="_header-btn _btn _btn--primary _btn-lighter">{{ _('Anmelden') }}</a>
         {% endif %}
       </nav>
     </div>
@@ -138,9 +138,9 @@
           <a href="/">{{ site_label.replace("<", "{start}").replace(">", "{end}").replace("{start}", '<span class="_headbar-site-sub-brand">').replace("{end}", '</span>')|safe }}</a>
         </div>
         <div class="_headbar-site-nav">
-          <a href="/courses"{% if thispage == "courses" %} class="-active"{% endif %}>Kurse</a>
-            <a href="/f/0"{% if thispage == "forum" %} class="-active"{% endif %}>Forum</a>
-            <a href="/users"{% if thispage == "user" %} class="-active"{% endif %}>Benutzer</a>
+          <a href="/courses"{% if thispage == "courses" %} class="-active"{% endif %}>{{ _('Kurse') }}</a>
+            <a href="/f/0"{% if thispage == "forum" %} class="-active"{% endif %}>{{ _('Forum') }}</a>
+            <a href="/users"{% if thispage == "user" %} class="-active"{% endif %}>{{ _('Benutzer') }}</a>
         </div>
       </div>
     </div>
@@ -164,34 +164,34 @@
       <div class="grid">
         <div class="column12__sm column3 p1">
           <h4 class="p1 fs-base2 f-caps f-bold col--primary-ddd">{{ site_short_name }}</h4>
-          <a class="d-b m1" href="/">Startseite</a>
-          <a class="d-b m1" href="/courses">Kurse</a>
-          <a class="d-b m1" href="/f/0">Globales Forum</a>
-          <a class="d-b m1" href="/help/legal/coc">Code of Conduct</a>
+          <a class="d-b m1" href="/">{{ _('Startseite') }}</a>
+          <a class="d-b m1" href="/courses">{{ _('Kurse') }}</a>
+          <a class="d-b m1" href="/f/0">{{ _('Globales Forum') }}</a>
+          <a class="d-b m1" href="/help/legal/coc">{{ _('Code of Conduct') }}</a>
         </div>
         <div class="column12__sm column3 p1">
-          <h4 class="p1 fs-base2 f-caps f-bold col--primary-ddd">Hilfe</h4>
-          <a class="d-b m1" href="/help">Hilfethemen</a>
-          <a class="d-b m1" href="/help/legal/impress">Impressum</a>
-          <a class="d-b m1" href="/legal/privacy">Datenschutz</a>
-          <a class="d-b m1" href="/helpdesk">Helpdesk</a>
+          <h4 class="p1 fs-base2 f-caps f-bold col--primary-ddd">{{ _('Hilfe') }}</h4>
+          <a class="d-b m1" href="/help">{{ _('Hilfethemen') }}</a>
+          <a class="d-b m1" href="/help/legal/impress">{{ _('Impressum') }}</a>
+          <a class="d-b m1" href="/legal/privacy">{{ _('Datenschutz') }}</a>
+          <a class="d-b m1" href="/helpdesk">{{ _('Helpdesk') }}</a>
           </ul>
         </div>
         <div class="column12__sm column3 p1">
-          <h4 class="p1 fs-base2 f-caps f-bold col--primary-ddd">Über uns</h4>
-          <a class="d-b m1" href="/tour">Website-Tour</a>
-          <a class="d-b m1" href="/about/team">Unser Team</a>
-          <a class="d-b m1" href="https://twitter.com/@pi_learn">Twitter</a>
+          <h4 class="p1 fs-base2 f-caps f-bold col--primary-ddd">{{ _('Über uns') }}</h4>
+          <a class="d-b m1" href="/tour">{{ _('Website-Tour') }}</a>
+          <a class="d-b m1" href="/about/team">{{ _('Unser Team') }}</a>
+          <a class="d-b m1" href="https://twitter.com/@pi_learn">{{ _('Twitter') }}</a>
         </div>
         <div class="column12__sm column3 pt3 p1">
           <img class="p1" alt="Creative Commons BY-SA (mit Namensnennung, Weitergabe unter gleichen Bedingungen)" src="https://i.creativecommons.org/l/by-sa/3.0/88x31.png">
-          <p>Texte und Bilder aus Kursen und Foren verfügbar unter <a href="https://creativecommons.org/licenses/by-sa/3.0/de/">CC-BY-SA</a> zur Verfügung.</p>
-          <p>Alle anderen Inhalte sind urheberrechtlich geschützt.</p>
+          <p>{{ _('Texte und Bilder aus Kursen und Foren verfügbar unter %(license_link)s.', license_link='<a href="https://creativecommons.org/licenses/by-sa/3.0/de/">CC-BY-SA</a>'|safe) }}</p>
+          <p>{{ _('Alle anderen Inhalte sind urheberrechtlich geschützt.') }}</p>
         </div>
         <div class="column12 p1">
-          <p>Diese Webseite nutzt die &pi;-Learn-Software in der Version {{ __version__ }}. Design, System und Logo &copy; &pi;-Learn</p>
-          {% if matomo_site_id %}
-          <p class="o5">{{ site_name }} nutzt statt den üblichen externen Anbietern die datenschutzfreundliche Alternative <a href="https://matomo.org">Matomo</a>, um Statistiken zu Seitenaufrufen zu erhalten. Wenn du das nicht möchtest, kannst du <a href="https://analytics.velja.de/index.php?module=CoreAdminHome&action=optOut&language=de&backgroundColor=ffffff&fontColor=5f5f5f&fontSize=16px&fontFamily=%22Source%20Sans%20Pro%22%2C%22Open%20Sans%22%2C%22Helvetica%20Neue%22%2CHelvetica%2CArial%2Csans-serif">hier</a> der Speicherung widersprechen.</p>
+          <p>{{ _('Diese Webseite nutzt die &pi;-Learn-Software in der Version %(version)s. Design, System und Logo &copy; &pi;-Learn', version=__version__) }}</p>
+          {% if matomo_site_id >= 1 %}
+          <p class="o5">{{ _('%(site_name)s nutzt statt den üblichen externen Anbietern die datenschutzfreundliche Alternative %(matomo_link)s , um Statistiken zu Seitenaufrufen zu erhalten. Wenn du das nicht möchtest, kannst du %(matomo_disable_link)s  der Speicherung widersprechen.', site_name=site_name, matomo_link='<a href="https://matomo.org">Matomo</a>'|safe, matomo_disable_link='<a href="https://analytics.velja.de/index.php?module=CoreAdminHome&action=optOut&language=de&backgroundColor=ffffff&fontColor=5f5f5f&fontSize=16px&fontFamily=%22Source%20Sans%20Pro%22%2C%22Open%20Sans%22%2C%22Helvetica%20Neue%22%2CHelvetica%2CArial%2Csans-serif">'|safe + _('hier') + '</a>'|safe) }}</p>
           {% endif %}
         </div>
     </div>
@@ -199,7 +199,7 @@
     {% if not (user.isLoggedIn() or request.cookies.get("hide-hero-login-request", False)) %}
         <div class="_banner _banner--primary _banner-strong _banner-bottom" id="banner:login-request">
             <div class="single-fluid grid">
-              <p class="column9 column12__sm">Willst du auch mitmachen und dein Wissen teilen?</p><div class="column3 column12__sm al-r"><a href="/login" class="_btn _btn--primary _btn-on-dark _btn-lighter">Registrieren</a><a href="#!" onclick="K=this;$.ajax({url:'/hide-hero',method:'POST', data:JSON.stringify({'hero':'login-request'}),
+              <p class="column9 column12__sm">{{ _('Willst du auch mitmachen und dein Wissen teilen?') }}</p><div class="column3 column12__sm al-r"><a href="/login" class="_btn _btn--primary _btn-on-dark _btn-lighter">{{ _('Registrieren') }}</a><a href="#!" onclick="K=this;$.ajax({url:'/hide-hero',method:'POST', data:JSON.stringify({'hero':'login-request'}),
               contentType: 'application/json; charset=utf-8',success:function(){K.parentNode.parentNode.parentNode.style.display='none';}});" class="_btn _btn--primary _btn-on-dark">&times;</a></div></div>
         </div>
     {% endif %}
@@ -210,7 +210,7 @@
     <script src="/static/new_js/moderator.js" charset="utf-8"></script>
     {% endif %}
     {% if user.getPref("darkTheme", False) == "1" %}
-    <style>._headbar-site,.container, footer, ._dialog{filter:invert(100%)}._headbar-site img,.container img{filter:invert(100%)}html{background-color:#000 !important}</style>
+    <style>._headbar-site,.container, footer, ._dialog{filter:invert(100%)}._headbar-site img,.container img, .container iframe{filter:invert(100%)}html{background-color:#000 !important}</style>
     {% endif %}
 </body>
 </html>

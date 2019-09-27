@@ -1,0 +1,181 @@
+# German translations for PROJECT.
+# Copyright (C) 2019 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2019.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2019-09-27 20:33+0200\n"
+"PO-Revision-Date: 2019-09-27 17:26+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.7.0\n"
+
+#: ../main/templates/layout_new.html:9
+#, python-format
+msgid ""
+"%(site_name)s ist eine Community-gesteuerte Open Learning Webseite. Das "
+"heißt, jeder Benutzer kann sein Wissen in Form von Kursen und "
+"Forenbeiträgen mit anderen teilen. Alle Inhalte werden frei "
+"veröffentlicht und können von allen angesehen werden, aber so richtig "
+"Spaß macht es erst, wenn man sich anmeldet."
+msgstr ""
+
+#: ../main/templates/layout_new.html:73
+msgid "Werkzeuge"
+msgstr ""
+
+#: ../main/templates/layout_new.html:80
+msgid "Moderation"
+msgstr ""
+
+#: ../main/templates/layout_new.html:94
+msgid "Eigenes Benutzerprofil"
+msgstr ""
+
+#: ../main/templates/layout_new.html:103
+msgid "Reputation"
+msgstr ""
+
+#: ../main/templates/layout_new.html:110
+msgid "Posteingang"
+msgstr ""
+
+#: ../main/templates/layout_new.html:110
+msgid "Keine ungelesenen Nachrichten"
+msgstr ""
+
+#: ../main/templates/layout_new.html:110
+msgid "1 ungelesene Nachricht"
+msgstr ""
+
+#: ../main/templates/layout_new.html:110
+#, python-format
+msgid "%(notification_count)i ungelesenen Nachrichten"
+msgstr ""
+
+#: ../main/templates/layout_new.html:119
+msgid "Auszeichnungen"
+msgstr ""
+
+#: ../main/templates/layout_new.html:119
+msgid "Keine kürzliche Änderung deiner Reputation"
+msgstr ""
+
+#: ../main/templates/layout_new.html:119
+#, python-format
+msgid "Kürzliche Änderung der Reputation: %(amount)i"
+msgstr ""
+
+#: ../main/templates/layout_new.html:119
+msgid "Neue Abzeichen"
+msgstr ""
+
+#: ../main/templates/layout_new.html:129 ../main/templates/layout_new.html:202
+msgid "Registrieren"
+msgstr ""
+
+#: ../main/templates/layout_new.html:130
+msgid "Anmelden"
+msgstr ""
+
+#: ../main/templates/layout_new.html:141 ../main/templates/layout_new.html:168
+msgid "Kurse"
+msgstr ""
+
+#: ../main/templates/layout_new.html:142
+msgid "Forum"
+msgstr ""
+
+#: ../main/templates/layout_new.html:143
+msgid "Benutzer"
+msgstr ""
+
+#: ../main/templates/layout_new.html:167
+msgid "Startseite"
+msgstr ""
+
+#: ../main/templates/layout_new.html:169
+msgid "Globales Forum"
+msgstr ""
+
+#: ../main/templates/layout_new.html:170
+msgid "Code of Conduct"
+msgstr ""
+
+#: ../main/templates/layout_new.html:173
+msgid "Hilfe"
+msgstr ""
+
+#: ../main/templates/layout_new.html:174
+msgid "Hilfethemen"
+msgstr ""
+
+#: ../main/templates/layout_new.html:175
+msgid "Impressum"
+msgstr ""
+
+#: ../main/templates/layout_new.html:176
+msgid "Datenschutz"
+msgstr ""
+
+#: ../main/templates/layout_new.html:177
+msgid "Helpdesk"
+msgstr ""
+
+#: ../main/templates/layout_new.html:181
+msgid "Über uns"
+msgstr ""
+
+#: ../main/templates/layout_new.html:182
+msgid "Website-Tour"
+msgstr ""
+
+#: ../main/templates/layout_new.html:183
+msgid "Unser Team"
+msgstr ""
+
+#: ../main/templates/layout_new.html:184
+msgid "Twitter"
+msgstr ""
+
+#: ../main/templates/layout_new.html:188
+#, python-format
+msgid "Texte und Bilder aus Kursen und Foren verfügbar unter %(license_link)s."
+msgstr ""
+
+#: ../main/templates/layout_new.html:189
+msgid "Alle anderen Inhalte sind urheberrechtlich geschützt."
+msgstr ""
+
+#: ../main/templates/layout_new.html:192
+#, python-format
+msgid ""
+"Diese Webseite nutzt die &pi;-Learn-Software in der Version %(version)s. "
+"Design, System und Logo &copy; &pi;-Learn"
+msgstr ""
+
+#: ../main/templates/layout_new.html:194
+#, python-format
+msgid ""
+"%(site_name)s nutzt statt den üblichen externen Anbietern die "
+"datenschutzfreundliche Alternative %(matomo_link)s , um Statistiken zu "
+"Seitenaufrufen zu erhalten. Wenn du das nicht möchtest, kannst du "
+"%(matomo_disable_link)s  der Speicherung widersprechen."
+msgstr ""
+
+#: ../main/templates/layout_new.html:194
+msgid "hier"
+msgstr ""
+
+#: ../main/templates/layout_new.html:202
+msgid "Willst du auch mitmachen und dein Wissen teilen?"
+msgstr ""
+

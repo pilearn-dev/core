@@ -26,7 +26,8 @@ app = Flask(__name__)
 
 app.config.update(dict(
     SECRET_KEY='S6b9ySuzI2Uv55aY3To8',
-    MAX_CONTENT_LENGTH = 4 * 1024 * 1024
+    MAX_CONTENT_LENGTH = 4 * 1024 * 1024,
+    BABEL_TRANSLATION_DIRECTORIES='../translations'
 ))
 md.md_apply(app)
 babel = Babel(app)
@@ -80,13 +81,14 @@ def prepare_template_context():
         "mathjax_block_delim": S.get("enable-mathjax-tokens-block", "::( )::").split(" "),
         "mathjax_inline_delim": S.get("enable-mathjax-tokens-inline", ":( ):").split(" "),
         "needs_mathjax": False,
-        "matomo_site_id": S.get("logging-matomo-id"),
+        "matomo_site_id": int(S.get("logging-matomo-id")),
         "featured_announcements": mforum.ForumAnnouncement.byForumFeatured(0)
     }
 
 @babel.localeselector
 def babel_select_language():
-    return S.get("feature-language", "de")
+    lang = S.get("site-language", "de")
+    return lang
 
 @app.before_request
 def prepare_request():

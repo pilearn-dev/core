@@ -18,3 +18,4 @@ archive/*
 mailoutput/*
 main/static/CourseStockImages/*
 main/static/CourseStockImages_small/*
+*.pot
