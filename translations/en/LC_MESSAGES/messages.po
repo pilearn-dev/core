@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-09-27 22:08+0200\n"
+"POT-Creation-Date: 2019-09-28 14:40+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -30,29 +30,29 @@ msgid ""
 "einer offenen Internet-Community angeboten: Jeder kann sein Wissen in "
 "Kursen und Kursforen mit anderen teilen."
 msgstr ""
-"%(site_name)s is a platform for free "
-"open online courses, offered by an "
-"inclusive community: Everyone is invited "
-"to share their knowledge by publishing"
-" courses or course articles."
+"%(site_name)s is a platform for free open online courses, offered by an "
+"inclusive community: Everyone is invited to share their knowledge by "
+"publishing courses or course articles."
 
 #: ../main/templates/index.html:12
 msgid ""
 "Alle Inhalte sind auch für nicht angemeldete Benutzer zugänglich, aber so"
 " richtig Spaß macht es erst, wenn man sich anmeldet."
 msgstr ""
-"All contents are published freely under a "
-"permissive license and can "
-"be seen by everybody, however it "
-"is more fun if you login and "
-"join the community."
+"All contents are published freely under a permissive license and can be "
+"seen by everybody, however it is more fun if you login and join the "
+"community."
 
 #: ../main/templates/index.html:14 ../main/templates/index.html:25
 #: ../main/templates/layout_new.html:129 ../main/templates/layout_new.html:202
+#: ../main/templates/register.html:5 ../main/templates/register.html:34
+#: ../main/view/auth.py:60
 msgid "Registrieren"
 msgstr "Register"
 
 #: ../main/templates/index.html:15 ../main/templates/layout_new.html:130
+#: ../main/templates/login.html:5 ../main/templates/login.html:32
+#: ../main/view/auth.py:24
 msgid "Anmelden"
 msgstr "Log in"
 
@@ -60,33 +60,34 @@ msgstr "Log in"
 msgid "Neu hier?"
 msgstr "New here?"
 
-#: ../main/templates/index.html:21
+#: ../main/templates/index.html:21 ../main/templates/login.html:27
+#: ../main/templates/passwordreset.html:15 ../main/templates/register.html:27
 msgid "E-Mail-Adresse"
 msgstr "e-mail address"
 
-#: ../main/templates/index.html:22
+#: ../main/templates/index.html:22 ../main/templates/register.html:29
 msgid "Benutzername"
 msgstr "user name"
 
-#: ../main/templates/index.html:23
+#: ../main/templates/index.html:23 ../main/templates/login.html:29
+#: ../main/templates/register.html:31
 msgid "Passwort"
 msgstr "password"
 
-#: ../main/templates/index.html:27
+#: ../main/templates/index.html:27 ../main/templates/register.html:36
 #, python-format
 msgid ""
 "Wenn du dich registrierst, erklärst du dich mit den %(terms_link)s und "
-"der %(privacy_link)s einverstanden"
+"der %(privacy_link)s einverstanden."
 msgstr ""
-"By registering, you agree to have "
-"read and accept our %(terms_link)s and"
-" %(privacy_link)s."
+"By registering, you agree to have read and accept our %(terms_link)s and "
+"%(privacy_link)s."
 
-#: ../main/templates/index.html:27
+#: ../main/templates/index.html:27 ../main/templates/register.html:36
 msgid "Nutzungsbedingungen"
 msgstr "Terms of Service"
 
-#: ../main/templates/index.html:27
+#: ../main/templates/index.html:27 ../main/templates/register.html:36
 msgid "Datenschutzerklärung"
 msgstr "Privacy Declaration"
 
@@ -164,7 +165,10 @@ msgid ""
 "Diese Kurse wurden von Benutzern vorgeschlagen. Wähle die aus, die dich "
 "interessieren und unterstütze sie, indem du erklärst, dass du an ihnen "
 "teilnehmen möchtest."
-msgstr "These are course proposals made by community members. Select the ones you find interesting and support them by declaring your interest in participating in them."
+msgstr ""
+"These are course proposals made by community members. Select the ones you"
+" find interesting and support them by declaring your interest in "
+"participating in them."
 
 #: ../main/templates/index.html:149
 msgid "Ankündigungen"
@@ -342,3 +346,197 @@ msgstr "here"
 #: ../main/templates/layout_new.html:202
 msgid "Willst du auch mitmachen und dein Wissen teilen?"
 msgstr "Don't you want to join and share your knowledge?"
+
+#: ../main/templates/login.html:8 ../main/templates/register.html:10
+msgid "Dieser Benutzeraccount wurde nicht gefunden."
+msgstr "Your user account could not be found."
+
+#: ../main/templates/login.html:12 ../main/templates/register.html:14
+msgid ""
+"Dieser Benutzeraccount wurde gelöscht. Du kannst dich nicht mit diesem "
+"Konto anmelden. Eventuell kann das Konto wiederhergestellt werden. "
+"Registriere dafür ein Konto mit den exakt gleichen Anmeldedaten."
+msgstr ""
+"This user account has been deleted. You therefore cannot use it to log "
+"in. However it might be possible to restore the account, by registering "
+"an account using the same login credentials"
+
+#: ../main/templates/login.html:16 ../main/templates/register.html:18
+msgid "Das Format, das du für deine Benutzerdaten angegeben hast ist ungültig."
+msgstr "Your login credentials are invalid."
+
+#: ../main/templates/login.html:19
+msgid "Melde dich mit einem bereits existierenden Benutzerkonto an."
+msgstr "Login with an existing user account"
+
+#: ../main/templates/login.html:20
+msgid "Du hast noch kein Benutzerkonto?"
+msgstr "You don't have a user account yet?"
+
+#: ../main/templates/login.html:20
+#, python-format
+msgid ""
+"Dann kannst du <a href=\"%(register_link)s\">ein neues Benutzerkonto "
+"erstellen</a>."
+msgstr "Then you can <a href=\"%(register_link)s\">create a new one here</a>."
+
+#: ../main/templates/login.html:21 ../main/templates/register.html:21
+msgid "Externe Dienste"
+msgstr "Third-party services"
+
+#: ../main/templates/login.html:23 ../main/templates/register.html:23
+msgid "Google-Anmeldung"
+msgstr "Login with Google"
+
+#: ../main/templates/login.html:25 ../main/templates/register.html:25
+#, python-format
+msgid "%(site_name)s-Konto"
+msgstr "Account on %(site_name)s"
+
+#: ../main/templates/login.html:33
+msgid "Passwort vergessen"
+msgstr "Forgot your password?"
+
+#: ../main/templates/mail.html:48
+msgid ""
+"Du erhältst diese E-Mail, weil du dich mit dieser E-Mail-Adresse bei "
+"&pi;-Learn angemeldet hast."
+msgstr "You receive this email, because you registered an account on "
+"&pi;-Learn with this address."
+
+#: ../main/templates/mail.html:53
+msgid ""
+"Du siehst, dass diese E-Mail wirklich von uns stammt, da alle Links mit "
+"<code>https://pilearn.de/</code> beginnen. Im Zweifelsfall, besuche "
+"pilearn.de in deinem Browser (nicht von hier kopieren!)"
+msgstr ""
+"To verify, that this e-mail has been properly send by us, check if all "
+"links start with <code>https://pilearn.de/</code>. When in doubt, open "
+"pilearn.de in your web browser (not copying any link from this e-mail)."
+
+#: ../main/templates/passwordreset.html:5
+#: ../main/templates/passwordreset_verify.html:5
+#: ../main/templates/passwordreset_verify.html:22 ../main/view/auth.py:88
+#: ../main/view/auth.py:100
+msgid "Passwort zurücksetzen"
+msgstr "Reset password"
+
+#: ../main/templates/passwordreset.html:6
+msgid "Du hast dein Passwort vergessen? Hier kannst du es zurücksetzen."
+msgstr "If you forgot your password, you can reset it here."
+
+#: ../main/templates/passwordreset.html:7
+msgid "Du kennst dein Passwort (doch) noch?"
+msgstr "You still remember your password?"
+
+#: ../main/templates/passwordreset.html:7 ../main/templates/register.html:7
+#, python-format
+msgid "Dann brauchst du dich nur <a href=\"%(login_link)s\">anzumelden</a>."
+msgstr "Then you can <a href=\"%(login_link)s\">login here</a>."
+
+#: ../main/templates/passwordreset.html:8
+msgid ""
+"Wenn du dich mit einem externen Anbieter angemeldet hast, gehe bitte zu "
+"diesem um dein Passwort zurückzusetzen."
+msgstr ""
+"If you registered with a third-party service, you ought to go to them to "
+"reset the password."
+
+#: ../main/templates/passwordreset.html:11
+msgid "Ungültige E-Mail."
+msgstr "Invalid e-mail"
+
+#: ../main/templates/passwordreset.html:11
+msgid "Die E-Mail-Adresse ist ungültig oder wurde nicht gefunden."
+msgstr "Your e-mail is invalid or could not be found."
+
+#: ../main/templates/passwordreset.html:11
+#: ../main/templates/passwordreset_verify.html:14
+msgid "Bitte versuche es erneut."
+msgstr "Please retry."
+
+#: ../main/templates/passwordreset.html:17
+msgid "Weiter"
+msgstr "Continue"
+
+#: ../main/templates/passwordreset_verify.html:8
+msgid "Erfolgreich."
+msgstr "Success."
+
+#: ../main/templates/passwordreset_verify.html:8
+#, python-format
+msgid "Dein Passwort wurde zurückgesetzt. Du kannst dich jetzt %(login_link)s."
+msgstr "Your password has been reset successfully. You can now %(login_link)s."
+
+#: ../main/templates/passwordreset_verify.html:8
+msgid "anmelden"
+msgstr "login"
+
+#: ../main/templates/passwordreset_verify.html:11
+msgid "Wir haben einen Bestätigungscode an deine E-Mail-Adresse gesendet."
+msgstr "We sent a verification code to your e-mail."
+
+#: ../main/templates/passwordreset_verify.html:14
+msgid "Ungültiger Code."
+msgstr "Invalid code."
+
+#: ../main/templates/passwordreset_verify.html:14
+msgid "Der Bestätigungscode war ungültig."
+msgstr "Your verification code has expired or is invalid."
+
+#: ../main/templates/passwordreset_verify.html:18
+msgid "Code"
+msgstr "Verification code"
+
+#: ../main/templates/passwordreset_verify.html:20
+msgid "Neues Passwort"
+msgstr "Your new password"
+
+#: ../main/templates/register.html:6
+#, python-format
+msgid "Erstelle ein neues Benutzerkonto für %(site_name)s."
+msgstr "Register a new user account for %(site_name)s"
+
+#: ../main/templates/register.html:7
+msgid "Du hast bereits ein Benutzerkonto?"
+msgstr "You already have an user account?"
+
+#: ../main/view/auth.py:70
+msgid "Dein Passwort-Zurücksetz-Code"
+msgstr "Your password reset verification code"
+
+#: ../main/view/auth.py:70
+#, python-format
+msgid ""
+"Hallo,\n"
+"\n"
+"du hast eine Anfrage auf &pi;-Learn gesendet, um das Passwort für diese E"
+"-Mail-Adresse zurückzusetzen.\n"
+"\n"
+"Der Bestätigungscode dafür lautet:\n"
+"\n"
+"# %(code)s\n"
+"\n"
+"Wenn du das Fenster bereits geschlossen hast, kannst du { hier klicken ->"
+" %(link)s } oder diesen Link im Browser öffnen:\n"
+"\n"
+"%(link)s\n"
+"\n"
+"Wenn diese Anfrage nicht von dir stammt, kannst du diese E-Mail einfach "
+"löschen."
+msgstr ""
+"Hello!\n"
+"\n"
+"You requested that your &pi;-Learn account password for this e-mail shall"
+" be reset.\n"
+"\n"
+"The verification code for this is:\n"
+"\n"
+"# %(code)s\n"
+"\n"
+"If you already closed the browser window, you can { click here -> "
+"%(link)s } or copy this link and open it in your browser:\n"
+"\n"
+"%(link)s\n"
+"\n"
+"If you have not requested a passwort reset, just delete this e-mail."

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-09-27 22:08+0200\n"
+"POT-Creation-Date: 2019-09-28 14:40+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -39,10 +39,14 @@ msgstr ""
 
 #: ../main/templates/index.html:14 ../main/templates/index.html:25
 #: ../main/templates/layout_new.html:129 ../main/templates/layout_new.html:202
+#: ../main/templates/register.html:5 ../main/templates/register.html:34
+#: ../main/view/auth.py:60
 msgid "Registrieren"
 msgstr ""
 
 #: ../main/templates/index.html:15 ../main/templates/layout_new.html:130
+#: ../main/templates/login.html:5 ../main/templates/login.html:32
+#: ../main/view/auth.py:24
 msgid "Anmelden"
 msgstr ""
 
@@ -50,30 +54,32 @@ msgstr ""
 msgid "Neu hier?"
 msgstr ""
 
-#: ../main/templates/index.html:21
+#: ../main/templates/index.html:21 ../main/templates/login.html:27
+#: ../main/templates/passwordreset.html:15 ../main/templates/register.html:27
 msgid "E-Mail-Adresse"
 msgstr ""
 
-#: ../main/templates/index.html:22
+#: ../main/templates/index.html:22 ../main/templates/register.html:29
 msgid "Benutzername"
 msgstr ""
 
-#: ../main/templates/index.html:23
+#: ../main/templates/index.html:23 ../main/templates/login.html:29
+#: ../main/templates/register.html:31
 msgid "Passwort"
 msgstr ""
 
-#: ../main/templates/index.html:27
+#: ../main/templates/index.html:27 ../main/templates/register.html:36
 #, python-format
 msgid ""
 "Wenn du dich registrierst, erklärst du dich mit den %(terms_link)s und "
-"der %(privacy_link)s einverstanden"
+"der %(privacy_link)s einverstanden."
 msgstr ""
 
-#: ../main/templates/index.html:27
+#: ../main/templates/index.html:27 ../main/templates/register.html:36
 msgid "Nutzungsbedingungen"
 msgstr ""
 
-#: ../main/templates/index.html:27
+#: ../main/templates/index.html:27 ../main/templates/register.html:36
 msgid "Datenschutzerklärung"
 msgstr ""
 
@@ -318,6 +324,176 @@ msgstr ""
 msgid "Willst du auch mitmachen und dein Wissen teilen?"
 msgstr ""
 
+#: ../main/templates/login.html:8 ../main/templates/register.html:10
+msgid "Dieser Benutzeraccount wurde nicht gefunden."
+msgstr ""
+
+#: ../main/templates/login.html:12 ../main/templates/register.html:14
+msgid ""
+"Dieser Benutzeraccount wurde gelöscht. Du kannst dich nicht mit diesem "
+"Konto anmelden. Eventuell kann das Konto wiederhergestellt werden. "
+"Registriere dafür ein Konto mit den exakt gleichen Anmeldedaten."
+msgstr ""
+
+#: ../main/templates/login.html:16 ../main/templates/register.html:18
+msgid "Das Format, das du für deine Benutzerdaten angegeben hast ist ungültig."
+msgstr ""
+
+#: ../main/templates/login.html:19
+msgid "Melde dich mit einem bereits existierenden Benutzerkonto an."
+msgstr ""
+
+#: ../main/templates/login.html:20
+msgid "Du hast noch kein Benutzerkonto?"
+msgstr ""
+
+#: ../main/templates/login.html:20
+#, python-format
+msgid ""
+"Dann kannst du <a href=\"%(register_link)s\">ein neues Benutzerkonto "
+"erstellen</a>."
+msgstr ""
+
+#: ../main/templates/login.html:21 ../main/templates/register.html:21
+msgid "Externe Dienste"
+msgstr ""
+
+#: ../main/templates/login.html:23 ../main/templates/register.html:23
+msgid "Google-Anmeldung"
+msgstr ""
+
+#: ../main/templates/login.html:25 ../main/templates/register.html:25
+#, python-format
+msgid "%(site_name)s-Konto"
+msgstr ""
+
+#: ../main/templates/login.html:33
+msgid "Passwort vergessen"
+msgstr ""
+
+#: ../main/templates/mail.html:48
+msgid ""
+"Du erhältst diese E-Mail, weil du dich mit dieser E-Mail-Adresse bei "
+"&pi;-Learn angemeldet hast."
+msgstr ""
+
+#: ../main/templates/mail.html:53
+msgid ""
+"Du siehst, dass diese E-Mail wirklich von uns stammt, da alle Links mit "
+"<code>https://pilearn.de/</code> beginnen. Im Zweifelsfall, besuche "
+"pilearn.de in deinem Browser (nicht von hier kopieren!)"
+msgstr ""
+
+#: ../main/templates/passwordreset.html:5
+#: ../main/templates/passwordreset_verify.html:5
+#: ../main/templates/passwordreset_verify.html:22 ../main/view/auth.py:88
+#: ../main/view/auth.py:100
+msgid "Passwort zurücksetzen"
+msgstr ""
+
+#: ../main/templates/passwordreset.html:6
+msgid "Du hast dein Passwort vergessen? Hier kannst du es zurücksetzen."
+msgstr ""
+
+#: ../main/templates/passwordreset.html:7
+msgid "Du kennst dein Passwort (doch) noch?"
+msgstr ""
+
+#: ../main/templates/passwordreset.html:7 ../main/templates/register.html:7
+#, python-format
+msgid "Dann brauchst du dich nur <a href=\"%(login_link)s\">anzumelden</a>."
+msgstr ""
+
+#: ../main/templates/passwordreset.html:8
+msgid ""
+"Wenn du dich mit einem externen Anbieter angemeldet hast, gehe bitte zu "
+"diesem um dein Passwort zurückzusetzen."
+msgstr ""
+
+#: ../main/templates/passwordreset.html:11
+msgid "Ungültige E-Mail."
+msgstr ""
+
+#: ../main/templates/passwordreset.html:11
+msgid "Die E-Mail-Adresse ist ungültig oder wurde nicht gefunden."
+msgstr ""
+
+#: ../main/templates/passwordreset.html:11
+#: ../main/templates/passwordreset_verify.html:14
+msgid "Bitte versuche es erneut."
+msgstr ""
+
+#: ../main/templates/passwordreset.html:17
+msgid "Weiter"
+msgstr ""
+
+#: ../main/templates/passwordreset_verify.html:8
+msgid "Erfolgreich."
+msgstr ""
+
+#: ../main/templates/passwordreset_verify.html:8
+#, python-format
+msgid "Dein Passwort wurde zurückgesetzt. Du kannst dich jetzt %(login_link)s."
+msgstr ""
+
+#: ../main/templates/passwordreset_verify.html:8
+msgid "anmelden"
+msgstr ""
+
+#: ../main/templates/passwordreset_verify.html:11
+msgid "Wir haben einen Bestätigungscode an deine E-Mail-Adresse gesendet."
+msgstr ""
+
+#: ../main/templates/passwordreset_verify.html:14
+msgid "Ungültiger Code."
+msgstr ""
+
+#: ../main/templates/passwordreset_verify.html:14
+msgid "Der Bestätigungscode war ungültig."
+msgstr ""
+
+#: ../main/templates/passwordreset_verify.html:18
+msgid "Code"
+msgstr ""
+
+#: ../main/templates/passwordreset_verify.html:20
+msgid "Neues Passwort"
+msgstr ""
+
+#: ../main/templates/register.html:6
+#, python-format
+msgid "Erstelle ein neues Benutzerkonto für %(site_name)s."
+msgstr ""
+
+#: ../main/templates/register.html:7
+msgid "Du hast bereits ein Benutzerkonto?"
+msgstr ""
+
+#: ../main/view/auth.py:70
+msgid "Dein Passwort-Zurücksetz-Code"
+msgstr ""
+
+#: ../main/view/auth.py:70
+#, python-format
+msgid ""
+"Hallo,\n"
+"\n"
+"du hast eine Anfrage auf &pi;-Learn gesendet, um das Passwort für diese E"
+"-Mail-Adresse zurückzusetzen.\n"
+"\n"
+"Der Bestätigungscode dafür lautet:\n"
+"\n"
+"# %(code)s\n"
+"\n"
+"Wenn du das Fenster bereits geschlossen hast, kannst du { hier klicken ->"
+" %(link)s } oder diesen Link im Browser öffnen:\n"
+"\n"
+"%(link)s\n"
+"\n"
+"Wenn diese Anfrage nicht von dir stammt, kannst du diese E-Mail einfach "
+"löschen."
+msgstr ""
+
 #~ msgid "Willkommen bei %(site_name)s!"
 #~ msgstr ""
 
@@ -406,5 +582,14 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Suchen"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Die E-Mail-Adresse ist ungültig oder "
+#~ "wurde nicht gefunden. Bitte versuche es"
+#~ " erneut."
+#~ msgstr ""
+
+#~ msgid "Password zurücksetzen"
 #~ msgstr ""
 

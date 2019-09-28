@@ -2,37 +2,37 @@
 {% extends "layout_new.html" %}
 {% block body %}
 <div class="container single-fluid-tiny s3 p4">
-  <h1 class="fs-subtitle ta-c bb1 bb-s bb-dark-ll">Registrieren</h1>
-  <p>Erstelle ein neues Benutzerkonto für {{ site_name }}.</p>
-  <p>Du hast bereits ein Benutzerkonto? Dann brauchst du dich nur <a href="/auth/login">anzumelden</a>.</p>
+  <h1 class="fs-subtitle ta-c bb1 bb-s bb-dark-ll">{{ _('Registrieren') }}</h1>
+  <p>{{ _('Erstelle ein neues Benutzerkonto für %(site_name)s.', site_name=site_name) }}</p>
+  <p>{{ _('Du hast bereits ein Benutzerkonto?') }} {{ _('Dann brauchst du dich nur <a href="%(login_link)s">anzumelden</a>.', login_link='/auth/login') }}</p>
   {% if error == "not-found" %}
     <div class="_alert _alert-danger">
-        Dieser Benutzeraccount wurde nicht gefunden.
+        {% trans %}Dieser Benutzeraccount wurde nicht gefunden.{% endtrans %}
     </div>
   {% elif error == "forbidden" %}
     <div class="_alert _alert-danger">
-        Dieser Benutzeraccount wurde gelöscht. Du kannst dich nicht mit diesem Konto anmelden. Eventuell kann das Konto wiederhergestellt werden. Registriere dafür ein Konto mit den exakt gleichen Anmeldedaten.
+      {% trans %}Dieser Benutzeraccount wurde gelöscht. Du kannst dich nicht mit diesem Konto anmelden. Eventuell kann das Konto wiederhergestellt werden. Registriere dafür ein Konto mit den exakt gleichen Anmeldedaten.{% endtrans %}
     </div>
   {% elif error == "format" %}
     <div class="_alert _alert-danger">
-        Das Format, das du für deine Benutzerdaten angegeben hast ist ungültig.
+        {% trans %}Das Format, das du für deine Benutzerdaten angegeben hast ist ungültig.{% endtrans %}
     </div>
   {% endif %}
-  <h2 class="fs-base3 col-dark-dd ta-c">Externe Dienste</h2>
+  <h2 class="fs-base3 col-dark-dd ta-c">{{ _('Externe Dienste') }}</h2>
   <div class="grid">
-      <a href="/auth/oauth-provider/google" class="_btn _btn-service _btn-service-google">Google-Anmeldung</a>
+      <a href="/auth/oauth-provider/google" class="_btn _btn-service _btn-service-google">{{ _('Google-Anmeldung') }}</a>
   </div>
-  <h2 class="fs-base3 col-dark-dd ta-c">{{ site_short_name }}-Konto</h2>
+  <h2 class="fs-base3 col-dark-dd ta-c">{{ _("%(site_name)s-Konto", site_name=site_short_name) }}</h2>
   <form action="" method="POST">
-    <label for="register_email" class="form">E-Mail:</label>
+    <label for="register_email" class="form">{{ _("E-Mail-Adresse") }}:</label>
     <input id="register_email" class="form" name="email" type="email">
-    <label for="register_username" class="form">Benutzername:</label>
+    <label for="register_username" class="form">{{ _("Benutzername") }}:</label>
     <input id="register_username" class="form" name="realname">
-    <label for="register_password" class="form">Passwort:</label>
+    <label for="register_password" class="form">{{ _("Passwort") }}:</label>
     <input id="register_password" class="form" name="password" type="password">
     <input type="hidden" name="login_provider" value="local_account">
-    <button class="_btn _btn--primary" type="submit">Registrieren</button>
+    <button class="_btn _btn--primary" type="submit">{{ _("Registrieren") }}</button>
   </form>
-  <p class="anchor-dark col-dark-d">Wenn du dich registrierst, erklärst du dich mit den <a href="/legal/terms">Nutzungsbedingungen</a> und der <a href="/legal/privacy">Datenschutzerklärung</a> einverstanden.</p>
+  <p class="anchor-dark col-dark-d">{{ _('Wenn du dich registrierst, erklärst du dich mit den %(terms_link)s und der %(privacy_link)s einverstanden.', terms_link='<a href="/legal/terms">'|safe + _('Nutzungsbedingungen') + '</a>'|safe, privacy_link='<a href="/legal/privacy">'|safe + _('Datenschutzerklärung') + '</a>'|safe) }}</p>
 </div>
 {% endblock %}

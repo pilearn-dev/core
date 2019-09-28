@@ -3,6 +3,7 @@ from flask import render_template, redirect, abort, url_for, request, session
 from model import user as muser, auth as mauth
 from controller import query as cquery, mail as cmail
 import json, time, re
+from flask_babel import _
 
 def login():
     error = False
@@ -20,7 +21,7 @@ def login():
             session["login_time"] = time.time()
 
             return redirect(url_for('index'))
-    return render_template('login.html', error=error, title="Anmelden", thispage="login")
+    return render_template('login.html', error=error, title=_("Anmelden"), thispage="login")
 
 def register():
     error = False
@@ -56,7 +57,7 @@ def register():
                 return redirect(url_for('user_page', id=user_id))
             else:
                 return redirect(url_for('index'))
-    return render_template('register.html', error=error, title="Registrieren", thispage="login")
+    return render_template('register.html', error=error, title=_("Registrieren"), thispage="login")
 
 def reset_password():
     error = False
@@ -66,25 +67,25 @@ def reset_password():
 
             url = url_for("reset_password_verify", id=data[0], _external=True)
 
-            cmail.send_textbased_email(request.form['email'], u"Dein Passwort-Zurücksetz-Code", u"""Hallo,
+            cmail.send_textbased_email(request.form['email'], _(u"Dein Passwort-Zurücksetz-Code"), _(u"""Hallo,
 
 du hast eine Anfrage auf &pi;-Learn gesendet, um das Passwort für diese E-Mail-Adresse zurückzusetzen.
 
 Der Bestätigungscode dafür lautet:
 
-# %s
+# %(code)s
 
-Wenn du das Fenster bereits geschlossen hast, kannst du { hier klicken -> %s } oder diesen Link im Browser öffnen:
+Wenn du das Fenster bereits geschlossen hast, kannst du { hier klicken -> %(link)s } oder diesen Link im Browser öffnen:
 
-%s
+%(link)s
 
-Wenn diese Anfrage nicht von dir stammt, kannst du diese E-Mail einfach löschen.""" %(data[1], url, url))
+Wenn diese Anfrage nicht von dir stammt, kannst du diese E-Mail einfach löschen.""", code=data[1], link=url))
 
 
 
             return redirect(url)
         error = "invalid"
-    return render_template('passwordreset.html', error=error, title=u"Passwort zurücksetzen", thispage="login")
+    return render_template('passwordreset.html', error=error, title=_(u"Passwort zurücksetzen"), thispage="login")
 
 def reset_password_verify(id):
     if not muser.User.passwdreset_has_request(id):
@@ -96,7 +97,7 @@ def reset_password_verify(id):
             error = "success"
         else:
             error = "invalid-code"
-    return render_template('passwordreset_verify.html', error=error, title=u"Passwort zurücksetzen", thispage="login")
+    return render_template('passwordreset_verify.html', error=error, title=_(u"Passwort zurücksetzen"), thispage="login")
 
 def logout():
     user = muser.getCurrentUser()

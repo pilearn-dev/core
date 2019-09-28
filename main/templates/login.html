@@ -2,35 +2,35 @@
 {% extends "layout_new.html" %}
 {% block body %}
 <div class="container single-fluid-tiny s3 p4">
-  <h1 class="fs-subtitle ta-c bb1 bb-s bb-dark-ll">Anmelden</h1>
+  <h1 class="fs-subtitle ta-c bb1 bb-s bb-dark-ll">{{ _("Anmelden") }}</h1>
   {% if error == "not-found" %}
     <div class="_alert _alert-danger">
-        Dieser Benutzeraccount wurde nicht gefunden.
+        {% trans %}Dieser Benutzeraccount wurde nicht gefunden.{% endtrans %}
     </div>
   {% elif error == "forbidden" %}
     <div class="_alert _alert-danger">
-        Dieser Benutzeraccount wurde gelöscht. Du kannst dich nicht mit diesem Konto anmelden. Eventuell kann das Konto wiederhergestellt werden. Registriere dafür ein Konto mit den exakt gleichen Anmeldedaten.
+      {% trans %}Dieser Benutzeraccount wurde gelöscht. Du kannst dich nicht mit diesem Konto anmelden. Eventuell kann das Konto wiederhergestellt werden. Registriere dafür ein Konto mit den exakt gleichen Anmeldedaten.{% endtrans %}
     </div>
   {% elif error == "format" %}
     <div class="_alert _alert-danger">
-        Das Format, das du für deine Benutzerdaten angegeben hast ist ungültig.
+        {% trans %}Das Format, das du für deine Benutzerdaten angegeben hast ist ungültig.{% endtrans %}
     </div>
   {% endif %}
-  <p>Melde dich mit einem bereits existierenden Benutzerkonto an.</p>
-  <p>Du hast noch kein Benutzerkonto? Dann kannst du <a href="/auth/register">ein neues Benutzerkonto erstellen</a>.</p>
-  <h2 class="fs-base3 col-dark-dd ta-c">Externe Dienste</h2>
+  <p>{{ _("Melde dich mit einem bereits existierenden Benutzerkonto an.") }}</p>
+  <p>{{ _('Du hast noch kein Benutzerkonto?') }} {{ _('Dann kannst du <a href="%(register_link)s">ein neues Benutzerkonto erstellen</a>.', register_link='/auth/register') }}</p>
+  <h2 class="fs-base3 col-dark-dd ta-c">{{ _('Externe Dienste') }}</h2>
   <div class="grid">
-      <a href="/auth/oauth-provider/google" class="_btn _btn-service _btn-service-google">Google-Anmeldung</a>
+      <a href="/auth/oauth-provider/google" class="_btn _btn-service _btn-service-google">{{ _('Google-Anmeldung') }}</a>
   </div>
-  <h2 class="fs-base3 col-dark-dd ta-c">{{ site_short_name }}-Konto</h2>
+  <h2 class="fs-base3 col-dark-dd ta-c">{{ _("%(site_name)s-Konto", site_name=site_short_name) }}</h2>
   <form action="" method="POST">
-    <label for="login_email" class="form">E-Mail:</label>
+    <label for="login_email" class="form">{{ _('E-Mail-Adresse') }}:</label>
     <input id="login_email" class="form" name="email">
-    <label for="login_password" class="form">Passwort:</label>
+    <label for="login_password" class="form">{{ _('Passwort') }}:</label>
     <input id="login_password" class="form" name="password" type="password">
     <input type="hidden" name="login_provider" value="local_account">
-    <button class="_btn _btn--primary" type="submit">Anmelden</button>
-    <a href="/auth/password-reset" class="_btn _btn--primary _btn-on-light">Passwort vergessen</a>
+    <button class="_btn _btn--primary" type="submit">{{ _('Anmelden') }}</button>
+    <a href="/auth/password-reset" class="_btn _btn--primary _btn-on-light">{{ _('Passwort vergessen') }}</a>
   </form>
 </div>
 {% endblock %}
