@@ -20,7 +20,7 @@ import re, json, time
 import sentry_sdk
 from sentry_sdk.integrations.flask import FlaskIntegration
 
-from flask_babel import Babel
+from flask_babel import Babel, _
 
 app = Flask(__name__)
 
@@ -125,7 +125,7 @@ def prepare_request():
 
 @app.route("/")
 def index():
-    return render_template('index.html', title="Startseite", thispage="index", globalForum=mforum.Forum.from_id(0), topics=mcourses.Topic, _proposal=mproposal.Proposal, courses=mcourses.Courses)
+    return render_template('index.html', title=_("Startseite"), thispage="index", globalForum=mforum.Forum.from_id(0), topics=mcourses.Topic, _proposal=mproposal.Proposal, courses=mcourses.Courses)
 
 @app.route("/hide-hero", methods=["POST"])
 def hide_hero():
