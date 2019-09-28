@@ -29,6 +29,9 @@
     <label for="login_password" class="form">{{ _('Passwort') }}:</label>
     <input id="login_password" class="form" name="password" type="password">
     <input type="hidden" name="login_provider" value="local_account">
+    <div class="d-n">
+      <input type="input" name="global_identity_verification">
+    </div>
     <button class="_btn _btn--primary" type="submit">{{ _('Anmelden') }}</button>
     <a href="/auth/password-reset" class="_btn _btn--primary _btn-on-light">{{ _('Passwort vergessen') }}</a>
   </form>

@@ -31,6 +31,9 @@
     <label for="register_password" class="form">{{ _("Passwort") }}:</label>
     <input id="register_password" class="form" name="password" type="password">
     <input type="hidden" name="login_provider" value="local_account">
+    <div class="d-n">
+      <input type="input" name="global_identity_verification">
+    </div>
     <button class="_btn _btn--primary" type="submit">{{ _("Registrieren") }}</button>
   </form>
   <p class="anchor-dark col-dark-d">{{ _('Wenn du dich registrierst, erklärst du dich mit den %(terms_link)s und der %(privacy_link)s einverstanden.', terms_link='<a href="/legal/terms">'|safe + _('Nutzungsbedingungen') + '</a>'|safe, privacy_link='<a href="/legal/privacy">'|safe + _('Datenschutzerklärung') + '</a>'|safe) }}</p>

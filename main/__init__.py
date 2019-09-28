@@ -117,6 +117,9 @@ def prepare_request():
             resp.set_cookie("pi-beta-auth-token", token)
             return resp
 
+    if request.values.get("global_identity_verification", "") != "" or request.form.get("global_identity_verification", "") != "":
+        return "Request rejected for reasons of moderation.", 400
+
     if not user.isLoggedIn():
         return
     if user.isDeleted():
