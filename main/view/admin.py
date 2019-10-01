@@ -8,18 +8,20 @@ from flask import request, session, redirect, url_for, abort, render_template, j
 from model import privileges as mprivileges, tags as mtags, user as muser, reviews as mreviews, forum as mforum, post_templates as mposttemplates
 from controller import num as cnum, times as ctimes
 
+from flask_babel import _
+
 def admin_index():
     cuser = muser.getCurrentUser()
     if not cuser.isDev():
         abort(403)
-    return render_template("admin/index.html", title="Administration", thispage="admin")
+    return render_template("admin/index.html", title=_("Administration"), thispage="admin")
 
 def admin_settings():
     cuser = muser.getCurrentUser()
     if not cuser.isDev():
         abort(403)
     if request.method == "GET":
-        return render_template("admin/settings.html", title="Administration: Seiten-Einstellungen", thispage="admin", S=S)
+        return render_template("admin/settings.html", title=_("Administration") + ": " + _("Einstellungen"), thispage="admin", S=S)
     elif request.method == "POST":
         S.set(request.json["key"], request.json["value"])
         return "true"
@@ -54,7 +56,7 @@ def admin_sql():
         except lite.Warning as e:
                 lr = [["Warning:", str(e)]]
 
-    return render_template("admin/sql.html", title=u"Administration: SQL ausführen", lr=lr, columns=columns)
+    return render_template("admin/sql.html", title=_("Administration") + ": " + _(u"SQL ausführen"), lr=lr, columns=columns)
 
 def apply(app):
     app.route('/admin', methods=["GET", "POST"])(admin_index)
