@@ -32,12 +32,14 @@ def register():
                 if llin == -4:
                     data = muser.User.reset_deletion(request.form['email'], request.form['password'])
                 else:
+                    user_name = request.form['realname']
+                    if len(user_name) > 30 or "http://" in user_name or "https://" in user_name:
+                        abort(400)
                     data = muser.User.register(request.form['password'], time.time(), request.form['email'])
                     datao = muser.User.from_id(data)
                     datao.setDetail("name", "benutzer-" + str(datao.id))
                     datao.setDetail("realname", "benutzer-" + str(datao.id))
-                    user_name = request.form['realname']
-                    if 3 <= len(user_name) <= 30 and u"♦" not in user_name:
+                    if 3 <= len(user_name) and u"♦" not in user_name:
                         datao.setDetail("realname", user_name)
                         datao.setDetail("name", user_name)
                 if data == -3:
