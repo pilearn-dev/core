@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-10-01 19:53+0200\n"
+"POT-Creation-Date: 2019-10-01 20:08+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -489,6 +489,7 @@ msgid "Administrations-Zentrum von %(site_name)s"
 msgstr ""
 
 #: ../main/templates/admin/index.html:8 ../main/templates/admin/sql.html:4
+#: ../main/view/admin.py:59
 msgid "SQL ausführen"
 msgstr ""
 
@@ -502,7 +503,7 @@ msgid "Öffnen"
 msgstr ""
 
 #: ../main/templates/admin/index.html:15
-#: ../main/templates/admin/settings.html:5
+#: ../main/templates/admin/settings.html:5 ../main/view/admin.py:24
 msgid "Einstellungen"
 msgstr ""
 
@@ -511,6 +512,7 @@ msgid "Diese Seite konfigurieren. Sehr viele Möglichkeiten!"
 msgstr ""
 
 #: ../main/templates/admin/settings.html:5 ../main/templates/admin/sql.html:4
+#: ../main/view/admin.py:17 ../main/view/admin.py:24 ../main/view/admin.py:59
 msgid "Administration"
 msgstr ""
 
@@ -558,6 +560,7 @@ msgid "Ausführen"
 msgstr ""
 
 #: ../main/templates/badges/list.html:3 ../main/templates/badges/single.html:3
+#: ../main/view/badges.py:16 ../main/view/badges.py:22
 msgid "Abzeichen"
 msgstr ""
 
@@ -607,6 +610,7 @@ msgid "An einen Benutzer verleihen"
 msgstr ""
 
 #: ../main/templates/badges/single.html:23
+#: ../main/templates/certificates/confirmation_of_participation.html:71
 msgid "Benutzer-ID"
 msgstr ""
 
@@ -616,6 +620,36 @@ msgstr ""
 
 #: ../main/templates/badges/single.html:25
 msgid "Verleihen"
+msgstr ""
+
+#: ../main/templates/certificates/confirmation_of_participation.html:5
+#: ../main/templates/certificates/confirmation_of_participation.html:59
+msgid "Teilnahmebestätigung"
+msgstr ""
+
+#: ../main/templates/certificates/confirmation_of_participation.html:62
+msgid "Hiermit bestätigen wir, dass"
+msgstr ""
+
+#: ../main/templates/certificates/confirmation_of_participation.html:64
+#, python-format
+msgid "auf %(site_name)s am Kurs"
+msgstr ""
+
+#: ../main/templates/certificates/confirmation_of_participation.html:66
+msgid "erfolgreich teilgenommen hat."
+msgstr ""
+
+#: ../main/templates/certificates/confirmation_of_participation.html:69
+msgid "Erstellt auf"
+msgstr ""
+
+#: ../main/templates/certificates/confirmation_of_participation.html:69
+msgid "am"
+msgstr ""
+
+#: ../main/templates/certificates/confirmation_of_participation.html:70
+msgid "Kurs-ID"
 msgstr ""
 
 #: ../main/templates/tour/pi-learn.html:2
@@ -784,6 +818,10 @@ msgid ""
 "löschen."
 msgstr ""
 
+#: ../main/view/courses.py:532
+msgid "Teilnahmeurkunde"
+msgstr ""
+
 #~ msgid "Willkommen bei %(site_name)s!"
 #~ msgstr ""
 
@@ -886,5 +924,8 @@ msgstr ""
 #~ msgid ""
 #~ "Jeder Benutzerin und jeder Benutzer kann"
 #~ " Kurse vorschlage, erarbeiten und anbieten."
+#~ msgstr ""
+
+#~ msgid "Teilnahmeurkunde"
 #~ msgstr ""
 

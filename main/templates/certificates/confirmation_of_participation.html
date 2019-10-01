@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Teilnahmeurkunde</title>
+        <title>{{ _('Teilnahmebestätigung') }}</title>
 
         <style>
             * { box-sizing: border-box; }
@@ -56,19 +56,19 @@
     <body>
         <div class="header">
             <img src="file:///{{cwd}}/main/static/img/logo_pi-learn.png">
-            <div class="h1">Teilnahmebestätigung</div>
+            <div class="h1">{{ _('Teilnahmebestätigung') }}</div>
         </div>
         <div class="main">
-            Hiermit bestätigen wir, dass
+            {{ _('Hiermit bestätigen wir, dass') }}
             <div class="large">{{ user_name }}</div>
-            auf {{ site_name }} am Kurs
+            {{ _('auf %(site_name)s am Kurs', site_name=site_name) }}
             <div class="large">{{ course_title }}</div>
-            erfolgreich teilgenommen hat.
+            {{ _('erfolgreich teilgenommen hat.') }}
         </div>
         <div class="footer">
-            Erstellt auf {{ site_name }} am {{ now }}.<br>
-            Kurs-ID: #{{ course_id }}<br>
-            Benutzer-ID: #{{ user_id }}
+            {{ _('Erstellt auf') }} {{ site_name }} {{ _('am') }} {{ now }}.<br>
+            {{ _('Kurs-ID') }}: #{{ course_id }}<br>
+            {{ _('Benutzer-ID') }}: #{{ user_id }}
         </div>
     </body>
 </html>

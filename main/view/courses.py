@@ -4,6 +4,8 @@ from model import privileges as mprivileges, courses as mcourses, user as muser,
 from controller import query as cquery, times as ctimes
 import json, time, os, re
 
+from flask_babel import _
+
 import pdfkit
 
 def courses_index():
@@ -527,7 +529,7 @@ def course_result_confirmation_of_participation(id, label=None):
     html = render_template("certificates/confirmation_of_participation.html", course_title=course.getTitle(), user_name=cuser.getDetail("certificate_full_name"), now=ctimes.stamp2germandate(time.time()), cwd=os.getcwd().replace("\\", "/"), course_id=course.id, user_id=cuser.id)
 
     pdf = pdfkit.from_string(html, False, options={
-        "title": "Teilnahmeurkunde",
+        "title": _(u"Teilnahmeurkunde"),
         'margin-top': '0mm',
         'margin-right': '0mm',
         'margin-bottom': '0mm',
