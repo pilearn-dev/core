@@ -1,13 +1,13 @@
 {% extends "layout_new.html" %}
 {% block body %}
-    <h1>Abzeichen</h1>
-    <p>Zusätzlich zur Reputation gibt es noch Abzeichen, die du für die Benutzung der Seite erhalten kannst. Abzeichen kommen in drei Stufen: <span class="_badge _badge-award _badge-award-bronze"><span class="_badge-icon"></span>Bronze</span>, <span class="_badge _badge-award _badge-award-silver"><span class="_badge-icon"></span>Silber</span> und <span class="_badge _badge-award _badge-award-gold"><span class="_badge-icon"></span>Gold</span></p>
+    <h1>{{ _('Abzeichen') }}</h1>
+    <p>{{ _('Zusätzlich zur Reputation gibt es noch Abzeichen, die du für die Benutzung der Seite erhalten kannst. Abzeichen kommen in drei Stufen:') }}<span class="_badge _badge-award _badge-award-bronze"><span class="_badge-icon"></span>{{ _('Bronze') }}</span>, <span class="_badge _badge-award _badge-award-silver"><span class="_badge-icon"></span>{{ _('Silber') }}</span> {{ _('und') }} <span class="_badge _badge-award _badge-award-gold"><span class="_badge-icon"></span>{{ _('Gold') }}</span></p>
     {% for b in badges %}
     {% if changed(b.getClass()) %}
     {% if not loop.first %}
     </div>
     {% endif %}
-    <h2>{{ {"bronze": "Bronze", "silver":"Silber", "gold": "Gold"}[b.getClass()] }}</h2>
+    <h2>{{ {"bronze": _('Bronze'), "silver":_('Silber'), "gold": _('Gold')}[b.getClass()] }}</h2>
     <div class="_datalist">
     {% endif %}{% set ac = b.getAwardeeCount() %}
       <div class="_datalist-item">
@@ -18,7 +18,7 @@
           {{ b.getDescription() }}
         </div>
         {% if ac != 0 %}
-        <em>({{ ac }} &times; verliehen)</em>
+        <em>({{ ngettext('%(num)s &times; verliehen', '%(num)s &times; verliehen', ac) }})</em>
         {% endif %}
       </div>
     {% endfor %}

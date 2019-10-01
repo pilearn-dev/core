@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-10-01 17:28+0200\n"
+"POT-Creation-Date: 2019-10-01 19:53+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -555,6 +555,67 @@ msgstr ""
 
 #: ../main/templates/admin/sql.html:30
 msgid "Ausführen"
+msgstr ""
+
+#: ../main/templates/badges/list.html:3 ../main/templates/badges/single.html:3
+msgid "Abzeichen"
+msgstr ""
+
+#: ../main/templates/badges/list.html:4
+msgid ""
+"Zusätzlich zur Reputation gibt es noch Abzeichen, die du für die "
+"Benutzung der Seite erhalten kannst. Abzeichen kommen in drei Stufen:"
+msgstr ""
+
+#: ../main/templates/badges/list.html:4 ../main/templates/badges/list.html:10
+msgid "Bronze"
+msgstr ""
+
+#: ../main/templates/badges/list.html:4 ../main/templates/badges/list.html:10
+msgid "Silber"
+msgstr ""
+
+#: ../main/templates/badges/list.html:4
+msgid "und"
+msgstr ""
+
+#: ../main/templates/badges/list.html:4 ../main/templates/badges/list.html:10
+msgid "Gold"
+msgstr ""
+
+#: ../main/templates/badges/list.html:21
+#, python-format
+msgid "%(num)s &times; verliehen"
+msgid_plural "%(num)s &times; verliehen"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../main/templates/badges/single.html:5
+msgid "Mit Entwickleroptionen"
+msgstr ""
+
+#: ../main/templates/badges/single.html:8
+msgid "Verliehen an"
+msgstr ""
+
+#: ../main/templates/badges/single.html:15
+msgid "Entziehen"
+msgstr ""
+
+#: ../main/templates/badges/single.html:21
+msgid "An einen Benutzer verleihen"
+msgstr ""
+
+#: ../main/templates/badges/single.html:23
+msgid "Benutzer-ID"
+msgstr ""
+
+#: ../main/templates/badges/single.html:24
+msgid "Daten (leer=Null)"
+msgstr ""
+
+#: ../main/templates/badges/single.html:25
+msgid "Verleihen"
 msgstr ""
 
 #: ../main/templates/tour/pi-learn.html:2

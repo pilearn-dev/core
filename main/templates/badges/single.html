@@ -1,28 +1,28 @@
 {% extends "layout_new.html" %}
 {% block body %}
-    <h1><a class="anchor-black" href="/badges">Abzeichen</a> / <span class="_badge _badge-award _badge-award-{{ b.getClass() }}"><span class="_badge-icon"></span>{{ b.getName() }}</span></h1>
+    <h1><a class="anchor-black" href="/badges">{{ _('Abzeichen') }}</a> / <span class="_badge _badge-award _badge-award-{{ b.getClass() }}"><span class="_badge-icon"></span>{{ b.getName() }}</span></h1>
     {% if user.isDev() %}
-    <a class="fs-base1 anchor-dark" href="?dev-options=1">Mit Entwickleroptionen</a>
+    <a class="fs-base1 anchor-dark" href="?dev-options=1">{{ _('Mit Entwickleroptionen') }}</a>
     {% endif %}
     <p class="fs-base3">{{ b.getDescription() }}</p>
-    <h2>Verliehen an</h2>
+    <h2>{{ _('Verliehen an') }}</h2>
     <div class="_datalist">
     {% for data in b.getAwardees() %}
       <div class="_datalist-item">
         <a class="_datalist-field" href="/u/{{ data.user.id }}">{{ data.user.getHTMLName()|safe }}</a>
         <span class="_datalist-field" title="{{ data.time[1] }}">{{ data.time[2] }}</span>
         {% if user.isDev() and request.values.get("dev-options",0)=="1" %}
-        <form class="_datalist-action" action="/badges/{{ b.id }}/revoke" method="post"><input name="from" type="hidden" value="{{ data.user.id }}"><input name="ts" type="hidden" value="{{ data.time[0] }}"><button type="submit" class="_btn _btn-sm _btn-danger">Entziehen</button></form>
+        <form class="_datalist-action" action="/badges/{{ b.id }}/revoke" method="post"><input name="from" type="hidden" value="{{ data.user.id }}"><input name="ts" type="hidden" value="{{ data.time[0] }}"><button type="submit" class="_btn _btn-sm _btn-danger">{{ _('Entziehen') }}</button></form>
         {% endif %}
       </div>
     {% endfor %}
     </div>
     {% if user.isDev() and request.values.get("dev-options",0)=="1" %}
-      <h2>An einen Benutzer verleihen</h2>
+      <h2>{{ _('An einen Benutzer verleihen') }}</h2>
       <form action="/badges/{{ b.id }}/award" method="post" class="horizontal-list">
-        <input name="to" class="form form-inline" placeholder="Benutzer-ID">
-        <input name="data" class="form form-inline" placeholder="Daten (leer=Null)">
-        <button type="submit" class="_btn">Verleihen</button>
+        <input name="to" class="form form-inline" placeholder="{{ _('Benutzer-ID') }}">
+        <input name="data" class="form form-inline" placeholder="{{ _('Daten (leer=Null)') }}">
+        <button type="submit" class="_btn">{{ _('Verleihen') }}</button>
       </form>
     {% endif %}
 {% endblock %}
