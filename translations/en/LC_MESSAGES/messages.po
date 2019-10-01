@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-10-01 12:34+0200\n"
+"POT-Creation-Date: 2019-10-01 17:28+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -516,6 +516,83 @@ msgstr "Edit this list"
 msgid "Webseite"
 msgstr "website"
 
+#: ../main/templates/admin/index.html:4
+#, python-format
+msgid "Administrations-Zentrum von %(site_name)s"
+msgstr "Administration center for %(site_name)s"
+
+#: ../main/templates/admin/index.html:8 ../main/templates/admin/sql.html:4
+msgid "SQL ausführen"
+msgstr "Run SQL"
+
+#: ../main/templates/admin/index.html:9
+#, python-format
+msgid "Du kannst SQL auf der %(site_name)s-Datenbank ausführen."
+msgstr "You can execute arbitrary SQL on the %(site_name)s database."
+
+#: ../main/templates/admin/index.html:11 ../main/templates/admin/index.html:18
+msgid "Öffnen"
+msgstr "Open"
+
+#: ../main/templates/admin/index.html:15
+#: ../main/templates/admin/settings.html:5
+msgid "Einstellungen"
+msgstr "Settings"
+
+#: ../main/templates/admin/index.html:16
+msgid "Diese Seite konfigurieren. Sehr viele Möglichkeiten!"
+msgstr "Configure this site's settings. Many options!!1!"
+
+#: ../main/templates/admin/settings.html:5 ../main/templates/admin/sql.html:4
+msgid "Administration"
+msgstr "Administration"
+
+#: ../main/templates/admin/settings.html:6
+#, python-format
+msgid ""
+"Dies sind die administrativen Einstellungen für %(site_name)s. Sie sind "
+"jedoch etwas verzögert gespeichert. Wundere dich daher nicht, wieso sie "
+"nicht sofort Auswirkung haben. Notfalls hilft es, den Server neu zu "
+"starten."
+msgstr ""
+"These are the site settings for %(site_name)s. They are cached, so don't "
+"wonder, why they are not effective immediately. You can force an update "
+"by restarting the server."
+
+#: ../main/templates/admin/settings.html:16
+#: ../main/templates/admin/settings.html:39
+#: ../main/templates/admin/settings.html:45
+msgid "Speichern"
+msgstr "Save"
+
+#: ../main/templates/admin/settings.html:26
+msgid "Speichern ..."
+msgstr "Saving ..."
+
+#: ../main/templates/admin/settings.html:37
+msgid "Gespeichert."
+msgstr "Saved."
+
+#: ../main/templates/admin/settings.html:43
+msgid "Fehler ist aufgetreten."
+msgstr "An error occured."
+
+#: ../main/templates/admin/sql.html:6
+msgid "Letzte Abfrage"
+msgstr "Previous request"
+
+#: ../main/templates/admin/sql.html:26
+msgid "Neue Abfrage"
+msgstr "New request"
+
+#: ../main/templates/admin/sql.html:29
+msgid "Dies ist eine Massenabfrage. (Kann keine Ergebnisse anzeigen)"
+msgstr "This is a bulk request. (bulk requests can't show any results)"
+
+#: ../main/templates/admin/sql.html:30
+msgid "Ausführen"
+msgstr "Run"
+
 #: ../main/templates/tour/pi-learn.html:2
 #, python-format
 msgid ""
@@ -594,10 +671,10 @@ msgid ""
 "Durch die Bewertung der Inhalte zeigt die Community, wie sehr sie dir "
 "vertraut. Daraus errechnet sich eine Punktzahl &ndash; deine Reputation"
 msgstr ""
-"When community members vote on your contents, the votes signalise, how much "
-"the community can trust you. This amount of trust is represented by a score "
-" called reputation, that can be directly calculated from the votes on your "
-"content".
+"When community members vote on your contents, the votes signalise, how "
+"much the community can trust you. This amount of trust is represented by "
+"a score  called reputation, that can be directly calculated from the "
+"votes on your content\""
 
 #: ../main/templates/tour/pi-learn.html:52
 msgid "Du erhältst Reputation, wenn ..."

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-10-01 12:34+0200\n"
+"POT-Creation-Date: 2019-10-01 17:28+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -481,6 +481,80 @@ msgstr ""
 
 #: ../main/templates/about/team.html:48
 msgid "Webseite"
+msgstr ""
+
+#: ../main/templates/admin/index.html:4
+#, python-format
+msgid "Administrations-Zentrum von %(site_name)s"
+msgstr ""
+
+#: ../main/templates/admin/index.html:8 ../main/templates/admin/sql.html:4
+msgid "SQL ausführen"
+msgstr ""
+
+#: ../main/templates/admin/index.html:9
+#, python-format
+msgid "Du kannst SQL auf der %(site_name)s-Datenbank ausführen."
+msgstr ""
+
+#: ../main/templates/admin/index.html:11 ../main/templates/admin/index.html:18
+msgid "Öffnen"
+msgstr ""
+
+#: ../main/templates/admin/index.html:15
+#: ../main/templates/admin/settings.html:5
+msgid "Einstellungen"
+msgstr ""
+
+#: ../main/templates/admin/index.html:16
+msgid "Diese Seite konfigurieren. Sehr viele Möglichkeiten!"
+msgstr ""
+
+#: ../main/templates/admin/settings.html:5 ../main/templates/admin/sql.html:4
+msgid "Administration"
+msgstr ""
+
+#: ../main/templates/admin/settings.html:6
+#, python-format
+msgid ""
+"Dies sind die administrativen Einstellungen für %(site_name)s. Sie sind "
+"jedoch etwas verzögert gespeichert. Wundere dich daher nicht, wieso sie "
+"nicht sofort Auswirkung haben. Notfalls hilft es, den Server neu zu "
+"starten."
+msgstr ""
+
+#: ../main/templates/admin/settings.html:16
+#: ../main/templates/admin/settings.html:39
+#: ../main/templates/admin/settings.html:45
+msgid "Speichern"
+msgstr ""
+
+#: ../main/templates/admin/settings.html:26
+msgid "Speichern ..."
+msgstr ""
+
+#: ../main/templates/admin/settings.html:37
+msgid "Gespeichert."
+msgstr ""
+
+#: ../main/templates/admin/settings.html:43
+msgid "Fehler ist aufgetreten."
+msgstr ""
+
+#: ../main/templates/admin/sql.html:6
+msgid "Letzte Abfrage"
+msgstr ""
+
+#: ../main/templates/admin/sql.html:26
+msgid "Neue Abfrage"
+msgstr ""
+
+#: ../main/templates/admin/sql.html:29
+msgid "Dies ist eine Massenabfrage. (Kann keine Ergebnisse anzeigen)"
+msgstr ""
+
+#: ../main/templates/admin/sql.html:30
+msgid "Ausführen"
 msgstr ""
 
 #: ../main/templates/tour/pi-learn.html:2

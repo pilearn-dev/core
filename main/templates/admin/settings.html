@@ -2,8 +2,8 @@
 {% block body %}
 
 <div class="p4">
-  <h1 class="h-underlined"><a href="/admin">Administration</a>: Einstellungen</h1>
-<p class="p-lead">Dies sind die administrativen Einstellungen für {{ site_short_name }}. Sie sind jedoch etwas verzögert gespeichert. Wundere dich daher nicht, wieso sie nicht sofort Auswirkung haben. Notfalls hilft es, den Server neu zu starten.</p>
+  <h1 class="h-underlined"><a href="/admin">{{ _('Administration') }}</a>: {{ _('Einstellungen') }}</h1>
+<p class="p-lead">{{ _('Dies sind die administrativen Einstellungen für %(site_name)s. Sie sind jedoch etwas verzögert gespeichert. Wundere dich daher nicht, wieso sie nicht sofort Auswirkung haben. Notfalls hilft es, den Server neu zu starten.', site_name=site_short_name) }}</p>
 {% for item in S.getAllSettingsGrouped() %}
 {% if item[0] == "group" %}
 <h2 class="p2 fs-base3 bg-dark-lll col-dark-ddd mb0 f-bold f-caps">{{ item[1] }}</h2>
@@ -13,7 +13,7 @@
     <h3 class="fs-base3 f-bold my1">{{ item[1].setting_key.replace("-", " ").capitalize() }}</h3>
     <p>{{ item[1].setting_description }}</p>
     <textarea class="form form-small" id="setting_{{ item[1].setting_key }}">{{ item[1].setting_value }}</textarea>
-    <button class="_btn _btn-sm _btn-dark" onclick="saveSetting('{{ item[1].setting_key }}', this);">Speichern</button>
+    <button class="_btn _btn-sm _btn-dark" onclick="saveSetting('{{ item[1].setting_key }}', this);">{{ _('Speichern') }}</button>
   </div>
 </div>
 {% endif %}
@@ -23,7 +23,7 @@
 <script>
   function saveSetting(key, btn) {
     $btn = $(btn);
-    $btn.attr("disabled", "").addClass("-loading").text("Speichern ...");
+    $btn.attr("disabled", "").addClass("-loading").text("{{ _('Speichern ...') }}");
 
     $.ajax({
       method: "POST",
@@ -34,15 +34,15 @@
         value: $("#setting_" + key).val()
       }),
       success: function(r) {
-        $btn.removeClass("-loading").removeAttr("disabled").text("Gespeichert.");
+        $btn.removeClass("-loading").removeAttr("disabled").text("{{ _('Gespeichert.') }}");
         setTimeout(function() {
-          $btn.text("Speichern");
+          $btn.text("{{ _('Speichern') }}");
         }, 1000);
       },
       error: function() {
-        $btn.removeClass("-loading _btn-dark").addClass("_btn-danger").removeAttr("disabled").text("Fehler ist aufgetreten.");
+        $btn.removeClass("-loading _btn-dark").addClass("_btn-danger").removeAttr("disabled").text("{{ _('Fehler ist aufgetreten.') }}");
         setTimeout(function() {
-          $btn.addClass("_btn-dark").removeClass("_btn-danger").text("Speichern");
+          $btn.addClass("_btn-dark").removeClass("_btn-danger").text("{{ _('Speichern') }}");
         }, 2000);
       }
     });
