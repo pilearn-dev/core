@@ -1,17 +1,18 @@
 {% extends "layout_new.html" %}
-{% block meta_description %}π-Learn ist eine Community-gesteuerte Open Learning Webseite. Hier erfährst du, was das bedeutet.{% endblock %}
+{% block meta_description %}{{ _('%(site_name)s ist eine Community-gesteuerte Open Learning Webseite. Hier erfährst du, was das bedeutet.', site_name=site_name) }}{% endblock %}
 {% block body %}
-<h1 class="ta-c fs-display2">Willkommen zu {{ site_name }}</h1>
-<p class="fs-subheading ta-c mt3 mb3">{{ site_name }} ist eine Community-gesteuerte Open Learning Plattform. Was bedeutet das? Finde es heraus!</p>
+<div class="p6">
+<h1 class="ta-c fs-display2">{{ _('Willkommen bei %(site_name)s!', site_name=site_name) }}</h1>
+<p class="fs-subheading ta-c mt3 mb3">{{ _(' %(site_name)s ist eine Community-gesteuerte Open Learning Plattform. Was bedeutet das? Finde es heraus!', site_name=site_name)}}</p>
 <div class="mt8">
-    <h2><span class="i">Kurse &ndash; zu verschiedenen Themen</span></h2>
+    <h2><span class="i">{{ _('<strong>Kurse</strong> – zu verschiedenen Themen') }}</span></h2>
     <div class="grid">
         <div class="column12 column4__lg p3">
             <img src="/static/img/tour/courses.svg" alt="">
         </div>
         <div class="column12 column8__lg p3">
-            <p>Jeder kann an kostenlosen Online-Kursen teilnehmen. Alle Kurse auf {{ site_name }} sind unter einer freien Lizenz verfügbar und können ohne Einschränkungen weiterverwendet werden.</p>
-            <p>Es gibt Kurse zu diesen Themengebieten auf {{ site_name }}:</p>
+            <p>{{ _('Jeder kann an kostenlosen Online-Kursen teilnehmen. Alle Kurse auf %(site_name)s sind unter einer freien Lizenz verfügbar und können ohne Einschränkungen weiterverwendet werden.', site_name=site_name) }}</p>
+            <p>{{ _('Es gibt Kurse zu diesen Themengebieten auf %(site_name)s:', site_name=site_name) }}</p>
             <ul>
                 {% for t in topic.getAll() %}
                 <li><a class="_badge _badge-unit" href="/t/{{ t.getName() }}">{{ t.getTitle() }}</a> &ndash; {{ t.getExcerpt() }}</li>
@@ -19,101 +20,97 @@
             </ul>
         </div>
     </div>
-    <h2><span class="i">Jeder kann Inhalte einbringen</span></h2>
+    <h2><span class="i">{{ _('<strong>Jeder</strong> kann Inhalte einbringen') }}</span></h2>
     <div class="grid">
         <div class="column12 column4__lg p3">
             <img src="/static/img/tour/contents.svg" alt="">
         </div>
         <div class="column12 column8__lg p3">
-            <p>Jeder Benutzerin und jeder Benutzer kann Kurse vorschlage, erarbeiten und anbieten.</p>
-            <p>In den Kursforen kann man über Kursinhalte diskutieren.</p>
-            <p>Deine Inhalte können von anderen bearbeitet werden.</p>
+            <p>{{ _('Jeder Benutzerin und jeder Benutzer kann Kurse vorschlagen, erarbeiten und anbieten.') }}</p>
+            <p>{{ _('In den Kursforen kann man über Kursinhalte diskutieren.') }}</p>
+            <p>{{ _('Deine Inhalte können von anderen bearbeitet werden.') }}</p>
         </div>
     </div>
-    <h2><span class="i">Die Community kontrolliert die Inhalte</span></h2>
+    <h2><span class="i">{{ _('Die <strong>Community</strong> kontrolliert die Inhalte') }}</span></h2>
     <div class="grid">
         <div class="column12 column4__lg p3">
             <img src="/static/img/tour/community-review.svg" alt="">
         </div>
         <div class="column12 column8__lg p3">
-            <p>Alle Benutzer können die Inhalte auf {{ site_name }} bewerten und schädliche Inhalte melden oder zur Löschung vorschlagen.</p>
-            <p>So wird eine durchgängig hohe Qualität durchgesetzt.</p>
-            <p>Richtlinien dafür werden in einem <a href="#!">globalen Forum</a> entwickelt und dokumentiert.</p>
+            <p>{{ _('Alle Benutzer können die Inhalte auf %(site_name)s bewerten und schädliche Inhalte melden oder zur Löschung vorschlagen.', site_name=site_name) }}</p>
+            <p>{{ _('So wird eine durchgängig hohe Qualität durchgesetzt.') }}</p>
+            <p>{{ _('Richtlinien dafür werden in einem <a href="/f/0">globalen Forum</a> entwickelt und dokumentiert.') }}</p>
         </div>
     </div>
-    <h2><span class="i">Reputation &ndash; Vertrauen von der Community</span></h2>
+    <h2><span class="i">{{ _('<strong>Reputation</strong> &ndash; Vertrauen von der Community') }}</span></h2>
     <div class="grid">
         <div class="column12 column4__lg p3">
             <img src="/static/img/tour/reputation.svg" alt="">
         </div>
         <div class="column12 column8__lg p3">
-            <p>Durch die Bewertung der Inhalte zeigt die Community, wie sehr sie dir vertraut. Daraus errechnet sich eine Punktzahl &ndash; deine Reputation</p>
-            <p>Du erhältst Reputation, wenn ...</p>
+            <p>{{ _('Durch die Bewertung der Inhalte zeigt die Community, wie sehr sie dir vertraut. Daraus errechnet sich eine Punktzahl &ndash; deine Reputation') }}</p>
+            <p>{{ _('Du erhältst Reputation, wenn ...') }}</p>
             <div class="_pin-group">
                 <div class="_pin-group-item _pin-group-centered">
                     <span class="_pin _pin-green">+3</span>
-                    <p class="fs-caption col-dark-dd">dein Beitrag einen Upvote erhält</p>
+                    <p class="fs-caption col-dark-dd">{{ _('dein Beitrag einen Upvote erhält') }}</p>
                 </div>
                 <div class="_pin-group-item _pin-group-centered">
                     <span class="_pin _pin-green">+1</span>
-                    <p class="fs-caption col-dark-dd">ein Benutzer deinem Kurs beitritt</p>
+                    <p class="fs-caption col-dark-dd">{{ _('ein Benutzer deinem Kurs beitritt') }}</p>
                 </div>
                 <div class="_pin-group-item _pin-group-centered">
                     <span class="_pin _pin-green">+5</span>
-                    <p class="fs-caption col-dark-dd">dein Kurs einen Upvote erhält</p>
+                    <p class="fs-caption col-dark-dd">{{ _('dein Kurs einen Upvote erhält') }}</p>
                 </div>
                 <div class="_pin-group-item _pin-group-centered">
-                    <span class="_pin _pin-green p2 pt1 ta-c"><div style="font-size: 8px;">max.</div>+50</span>
-                    <p class="fs-caption col-dark-dd">ein Pull Request angenommen wird</p>
+                    <span class="_pin _pin-green p2 pt1 ta-c"><div style="font-size: 8px;">{{ _('max.') }}</div>+50</span>
+                    <p class="fs-caption col-dark-dd">{{ _('ein Pull Request angenommen wird') }}</p>
                 </div>
             </div>
-            <p>Dir wird Reputation abgezogen, wenn ...</p>
+            <p>{{ _('Dir wird Reputation abgezogen, wenn ...') }}</p>
             <div class="_pin-group">
                 <div class="_pin-group-item _pin-group-centered">
                     <span class="_pin _pin-red">&ndash;3</span>
-                    <p class="fs-caption col-dark-dd">dein Beitrag einen Downvote erhält</p>
+                    <p class="fs-caption col-dark-dd">{{ _('dein Beitrag einen Downvote erhält') }}</p>
                 </div>
                 <div class="_pin-group-item _pin-group-centered">
                     <span class="_pin _pin-red">&ndash;5</span>
-                    <p class="fs-caption col-dark-dd">dein Kurs einen Downvote erhält</p>
+                    <p class="fs-caption col-dark-dd">{{ _('dein Kurs einen Downvote erhält') }}</p>
                 </div>
-                <!--<div class="_pin-group-item _pin-group-centered">
-                    <span class="_pin _pin-red">&ndash;20</span>
-                    <p class="fs-caption col-dark-dd">du um einen Kurs bittest</p>
-                </div>-->
             </div>
-            <p>Mit steigender Reputation erhältst du Privilegien zur Moderation der Inhalte ...</p>
+            <p>{{ _('Mit steigender Reputation erhältst du Privilegien zur Moderation der Inhalte ...') }}</p>
             <table>
                 <tr>
                     <td class="p1"><span class="_badge _badge-vote _badge-vote--primary _badge-vote-fw">1</span></td>
-                    <th class="ta-l p2">Beiträge bewerten</th>
+                    <th class="ta-l p2">{{ _('Beiträge bewerten') }}</th>
                 </tr>
                 <tr>
                     <td class="p1"><span class="_badge _badge-vote _badge-vote--primary _badge-vote-fw">100</span></td>
-                    <th class="ta-l p2">Kurse bewerten</th>
+                    <th class="ta-l p2">{{ _('Kurse bewerten') }}</th>
                 </tr>
                 <tr>
                     <td class="p1"><span class="_badge _badge-vote _badge-vote--primary _badge-vote-fw">1</span></td>
-                    <th class="ta-l p2">Überall kommentieren</th>
+                    <th class="ta-l p2">{{ _('Überall kommentieren') }}</th>
                 </tr>
                 <tr>
                     <td class="p1"><span class="_badge _badge-vote _badge-vote--primary _badge-vote-fw">1</span></td>
-                    <th class="ta-l p2">Beiträge bearbeiten</th>
+                    <th class="ta-l p2">{{ _('Beiträge bearbeiten') }}</th>
                 </tr>
-                <!--<tr>
+                {#<!--<tr>
                     <td class="p1"><span class="_badge _badge-vote _badge-vote--primary _badge-vote-fw">200</span></td>
                     <th class="ta-l p2">Pull Requests annehmen/ablehnen</th>
-                </tr>-->
+                </tr>-->#}
                 <tr>
                     <td class="p1"><span class="_badge _badge-vote _badge-vote--primary _badge-vote-fw">100</span></td>
-                    <th class="ta-l p2">Beiträge löschen</th>
+                    <th class="ta-l p2">{{ _('Beiträge löschen') }}</th>
                 </tr>
                 <tr>
                     <td class="p1"><span class="_badge _badge-vote _badge-vote--primary _badge-vote-fw">200</span></td>
-                    <th class="ta-l p2">Kurse sperren</th>
+                    <th class="ta-l p2">{{ _('Kurse sperren') }}</th>
                 </tr>
             </table>
-            <p>... und kannst so zusammen mit den Moderierenden zum Erfolg von {{ site_name }} beitragen.</p>
+            <p>{{ _('... und kannst so zusammen mit den Moderierenden zum Erfolg von %(site_name)s beitragen.', site_name=site_name) }}</p>
         </div>
     </div>
 
@@ -121,8 +118,9 @@
 <hr>
 <div class="grid p2">
     <div>
-        <a href="/courses" class="_btn _btn-xl _btn--primary">Kurse ansehen</a>
-        <a href="/help" class="_btn _btn-xl _btn--primary _btn-outline">Hilfezentrum</a>
+        <a href="/courses" class="_btn _btn-xl _btn--primary">{{ _('Kurse ansehen') }}</a>
+        <a href="/help" class="_btn _btn-xl _btn--primary _btn-outline">{{ _('Hilfethemen') }}</a>
     </div>
+</div>
 </div>
 {% endblock %}

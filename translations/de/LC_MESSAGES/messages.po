@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-09-28 14:40+0200\n"
+"POT-Creation-Date: 2019-10-01 12:34+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -18,7 +18,11 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.7.0\n"
 
-#: ../main/templates/index.html:10
+#: ../main/__init__.py:131 ../main/templates/layout_new.html:167
+msgid "Startseite"
+msgstr ""
+
+#: ../main/templates/index.html:10 ../main/templates/tour/pi-learn.html:5
 #, python-format
 msgid "Willkommen bei %(site_name)s!"
 msgstr ""
@@ -37,15 +41,15 @@ msgid ""
 " richtig Spaß macht es erst, wenn man sich anmeldet."
 msgstr ""
 
-#: ../main/templates/index.html:14 ../main/templates/index.html:25
+#: ../main/templates/index.html:14 ../main/templates/index.html:28
 #: ../main/templates/layout_new.html:129 ../main/templates/layout_new.html:202
-#: ../main/templates/register.html:5 ../main/templates/register.html:34
-#: ../main/view/auth.py:60
+#: ../main/templates/register.html:5 ../main/templates/register.html:37
+#: ../main/view/auth.py:62
 msgid "Registrieren"
 msgstr ""
 
 #: ../main/templates/index.html:15 ../main/templates/layout_new.html:130
-#: ../main/templates/login.html:5 ../main/templates/login.html:32
+#: ../main/templates/login.html:5 ../main/templates/login.html:35
 #: ../main/view/auth.py:24
 msgid "Anmelden"
 msgstr ""
@@ -68,106 +72,106 @@ msgstr ""
 msgid "Passwort"
 msgstr ""
 
-#: ../main/templates/index.html:27 ../main/templates/register.html:36
+#: ../main/templates/index.html:30 ../main/templates/register.html:39
 #, python-format
 msgid ""
 "Wenn du dich registrierst, erklärst du dich mit den %(terms_link)s und "
 "der %(privacy_link)s einverstanden."
 msgstr ""
 
-#: ../main/templates/index.html:27 ../main/templates/register.html:36
+#: ../main/templates/index.html:30 ../main/templates/register.html:39
 msgid "Nutzungsbedingungen"
 msgstr ""
 
-#: ../main/templates/index.html:27 ../main/templates/register.html:36
+#: ../main/templates/index.html:30 ../main/templates/register.html:39
 msgid "Datenschutzerklärung"
 msgstr ""
 
-#: ../main/templates/index.html:37
+#: ../main/templates/index.html:40 ../main/templates/tour/pi-learn.html:8
 msgid "<strong>Kurse</strong> – zu verschiedenen Themen"
 msgstr ""
 
-#: ../main/templates/index.html:41
+#: ../main/templates/index.html:44 ../main/templates/tour/pi-learn.html:23
 msgid "<strong>Jeder</strong> kann Inhalte einbringen"
 msgstr ""
 
-#: ../main/templates/index.html:45
+#: ../main/templates/index.html:48 ../main/templates/tour/pi-learn.html:34
 msgid "Die <strong>Community</strong> kontrolliert die Inhalte"
 msgstr ""
 
-#: ../main/templates/index.html:51
+#: ../main/templates/index.html:54 ../main/templates/tour/pi-learn.html:121
 msgid "Kurse ansehen"
 msgstr ""
 
-#: ../main/templates/index.html:52
+#: ../main/templates/index.html:55
 msgid "Mehr erfahren"
 msgstr ""
 
-#: ../main/templates/index.html:60
+#: ../main/templates/index.html:63
 msgid "Empfohlene Kurse"
 msgstr ""
 
-#: ../main/templates/index.html:87
+#: ../main/templates/index.html:90
 msgid "Kurs zugriffsbeschränkt"
 msgstr ""
 
-#: ../main/templates/index.html:89
+#: ../main/templates/index.html:92
 msgid "Kurs nicht verfügbar"
 msgstr ""
 
-#: ../main/templates/index.html:92
+#: ../main/templates/index.html:95
 msgid "Zum Kurs"
 msgstr ""
 
-#: ../main/templates/index.html:94
+#: ../main/templates/index.html:97
 msgid "Einschreiben"
 msgstr ""
 
-#: ../main/templates/index.html:97
+#: ../main/templates/index.html:100
 msgid "Informationen"
 msgstr ""
 
-#: ../main/templates/index.html:110
+#: ../main/templates/index.html:113
 msgid "Kurse finden"
 msgstr ""
 
-#: ../main/templates/index.html:112
+#: ../main/templates/index.html:115
 #, python-format
 msgid "Du kannst unsere %(topic_link)s durchstöbern ..."
 msgstr ""
 
-#: ../main/templates/index.html:112
+#: ../main/templates/index.html:115
 msgid "Themen"
 msgstr ""
 
-#: ../main/templates/index.html:121
+#: ../main/templates/index.html:124
 msgid "... oder nach Kursen suchen"
 msgstr ""
 
-#: ../main/templates/index.html:127
+#: ../main/templates/index.html:130
 msgid "Suchen"
 msgstr ""
 
-#: ../main/templates/index.html:134
+#: ../main/templates/index.html:137
 msgid "Ideen für Kurse"
 msgstr ""
 
-#: ../main/templates/index.html:135
+#: ../main/templates/index.html:138
 msgid ""
 "Diese Kurse wurden von Benutzern vorgeschlagen. Wähle die aus, die dich "
 "interessieren und unterstütze sie, indem du erklärst, dass du an ihnen "
 "teilnehmen möchtest."
 msgstr ""
 
-#: ../main/templates/index.html:149
+#: ../main/templates/index.html:152
 msgid "Ankündigungen"
 msgstr ""
 
-#: ../main/templates/index.html:159
+#: ../main/templates/index.html:162
 msgid "Globale Ankündigung"
 msgstr ""
 
-#: ../main/templates/index.html:161
+#: ../main/templates/index.html:164
 msgid "Kurs"
 msgstr ""
 
@@ -243,10 +247,6 @@ msgstr ""
 msgid "Benutzer"
 msgstr ""
 
-#: ../main/templates/layout_new.html:167
-msgid "Startseite"
-msgstr ""
-
 #: ../main/templates/layout_new.html:169
 msgid "Globales Forum"
 msgstr ""
@@ -260,6 +260,7 @@ msgid "Hilfe"
 msgstr ""
 
 #: ../main/templates/layout_new.html:174
+#: ../main/templates/tour/pi-learn.html:122
 msgid "Hilfethemen"
 msgstr ""
 
@@ -275,18 +276,19 @@ msgstr ""
 msgid "Helpdesk"
 msgstr ""
 
-#: ../main/templates/layout_new.html:181
+#: ../main/templates/about/team.html:10 ../main/templates/layout_new.html:181
 msgid "Über uns"
 msgstr ""
 
-#: ../main/templates/layout_new.html:182
+#: ../main/templates/about/team.html:6 ../main/templates/layout_new.html:182
 msgid "Website-Tour"
 msgstr ""
 
-#: ../main/templates/layout_new.html:183
+#: ../main/templates/about/team.html:7 ../main/templates/layout_new.html:183
 msgid "Unser Team"
 msgstr ""
 
+#: ../main/templates/about/team.html:5 ../main/templates/about/team.html:52
 #: ../main/templates/layout_new.html:184
 msgid "Twitter"
 msgstr ""
@@ -367,7 +369,7 @@ msgstr ""
 msgid "%(site_name)s-Konto"
 msgstr ""
 
-#: ../main/templates/login.html:33
+#: ../main/templates/login.html:36
 msgid "Passwort vergessen"
 msgstr ""
 
@@ -386,8 +388,8 @@ msgstr ""
 
 #: ../main/templates/passwordreset.html:5
 #: ../main/templates/passwordreset_verify.html:5
-#: ../main/templates/passwordreset_verify.html:22 ../main/view/auth.py:88
-#: ../main/view/auth.py:100
+#: ../main/templates/passwordreset_verify.html:22 ../main/view/auth.py:90
+#: ../main/view/auth.py:102
 msgid "Passwort zurücksetzen"
 msgstr ""
 
@@ -469,11 +471,164 @@ msgstr ""
 msgid "Du hast bereits ein Benutzerkonto?"
 msgstr ""
 
-#: ../main/view/auth.py:70
+#: ../main/templates/about/team.html:11
+msgid "Das ist das &pi;-Learn Team, dass diese Webseite entwickelt und anbietet:"
+msgstr ""
+
+#: ../main/templates/about/team.html:13
+msgid "Diese Liste bearbeiten"
+msgstr ""
+
+#: ../main/templates/about/team.html:48
+msgid "Webseite"
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:2
+#, python-format
+msgid ""
+"%(site_name)s ist eine Community-gesteuerte Open Learning Webseite. Hier "
+"erfährst du, was das bedeutet."
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:6
+#, python-format
+msgid ""
+" %(site_name)s ist eine Community-gesteuerte Open Learning Plattform. Was"
+" bedeutet das? Finde es heraus!"
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:14
+#, python-format
+msgid ""
+"Jeder kann an kostenlosen Online-Kursen teilnehmen. Alle Kurse auf "
+"%(site_name)s sind unter einer freien Lizenz verfügbar und können ohne "
+"Einschränkungen weiterverwendet werden."
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:15
+#, python-format
+msgid "Es gibt Kurse zu diesen Themengebieten auf %(site_name)s:"
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:29
+msgid ""
+"Jeder Benutzerin und jeder Benutzer kann Kurse vorschlagen, erarbeiten "
+"und anbieten."
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:30
+msgid "In den Kursforen kann man über Kursinhalte diskutieren."
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:31
+msgid "Deine Inhalte können von anderen bearbeitet werden."
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:40
+#, python-format
+msgid ""
+"Alle Benutzer können die Inhalte auf %(site_name)s bewerten und "
+"schädliche Inhalte melden oder zur Löschung vorschlagen."
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:41
+msgid "So wird eine durchgängig hohe Qualität durchgesetzt."
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:42
+msgid ""
+"Richtlinien dafür werden in einem <a href=\"/f/0\">globalen Forum</a> "
+"entwickelt und dokumentiert."
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:45
+msgid "<strong>Reputation</strong> &ndash; Vertrauen von der Community"
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:51
+msgid ""
+"Durch die Bewertung der Inhalte zeigt die Community, wie sehr sie dir "
+"vertraut. Daraus errechnet sich eine Punktzahl &ndash; deine Reputation"
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:52
+msgid "Du erhältst Reputation, wenn ..."
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:56
+msgid "dein Beitrag einen Upvote erhält"
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:60
+msgid "ein Benutzer deinem Kurs beitritt"
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:64
+msgid "dein Kurs einen Upvote erhält"
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:67
+msgid "max."
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:68
+msgid "ein Pull Request angenommen wird"
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:71
+msgid "Dir wird Reputation abgezogen, wenn ..."
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:75
+msgid "dein Beitrag einen Downvote erhält"
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:79
+msgid "dein Kurs einen Downvote erhält"
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:82
+msgid ""
+"Mit steigender Reputation erhältst du Privilegien zur Moderation der "
+"Inhalte ..."
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:86
+msgid "Beiträge bewerten"
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:90
+msgid "Kurse bewerten"
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:94
+msgid "Überall kommentieren"
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:98
+msgid "Beiträge bearbeiten"
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:106
+msgid "Beiträge löschen"
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:110
+msgid "Kurse sperren"
+msgstr ""
+
+#: ../main/templates/tour/pi-learn.html:113
+#, python-format
+msgid ""
+"... und kannst so zusammen mit den Moderierenden zum Erfolg von "
+"%(site_name)s beitragen."
+msgstr ""
+
+#: ../main/view/auth.py:72
 msgid "Dein Passwort-Zurücksetz-Code"
 msgstr ""
 
-#: ../main/view/auth.py:70
+#: ../main/view/auth.py:72
 #, python-format
 msgid ""
 "Hallo,\n"
@@ -591,5 +746,10 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "Password zurücksetzen"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Jeder Benutzerin und jeder Benutzer kann"
+#~ " Kurse vorschlage, erarbeiten und anbieten."
 #~ msgstr ""
 
