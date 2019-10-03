@@ -12,25 +12,25 @@
    <div class="column9__lg column12 bs2-light">
     <div class="_headbar-item">
       <div class="_headbar-item-name">{{ data.getTitle() }}</div>
-      <div class="_headbar-item-type">Pinwand</div>
+      <div class="_headbar-item-type">{{ _('Pinnwand') }}</div>
       <div class="_headbar-item-status">
         {% if data.isDisabled() %}
-          <span class="_badge _badge-s-danger">unveröffentlicht</span>
+          <span class="_badge _badge-s-danger">{{ _('unveröffentlicht') }}</span>
         {% else %}
-          <span class="_badge _badge-s-success">live</span>
+          <span class="_badge _badge-s-success">{{ _('live') }}</span>
         {% endif %}
       </div>
       <div class="_headbar-item-sep"></div>
       <div class="_headbar-item-action">
         {% if user.isMod() or course.getCourseRole(user) >= 3 %}
-        <a href="/c/{{ course.id }}/edit/unit/{{ data.id }}" class="_btn _btn-xs _btn--primary">Bearbeiten</a>
+        <a href="/c/{{ course.id }}/edit/unit/{{ data.id }}" class="_btn _btn-xs _btn--primary">{{ _('Bearbeiten') }}</a>
         {% endif %}
       </div>
     </div>
     <div class="{% if data.isDisabled() %}bg-danger-lll{% endif %} p3">
 
        {% if not post %}
-        <p>Es wurde noch kein Beitrag für dieses Pinboard ausgewählt.</p>
+        <p>{{ _('Es wurde noch kein Beitrag für dieses Pinboard ausgewählt.') }}</p>
        {% else %}
          <div class="m1 p5 fs-subheading b1s b-dark-ll b-r2">
            {{ post.getContent() }}
@@ -41,7 +41,7 @@
            </div>
          {% endif %}
          {% set aw = post.getAnswers() %}
-         <h2>Rückmeldungen</h2>
+         <h2>{{ _('Rückmeldungen') }}</h2>
          <div class="grid">
          {% for answer in aw if answer.mayBeSeen(user) %}
          <div class="column6 column12__sm">
@@ -53,7 +53,7 @@
              </div>
              <div class="_card-footer">
                {% if course.getCourseRole(user) >= 3 %}
-                 <div class="p2">Zustimmung: {{ answer.getScore() }}</div>
+                 <div class="p2">{{ _('Zustimmung:') }} {{ answer.getScore() }}</div>
                {% else %}
                <div class="horizontal-list">
                  {% set the_vote = answer.getUserVote(user) %}
@@ -67,11 +67,11 @@
          {% endfor %}
          </div>
          {% if not course.getCourseRole(user) >= 3 and user.isLoggedIn() %}
-         <h2>Kommentar hinzufügen</h2>
-         <p>Die bisherigen Antworten drücken nicht deine Meinung aus? Du möchtest noch etwas hinzufügen?</p>
-         <p>Schreibe selber einen Kommentar:</p>
+         <h2>{{ _('Kommentar hinzufügen') }}</h2>
+         <p>{{ _('Die bisherigen Antworten drücken nicht deine Meinung aus? Du möchtest noch etwas hinzufügen?') }}</p>
+         <p>{{ _('Schreibe selber einen Kommentar:') }}</p>
          <input id="answer" class="form" maxlength="280">
-         <button class="js--submit _btn _btn--primary">Absenden</button>
+         <button class="js--submit _btn _btn--primary">{{ _('Absenden') }}</button>
          {% endif %}
        {% endif %}
    </div>

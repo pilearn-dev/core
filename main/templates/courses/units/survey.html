@@ -13,18 +13,18 @@
    <div class="column9__lg column12 bs2-light">
     <div class="_headbar-item">
       <div class="_headbar-item-name">{{ data.getTitle() }}</div>
-      <div class="_headbar-item-type">Umfrage</div>
+      <div class="_headbar-item-type">{{ _('Umfrage') }}</div>
       <div class="_headbar-item-status">
         {% if data.isDisabled() %}
-          <span class="_badge _badge-s-danger">unveröffentlicht</span>
+          <span class="_badge _badge-s-danger">{{ _('unveröffentlicht') }}</span>
         {% else %}
-          <span class="_badge _badge-s-success">live</span>
+          <span class="_badge _badge-s-success">{{ _('live') }}</span>
         {% endif %}
       </div>
       <div class="_headbar-item-sep"></div>
       <div class="_headbar-item-action">
         {% if user.isMod() or course.getCourseRole(user) >= 3 %}
-        <a href="/c/{{ course.id }}/edit/unit/{{ data.id }}" class="_btn _btn-xs _btn--primary">Bearbeiten</a>
+        <a href="/c/{{ course.id }}/edit/unit/{{ data.id }}" class="_btn _btn-xs _btn--primary">{{ _('Bearbeiten') }}</a>
         {% endif %}
       </div>
     </div>

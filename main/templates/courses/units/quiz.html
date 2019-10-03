@@ -13,18 +13,18 @@
    <div class="column9__lg column12 bs2-light">
     <div class="_headbar-item">
       <div class="_headbar-item-name">{{ data.getTitle() }}</div>
-      <div class="_headbar-item-type">Quiz</div>
+      <div class="_headbar-item-type">{{ _('Quiz') }}</div>
       <div class="_headbar-item-status">
         {% if data.isDisabled() %}
-          <span class="_badge _badge-s-danger">unveröffentlicht</span>
+          <span class="_badge _badge-s-danger">{{ _('unveröffentlicht') }}</span>
         {% else %}
-          <span class="_badge _badge-s-success">live</span>
+          <span class="_badge _badge-s-success">{{ _('live') }}</span>
         {% endif %}
       </div>
       <div class="_headbar-item-sep"></div>
       <div class="_headbar-item-action">
         {% if user.isMod() or course.getCourseRole(user) >= 3 %}
-        <a href="/c/{{ course.id }}/edit/unit/{{ data.id }}" class="_btn _btn-xs _btn--primary">Bearbeiten</a>
+        <a href="/c/{{ course.id }}/edit/unit/{{ data.id }}" class="_btn _btn-xs _btn--primary">{{ _('Bearbeiten') }}</a>
         {% endif %}
       </div>
     </div>
@@ -33,8 +33,8 @@
         <div class="column8 column12__sm p2">
           {% if request.values.get("submission-error") == "incomplete" %}
             <div class="content-warning">
-              <h3>Dieses Quiz muss erneut abgeschickt werden</h3>
-              <p>Ein Fehler ist aufgetreten (wahrscheinlich wurde das Quiz geändert) und daher muss das Quiz erneut abgeschickt werden.</p>
+              <h3>{{ _('Dieses Quiz muss erneut abgeschickt werden') }}</h3>
+              <p>{{ _('Ein Fehler ist aufgetreten (wahrscheinlich wurde das Quiz geändert) und daher muss das Quiz erneut abgeschickt werden.') }}</p>
             </div>
             {% endif %}
            {% if data.hasViewData(user) and not request.values.get("re-submit", "false") == "true" %}
@@ -64,7 +64,7 @@
               </div>
               {% elif i.type == "multiple-choice" %}{% set sum = eval_data.result[""~loop.index].sum %}{% set max = int(i.data.points) %}{% if (""~sum).endswith(".0") %}{% set sum=int(sum) %}{% endif %}
               <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
-                 <div class="push-right"><span class="_badge _badge-s-black">{{ (""~sum).replace(".",",") }} / {{ max }} Pkt.</span></div>
+                 <div class="push-right"><span class="_badge _badge-s-black">{{ (""~sum).replace(".",",") }} / {{ max }} {{ _('Pkt.') }}</span></div>
                  <div class="fs-subheading">
                    {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
                  </div>
@@ -73,7 +73,7 @@
                    <div class="p1">
                      <input type="radio" disabled name="quiz-question-{{ masterloop.index }}" id="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" value="{{ loop.index-1 }}" class="form-radio" {% if (""~(loop.index-1)) in eval_data.result[""~masterloop.index].selection %} checked{% endif %}>
                      <label for="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" class="form form-inline">
-                       {% if (""~(loop.index-1)) not in eval_data.result[""~masterloop.index].selection and c.startswith("*") %} <span class="_badge _badge-s-dark push-right">wäre richtig gewesen</span>{% elif not c.startswith("*") and (""~(loop.index-1)) in eval_data.result[""~masterloop.index].selection %} <span class="_badge _badge-s-danger push-right">falsch</span>{% endif %}
+                       {% if (""~(loop.index-1)) not in eval_data.result[""~masterloop.index].selection and c.startswith("*") %} <span class="_badge _badge-s-dark push-right">{{ _('wäre richtig gewesen') }}</span>{% elif not c.startswith("*") and (""~(loop.index-1)) in eval_data.result[""~masterloop.index].selection %} <span class="_badge _badge-s-danger push-right">{{ _('falsch') }}</span>{% endif %}
                         {%if c.startswith("*")%}{%set c=c[1:]%}{%endif%}
                        {{ c }}
                      </label>
@@ -82,7 +82,7 @@
                </div>
               {% elif i.type == "multiple-answer" %}{% set sum = eval_data.result[""~loop.index].sum %}{% set max = int(i.data.points) %}{% if (""~sum).endswith(".0") %}{% set sum=int(sum) %}{% endif %}
               <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
-                 <div class="push-right"><span class="_badge _badge-s-black">{{ (""~sum).replace(".",",") }} / {{ max }} Pkt.</span></div>
+                 <div class="push-right"><span class="_badge _badge-s-black">{{ (""~sum).replace(".",",") }} / {{ max }} {{ _('Pkt.') }}</span></div>
                  <div class="fs-subheading">
                    {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
                  </div>
@@ -91,7 +91,7 @@
                    <div class="p1">
                      <input type="checkbox" disabled name="quiz-question-{{ masterloop.index }}" id="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" value="{{ loop.index-1 }}" class="form-checkbox" {% if (""~(loop.index-1)) in eval_data.result[""~masterloop.index].selection %} checked{% endif %}>
                      <label for="quiz-question-{{ masterloop.index }}-answer-{{ loop.index }}" class="form form-inline">
-                       {% if (""~(loop.index-1)) not in eval_data.result[""~masterloop.index].selection and c.startswith("*") %} <span class="_badge _badge-s-dark push-right">wäre richtig gewesen</span>{% elif c.startswith("*") %}{% elif not c.startswith("*") and (""~(loop.index-1)) in eval_data.result[""~masterloop.index].selection %} <span class="_badge _badge-s-danger push-right">falsch</span>{% endif %}
+                       {% if (""~(loop.index-1)) not in eval_data.result[""~masterloop.index].selection and c.startswith("*") %} <span class="_badge _badge-s-dark push-right">{{ _('wäre richtig gewesen') }}</span>{% elif c.startswith("*") %}{% elif not c.startswith("*") and (""~(loop.index-1)) in eval_data.result[""~masterloop.index].selection %} <span class="_badge _badge-s-danger push-right">{{ _('falsch') }}</span>{% endif %}
                         {%if c.startswith("*")%}{%set c=c[1:]%}{%endif%}
                        {{ c }}
                      </label>
@@ -100,13 +100,13 @@
                </div>
               {% elif i.type == "text-answer" %}{% set sum = eval_data.result[""~loop.index].sum %}{% set max = i.data.points %}
               <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
-                 <div class="push-right"><span class="_badge _badge-s-black">{{ sum }} / {{ max }} Pkt.</span></div>
+                 <div class="push-right"><span class="_badge _badge-s-black">{{ sum }} / {{ max }} {{ _('Pkt.') }}</span></div>
                  <div class="fs-subheading">
                    {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
                  </div>
                  <div class="p1">
                    <input class="form" id="quiz-question-{{ loop.index }}-answer" disabled value="{{ eval_data.result[""~loop.index].selection }}">
-                   <p class="form-validation"><strong>akzeptiert werden:</strong> {% for _ in eval_data.result[""~loop.index].correct %}{% if not loop.index == 1 %}, {% endif %}{{ _ }}{% endfor %}
+                   <p class="form-validation"><strong>{{ _('akzeptiert werden:') }}</strong> {% for _ in eval_data.result[""~loop.index].correct %}{% if not loop.index == 1 %}, {% endif %}{{ _ }}{% endfor %}
                  </div>
                </div>
               {% endif %}
@@ -137,7 +137,7 @@
                </div>
              {% elif i.type == "multiple-choice" %}
              <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
-              <div class="push-right"><span class="_badge _badge-s-info">{{ i.data.points }} Pkt.</span></div>
+              <div class="push-right"><span class="_badge _badge-s-info">{{ i.data.points }} {{ _('Pkt.') }}</span></div>
               <div class="fs-subheading">
                 {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
               </div>
@@ -151,7 +151,7 @@
             </div>
              {% elif i.type == "multiple-answer" %}
              <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
-                <div class="push-right"><span class="_badge _badge-s-info">{{ i.data.points }} Pkt.</span></div>
+                <div class="push-right"><span class="_badge _badge-s-info">{{ i.data.points }} {{ _('Pkt.') }}</span></div>
                 <div class="fs-subheading">
                   {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
                 </div>
@@ -165,20 +165,20 @@
               </div>
              {% elif i.type == "text-answer" %}
              <div class="bt1s b-dark-ll p1 m1 mt3 mb3">
-                <div class="push-right"><span class="_badge _badge-s-info">{{ i.data.points }} Pkt.</span></div>
+                <div class="push-right"><span class="_badge _badge-s-info">{{ i.data.points }} {{ _('Pkt.') }}</span></div>
                 <div class="fs-subheading">
                   {{ (i.data.question.replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
                 </div>
                 <div class="p1">
-                  <input class="form" id="quiz-question-{{ loop.index }}-answer" placeholder="Bitte Antwort eingeben">
+                  <input class="form" id="quiz-question-{{ loop.index }}-answer" placeholder="{{ _('Bitte Antwort eingeben') }}">
                 </div>
               </div>
              {% endif %}
             {% endfor %}
             {% if user.isLoggedIn() %}
-            <button class="_btn _btn-lg _btn--primary" onclick="send();">Absenden</button>
+            <button class="_btn _btn-lg _btn--primary" onclick="send();">{{ _('Absenden') }}</button>
             {% else %}
-            <p>Du bist nicht angemeldet und kannst dieses Quiz daher leider nicht abschicken.</p>
+            <p>{{ _('Du bist nicht angemeldet und kannst dieses Quiz daher leider nicht abschicken.') }}</p>
             {% endif %}
           {% endif %}
         </div>
@@ -187,26 +187,26 @@
             {% set eval_data = data.getViewData(user, as_json=True) %}
             {% set sum = eval_data.sum %}
             <div class="_card">
-              <div class="_card-title">Ergebnis</div>
+              <div class="_card-title">{{ _('Ergebnis') }}</div>
               <div class="_card-content">
                 {% if (""~sum).endswith(".0") %}{% set sum=int(sum) %}{% endif %}
-                Du hast an diesem Quiz teilgenommen und <div class="fs-heading f-strong ta-c">
+                {{ _('Du hast an diesem Quiz teilgenommen und') }} <div class="fs-heading f-strong ta-c">
                   {{ (""~sum).replace(".",",") }} / {{ eval_data.max }}
                 </div>
-                Punkte erreicht.
+                {{ _('Punkte erreicht.') }}
                 <div class="_progress-bar _progress-bar-success _progress-bar-sm">
                     <div class="_progress-bar-slot" style="width: {{ 100 * eval_data.sum / eval_data.max }}%"></div>
                     <div class="_progress-bar-label">{{ (""~(int(1000 * eval_data.sum / eval_data.max)/10)).replace(".",",") }}%</div>
                 </div>
               </div>
               <div class="_card-footer">
-                <a class="_btn _btn--primary _btn-sm" href="?re-submit=true">Erneut teilnehmen</a>
+                <a class="_btn _btn--primary _btn-sm" href="?re-submit=true">{{ _('Erneut teilnehmen') }}</a>
               </div>
             </div>
           {% endif %}
           <div class="_alert _alert-info">
-            <h3>Hinweis</h3>
-            <p>Dies ist ein Quiz und kann beliebig oft wiederholt werden.</p>
+            <h3>{{ _('Hinweis') }}</h3>
+            <p>{{ _('Dies ist ein Quiz und kann beliebig oft wiederholt werden.') }}</p>
           </div>
         </div>
       </div>

@@ -82,7 +82,8 @@ def prepare_template_context():
         "mathjax_inline_delim": S.get("enable-mathjax-tokens-inline", ":( ):").split(" "),
         "needs_mathjax": False,
         "matomo_site_id": int(S.get("logging-matomo-id")),
-        "featured_announcements": mforum.ForumAnnouncement.byForumFeatured(0)
+        "featured_announcements": mforum.ForumAnnouncement.byForumFeatured(0),
+        "language": S.get("site-language", "de")
     }
 
 @babel.localeselector

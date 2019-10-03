@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-10-03 13:32+0200\n"
+"POT-Creation-Date: 2019-10-03 14:17+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -28,6 +28,66 @@ msgstr ""
 
 #: ../main/model/courses.py:227
 msgid "von"
+msgstr ""
+
+#: ../main/templates/_course-header.html:6
+#, python-format
+msgid ""
+"für alle Fragen zu %(site_name) selber und für Fehlermeldungen oder "
+"Verbesserungsideen"
+msgstr ""
+
+#: ../main/templates/_course-header.html:19
+#: ../main/templates/_course-header.html:54
+#: ../main/templates/courses/info.html:7
+msgid "Infos"
+msgstr ""
+
+#: ../main/templates/_course-header.html:20
+#: ../main/templates/_course-header.html:55
+#: ../main/templates/courses/info.html:8
+#: ../main/templates/courses/units/info.html:16
+#: ../main/templates/courses/units/syllabus.html:50
+msgid "Inhalte"
+msgstr ""
+
+#: ../main/templates/_course-header.html:22
+#: ../main/templates/_course-header.html:57
+#: ../main/templates/courses/info.html:10
+#: ../main/templates/courses/units/extvideo.html:26
+#: ../main/templates/courses/units/info.html:27
+#: ../main/templates/courses/units/pinboard.html:26
+#: ../main/templates/courses/units/quiz.html:27
+#: ../main/templates/courses/units/survey.html:27
+#: ../main/templates/courses/units/syllabus.html:27
+msgid "Bearbeiten"
+msgstr ""
+
+#: ../main/templates/_course-header.html:24
+#: ../main/templates/_course-header.html:59
+#: ../main/templates/courses/info.html:12 ../main/templates/layout_new.html:142
+msgid "Forum"
+msgstr ""
+
+#: ../main/templates/_course-header.html:26
+#: ../main/templates/_course-header.html:61
+#: ../main/templates/courses/info.html:14
+msgid "Ergebnisse"
+msgstr ""
+
+#: ../main/templates/_course-header.html:29
+#: ../main/templates/_course-header.html:31
+#: ../main/templates/_course-header.html:64
+#: ../main/templates/_course-header.html:66
+#: ../main/templates/courses/info.html:17
+#: ../main/templates/courses/info.html:19
+msgid "Pull Requests"
+msgstr ""
+
+#: ../main/templates/_course-header.html:34
+#: ../main/templates/_course-header.html:69
+#: ../main/templates/courses/info.html:22
+msgid "Verwaltung"
 msgstr ""
 
 #: ../main/templates/index.html:10 ../main/templates/tour/pi-learn.html:5
@@ -253,10 +313,6 @@ msgstr ""
 #: ../main/templates/courses/index.html:9 ../main/templates/layout_new.html:141
 #: ../main/templates/layout_new.html:168
 msgid "Kurse"
-msgstr ""
-
-#: ../main/templates/courses/info.html:12 ../main/templates/layout_new.html:142
-msgid "Forum"
 msgstr ""
 
 #: ../main/templates/layout_new.html:143
@@ -664,7 +720,14 @@ msgstr ""
 msgid "Kurs-ID"
 msgstr ""
 
+#: ../main/templates/courses/_unit-nav.html:3
+msgid "Menü"
+msgstr ""
+
 #: ../main/templates/courses/index.html:4
+#: ../main/templates/courses/units/syllabus.html:16
+#: ../main/templates/courses/units/syllabus.html:34
+#: ../main/templates/courses/units/syllabus.html:56
 msgid "Übersicht"
 msgstr ""
 
@@ -688,31 +751,6 @@ msgstr ""
 
 #: ../main/templates/courses/index.html:41
 msgid "Aktuelle Kurse"
-msgstr ""
-
-#: ../main/templates/courses/info.html:7
-msgid "Infos"
-msgstr ""
-
-#: ../main/templates/courses/info.html:8
-msgid "Inhalte"
-msgstr ""
-
-#: ../main/templates/courses/info.html:10
-msgid "Bearbeiten"
-msgstr ""
-
-#: ../main/templates/courses/info.html:14
-msgid "Ergebnisse"
-msgstr ""
-
-#: ../main/templates/courses/info.html:17
-#: ../main/templates/courses/info.html:19
-msgid "Pull Requests"
-msgstr ""
-
-#: ../main/templates/courses/info.html:22
-msgid "Verwaltung"
 msgstr ""
 
 #: ../main/templates/courses/info.html:38
@@ -752,6 +790,166 @@ msgid ""
 "Vielleicht gefallen dir auch weitere <a href=\"%(topic_link)s\">Kurse zum"
 " Thema %(topic_name)s</a> oder <a href=\"%(propose_link)s\">biete selber "
 "einen Kurs an</a>."
+msgstr ""
+
+#: ../main/templates/courses/units/extvideo.html:15
+#: ../main/templates/courses/units/syllabus.html:52
+msgid "Video"
+msgstr ""
+
+#: ../main/templates/courses/units/extvideo.html:18
+#: ../main/templates/courses/units/info.html:19
+#: ../main/templates/courses/units/pinboard.html:18
+#: ../main/templates/courses/units/quiz.html:19
+#: ../main/templates/courses/units/survey.html:19
+#: ../main/templates/courses/units/syllabus.html:19
+msgid "unveröffentlicht"
+msgstr ""
+
+#: ../main/templates/courses/units/extvideo.html:20
+#: ../main/templates/courses/units/info.html:21
+#: ../main/templates/courses/units/pinboard.html:20
+#: ../main/templates/courses/units/quiz.html:21
+#: ../main/templates/courses/units/survey.html:21
+#: ../main/templates/courses/units/syllabus.html:21
+msgid "live"
+msgstr ""
+
+#: ../main/templates/courses/units/extvideo.html:39
+msgid "Disclaimer:"
+msgstr ""
+
+#: ../main/templates/courses/units/extvideo.html:40
+#, python-format
+msgid ""
+"Dieses Video ist eventuell urheberrechtlich geschützt. &pi;-Learn "
+"übernimmt keine Verantwortung für unangemessene Inhalte. Melden Sie "
+"unangebrachte Inhalte oder Urheberrechtsverstöße im <a "
+"href=\"%(helpdesk_link)s\">Helpdesk</a> und wir werden uns darum kümmern."
+msgstr ""
+
+#: ../main/templates/courses/units/pinboard.html:15
+#: ../main/templates/courses/units/syllabus.html:60
+msgid "Pinwand"
+msgstr ""
+
+#: ../main/templates/courses/units/pinboard.html:33
+msgid "Es wurde noch kein Beitrag für dieses Pinboard ausgewählt."
+msgstr ""
+
+#: ../main/templates/courses/units/pinboard.html:44
+msgid "Rückmeldungen"
+msgstr ""
+
+#: ../main/templates/courses/units/pinboard.html:56
+msgid "Zustimmung:"
+msgstr ""
+
+#: ../main/templates/courses/units/pinboard.html:70
+msgid "Kommentar hinzufügen"
+msgstr ""
+
+#: ../main/templates/courses/units/pinboard.html:71
+msgid ""
+"Die bisherigen Antworten drücken nicht deine Meinung aus? Du möchtest "
+"noch etwas hinzufügen?"
+msgstr ""
+
+#: ../main/templates/courses/units/pinboard.html:72
+msgid "Schreibe selber einen Kommentar:"
+msgstr ""
+
+#: ../main/templates/courses/units/pinboard.html:74
+#: ../main/templates/courses/units/quiz.html:179
+msgid "Absenden"
+msgstr ""
+
+#: ../main/templates/courses/units/quiz.html:16
+#: ../main/templates/courses/units/syllabus.html:54
+msgid "Quiz"
+msgstr ""
+
+#: ../main/templates/courses/units/quiz.html:36
+msgid "Dieses Quiz muss erneut abgeschickt werden"
+msgstr ""
+
+#: ../main/templates/courses/units/quiz.html:37
+msgid ""
+"Ein Fehler ist aufgetreten (wahrscheinlich wurde das Quiz geändert) und "
+"daher muss das Quiz erneut abgeschickt werden."
+msgstr ""
+
+#: ../main/templates/courses/units/quiz.html:67
+#: ../main/templates/courses/units/quiz.html:85
+#: ../main/templates/courses/units/quiz.html:103
+msgid "Pkt."
+msgstr ""
+
+#: ../main/templates/courses/units/quiz.html:76
+#: ../main/templates/courses/units/quiz.html:94
+msgid "wäre richtig gewesen"
+msgstr ""
+
+#: ../main/templates/courses/units/quiz.html:76
+#: ../main/templates/courses/units/quiz.html:94
+msgid "falsch"
+msgstr ""
+
+#: ../main/templates/courses/units/quiz.html:109
+msgid "akzeptiert werden:"
+msgstr ""
+
+#: ../main/templates/courses/units/quiz.html:173
+msgid "Bitte Antwort eingeben"
+msgstr ""
+
+#: ../main/templates/courses/units/quiz.html:181
+msgid ""
+"Du bist nicht angemeldet und kannst dieses Quiz daher leider nicht "
+"abschicken."
+msgstr ""
+
+#: ../main/templates/courses/units/quiz.html:190
+msgid "Ergebnis"
+msgstr ""
+
+#: ../main/templates/courses/units/quiz.html:193
+msgid "Du hast an diesem Quiz teilgenommen und"
+msgstr ""
+
+#: ../main/templates/courses/units/quiz.html:196
+msgid "Punkte erreicht."
+msgstr ""
+
+#: ../main/templates/courses/units/quiz.html:203
+msgid "Erneut teilnehmen"
+msgstr ""
+
+#: ../main/templates/courses/units/quiz.html:208
+msgid "Hinweis"
+msgstr ""
+
+#: ../main/templates/courses/units/quiz.html:209
+msgid "Dies ist ein Quiz und kann beliebig oft wiederholt werden."
+msgstr ""
+
+#: ../main/templates/courses/units/survey.html:16
+#: ../main/templates/courses/units/syllabus.html:58
+msgid "Umfrage"
+msgstr ""
+
+#: ../main/templates/courses/units/syllabus.html:37
+msgid ""
+"Dieses Modul ist in der unteren Ebene und kann daher keine Kindelemente "
+"enthalten."
+msgstr ""
+
+#: ../main/templates/courses/units/syllabus.html:42
+msgid "Typ"
+msgstr ""
+
+#: ../main/templates/courses/units/syllabus.html:43
+msgid "Modul"
 msgstr ""
 
 #: ../main/templates/tour/pi-learn.html:2

@@ -1,6 +1,6 @@
 <button class="_btn _btn-dark hide__lg hide__md mb0 push-right" data-toggle="#course-unit-menu" data-toggle-class="hide__sm" data-toggle-self-class="-active"><i class="fa fa-bars"></i> Menü</button>
 <div id="course-unit-menu" class="hide__sm p3__sm b1s__sm b-dark-ll s2__sm">
-  <h2>Menü</h2>
+  <h2>{{ _('Menü') }}</h2>
   <nav class="_nav _nav-v _nav-v-extended">
     {% for element in course.getMenu() if element.availible %}
       {% if element.id == data.id %}

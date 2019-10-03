@@ -13,51 +13,51 @@
    <div class="column9__lg column12 bs2-light">
     <div class="_headbar-item">
       <div class="_headbar-item-name">{{ data.getTitle() }}</div>
-      <div class="_headbar-item-type">Übersicht</div>
+      <div class="_headbar-item-type">{{ _('Übersicht') }}</div>
       <div class="_headbar-item-status">
         {% if data.isDisabled() %}
-          <span class="_badge _badge-s-danger">unveröffentlicht</span>
+          <span class="_badge _badge-s-danger">{{ _('unveröffentlicht') }}</span>
         {% else %}
-          <span class="_badge _badge-s-success">live</span>
+          <span class="_badge _badge-s-success">{{ _('live') }}</span>
         {% endif %}
       </div>
       <div class="_headbar-item-sep"></div>
       <div class="_headbar-item-action">
         {% if user.isMod() or course.getCourseRole(user) >= 3 %}
-        <a href="/c/{{ course.id }}/edit/unit/{{ data.id }}" class="_btn _btn-xs _btn--primary">Bearbeiten</a>
+        <a href="/c/{{ course.id }}/edit/unit/{{ data.id }}" class="_btn _btn-xs _btn--primary">{{ _('Bearbeiten') }}</a>
         {% endif %}
       </div>
     </div>
      <div class="{% if data.isDisabled() %}bg-danger-lll{% endif %} p3">
        <h1>{{ data.getTitle() }}</h1>
         {{ (data.getJSON().replace("\n", "\0")|striptags|markdown).replace("\0", "\n") }}
-       <h2>Übersicht</h2>
+       <h2>{{ _('Übersicht') }}</h2>
        {% if data.getDetail("parent") != 0 %}
        {% if user.isMod() or course.getCourseRole(user) >= 3 %}
-       <div class="fs-base3 f-bold col-danger-dd">Dieses Modul ist in der unteren Ebene und kann daher keine Kindelemente enthalten.</div>
+       <div class="fs-base3 f-bold col-danger-dd">{{ _('Dieses Modul ist in der unteren Ebene und kann daher keine Kindelemente enthalten.') }}</div>
        {% endif %}
        {% else %}
        <table class="table" style="width: 100%">
          <tr>
-           <th>Typ</th>
-           <th colspan="3">Modul</th>
+           <th>{{ _('Typ') }}</th>
+           <th colspan="3">{{ _('Modul') }}</th>
          </tr>
          {% for element in course.getMenu() if element.availible %}
            {% if element.id == data.id and element.children %}
              {% for child in element.children if child.availible %}
              <tr>
                  {% if child.type == "info" %}
-                 <td>Info</td>
+                 <td>{{ _('Inhalte') }}</td>
                  {% elif child.type == "extvideo" %}
-                 <td>Video</td>
+                 <td>{{ _('Video') }}</td>
                  {% elif child.type == "quiz" %}
-                 <td>Quiz</td>
+                 <td>{{ _('Quiz') }}</td>
                  {% elif element.type == "syllabus" %}
-                 <td>Übersicht</td>
+                 <td>{{ _('Übersicht') }}</td>
                  {% elif child.type == "survey" %}
-                 <td>Umfrage</td>
+                 <td>{{ _('Umfrage') }}</td>
                  {% elif child.type == "pinboard" %}
-                 <td>Pinwand</td>
+                 <td>{{ _('Pinnwand') }}</td>
                  {% else %}
                  <td></td>
                  {% endif %}
