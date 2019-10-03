@@ -6,6 +6,8 @@ from flask import request, session, url_for
 from sha1 import sha1
 from model import privileges as mprivileges, user as muser
 
+from flask_babel import _
+
 class Courses:
 
     def __init__(self, id):
@@ -218,11 +220,11 @@ class Courses:
             for d in data:
                 du = muser.User.from_id(d["userid"])
                 if i == len(data) - 1 and i !=0:
-                    val += " und ["+du.getDetail("realname")+"](/u/"+str(du.id)+")"
+                    val += " " + _("und") + " ["+du.getDetail("realname")+"](/u/"+str(du.id)+")"
                 else:
                     val += ", ["+du.getDetail("realname")+"](/u/"+str(du.id)+")"
                 i += 1
-            val = "von " + val[2:]
+            val = _("von") + " " + val[2:]
             return val
         except lite.Error as e:
             return ""

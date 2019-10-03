@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-10-03 11:44+0200\n"
+"POT-Creation-Date: 2019-10-03 11:49+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -20,6 +20,14 @@ msgstr ""
 
 #: ../main/__init__.py:131 ../main/templates/layout_new.html:167
 msgid "Startseite"
+msgstr ""
+
+#: ../main/model/courses.py:223 ../main/templates/badges/list.html:4
+msgid "und"
+msgstr ""
+
+#: ../main/model/courses.py:227
+msgid "von"
 msgstr ""
 
 #: ../main/templates/index.html:10 ../main/templates/tour/pi-learn.html:5
@@ -579,10 +587,6 @@ msgstr ""
 
 #: ../main/templates/badges/list.html:4 ../main/templates/badges/list.html:10
 msgid "Silber"
-msgstr ""
-
-#: ../main/templates/badges/list.html:4
-msgid "und"
 msgstr ""
 
 #: ../main/templates/badges/list.html:4 ../main/templates/badges/list.html:10
