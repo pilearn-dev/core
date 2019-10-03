@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-10-03 11:49+0200\n"
+"POT-Creation-Date: 2019-10-03 13:32+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -119,20 +119,25 @@ msgstr ""
 msgid "Empfohlene Kurse"
 msgstr ""
 
-#: ../main/templates/courses/index.html:60 ../main/templates/index.html:90
+#: ../main/templates/courses/index.html:60
+#: ../main/templates/courses/info.html:46 ../main/templates/index.html:90
 msgid "Kurs zugriffsbeschränkt"
 msgstr ""
 
-#: ../main/templates/courses/index.html:62 ../main/templates/index.html:92
+#: ../main/templates/courses/index.html:62
+#: ../main/templates/courses/info.html:49 ../main/templates/index.html:92
 msgid "Kurs nicht verfügbar"
 msgstr ""
 
 #: ../main/templates/courses/index.html:31
-#: ../main/templates/courses/index.html:65 ../main/templates/index.html:95
+#: ../main/templates/courses/index.html:65
+#: ../main/templates/courses/info.html:54 ../main/templates/index.html:95
 msgid "Zum Kurs"
 msgstr ""
 
-#: ../main/templates/courses/index.html:67 ../main/templates/index.html:97
+#: ../main/templates/courses/index.html:67
+#: ../main/templates/courses/info.html:51
+#: ../main/templates/courses/info.html:56 ../main/templates/index.html:97
 msgid "Einschreiben"
 msgstr ""
 
@@ -173,7 +178,7 @@ msgid ""
 "teilnehmen möchtest."
 msgstr ""
 
-#: ../main/templates/index.html:152
+#: ../main/templates/courses/info.html:78 ../main/templates/index.html:152
 msgid "Ankündigungen"
 msgstr ""
 
@@ -250,7 +255,7 @@ msgstr ""
 msgid "Kurse"
 msgstr ""
 
-#: ../main/templates/layout_new.html:142
+#: ../main/templates/courses/info.html:12 ../main/templates/layout_new.html:142
 msgid "Forum"
 msgstr ""
 
@@ -683,6 +688,70 @@ msgstr ""
 
 #: ../main/templates/courses/index.html:41
 msgid "Aktuelle Kurse"
+msgstr ""
+
+#: ../main/templates/courses/info.html:7
+msgid "Infos"
+msgstr ""
+
+#: ../main/templates/courses/info.html:8
+msgid "Inhalte"
+msgstr ""
+
+#: ../main/templates/courses/info.html:10
+msgid "Bearbeiten"
+msgstr ""
+
+#: ../main/templates/courses/info.html:14
+msgid "Ergebnisse"
+msgstr ""
+
+#: ../main/templates/courses/info.html:17
+#: ../main/templates/courses/info.html:19
+msgid "Pull Requests"
+msgstr ""
+
+#: ../main/templates/courses/info.html:22
+msgid "Verwaltung"
+msgstr ""
+
+#: ../main/templates/courses/info.html:38
+msgid "Dieser Kurs wird angeboten"
+msgstr ""
+
+#: ../main/templates/courses/info.html:47
+msgid "Auf diesen Kurs können nur eingeladene Benutzer zugreifen."
+msgstr ""
+
+#: ../main/templates/courses/info.html:66
+msgid "Was benötigt man zur Teilnahme?"
+msgstr ""
+
+#: ../main/templates/courses/info.html:73
+msgid "Benutzer eingeschrieben"
+msgstr ""
+
+#: ../main/templates/courses/info.html:96
+msgid "Du hast eine Frage zum Kurs?"
+msgstr ""
+
+#: ../main/templates/courses/info.html:98
+#, python-format
+msgid ""
+"Fragen zu diesem Kurs kannst du im <a href=\"%(link)s\">Kursforum</a> "
+"stellen."
+msgstr ""
+
+#: ../main/templates/courses/info.html:102
+msgid "Gefällt dir dieser Kurs?"
+msgstr ""
+
+#: ../main/templates/courses/info.html:104
+#, python-format
+msgid ""
+"Vielleicht gefallen dir auch weitere <a href=\"%(topic_link)s\">Kurse zum"
+" Thema %(topic_name)s</a> oder <a href=\"%(propose_link)s\">biete selber "
+"einen Kurs an</a>."
 msgstr ""
 
 #: ../main/templates/tour/pi-learn.html:2

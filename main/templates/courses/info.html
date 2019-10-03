@@ -4,22 +4,22 @@
 {% set topic = data.getTopic() %}
 {% if not(data.getDetail("state") == 0 and not data.getCourseRole(user) >= 2) and (data.isEnrolled(user) or not user.isLoggedIn()) %}
 <nav class="_nav _nav-t">
-  <a href="/c/{{ data.id }}/info" class="-active">Infos</a>
-  <a href="/course/{{ data.id }}/{{ data.getLabel() }}/start">Inhalte</a>
+  <a href="/c/{{ data.id }}/info" class="-active">{{ _('Infos') }}</a>
+  <a href="/course/{{ data.id }}/{{ data.getLabel() }}/start">{{ _('Inhalte') }}</a>
   {% if data.getCourseRole(user) >= 3 %}
-  <a href="/course/{{ data.id }}/{{ data.getLabel() }}/edit">Bearbeiten</a>
+  <a href="/course/{{ data.id }}/{{ data.getLabel() }}/edit">{{ _('Bearbeiten') }}</a>
   {% endif %}
-  <a href="/forum/{{ data.id }}/{{ data.getLabel() }}">Forum</a>
+  <a href="/forum/{{ data.id }}/{{ data.getLabel() }}">{{ _('Forum') }}</a>
   {% if data.isEnrolled(user) %}
-  <a href="/course/{{ data.id }}/{{ data.getLabel() }}/result">Ergebnisse</a>
+  <a href="/course/{{ data.id }}/{{ data.getLabel() }}/result">{{ _('Ergebnisse') }}</a>
   {% endif %}
   {% if data.getCourseRole(user) >= 3 %}{% set prc = data.getActivePRCount() %}
-  <a href="/course/{{ data.id }}/{{ data.getLabel() }}/pull-requests"{% if current_page == "pr" %} class="-active"{% endif %}>Pull Requests{% if prc %}<span class="_badge _badge-tabitem">{{ prc }}</span>{% endif %}</a>
+  <a href="/course/{{ data.id }}/{{ data.getLabel() }}/pull-requests"{% if current_page == "pr" %} class="-active"{% endif %}>{{ _('Pull Requests') }}{% if prc %}<span class="_badge _badge-tabitem">{{ prc }}</span>{% endif %}</a>
   {% else %}
-  <a href="/course/{{ data.id }}/{{ data.getLabel() }}/branches"{% if current_page == "pr" %} class="-active"{% endif %}>Pull Requests</a>
+  <a href="/course/{{ data.id }}/{{ data.getLabel() }}/branches"{% if current_page == "pr" %} class="-active"{% endif %}>{{ _('Pull Requests') }}</a>
   {% endif %}
   {% if data.getCourseRole(user) == 4 or user.isMod() %}
-  <a href="/course/{{ data.id }}/{{ data.getLabel() }}/admin">Verwaltung</a>
+  <a href="/course/{{ data.id }}/{{ data.getLabel() }}/admin">{{ _('Verwaltung') }}</a>
   {% endif %}
 </nav>
 {% endif %}
@@ -35,7 +35,7 @@
         <a class="_badge _badge-unit push-right m2" href="/t/{{ topic.getName() }}">{{ topic.getTitle() }}</a>
         <h1 class="fs-display1">{{ data.getTitle() }}</h1>
         <p class="p-lead">{{ data.getShortdesc() }}</p>
-        <p>Dieser Kurs wird angeboten {{ (data.getByLine()|markdown)[3:-4] }}</p>
+        <p>{{ _('Dieser Kurs wird angeboten') }} {{ (data.getByLine()|markdown)[3:-4] }}</p>
       </div>
     </div>
     <div class="column5 hide__sm hide__md bt1s bt-dark-ll">
@@ -43,17 +43,17 @@
     <div class="column7__lg column12 bt1s bt-dark-ll">
       <div class="p3">
         {% if data.getDetail("manual_enrollment") and not data.isEnrolled(user) %}
-        <button class="_btn _btn-dark _btn-lg -active" disabled><i class="fa fa-lock"></i> Kurs zugriffsbeschränkt</button>
-        <p class="fs-caption">Auf diesen Kurs können nur eingeladene Benutzer zugreifen</p>
+        <button class="_btn _btn-dark _btn-lg -active" disabled><i class="fa fa-lock"></i> {{ _('Kurs zugriffsbeschränkt') }}</button>
+        <p class="fs-caption">{{ _('Auf diesen Kurs können nur eingeladene Benutzer zugreifen.') }}</p>
         {% elif data.getDetail("state") == 0 and not data.getCourseRole(user) >= 2 %}
-        <button class="_btn _btn-dark _btn-lg -active" disabled><i class="fa fa-lock"></i> Kurs nicht verfügbar</button>
+        <button class="_btn _btn-dark _btn-lg -active" disabled><i class="fa fa-lock"></i> {{ _('Kurs nicht verfügbar') }}</button>
         {% if not data.isEnrolled(user) and user.isLoggedIn() %}
-        <a href="/course/{{ data.id }}/{{ data.getLabel() }}/enroll" class="_btn _btn-dark _btn-on-light _btn-lg">Einschreiben</a>
+        <a href="/course/{{ data.id }}/{{ data.getLabel() }}/enroll" class="_btn _btn-dark _btn-on-light _btn-lg">{{ _('Einschreiben') }}</a>
         {% endif %}
         {% elif data.isEnrolled(user) or not user.isLoggedIn() %}
-        <a href="/course/{{ data.id }}/{{ data.getLabel() }}/start" class="_btn _btn--primary _btn-lg">Zum Kurs</a>
+        <a href="/course/{{ data.id }}/{{ data.getLabel() }}/start" class="_btn _btn--primary _btn-lg">{{ _('Zum Kurs') }}</a>
         {% else %}
-        <a href="/course/{{ data.id }}/{{ data.getLabel() }}/enroll" class="_btn _btn--primary _btn-lg">Einschreiben</a>
+        <a href="/course/{{ data.id }}/{{ data.getLabel() }}/enroll" class="_btn _btn--primary _btn-lg">{{ _('Einschreiben') }}</a>
         {% endif %}
       </div>
     </div>
@@ -63,19 +63,19 @@
     <div class="column8 column12__sm">
       <div class="p3">
         {{ data.getLongdesc()|markdown }}
-        <h3>Was benötigt man zur Teilnahme?</h3>
+        <h3>{{ _('Was benötigt man zur Teilnahme?') }}</h3>
         {{ data.getRequirements()|markdown }}
       </div>
     </div>
     <div class="column4 column12__sm">
       <div class="p3">
         <div class="fs-subtitle">{{ data.getEnrolledCount() }}</div>
-        <div class="fs-base1">Benutzer eingeschrieben</div>
+        <div class="fs-base1">{{ _('Benutzer eingeschrieben') }}</div>
       </div>
       {% set announcements = ForumAnnouncement.byForum(data.id) %}
       {% if announcements|length > 0 %}
       <div class="_card">
-        <div class="_card-title _card-subtitle">Ankündigungen</div>
+        <div class="_card-title _card-subtitle">{{ _('Ankündigungen') }}</div>
         <div class="_card-content _card-content-direct">
         <div class="_list _list-unbordered">
         {% for a in announcements %}
@@ -93,15 +93,15 @@
         </div>
       {% endif %}
       <div class="_card">
-        <div class="_card-title">Du hast eine Frage zum Kurs?</div>
+        <div class="_card-title">{{ _('Du hast eine Frage zum Kurs?') }}</div>
         <div class="_card-content">
-          <p>Fragen zu diesem Kurs kannst du im <a href="/f/{{ data.id }}">Kursforum</a> stellen.</p>
+          <p>{{ _('Fragen zu diesem Kurs kannst du im <a href="%(link)s">Kursforum</a> stellen.', link='/f/'~data.id) }}</p>
         </div>
       </div>
       <div class="_card">
-        <div class="_card-title">Gefällt dir dieser Kurs?</div>
+        <div class="_card-title">{{ _('Gefällt dir dieser Kurs?') }}</div>
         <div class="_card-content">
-          <p>Vielleicht gefallen dir auch weitere <a href="/t/{{ topic.getName() }}">Kurse zum Thema {{ topic.getTitle() }}</a> oder <a href="/course/propose">biete selber einen Kurs an</a>.</p>
+          <p>{{ _('Vielleicht gefallen dir auch weitere <a href="%(topic_link)s">Kurse zum Thema %(topic_name)s</a> oder <a href="%(propose_link)s">biete selber einen Kurs an</a>.', topic_name=topic.getTitle(), topic_link='/t/'+topic.getName(), propose_link='/course/propose') }}</p>
         </div>
       </div>
     </div>
