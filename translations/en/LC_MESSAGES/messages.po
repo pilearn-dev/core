@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-10-01 20:08+0200\n"
+"POT-Creation-Date: 2019-10-03 11:44+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -119,25 +119,27 @@ msgstr "More information"
 msgid "Empfohlene Kurse"
 msgstr "Recommended courses"
 
-#: ../main/templates/index.html:90
+#: ../main/templates/courses/index.html:60 ../main/templates/index.html:90
 msgid "Kurs zugriffsbeschränkt"
 msgstr "Only manual enrollment"
 
-#: ../main/templates/index.html:92
+#: ../main/templates/courses/index.html:62 ../main/templates/index.html:92
 msgid "Kurs nicht verfügbar"
 msgstr "Not available yet"
 
-#: ../main/templates/index.html:95
+#: ../main/templates/courses/index.html:31
+#: ../main/templates/courses/index.html:65 ../main/templates/index.html:95
 msgid "Zum Kurs"
 msgstr "Go to course"
 
-#: ../main/templates/index.html:97
+#: ../main/templates/courses/index.html:67 ../main/templates/index.html:97
 msgid "Einschreiben"
 msgstr "Enroll"
 
-#: ../main/templates/index.html:100
+#: ../main/templates/courses/index.html:32
+#: ../main/templates/courses/index.html:70 ../main/templates/index.html:100
 msgid "Informationen"
-msgstr "Information"
+msgstr "Details"
 
 #: ../main/templates/index.html:113
 msgid "Kurse finden"
@@ -148,7 +150,7 @@ msgstr "Find courses"
 msgid "Du kannst unsere %(topic_link)s durchstöbern ..."
 msgstr "You can browse our %(topic_link)s ..."
 
-#: ../main/templates/index.html:115
+#: ../main/templates/courses/index.html:6 ../main/templates/index.html:115
 msgid "Themen"
 msgstr "topics"
 
@@ -156,7 +158,7 @@ msgstr "topics"
 msgid "... oder nach Kursen suchen"
 msgstr "... or search for a course"
 
-#: ../main/templates/index.html:130
+#: ../main/templates/courses/index.html:5 ../main/templates/index.html:130
 msgid "Suchen"
 msgstr "search"
 
@@ -251,7 +253,8 @@ msgstr "recent reputation change: %(amount)i"
 msgid "Neue Abzeichen"
 msgstr "new badges"
 
-#: ../main/templates/layout_new.html:141 ../main/templates/layout_new.html:168
+#: ../main/templates/courses/index.html:9 ../main/templates/layout_new.html:141
+#: ../main/templates/layout_new.html:168
 msgid "Kurse"
 msgstr "courses"
 
@@ -690,6 +693,34 @@ msgstr "at"
 msgid "Kurs-ID"
 msgstr "course id"
 
+#: ../main/templates/courses/index.html:4
+msgid "Übersicht"
+msgstr "summary"
+
+#: ../main/templates/courses/index.html:7
+msgid "Vorschlagen"
+msgstr "propose"
+
+#: ../main/templates/courses/index.html:10
+msgid "Meine Kurse"
+msgstr "My courses"
+
+#: ../main/templates/courses/index.html:12
+msgid ""
+"<a href=\"/login\">Melde dich an</a>, um von dir besuchte Kurse extra zu "
+"sehen und auf alle Kurse und Inhalte zugreifen zu können"
+msgstr ""
+"<a href=\"/login\">Log in</a> to highlight courses you visited and be "
+"able to access all courses and contents."
+
+#: ../main/templates/courses/index.html:39
+msgid "Du hast dich bisher noch für keine Kurse eingeschrieben."
+msgstr "You have not enrolled for any course, yet."
+
+#: ../main/templates/courses/index.html:41
+msgid "Aktuelle Kurse"
+msgstr "Current courses"
+
 #: ../main/templates/tour/pi-learn.html:2
 #, python-format
 msgid ""
@@ -889,6 +920,10 @@ msgstr ""
 "%(link)s\n"
 "\n"
 "If you have not requested a passwort reset, just delete this e-mail."
+
+#: ../main/view/courses.py:22
+msgid "Kursüberblick"
+msgstr "Course summary"
 
 #: ../main/view/courses.py:532
 msgid "Teilnahmeurkunde"

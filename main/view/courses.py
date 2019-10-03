@@ -19,7 +19,7 @@ def courses_index():
             now_courses.append(c)
             if len(now_courses) == 5:
                 break
-    return render_template('courses/index.html', title=u"Kursüberblick", thispage="courses", my_courses=my_courses, now_courses=now_courses)
+    return render_template('courses/index.html', title=_(u"Kursüberblick"), thispage="courses", my_courses=my_courses, now_courses=now_courses)
 
 def courses_propose():
     cuser = muser.getCurrentUser()
