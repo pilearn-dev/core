@@ -210,7 +210,14 @@
     <script src="/static/new_js/moderator.js" charset="utf-8"></script>
     {% endif %}
     {% if user.getPref("darkTheme", False) == "1" %}
-    <style>._headbar-site,.container, footer, ._dialog{filter:invert(100%)}._headbar-site img,.container img, .container iframe{filter:invert(100%)}html{background-color:#000 !important}</style>
+    <style>
+    html { background-color: #000000; }
+    main, footer,
+    main img, main iframe, main ._card-image, main ._btn:not(._btn-on-light):not(._btn-outline), main #patterny, main video,
+    footer img { filter: invert(100%); }
+
+    ._headbar-site, ._header { opacity: 0.4; }
+    </style>
     {% endif %}
 </body>
 </html>
