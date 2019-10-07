@@ -5,14 +5,15 @@
 
 <div class="p3">
  <h1>{{ _('Kursmodule neu anordnen') }}</h1>
- <div id="reorder">
+ <div class="js--respectable-reorder">
   </div>
  <button class="_btn _btn--primary" onclick="submitOrder();">{{ _('Speichern') }}</button>
  <a class="_btn _btn-on-light _btn--primary" href="/course/{{ data.id }}/{{ data.getLabel() }}/start">{{ _('Abbrechen') }}</a>
 </div>
+<script src="/static/new_js/respectable-reorder.js" charset="utf-8"></script>
 <script>
- var COURSE_ID = {{ data.id }};
- var REORDER_DATA = [
+  Respectable = new RespectableReorder(".js--respectable-reorder");
+ Respectable.loadStructure([
    {% for element in data.getMenu() %}
    {
      "availible": {{ element.availible|tojson }},
@@ -29,40 +30,29 @@
      ]
    }{% if not loop.last %},{% endif %}
    {% endfor %}
-  ];
-  var TOGGLE_LEVEL_CMD = "{{ _('(ein/ausrücken)') }}";
+  ]);
+  Respectable.init();
+
+  function submitOrder() {
+    data = [];
+    for (var i = 0; i < Respectable.data.length; i++) {
+      item = Respectable.data[i];
+      subitems = [];
+      for (var j = 0; j < item.subitems.length; j++) {
+        subitem = item.subitems[j];
+        subitems.push({id: subitem.id, order: j+1});
+      }
+      data.push({id: item.id, order: i+1, subitems});
+    }
+    $.ajax({
+      url: "/c/{{ data.id }}/edit/reorder",
+      method: "POST",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify(data),
+      success: function( r ) {
+        window.location.href = "/c/{{ data.id }}/edit"
+      }
+    });
+  }
 </script>
-<script src="/static/js/reorder.js" charset="utf-8"></script>
-<style>
-  /* - reorder */
-  #reorder {
-    display: flex;
-    flex-direction: column;
-    padding: 5px;
-  }
-  #reorder .reorder-item {
-    padding: 10px;
-    display: flex;
-    background-color: #fafafa;
-    border: 1px solid #ddd;
-    border-radius: 2px;
-    margin: 5px;
-    align-items: center;
-    box-shadow: 0 0 5px -2px #aaa;
-    transition: all .3s ease;
-    cursor: pointer;
-  }
-  #reorder .reorder-item:hover {
-    border-color: #bbb;
-  }
-  #reorder .reorder-item.indented {
-    margin-left: 25px;
-  }
-  #reorder .reorder-item.drop-hover {
-    box-shadow: 0 4px 5px -2px #aaa;
-  }
-  #reorder .reorder-item span {
-    flex-grow: 1;
-  }
-</style>
 {% endblock %}
