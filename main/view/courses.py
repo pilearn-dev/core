@@ -437,6 +437,7 @@ def unit_new(course_id):
         s = msurvey.Survey.new(course.id, cuser.id)
         empty_set["survey"] = '{"survey":'+str(s.id)+'}'
     x = mcourses.Units.new(course.id, empty_set[request.json["type"]], request.json["type"], request.json["parent"])
+    mcourses.Units(x).setDetail("title", _("Neue Seite"))
     return url_for("unit_show", unit_id=x, course_id=course_id)
 
 def topic_index():

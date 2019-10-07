@@ -7,9 +7,9 @@
 <div class="grid -equal-columns">
   <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
     <div class="p3">
-      <h2>Menü</h2>
+      <h2>{{ _('Menü') }}</h2>
       <nav class="_nav _nav-v">
-        <a href="/c/{{ course.id }}/edit" class="-active f-bold mb3">Übersicht</a>
+        <a href="/c/{{ course.id }}/edit" class="-active f-bold mb3">{{ _('Übersicht') }}</a>
         {% for element in course.getMenu() %}
         {% if element.availible %}
         <a href="/c/{{ course.id }}/edit/unit/{{ element.id }}">{{ element.title }}</a>
@@ -34,30 +34,30 @@
    <div class="column9__lg column12 bs2-light">
      <div class="grid -equal-columns">
       <div class="column8 column12__sm p2">
-          <h1>Übersicht über die Kursmodule</h1>
-          <a href="/c/{{ course.id }}/edit/reorder" class="_btn push-right _btn--primary _btn-lighter">Anordnung ändern</a>
-          <button onclick="PiJS.dialog.resetposition($('#newitem_dialog').removeClass('hide'));" class="_btn push-right _btn--primary">Hinzufügen</button>
+          <h1>{{ _('Übersicht über die Kursmodule') }}</h1>
+          <a href="/c/{{ course.id }}/edit/reorder" class="_btn push-right _btn--primary _btn-lighter">{{ _('Anordnung ändern') }}</a>
+          <button onclick="PiJS.dialog.resetposition($('#newitem_dialog').removeClass('hide'));" class="_btn push-right _btn--primary">{{ _('Hinzufügen') }}</button>
           <div class="push-reset"></div>
           <table class="table" style="width: 100%">
               <tr>
-                  <th>Typ</th>
-                  <th>Modul</th>
-                  <th>sichtbar?</th>
+                  <th>{{ _('Typ') }}</th>
+                  <th>{{ _('Modul') }}</th>
+                  <th>{{ _('sichtbar?') }}</th>
               </tr>
               {% for element in course.getMenu() %}
               <tr>
                   {% if element.type == "info" %}
-                  <td>Info</td>
+                  <td>{{ _('Inhalte') }}</td>
                   {% elif element.type == "extvideo" %}
-                  <td>Video</td>
+                  <td>{{ _('Video') }}</td>
                   {% elif element.type == "quiz" %}
-                  <td>Quiz</td>
+                  <td>{{ _('Quiz') }}</td>
                   {% elif element.type == "syllabus" %}
-                  <td>Übersicht</td>
+                  <td>{{ _('Übersicht') }}</td>
                   {% elif element.type == "survey" %}
-                  <td>Umfrage</td>
+                  <td>{{ _('Umfrage') }}</td>
                   {% elif element.type == "pinboard" %}
-                  <td>Pinwand</td>
+                  <td>{{ _('Pinnwand') }}</td>
                   {% else %}
                   <td></td>
                   {% endif %}
@@ -68,17 +68,17 @@
                 {% for child in element.children %}
                 <tr>
                     {% if child.type == "info" %}
-                    <td>Info</td>
+                    <td>{{ _('Inhalte') }}</td>
                     {% elif child.type == "extvideo" %}
-                    <td>Video</td>
+                    <td>{{ _('Video') }}</td>
                     {% elif child.type == "quiz" %}
-                    <td>Quiz</td>
+                    <td>{{ _('Quiz') }}</td>
                     {% elif child.type == "syllabus" %}
-                    <td>Übersicht</td>
+                    <td>{{ _('Übersicht') }}</td>
                     {% elif child.type == "survey" %}
-                    <td>Umfrage</td>
+                    <td>{{ _('Umfrage') }}</td>
                     {% elif child.type == "pinboard" %}
-                    <td>Pinwand</td>
+                    <td>{{ _('Pinnwand') }}</td>
                     {% else %}
                     <td></td>
                     {% endif %}
@@ -89,21 +89,20 @@
               {% endif %}
               {% endfor %}
           </table>
-          <a href="/c/{{ course.id }}/edit/reorder" class="_btn push-right _btn--primary _btn-lighter">Anordnung ändern</a>
-          <button onclick="PiJS.dialog.resetposition($('#newitem_dialog').removeClass('hide'));" class="_btn push-right _btn--primary">Hinzufügen</button>
-          <div class="push-reset"></div>
+          <a href="/c/{{ course.id }}/edit/reorder" class="_btn push-right _btn--primary _btn-lighter">{{ _('Anordnung ändern') }}</a>
+          <button onclick="PiJS.dialog.resetposition($('#newitem_dialog').removeClass('hide'));" class="_btn push-right _btn--primary">{{ _('Hinzufügen') }}</button>
           <div class="push-reset"></div>
       </div>
       <div class="column4 p2 column12__sm">
-        <h2>Fortschritt</h2>
+        <h2>{{ _('Fortschritt') }}</h2>
         <div class="_progress">
             {% set units = (course.getUnitsByType("info") + course.getUnitsByType("extvideo"))|length %}
             <div class="_progress-card {% if units >= 3 %}-completed{% endif %}">
                 <div class="_progress-card-icon"></div>
                 <div class="_progress-card-label">
-                    <div class="_progress-card-heading">Füge drei Inhalte hinzu</div>
+                    <div class="_progress-card-heading">{{ _('Füge drei Inhalte hinzu') }}</div>
                     {% if units < 3 %}
-                    Am Wichtigsten sind für den Kurs natürlich die Inhalte. Eine klare Gliederung in mittelgroße Abschnitte sorgt für optimale Verständlichkeit.
+                    {{ _('Am Wichtigsten sind für den Kurs natürlich die Inhalte. Eine klare Gliederung in mittelgroße Abschnitte sorgt für optimale Verständlichkeit.') }}
                     <div class="_progress-bar _progress-bar-success _progress-bar-sm">
                         <div class="_progress-bar-slot" style="width: {{ 100*units/3 }}%"></div>
                         <div class="_progress-bar-label">{{ units }}/3</div>
@@ -115,9 +114,9 @@
             <div class="_progress-card {% if tests >= 1 %}-completed{% endif %}">
                 <div class="_progress-card-icon"></div>
                 <div class="_progress-card-label">
-                    <div class="_progress-card-heading">Füge ein Quiz hinzu</div>
+                    <div class="_progress-card-heading">{{ _('Füge ein Quiz hinzu') }}</div>
                     {% if tests < 1 %}
-                    Ein Quiz dient als Auflockerung und ermöglicht die Wiederholung der gelernten Inhalte.
+                    {{ _('Ein Quiz dient als Auflockerung und ermöglicht die Wiederholung der gelernten Inhalte.') }}
                     <div class="_progress-bar _progress-bar-success _progress-bar-sm">
                         <div class="_progress-bar-slot" style="width: {{ 100*tests/1 }}%"></div>
                         <div class="_progress-bar-label">{{ tests }}/1</div>
@@ -129,9 +128,9 @@
             <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/membership" class="_progress-card {% if testers >= 2 %}-completed{% endif %}">
                 <div class="_progress-card-icon"></div>
                 <div class="_progress-card-label">
-                    <div class="_progress-card-heading">Füge zwei Tester hinzu</div>
+                    <div class="_progress-card-heading">{{ _('Füge zwei Tester hinzu') }}</div>
                     {% if testers < 2 %}
-                    Bitte zwei Freunde/Bekannte, deinen Kurs zu testen, damit er auch wirklich bereit zur Veröffentlichung ist.
+                    {{ _('Bitte zwei Freunde/Bekannte, deinen Kurs zu testen, damit er auch wirklich bereit zur Veröffentlichung ist.') }}
                     <div class="_progress-bar _progress-bar-success _progress-bar-sm">
                         <div class="_progress-bar-slot" style="width: {{ 100*testers/2 }}%"></div>
                         <div class="_progress-bar-label">{{ testers }}/2</div>
@@ -140,32 +139,32 @@
                 </div>
             </a>
         </div>
-        <h2>Tipps und Tricks</h2>
+        <h2>{{ _('Tipps und Tricks') }}</h2>
         <div class="_card">
-            <div class="_card-title _card-subtitle"><a href="#!" data-toggle=".js--tips-structure" data-toggle-class="hide">Aufbau und Struktur</a></div>
+            <div class="_card-title _card-subtitle"><a href="#!" data-toggle=".js--tips-structure" data-toggle-class="hide">{{ _('Aufbau und Struktur') }}</a></div>
             <div class="_card-content hide js--tips-structure">
-              <p>Eine wohlüberlegte Struktur für die Kursinhalte vereinfacht den Lernprozess und sorgt dafür, dass der Kurs besser nachzuvollziehen ist.</p>
-              <p>Es ist jedoch nicht möglich, eine allgemeine Struktur vorzugeben, da dies von den Kursinhalten abhängt. Je nach Kursinhalt kann eine chronologische Unterteilung nach Kurswochen, eine thematische oder eine andere Unterteilung sinnvoll sein.</p>
+              <p>{{ _('Eine wohlüberlegte Struktur für die Kursinhalte vereinfacht den Lernprozess und sorgt dafür, dass der Kurs besser nachzuvollziehen ist.') }}</p>
+              <p>{{ _('Es ist jedoch nicht möglich, eine allgemeine Struktur vorzugeben, da dies von den Kursinhalten abhängt. Je nach Kursinhalt kann eine chronologische Unterteilung nach Kurswochen, eine thematische oder eine andere Unterteilung sinnvoll sein.') }}</p>
             </div>
-            <div class="_card-title _card-subtitle"><a href="#!" data-toggle=".js--tips-diverse" data-toggle-class="hide">Abwechslungsreich gestalten</a></div>
+            <div class="_card-title _card-subtitle"><a href="#!" data-toggle=".js--tips-diverse" data-toggle-class="hide">{{ _('Abwechslungsreich gestalten') }}</a></div>
             <div class="_card-content hide js--tips-diverse">
-              <p>Wer Spaß dabei hat kann besser lernen. Damit die Benutzer den Spaß nicht verlieren, ist ein gewisses Maß an Abwechslung gut.</p>
-              <p>Neben vereinzeltem Humor kann auch eine unterschiedliche Auswahl an Modultypen (Text, Bild, Video) zur Auflockerung beitragen.</p>
+              <p>{{ _('Wer Spaß dabei hat kann besser lernen. Damit die Benutzer den Spaß nicht verlieren, ist ein gewisses Maß an Abwechslung gut.') }}</p>
+              <p>{{ _('Neben vereinzeltem Humor kann auch eine unterschiedliche Auswahl an Modultypen (Text, Bild, Video) zur Auflockerung beitragen.') }}</p>
             </div>
-            <div class="_card-title _card-subtitle"><a href="#!" data-toggle=".js--tips-repeat" data-toggle-class="hide">Wiederholungen einbauen</a></div>
+            <div class="_card-title _card-subtitle"><a href="#!" data-toggle=".js--tips-repeat" data-toggle-class="hide">{{ _('Wiederholungen einbauen') }}</a></div>
             <div class="_card-content hide js--tips-repeat">
-              <p>Übung macht bekanntlichermaßen den Meister. Deshalb sollten Inhalte regelmäßig durch Quizze unterteilt werden.</p>
-              <p>In Quizzen kann die Wiederholung, Anwendung oder Weiterentwicklung von bereits gelerntem erfolgen. Außerdem geben Quizze kurzfristiges Feedback, sodass der Benutzer merkt, ob er die Kursinhalte verstanden hat.</p>
+              <p>{{ _('Übung macht bekanntlichermaßen den Meister. Deshalb sollten Inhalte regelmäßig durch Quizze unterbrochen werden.') }}</p>
+              <p>{{ _('In Quizzen kann die Wiederholung, Anwendung oder Weiterentwicklung von bereits gelerntem erfolgen. Außerdem geben Quizze kurzfristiges Feedback, sodass der Benutzer merkt, ob er die Kursinhalte verstanden hat.') }}</p>
             </div>
-            <div class="_card-title _card-subtitle"><a href="#!" data-toggle=".js--tips-test" data-toggle-class="hide">Kurse testen</a></div>
+            <div class="_card-title _card-subtitle"><a href="#!" data-toggle=".js--tips-test" data-toggle-class="hide">{{ _('Kurse testen' )}}</a></div>
             <div class="_card-content hide js--tips-test">
-              <p>Jeder kann Fehler machen. Fehler sind aber häufig ärgerlich und können zu Frust bei den Teilnehmenden führen.</p>
-              <p>Daher empfehlen wir, den Kurs mit mindestens zwei Benutzerinnen oder Benutzern zu testen:</p>
+              <p>{{ _('Jeder kann Fehler machen. Fehler sind aber häufig ärgerlich und können zu Frust bei den Teilnehmenden führen.') }}</p>
+              <p>{{ _('Daher empfehlen wir, den Kurs mit mindestens zwei Benutzerinnen oder Benutzern zu testen:') }}</p>
               <ol>
-                <li>Du suchst zwei Testpersonen aus und gibst diesen den Link zum Kurs.</li>
-                <li>Die Testpersonen schreiben sich auf der Kursseite für den Kurs ein.</li>
-                <li>Du gibst <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/membership">hier</a> den Testpersonen Kursbetrachter-Status</li>
-                <li>Über das Kursforum oder andere Wege, geben diese dir dann Feedback.</li>
+                <li>{{ _('Du suchst zwei Testpersonen aus und gibst diesen den Link zum Kurs.') }}</li>
+                <li>{{ _('Die Testpersonen schreiben sich auf der Kursseite für den Kurs ein.') }}</li>
+                <li>{{ _('Du gibst <a href="%(link)s">hier</a> den Testpersonen Kursbetrachter-Status', link='/course/' ~ course.id ~ '/' + course.getLabel() + '/admin/membership') }}</li>
+                <li>{{ _('Über das Kursforum oder andere Wege, geben diese dir dann Feedback.') }}</li>
               </ol>
             </div>
         </div>
@@ -175,54 +174,54 @@
 
  <div class="_dialog hide" id="newitem_dialog">
   <a href="#!" onclick="$('#newitem_dialog').addClass('hide')" class="_xbtn _dialog-xbtn">&times;</a>
-  <h3>Neue Seite hinzufügen</h3>
-  <p class="p-lead">Was für eine Seite willst du hinzufügen?</p>
-  <p>Achtung: Eine einmal angelegte Seite kann nicht wieder entfernt, nur ausgeblendet werden.</p>
+  <h3>{{ _('Neue Seite hinzufügen') }}</h3>
+  <p class="p-lead">{{ _('Was für eine Seite willst du hinzufügen?') }}</p>
+  <p>{{ _('Achtung: Eine einmal angelegte Seite kann nicht wieder entfernt, nur ausgeblendet werden.') }}</p>
   <div class="_toollist">
     <label class="_toollist-item" for="newitem_dialog-1">
       <input type="radio" value="info" class="form-radio" id="newitem_dialog-1" name="newitem_dialog">
       <div class="_toollist-data">
-        <h4>Inhalte/Info</h4>
-        <p>Lerninhalte mit Text und Bildern, sowie Informationen zum Kurs.</p>
+        <h4>{{ _('Inhalte') }}</h4>
+        <p>{{ _('Lerninhalte mit Text und Bildern, sowie Informationen zum Kurs.') }}</p>
       </div>
     </label>
     <label class="_toollist-item" for="newitem_dialog-2">
       <input type="radio" class="form-radio" id="newitem_dialog-2" value="extvideo" name="newitem_dialog">
       <div class="_toollist-data">
-        <h4>Video</h4>
-        <p>Lernvideo von Youtube, Vimeo oder von einem Link einbinden.</p>
+        <h4>{{ _('Video') }}</h4>
+        <p>{{ _('Lernvideo von Youtube, Vimeo oder von einem Link einbinden.') }}</p>
       </div>
     </label>
     <label class="_toollist-item" for="newitem_dialog-3">
       <input type="radio" class="form-radio" id="newitem_dialog-3" value="quiz" name="newitem_dialog">
       <div class="_toollist-data">
-        <h4>Quiz</h4>
-        <p>Wiederholung von gelernten Inhalten mit Multiple-Choice, Multiple-Answer und Textantwort-Fragen.</p>
+        <h4>{{ _('Quiz') }}</h4>
+        <p>{{ _('Wiederholung von gelernten Inhalten mit Multiple-Choice, Multiple-Answer und Textantwort-Fragen.') }}</p>
       </div>
     </label>
     <label class="_toollist-item" for="newitem_dialog-4">
       <input type="radio" class="form-radio" id="newitem_dialog-4" value="syllabus" name="newitem_dialog">
       <div class="_toollist-data">
-        <h4>Übersicht</h4>
-        <p>Eine Übersicht über untergeordnete Kursinhalte.</p>
+        <h4>{{ _('Übersicht') }}</h4>
+        <p>{{ _('Eine Übersicht über untergeordnete Kursinhalte.') }}</p>
       </div>
     </label>
     <label class="_toollist-item" for="newitem_dialog-5">
       <input type="radio" class="form-radio" id="newitem_dialog-5" value="survey" name="newitem_dialog">
       <div class="_toollist-data">
-        <h4>Umfrage</h4>
-        <p>Eine Umfrage zu Demografie, Erfahrung und/oder Lernergebnis der Kursteilnehmenden.</p>
+        <h4>{{ _('Umfrage') }}</h4>
+        <p>{{ _('Eine Umfrage zu Demografie, Erfahrung und/oder Lernergebnis der Kursteilnehmenden.') }}</p>
       </div>
     </label>
     <label class="_toollist-item" for="newitem_dialog-6">
       <input type="radio" class="form-radio" id="newitem_dialog-6" value="pinboard" name="newitem_dialog">
       <div class="_toollist-data">
-        <h4>Pinwand</h4>
-        <p>Eine Forumsdiskussion in den Kurs einbetten, um jedem die Möglichkeit zu geben, mitzudiskutieren. (z.B. für Feedback)</p>
+        <h4>{{ _('Pinnwand') }}</h4>
+        <p>{{ _('Eine Forumsdiskussion in den Kurs einbetten, um jedem die Möglichkeit zu geben, mitzudiskutieren. (z.B. für Feedback)') }}</p>
       </div>
     </label>
   </div>
-  <button class="push-right _btn _btn--primary" onclick="newItem()">Auswählen</button>
+  <button class="push-right _btn _btn--primary" onclick="newItem()">{{ _('Auswählen') }}</button>
 </div>
 <script>
   function newItem() {
@@ -240,7 +239,7 @@
         window.location.reload();
       },
       error: function() {
-        alert("Fehler beim Speichern");
+        alert("{{ _('Fehler beim Speichern') }}");
       }
     });
   }

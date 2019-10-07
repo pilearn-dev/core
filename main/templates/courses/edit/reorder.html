@@ -4,11 +4,11 @@
 {{ course_header(data, "edit", user) }}
 
 <div class="p3">
- <h1>Kursmodule neu anordnen</h1>
+ <h1>{{ _('Kursmodule neu anordnen') }}</h1>
  <div id="reorder">
   </div>
- <button class="_btn _btn--primary" onclick="submitOrder();">Speichern</button>
- <a class="_btn _btn-on-light _btn--primary" href="/course/{{ data.id }}/{{ data.getLabel() }}/start">Abbrechen</a>
+ <button class="_btn _btn--primary" onclick="submitOrder();">{{ _('Speichern') }}</button>
+ <a class="_btn _btn-on-light _btn--primary" href="/course/{{ data.id }}/{{ data.getLabel() }}/start">{{ _('Abbrechen') }}</a>
 </div>
 <script>
  var COURSE_ID = {{ data.id }};
@@ -30,6 +30,7 @@
    }{% if not loop.last %},{% endif %}
    {% endfor %}
   ];
+  var TOGGLE_LEVEL_CMD = "{{ _('(ein/ausrücken)') }}";
 </script>
 <script src="/static/js/reorder.js" charset="utf-8"></script>
 <style>

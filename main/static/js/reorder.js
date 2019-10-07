@@ -14,7 +14,7 @@ function draw_reorder(reorder, data) {
         container.appendChild(title);
 
         indenter = document.createElement("a");
-        indenter.innerText = "(aus-/einrücken)";
+        indenter.innerText = TOGGLE_LEVEL_CMD;
         indenter.container = container;
         indenter.addEventListener("click", function() {
           this.container.classList.toggle("indented");
@@ -35,7 +35,7 @@ function draw_reorder(reorder, data) {
             container.appendChild(title);
 
             indenter = document.createElement("a");
-            indenter.innerText = "(aus-/einrücken)";
+            indenter.innerText = TOGGLE_LEVEL_CMD;
             indenter.container = container;
             indenter.addEventListener("click", function() {
               this.container.classList.toggle("indented");

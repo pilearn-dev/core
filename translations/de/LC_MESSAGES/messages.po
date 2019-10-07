@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-10-07 13:20+0200\n"
+"POT-Creation-Date: 2019-10-07 14:53+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -45,6 +45,9 @@ msgstr ""
 
 #: ../main/templates/_course-header.html:20
 #: ../main/templates/_course-header.html:55
+#: ../main/templates/courses/edit/index.html:50
+#: ../main/templates/courses/edit/index.html:71
+#: ../main/templates/courses/edit/index.html:184
 #: ../main/templates/courses/info.html:8
 #: ../main/templates/courses/units/info.html:16
 #: ../main/templates/courses/units/syllabus.html:50
@@ -605,6 +608,7 @@ msgstr ""
 #: ../main/templates/admin/settings.html:16
 #: ../main/templates/admin/settings.html:39
 #: ../main/templates/admin/settings.html:45
+#: ../main/templates/courses/edit/reorder.html:10
 msgid "Speichern"
 msgstr ""
 
@@ -731,6 +735,7 @@ msgid "Kurs-ID"
 msgstr ""
 
 #: ../main/templates/courses/_unit-nav.html:3
+#: ../main/templates/courses/edit/index.html:10
 msgid "Menü"
 msgstr ""
 
@@ -742,10 +747,15 @@ msgstr ""
 msgid "Danach weitere einschreiben"
 msgstr ""
 
+#: ../main/templates/courses/edit/reorder.html:11
 #: ../main/templates/courses/enroll.html:11
 msgid "Abbrechen"
 msgstr ""
 
+#: ../main/templates/courses/edit/index.html:12
+#: ../main/templates/courses/edit/index.html:56
+#: ../main/templates/courses/edit/index.html:77
+#: ../main/templates/courses/edit/index.html:205
 #: ../main/templates/courses/index.html:4
 #: ../main/templates/courses/units/syllabus.html:16
 #: ../main/templates/courses/units/syllabus.html:34
@@ -1046,9 +1056,248 @@ msgid ""
 "tun. :)"
 msgstr ""
 
+#: ../main/templates/courses/edit/index.html:37
+msgid "Übersicht über die Kursmodule"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:38
+#: ../main/templates/courses/edit/index.html:92
+msgid "Anordnung ändern"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:39
+#: ../main/templates/courses/edit/index.html:93
+msgid "Hinzufügen"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:43
+#: ../main/templates/courses/units/syllabus.html:42
+msgid "Typ"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:44
+#: ../main/templates/courses/units/syllabus.html:43
+msgid "Modul"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:45
+msgid "sichtbar?"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:52
+#: ../main/templates/courses/edit/index.html:73
+#: ../main/templates/courses/edit/index.html:191
 #: ../main/templates/courses/units/extvideo.html:15
 #: ../main/templates/courses/units/syllabus.html:52
 msgid "Video"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:54
+#: ../main/templates/courses/edit/index.html:75
+#: ../main/templates/courses/edit/index.html:198
+#: ../main/templates/courses/units/quiz.html:16
+#: ../main/templates/courses/units/syllabus.html:54
+msgid "Quiz"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:58
+#: ../main/templates/courses/edit/index.html:79
+#: ../main/templates/courses/edit/index.html:212
+#: ../main/templates/courses/units/survey.html:16
+#: ../main/templates/courses/units/syllabus.html:58
+msgid "Umfrage"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:60
+#: ../main/templates/courses/edit/index.html:81
+#: ../main/templates/courses/edit/index.html:219
+#: ../main/templates/courses/units/pinboard.html:15
+#: ../main/templates/courses/units/syllabus.html:60
+msgid "Pinnwand"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:97
+msgid "Fortschritt"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:103
+msgid "Füge drei Inhalte hinzu"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:105
+msgid ""
+"Am Wichtigsten sind für den Kurs natürlich die Inhalte. Eine klare "
+"Gliederung in mittelgroße Abschnitte sorgt für optimale Verständlichkeit."
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:117
+msgid "Füge ein Quiz hinzu"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:119
+msgid ""
+"Ein Quiz dient als Auflockerung und ermöglicht die Wiederholung der "
+"gelernten Inhalte."
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:131
+msgid "Füge zwei Tester hinzu"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:133
+msgid ""
+"Bitte zwei Freunde/Bekannte, deinen Kurs zu testen, damit er auch "
+"wirklich bereit zur Veröffentlichung ist."
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:142
+msgid "Tipps und Tricks"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:144
+msgid "Aufbau und Struktur"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:146
+msgid ""
+"Eine wohlüberlegte Struktur für die Kursinhalte vereinfacht den "
+"Lernprozess und sorgt dafür, dass der Kurs besser nachzuvollziehen ist."
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:147
+msgid ""
+"Es ist jedoch nicht möglich, eine allgemeine Struktur vorzugeben, da dies"
+" von den Kursinhalten abhängt. Je nach Kursinhalt kann eine "
+"chronologische Unterteilung nach Kurswochen, eine thematische oder eine "
+"andere Unterteilung sinnvoll sein."
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:149
+msgid "Abwechslungsreich gestalten"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:151
+msgid ""
+"Wer Spaß dabei hat kann besser lernen. Damit die Benutzer den Spaß nicht "
+"verlieren, ist ein gewisses Maß an Abwechslung gut."
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:152
+msgid ""
+"Neben vereinzeltem Humor kann auch eine unterschiedliche Auswahl an "
+"Modultypen (Text, Bild, Video) zur Auflockerung beitragen."
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:154
+msgid "Wiederholungen einbauen"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:156
+msgid ""
+"Übung macht bekanntlichermaßen den Meister. Deshalb sollten Inhalte "
+"regelmäßig durch Quizze unterbrochen werden."
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:157
+msgid ""
+"In Quizzen kann die Wiederholung, Anwendung oder Weiterentwicklung von "
+"bereits gelerntem erfolgen. Außerdem geben Quizze kurzfristiges Feedback,"
+" sodass der Benutzer merkt, ob er die Kursinhalte verstanden hat."
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:159
+msgid "Kurse testen"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:161
+msgid ""
+"Jeder kann Fehler machen. Fehler sind aber häufig ärgerlich und können zu"
+" Frust bei den Teilnehmenden führen."
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:162
+msgid ""
+"Daher empfehlen wir, den Kurs mit mindestens zwei Benutzerinnen oder "
+"Benutzern zu testen:"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:164
+msgid "Du suchst zwei Testpersonen aus und gibst diesen den Link zum Kurs."
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:165
+msgid "Die Testpersonen schreiben sich auf der Kursseite für den Kurs ein."
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:166
+#, python-format
+msgid ""
+"Du gibst <a href=\"%(link)s\">hier</a> den Testpersonen Kursbetrachter-"
+"Status"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:167
+msgid "Über das Kursforum oder andere Wege, geben diese dir dann Feedback."
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:177
+msgid "Neue Seite hinzufügen"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:178
+msgid "Was für eine Seite willst du hinzufügen?"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:179
+msgid ""
+"Achtung: Eine einmal angelegte Seite kann nicht wieder entfernt, nur "
+"ausgeblendet werden."
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:185
+msgid "Lerninhalte mit Text und Bildern, sowie Informationen zum Kurs."
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:192
+msgid "Lernvideo von Youtube, Vimeo oder von einem Link einbinden."
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:199
+msgid ""
+"Wiederholung von gelernten Inhalten mit Multiple-Choice, Multiple-Answer "
+"und Textantwort-Fragen."
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:206
+msgid "Eine Übersicht über untergeordnete Kursinhalte."
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:213
+msgid ""
+"Eine Umfrage zu Demografie, Erfahrung und/oder Lernergebnis der "
+"Kursteilnehmenden."
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:220
+msgid ""
+"Eine Forumsdiskussion in den Kurs einbetten, um jedem die Möglichkeit zu "
+"geben, mitzudiskutieren. (z.B. für Feedback)"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:224
+msgid "Auswählen"
+msgstr ""
+
+#: ../main/templates/courses/edit/index.html:242
+msgid "Fehler beim Speichern"
+msgstr ""
+
+#: ../main/templates/courses/edit/reorder.html:7
+msgid "Kursmodule neu anordnen"
+msgstr ""
+
+#: ../main/templates/courses/edit/reorder.html:33
+msgid "(ein/ausrücken)"
 msgstr ""
 
 #: ../main/templates/courses/units/extvideo.html:18
@@ -1082,11 +1331,6 @@ msgid ""
 "href=\"%(helpdesk_link)s\">Helpdesk</a> und wir werden uns darum kümmern."
 msgstr ""
 
-#: ../main/templates/courses/units/pinboard.html:15
-#: ../main/templates/courses/units/syllabus.html:60
-msgid "Pinnwand"
-msgstr ""
-
 #: ../main/templates/courses/units/pinboard.html:33
 msgid "Es wurde noch kein Beitrag für dieses Pinboard ausgewählt."
 msgstr ""
@@ -1116,11 +1360,6 @@ msgstr ""
 #: ../main/templates/courses/units/pinboard.html:74
 #: ../main/templates/courses/units/quiz.html:179
 msgid "Absenden"
-msgstr ""
-
-#: ../main/templates/courses/units/quiz.html:16
-#: ../main/templates/courses/units/syllabus.html:54
-msgid "Quiz"
 msgstr ""
 
 #: ../main/templates/courses/units/quiz.html:36
@@ -1190,23 +1429,10 @@ msgstr ""
 msgid "Dies ist ein Quiz und kann beliebig oft wiederholt werden."
 msgstr ""
 
-#: ../main/templates/courses/units/survey.html:16
-#: ../main/templates/courses/units/syllabus.html:58
-msgid "Umfrage"
-msgstr ""
-
 #: ../main/templates/courses/units/syllabus.html:37
 msgid ""
 "Dieses Modul ist in der unteren Ebene und kann daher keine Kindelemente "
 "enthalten."
-msgstr ""
-
-#: ../main/templates/courses/units/syllabus.html:42
-msgid "Typ"
-msgstr ""
-
-#: ../main/templates/courses/units/syllabus.html:43
-msgid "Modul"
 msgstr ""
 
 #: ../main/templates/tour/pi-learn.html:2
@@ -1379,7 +1605,11 @@ msgstr ""
 msgid "Kursüberblick"
 msgstr ""
 
-#: ../main/view/courses.py:532
+#: ../main/view/courses.py:440
+msgid "Neue Seite"
+msgstr ""
+
+#: ../main/view/courses.py:533
 msgid "Teilnahmeurkunde"
 msgstr ""
 
