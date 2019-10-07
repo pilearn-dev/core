@@ -7,29 +7,29 @@
 <div class="grid">
   <div class="column3 column12__sm p2">
     <div class="_nav _nav-v">
-      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/identity">Identität</a>
-      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/picture" class="-active">Bild</a>
-      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/announcements">Ankündigungen</a>
-      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/membership">Benutzer</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/identity">{{ _('Identität') }}</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/picture" class="-active">{{ _('Bild') }}</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/announcements">{{ _('Ankündigungen') }}</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/membership">{{ _('Kursmitglieder') }}</a>
       {% if course.getDetail("state") == 0 %}
-      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/publish">Veröffentlichen</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/publish">{{ _('Veröffentlichen') }}</a>
       {% endif %}
     </div>
   </div>
   <div class="column9 column12__sm p3">
-    <h1>Bild des Kurses</h1>
+    <h1>{{ _('Bild des Kurses') }}</h1>
 
     <div style="height: 350px; width: 600px;" id="patterny">&nbsp;</div>
     {% set value = course.getDetail("picture_url") %}
 
 
-    <h2>Neues Bild setzen</h2>
+    <h2>{{ _('Neues Bild setzen') }}</h2>
 
     <div class="_toollist">
       <label class="_toollist-item" for="image-0-0">
         <input type="radio" class="form-radio" id="image-0-0" value="" name="image" {{ 'checked' if value=="" }}>
         <div class="_toollist-data">
-          <em>Kein Bild (automatisch generierter Farbverlauf)</em>
+          <em>{{ _('Kein Bild (automatisch generierter Farbverlauf)') }}</em>
         </div>
       </label>
 
@@ -55,10 +55,10 @@
       {% endfor %}
     </div>
 
-    <button class="_btn _btn--primary _btn-lg" id="submit_btn">Kurs aktualisieren</button>
+    <button class="_btn _btn--primary _btn-lg" id="submit_btn">{{ _('Kurs aktualisieren') }}</button>
 
     <div class="_warnbox p-s _warnbox-danger hide" id="save_errors"></div>
-    <div class="fs-caption p1 col-dark-dd">Die Bilder sind <strong>gemeinfreie</strong> von <a href="http://skuawk.com/">skuawk.com</a>.</div>
+    <div class="fs-caption p1 col-dark-dd">{{ _('Die Bilder sind <strong>gemeinfreie</strong> von %(urls)s', urls='<a href="http://skuawk.com/">skuawk.com</a>'|safe) }}</div>
   </div>
 </div>
 <script>
@@ -80,7 +80,7 @@
       error: function() {
         $("#submit_btn").attr("disabled", true);
         wb = $("#save_errors");
-        wb.text("Die Verbindung zum Server konnte nicht hergestellt werden.")
+        wb.text("{{ _('Die Verbindung zum Server konnte nicht hergestellt werden.') }}")
         wb.removeClass("hide");
       }
     })

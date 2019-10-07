@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-10-03 14:17+0200\n"
+"POT-Creation-Date: 2019-10-07 13:20+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.7.0\n"
 
-#: ../main/__init__.py:131 ../main/templates/layout_new.html:167
+#: ../main/__init__.py:132 ../main/templates/layout_new.html:167
 msgid "Startseite"
 msgstr ""
 
@@ -195,6 +195,7 @@ msgstr ""
 msgid "Zum Kurs"
 msgstr ""
 
+#: ../main/templates/courses/enroll.html:10
 #: ../main/templates/courses/index.html:67
 #: ../main/templates/courses/info.html:51
 #: ../main/templates/courses/info.html:56 ../main/templates/index.html:97
@@ -238,6 +239,10 @@ msgid ""
 "teilnehmen möchtest."
 msgstr ""
 
+#: ../main/templates/courses/admin/identity.html:12
+#: ../main/templates/courses/admin/membership.html:12
+#: ../main/templates/courses/admin/picture.html:12
+#: ../main/templates/courses/admin/publish.html:12
 #: ../main/templates/courses/info.html:78 ../main/templates/index.html:152
 msgid "Ankündigungen"
 msgstr ""
@@ -679,6 +684,11 @@ msgstr ""
 
 #: ../main/templates/badges/single.html:23
 #: ../main/templates/certificates/confirmation_of_participation.html:71
+#: ../main/templates/courses/admin/membership.html:35
+#: ../main/templates/courses/admin/membership.html:45
+#: ../main/templates/courses/admin/membership.html:55
+#: ../main/templates/courses/admin/membership.html:60
+#: ../main/templates/courses/enroll.html:8
 msgid "Benutzer-ID"
 msgstr ""
 
@@ -722,6 +732,18 @@ msgstr ""
 
 #: ../main/templates/courses/_unit-nav.html:3
 msgid "Menü"
+msgstr ""
+
+#: ../main/templates/courses/enroll.html:6
+msgid "Benutzer einschreiben"
+msgstr ""
+
+#: ../main/templates/courses/enroll.html:9
+msgid "Danach weitere einschreiben"
+msgstr ""
+
+#: ../main/templates/courses/enroll.html:11
+msgid "Abbrechen"
 msgstr ""
 
 #: ../main/templates/courses/index.html:4
@@ -792,6 +814,238 @@ msgid ""
 "einen Kurs an</a>."
 msgstr ""
 
+#: ../main/templates/courses/admin/identity.html:10
+#: ../main/templates/courses/admin/membership.html:10
+#: ../main/templates/courses/admin/picture.html:10
+#: ../main/templates/courses/admin/publish.html:10
+msgid "Identität"
+msgstr ""
+
+#: ../main/templates/courses/admin/identity.html:11
+#: ../main/templates/courses/admin/membership.html:11
+#: ../main/templates/courses/admin/picture.html:11
+#: ../main/templates/courses/admin/publish.html:11
+msgid "Bild"
+msgstr ""
+
+#: ../main/templates/courses/admin/identity.html:13
+#: ../main/templates/courses/admin/membership.html:13
+#: ../main/templates/courses/admin/membership.html:20
+#: ../main/templates/courses/admin/picture.html:13
+#: ../main/templates/courses/admin/publish.html:13
+msgid "Kursmitglieder"
+msgstr ""
+
+#: ../main/templates/courses/admin/identity.html:15
+#: ../main/templates/courses/admin/membership.html:15
+#: ../main/templates/courses/admin/picture.html:15
+#: ../main/templates/courses/admin/publish.html:15
+#: ../main/templates/courses/admin/publish.html:40
+msgid "Veröffentlichen"
+msgstr ""
+
+#: ../main/templates/courses/admin/identity.html:20
+msgid "Identität des Kurses"
+msgstr ""
+
+#: ../main/templates/courses/admin/identity.html:22
+msgid "Name des Kurses"
+msgstr ""
+
+#: ../main/templates/courses/admin/identity.html:25
+msgid "Eine kurze Beschreibung (Anreißer) des Kurses"
+msgstr ""
+
+#: ../main/templates/courses/admin/identity.html:28
+msgid "Ausführliche Beschreibung des Kurses und der angebotenen Inhalte"
+msgstr ""
+
+#: ../main/templates/courses/admin/identity.html:35
+msgid ""
+"Welche materiellen oder wissensbezogenen Voraussetzungen besitzt dieser "
+"Kurs?"
+msgstr ""
+
+#: ../main/templates/courses/admin/identity.html:42
+#: ../main/templates/courses/admin/picture.html:58
+msgid "Kurs aktualisieren"
+msgstr ""
+
+#: ../main/templates/courses/admin/identity.html:44
+msgid "Der Kurs wurde erfolgreich gespeichert."
+msgstr ""
+
+#: ../main/templates/courses/admin/identity.html:71
+msgid ""
+"Der Kurs konnte nicht vollständig gespeichert werden. Es sind Fehler "
+"aufgetreten:"
+msgstr ""
+
+#: ../main/templates/courses/admin/identity.html:83
+#: ../main/templates/courses/admin/picture.html:83
+msgid "Die Verbindung zum Server konnte nicht hergestellt werden."
+msgstr ""
+
+#: ../main/templates/courses/admin/membership.html:23
+msgid "Du bist <strong>Kursbearbeiter</strong> für diesen Kurs."
+msgstr ""
+
+#: ../main/templates/courses/admin/membership.html:25
+msgid "Du bist <strong>Kursbesitzer</strong> für diesen Kurs."
+msgstr ""
+
+#: ../main/templates/courses/admin/membership.html:27
+msgid "Kursbesitzer (Administratoren des Kurses)"
+msgstr ""
+
+#: ../main/templates/courses/admin/membership.html:33
+#: ../main/templates/courses/admin/membership.html:43
+#: ../main/templates/courses/admin/membership.html:53
+msgid "entfernen"
+msgstr ""
+
+#: ../main/templates/courses/admin/membership.html:35
+#: ../main/templates/courses/admin/membership.html:45
+#: ../main/templates/courses/admin/membership.html:55
+msgid "Hinzu"
+msgstr ""
+
+#: ../main/templates/courses/admin/membership.html:37
+msgid "Kursbearbeiter (können alles bearbeiten)"
+msgstr ""
+
+#: ../main/templates/courses/admin/membership.html:47
+msgid "Kursbetrachter (können auch nicht freigeschalteten Kurs besuchen)"
+msgstr ""
+
+#: ../main/templates/courses/admin/membership.html:57
+msgid "In diesen Kurs ist "
+msgid_plural "In diesen Kurs sind "
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../main/templates/courses/admin/membership.html:57
+msgid " Benutzer eingeschrieben."
+msgid_plural " Benutzer eingeschrieben."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../main/templates/courses/admin/membership.html:58
+msgid "Benutzer aus Kurs entfernen"
+msgstr ""
+
+#: ../main/templates/courses/admin/membership.html:59
+msgid ""
+"Du kannst einen Benutzer, der sich nicht an die Regeln hält, aus dem Kurs"
+" entfernen (Benutzer kann sich wieder einschreiben) und die Moderatoren "
+"darüber kontaktieren."
+msgstr ""
+
+#: ../main/templates/courses/admin/membership.html:60
+msgid "Rauswerfen"
+msgstr ""
+
+#: ../main/templates/courses/admin/membership.html:61
+msgid "Benutzer hinzufügen"
+msgstr ""
+
+#: ../main/templates/courses/admin/picture.html:20
+msgid "Bild des Kurses"
+msgstr ""
+
+#: ../main/templates/courses/admin/picture.html:26
+msgid "Neues Bild setzen"
+msgstr ""
+
+#: ../main/templates/courses/admin/picture.html:32
+msgid "Kein Bild (automatisch generierter Farbverlauf)"
+msgstr ""
+
+#: ../main/templates/courses/admin/picture.html:61
+#, python-format
+msgid "Die Bilder sind <strong>gemeinfreie</strong> von %(urls)s"
+msgstr ""
+
+#: ../main/templates/courses/admin/publish.html:20
+msgid "Kurs veröffentlichen"
+msgstr ""
+
+#: ../main/templates/courses/admin/publish.html:22
+msgid ""
+"Die Veröffentlichung des Kurses ist <mark>ein notwendiger Schritt</mark>,"
+" damit andere ihn ohne Einladung besuchen können. Allerdings ist sie "
+"nicht umkehrbar. Bevor du den Kurs veröffentlichst, bitten wir dich daher"
+" zu prüfen, was dann passiert und ob der Kurs wirklich bereit dafür ist."
+msgstr ""
+
+#: ../main/templates/courses/admin/publish.html:23
+msgid "Empfohlene Voraussetzungen"
+msgstr ""
+
+#: ../main/templates/courses/admin/publish.html:25
+msgid "Es wurde ein Konzept ausgearbeitet."
+msgstr ""
+
+#: ../main/templates/courses/admin/publish.html:26
+msgid "Es wurden alle Erklärseiten, Quizze und Videos hinzugefügt."
+msgstr ""
+
+#: ../main/templates/courses/admin/publish.html:27
+msgid "Umfragen befinden sich in der Planung (oder wurden verworfen)"
+msgstr ""
+
+#: ../main/templates/courses/admin/publish.html:28
+msgid "Der Kurs wurde von mindestens zwei anderen Benutzern getestet."
+msgstr ""
+
+#: ../main/templates/courses/admin/publish.html:29
+msgid "Alle Quizze wurden noch einmal auf Korrektheit geprüft."
+msgstr ""
+
+#: ../main/templates/courses/admin/publish.html:31
+msgid "Konsequenzen"
+msgstr ""
+
+#: ../main/templates/courses/admin/publish.html:33
+msgid "Alle angemeldeten Benutzer können sich für den Kurs einschreiben."
+msgstr ""
+
+#: ../main/templates/courses/admin/publish.html:34
+msgid "Eingeschriebene und nicht angemeldete Benutzer können den Kurs einsehen."
+msgstr ""
+
+#: ../main/templates/courses/admin/publish.html:35
+msgid "Eingeschriebene Benutzer können Quizze absenden."
+msgstr ""
+
+#: ../main/templates/courses/admin/publish.html:36
+msgid "Das Kursforum kann verwendet werden."
+msgstr ""
+
+#: ../main/templates/courses/admin/publish.html:37
+msgid "Feedback kann für den Kurs gegeben werden."
+msgstr ""
+
+#: ../main/templates/courses/admin/publish.html:39
+msgid ""
+"Ich bestätige, dass ich diesen Text sorgfältig gelesen habe und ich "
+"möchte mit der Veröffentlichung dieses Kurses fortfahren."
+msgstr ""
+
+#: ../main/templates/courses/admin/publish.html:45
+msgid "Sicherheitsabfrage bestätigen!"
+msgstr ""
+
+#: ../main/templates/courses/admin/publish.html:55
+msgid "Ein Fehler ist aufgetreten. Bitte wende dich an den Support."
+msgstr ""
+
+#: ../main/templates/courses/admin/publish.html:62
+msgid ""
+"Dieser Kurs wurde bereits veröffentlicht. Hier gibt es nicht für dich zu "
+"tun. :)"
+msgstr ""
+
 #: ../main/templates/courses/units/extvideo.html:15
 #: ../main/templates/courses/units/syllabus.html:52
 msgid "Video"
@@ -830,7 +1084,7 @@ msgstr ""
 
 #: ../main/templates/courses/units/pinboard.html:15
 #: ../main/templates/courses/units/syllabus.html:60
-msgid "Pinwand"
+msgid "Pinnwand"
 msgstr ""
 
 #: ../main/templates/courses/units/pinboard.html:33
@@ -882,6 +1136,9 @@ msgstr ""
 #: ../main/templates/courses/units/quiz.html:67
 #: ../main/templates/courses/units/quiz.html:85
 #: ../main/templates/courses/units/quiz.html:103
+#: ../main/templates/courses/units/quiz.html:140
+#: ../main/templates/courses/units/quiz.html:154
+#: ../main/templates/courses/units/quiz.html:168
 msgid "Pkt."
 msgstr ""
 
@@ -1238,5 +1495,8 @@ msgstr ""
 #~ "von dir besuchte Kurse extra zu "
 #~ "sehen und auf alle Kurse und "
 #~ "Inhalte zugreifen zu können"
+#~ msgstr ""
+
+#~ msgid "Pinwand"
 #~ msgstr ""
 

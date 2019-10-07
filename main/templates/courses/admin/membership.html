@@ -7,58 +7,58 @@
 <div class="grid">
   <div class="column3 column12__sm p2">
     <div class="_nav _nav-v">
-      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/identity">Identität</a>
-      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/picture">Bild</a>
-      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/announcements">Ankündigungen</a>
-      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/membership" class="-active">Benutzer</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/identity">{{ _('Identität') }}</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/picture">{{ _('Bild') }}</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/announcements">{{ _('Ankündigungen') }}</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/membership" class="-active">{{ _('Kursmitglieder') }}</a>
       {% if course.getDetail("state") == 0 %}
-      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/publish">Veröffentlichen</a>
+      <a href="/course/{{ course.id }}/{{ course.getLabel() }}/admin/publish">{{ _('Veröffentlichen') }}</a>
       {% endif %}
     </div>
   </div>
   <div class="column9 column12__sm p3">
-    <h1>Benutzer</h1>
+    <h1>{{ _('Kursmitglieder') }}</h1>
     {% set role = course.getCourseRole(user) %}
     {% if role == 3 %}
-    <p>Du bist <strong>Kursbearbeiter</strong> für diesen Kurs.</p>
+    <p>{{ _('Du bist <strong>Kursbearbeiter</strong> für diesen Kurs.') }}</p>
     {% elif role == 4 %}
-    <p>Du bist <strong>Kursbesitzer</strong> für diesen Kurs.</p>
+    <p>{{ _('Du bist <strong>Kursbesitzer</strong> für diesen Kurs.') }}</p>
     {% endif %}
-    <p>Kursbesitzer (Administratoren des Kurses)</p>
+    <p>{{ _('Kursbesitzer (Administratoren des Kurses)') }}</p>
     {% set course_admins = course.getEnrolledByPerm(4) %}
     <ul>
     {% for u in course_admins %}
     <li>
       <a href="/u/{{ u.id }}">{{ u.getHTMLName()|safe }}</a>
-      <a href="#!" onclick="revokeStatus(this, {{ u.id }});" class="_btn _btn-xs _btn-danger _btn-lighter">entfernen</a></li>
+      <a href="#!" onclick="revokeStatus(this, {{ u.id }});" class="_btn _btn-xs _btn-danger _btn-lighter">{{ _('entfernen') }}</a></li>
     {% endfor %}
-      <li><input class="form form-inline" id="status-add-4" placeholder="Benutzer-ID"><button class="_btn _btn--primary" onclick="addStatus(this, $('#status-add-4').val(), 4)">Hinzu</button></li>
+      <li><input class="form form-inline" id="status-add-4" placeholder="{{ _('Benutzer-ID') }}"><button class="_btn _btn--primary" onclick="addStatus(this, $('#status-add-4').val(), 4)">{{ _('Hinzu') }}</button></li>
     </ul>
-    <p>Kursbearbeiter (können alles bearbeiten)</p>
+    <p>{{ _('Kursbearbeiter (können alles bearbeiten)') }}</p>
     {% set course_editors = course.getEnrolledByPerm(3) %}
     <ul>
     {% for u in course_editors %}
     <li>
       <a href="/u/{{ u.id }}">{{ u.getHTMLName()|safe }}</a>
-      <a href="#!" onclick="revokeStatus(this, {{ u.id }});" class="_btn _btn-xs _btn-danger _btn-lighter">entfernen</a></li>
+      <a href="#!" onclick="revokeStatus(this, {{ u.id }});" class="_btn _btn-xs _btn-danger _btn-lighter">{{ _('entfernen') }}</a></li>
     {% endfor %}
-      <li><input class="form form-inline" id="status-add-3" placeholder="Benutzer-ID"><button class="_btn _btn--primary" onclick="addStatus(this, $('#status-add-3').val(), 3)">Hinzu</button></li>
+      <li><input class="form form-inline" id="status-add-3" placeholder="{{ _('Benutzer-ID') }}"><button class="_btn _btn--primary" onclick="addStatus(this, $('#status-add-3').val(), 3)">{{ _('Hinzu') }}</button></li>
     </ul>
-    <p>Kursbetrachter (können auch nicht freigeschalteten Kurs besuchen)</p>
+    <p>{{ _('Kursbetrachter (können auch nicht freigeschalteten Kurs besuchen)') }}</p>
     {% set course_visitors = course.getEnrolledByPerm(2) %}
     <ul>
     {% for u in course_visitors %}
     <li>
       <a href="/u/{{ u.id }}">{{ u.getHTMLName()|safe }}</a>
-      <a href="#!" onclick="revokeStatus(this, {{ u.id }});" class="_btn _btn-xs _btn-danger _btn-lighter">entfernen</a></li>
+      <a href="#!" onclick="revokeStatus(this, {{ u.id }});" class="_btn _btn-xs _btn-danger _btn-lighter">{{ _('entfernen') }}</a></li>
     {% endfor %}
-      <li><input class="form form-inline" id="status-add-2" placeholder="Benutzer-ID"><button class="_btn _btn--primary" onclick="addStatus(this, $('#status-add-2').val(), 2)">Hinzu</button></li>
-    </ul>
-    <p>In diesen Kurs sind <span class="_badge _badge-s-dark">{{ course.getEnrolledCount() }}</span> Benutzer eingeschrieben.</p>
-    <h3>Benutzer aus Kurs entfernen</h3>
-    <p>Du kannst einen Benutzer, der sich nicht an die Regeln hält, aus dem Kurs entfernen (Benutzer kann sich wieder einschreiben) und die Moderatoren darüber kontaktieren.</p>
-    <input class="form form-inline" id="kick-remove" placeholder="Benutzer-ID"><button class="_btn _btn-danger" onclick="revokeAccess(this, $('#kick-remove').val())">Rauswerfen</button>
-    <h3><a href="/c/{{ course.id }}/enroll">Benutzer hinzufügen</a></h3>
+      <li><input class="form form-inline" id="status-add-2" placeholder="{{ _('Benutzer-ID') }}"><button class="_btn _btn--primary" onclick="addStatus(this, $('#status-add-2').val(), 2)">{{ _('Hinzu') }}</button></li>
+    </ul>{% set ec=course.getEnrolledCount() %}
+    <p>{{ ngettext('In diesen Kurs ist ', 'In diesen Kurs sind ', ec) }}<span class="_badge _badge-s-dark">{{ ec }}</span>{{ ngettext(' Benutzer eingeschrieben.', ' Benutzer eingeschrieben.', ec) }}</p>
+    <h3>{{ _('Benutzer aus Kurs entfernen') }}</h3>
+    <p>{{ _('Du kannst einen Benutzer, der sich nicht an die Regeln hält, aus dem Kurs entfernen (Benutzer kann sich wieder einschreiben) und die Moderatoren darüber kontaktieren.') }}</p>
+    <input class="form form-inline" id="kick-remove" placeholder="{{ _('Benutzer-ID') }}"><button class="_btn _btn-danger" onclick="revokeAccess(this, $('#kick-remove').val())">{{ _('Rauswerfen') }}</button>
+    <h3><a href="/c/{{ course.id }}/enroll">{{ _('Benutzer hinzufügen') }}</a></h3>
   </div>
 </div>
 <script>

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-10-03 14:17+0200\n"
+"POT-Creation-Date: 2019-10-07 13:20+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.7.0\n"
 
-#: ../main/__init__.py:131 ../main/templates/layout_new.html:167
+#: ../main/__init__.py:132 ../main/templates/layout_new.html:167
 msgid "Startseite"
 msgstr "home page"
 
@@ -203,6 +203,7 @@ msgstr "Not available yet"
 msgid "Zum Kurs"
 msgstr "Go to course"
 
+#: ../main/templates/courses/enroll.html:10
 #: ../main/templates/courses/index.html:67
 #: ../main/templates/courses/info.html:51
 #: ../main/templates/courses/info.html:56 ../main/templates/index.html:97
@@ -249,6 +250,10 @@ msgstr ""
 " find interesting and support them by declaring your interest in "
 "participating in them."
 
+#: ../main/templates/courses/admin/identity.html:12
+#: ../main/templates/courses/admin/membership.html:12
+#: ../main/templates/courses/admin/picture.html:12
+#: ../main/templates/courses/admin/publish.html:12
 #: ../main/templates/courses/info.html:78 ../main/templates/index.html:152
 msgid "Ankündigungen"
 msgstr "Announcements"
@@ -717,6 +722,11 @@ msgstr "award to a user"
 
 #: ../main/templates/badges/single.html:23
 #: ../main/templates/certificates/confirmation_of_participation.html:71
+#: ../main/templates/courses/admin/membership.html:35
+#: ../main/templates/courses/admin/membership.html:45
+#: ../main/templates/courses/admin/membership.html:55
+#: ../main/templates/courses/admin/membership.html:60
+#: ../main/templates/courses/enroll.html:8
 msgid "Benutzer-ID"
 msgstr "user id"
 
@@ -761,6 +771,18 @@ msgstr "course id"
 #: ../main/templates/courses/_unit-nav.html:3
 msgid "Menü"
 msgstr "Menu"
+
+#: ../main/templates/courses/enroll.html:6
+msgid "Benutzer einschreiben"
+msgstr "Enroll users"
+
+#: ../main/templates/courses/enroll.html:9
+msgid "Danach weitere einschreiben"
+msgstr "Continue enrolling users after submission"
+
+#: ../main/templates/courses/enroll.html:11
+msgid "Abbrechen"
+msgstr "Cancel"
 
 #: ../main/templates/courses/index.html:4
 #: ../main/templates/courses/units/syllabus.html:16
@@ -837,6 +859,248 @@ msgstr ""
 "the topic %(topic_name)s</a> or you can <a "
 "href=\"%(propose_link)s\">offer your own course</a>."
 
+#: ../main/templates/courses/admin/identity.html:10
+#: ../main/templates/courses/admin/membership.html:10
+#: ../main/templates/courses/admin/picture.html:10
+#: ../main/templates/courses/admin/publish.html:10
+msgid "Identität"
+msgstr "Identity"
+
+#: ../main/templates/courses/admin/identity.html:11
+#: ../main/templates/courses/admin/membership.html:11
+#: ../main/templates/courses/admin/picture.html:11
+#: ../main/templates/courses/admin/publish.html:11
+msgid "Bild"
+msgstr "Picture"
+
+#: ../main/templates/courses/admin/identity.html:13
+#: ../main/templates/courses/admin/membership.html:13
+#: ../main/templates/courses/admin/membership.html:20
+#: ../main/templates/courses/admin/picture.html:13
+#: ../main/templates/courses/admin/publish.html:13
+msgid "Kursmitglieder"
+msgstr "Course members"
+
+#: ../main/templates/courses/admin/identity.html:15
+#: ../main/templates/courses/admin/membership.html:15
+#: ../main/templates/courses/admin/picture.html:15
+#: ../main/templates/courses/admin/publish.html:15
+#: ../main/templates/courses/admin/publish.html:40
+msgid "Veröffentlichen"
+msgstr "Publish"
+
+#: ../main/templates/courses/admin/identity.html:20
+msgid "Identität des Kurses"
+msgstr "Identity of this course"
+
+#: ../main/templates/courses/admin/identity.html:22
+msgid "Name des Kurses"
+msgstr "Name of course"
+
+#: ../main/templates/courses/admin/identity.html:25
+msgid "Eine kurze Beschreibung (Anreißer) des Kurses"
+msgstr "Short description (excerpt) for this course"
+
+#: ../main/templates/courses/admin/identity.html:28
+msgid "Ausführliche Beschreibung des Kurses und der angebotenen Inhalte"
+msgstr "Longer description of this course and its contents"
+
+#: ../main/templates/courses/admin/identity.html:35
+msgid ""
+"Welche materiellen oder wissensbezogenen Voraussetzungen besitzt dieser "
+"Kurs?"
+msgstr "What are the material or knowledge prerequisites for this course?"
+
+#: ../main/templates/courses/admin/identity.html:42
+#: ../main/templates/courses/admin/picture.html:58
+msgid "Kurs aktualisieren"
+msgstr "Update course"
+
+#: ../main/templates/courses/admin/identity.html:44
+msgid "Der Kurs wurde erfolgreich gespeichert."
+msgstr "This course was saved, successfully."
+
+#: ../main/templates/courses/admin/identity.html:71
+msgid ""
+"Der Kurs konnte nicht vollständig gespeichert werden. Es sind Fehler "
+"aufgetreten:"
+msgstr "This course could not be saved fully. Errors occured:"
+
+#: ../main/templates/courses/admin/identity.html:83
+#: ../main/templates/courses/admin/picture.html:83
+msgid "Die Verbindung zum Server konnte nicht hergestellt werden."
+msgstr "Could not connect to the web server."
+
+#: ../main/templates/courses/admin/membership.html:23
+msgid "Du bist <strong>Kursbearbeiter</strong> für diesen Kurs."
+msgstr "You are <strong>course editor</strong>."
+
+#: ../main/templates/courses/admin/membership.html:25
+msgid "Du bist <strong>Kursbesitzer</strong> für diesen Kurs."
+msgstr "You are <strong>course owner/administrator</strong>"
+
+#: ../main/templates/courses/admin/membership.html:27
+msgid "Kursbesitzer (Administratoren des Kurses)"
+msgstr "Course Owner (Administrators of Course)"
+
+#: ../main/templates/courses/admin/membership.html:33
+#: ../main/templates/courses/admin/membership.html:43
+#: ../main/templates/courses/admin/membership.html:53
+msgid "entfernen"
+msgstr "remove"
+
+#: ../main/templates/courses/admin/membership.html:35
+#: ../main/templates/courses/admin/membership.html:45
+#: ../main/templates/courses/admin/membership.html:55
+msgid "Hinzu"
+msgstr "add"
+
+#: ../main/templates/courses/admin/membership.html:37
+msgid "Kursbearbeiter (können alles bearbeiten)"
+msgstr "Course Editors (can edit everything)"
+
+#: ../main/templates/courses/admin/membership.html:47
+msgid "Kursbetrachter (können auch nicht freigeschalteten Kurs besuchen)"
+msgstr "Course Guests (are not prevented from seeing unpublished course)"
+
+#: ../main/templates/courses/admin/membership.html:57
+msgid "In diesen Kurs ist "
+msgid_plural "In diesen Kurs sind "
+msgstr[0] "There is "
+msgstr[1] "There are "
+
+#: ../main/templates/courses/admin/membership.html:57
+msgid " Benutzer eingeschrieben."
+msgid_plural " Benutzer eingeschrieben."
+msgstr[0] " user einrolled in this course."
+msgstr[1] " users enrolled in this course."
+
+#: ../main/templates/courses/admin/membership.html:58
+msgid "Benutzer aus Kurs entfernen"
+msgstr "Remove user from course"
+
+#: ../main/templates/courses/admin/membership.html:59
+msgid ""
+"Du kannst einen Benutzer, der sich nicht an die Regeln hält, aus dem Kurs"
+" entfernen (Benutzer kann sich wieder einschreiben) und die Moderatoren "
+"darüber kontaktieren."
+msgstr ""
+"You can remove users violating the rules from this course (User can re-"
+"enroll) and inform the moderators about the misbehavior."
+
+#: ../main/templates/courses/admin/membership.html:60
+msgid "Rauswerfen"
+msgstr "Dismiss"
+
+#: ../main/templates/courses/admin/membership.html:61
+msgid "Benutzer hinzufügen"
+msgstr "Add user"
+
+#: ../main/templates/courses/admin/picture.html:20
+msgid "Bild des Kurses"
+msgstr "Picture of Course"
+
+#: ../main/templates/courses/admin/picture.html:26
+msgid "Neues Bild setzen"
+msgstr "Choose new picture"
+
+#: ../main/templates/courses/admin/picture.html:32
+msgid "Kein Bild (automatisch generierter Farbverlauf)"
+msgstr "No picture (show automatically generated color gradient)"
+
+#: ../main/templates/courses/admin/picture.html:61
+#, python-format
+msgid "Die Bilder sind <strong>gemeinfreie</strong> von %(urls)s"
+msgstr "The pictures are <strong>public domain</strong> from %(urls)s"
+
+#: ../main/templates/courses/admin/publish.html:20
+msgid "Kurs veröffentlichen"
+msgstr "Publish course"
+
+#: ../main/templates/courses/admin/publish.html:22
+msgid ""
+"Die Veröffentlichung des Kurses ist <mark>ein notwendiger Schritt</mark>,"
+" damit andere ihn ohne Einladung besuchen können. Allerdings ist sie "
+"nicht umkehrbar. Bevor du den Kurs veröffentlichst, bitten wir dich daher"
+" zu prüfen, was dann passiert und ob der Kurs wirklich bereit dafür ist."
+msgstr ""
+"Publishing the course is a <mark>neccessary step</mark> in order for "
+"others to visit it without invitation by you. However the publication "
+"cannot be reversed. That's why we are asking you to review carefully, "
+"whether it is ready and what happens afterwards."
+
+#: ../main/templates/courses/admin/publish.html:23
+msgid "Empfohlene Voraussetzungen"
+msgstr "Recommended Requirements"
+
+#: ../main/templates/courses/admin/publish.html:25
+msgid "Es wurde ein Konzept ausgearbeitet."
+msgstr "You developed a draft for the course structure."
+
+#: ../main/templates/courses/admin/publish.html:26
+msgid "Es wurden alle Erklärseiten, Quizze und Videos hinzugefügt."
+msgstr "All neccessary information texts, quizzes and videos have been completed."
+
+#: ../main/templates/courses/admin/publish.html:27
+msgid "Umfragen befinden sich in der Planung (oder wurden verworfen)"
+msgstr "Survey are being planned or decided not to have"
+
+#: ../main/templates/courses/admin/publish.html:28
+msgid "Der Kurs wurde von mindestens zwei anderen Benutzern getestet."
+msgstr "At least two other users tested this course."
+
+#: ../main/templates/courses/admin/publish.html:29
+msgid "Alle Quizze wurden noch einmal auf Korrektheit geprüft."
+msgstr "All quizzes have been checked on correctness again."
+
+#: ../main/templates/courses/admin/publish.html:31
+msgid "Konsequenzen"
+msgstr "Consequences of Publication"
+
+#: ../main/templates/courses/admin/publish.html:33
+msgid "Alle angemeldeten Benutzer können sich für den Kurs einschreiben."
+msgstr "All registered users can enroll to this course."
+
+#: ../main/templates/courses/admin/publish.html:34
+msgid "Eingeschriebene und nicht angemeldete Benutzer können den Kurs einsehen."
+msgstr "Enrolled and anonymous users can visit the course contents."
+
+#: ../main/templates/courses/admin/publish.html:35
+msgid "Eingeschriebene Benutzer können Quizze absenden."
+msgstr "Enrolled users can submit quizzes."
+
+#: ../main/templates/courses/admin/publish.html:36
+msgid "Das Kursforum kann verwendet werden."
+msgstr "The course forum can be used."
+
+#: ../main/templates/courses/admin/publish.html:37
+msgid "Feedback kann für den Kurs gegeben werden."
+msgstr "Feedback can be given for the course."
+
+#: ../main/templates/courses/admin/publish.html:39
+msgid ""
+"Ich bestätige, dass ich diesen Text sorgfältig gelesen habe und ich "
+"möchte mit der Veröffentlichung dieses Kurses fortfahren."
+msgstr ""
+"I do hereby confirm, that I carefully read this text and that I wish to "
+"continue publishing this course."
+
+#: ../main/templates/courses/admin/publish.html:45
+msgid "Sicherheitsabfrage bestätigen!"
+msgstr "Please check the confirmation question."
+
+#: ../main/templates/courses/admin/publish.html:55
+msgid "Ein Fehler ist aufgetreten. Bitte wende dich an den Support."
+msgstr "Some error occured. Please contact support."
+
+#: ../main/templates/courses/admin/publish.html:62
+msgid ""
+"Dieser Kurs wurde bereits veröffentlicht. Hier gibt es nicht für dich zu "
+"tun. :)"
+msgstr ""
+"This course has already been published. Apparently here's nothing to do "
+"for you. :)"
+
 #: ../main/templates/courses/units/extvideo.html:15
 #: ../main/templates/courses/units/syllabus.html:52
 msgid "Video"
@@ -872,8 +1136,8 @@ msgid ""
 "unangebrachte Inhalte oder Urheberrechtsverstöße im <a "
 "href=\"%(helpdesk_link)s\">Helpdesk</a> und wir werden uns darum kümmern."
 msgstr ""
-"This movie may be protected by copyright. &pi;-Learn cannot take "
-"any legal responsibility for inappropriate contents. Please report "
+"This movie may be protected by copyright. &pi;-Learn cannot take any "
+"legal responsibility for inappropriate contents. Please report "
 "inappropriate contents or copyright infringements in our <a "
 "href=\"%(helpdesk_link)s\">help desk</a> and we'll take care of it."
 
@@ -935,6 +1199,9 @@ msgstr ""
 #: ../main/templates/courses/units/quiz.html:67
 #: ../main/templates/courses/units/quiz.html:85
 #: ../main/templates/courses/units/quiz.html:103
+#: ../main/templates/courses/units/quiz.html:140
+#: ../main/templates/courses/units/quiz.html:154
+#: ../main/templates/courses/units/quiz.html:168
 msgid "Pkt."
 msgstr "pts."
 
@@ -960,8 +1227,7 @@ msgstr "Please enter an answer"
 msgid ""
 "Du bist nicht angemeldet und kannst dieses Quiz daher leider nicht "
 "abschicken."
-msgstr ""
-"You are not logged in. Unfortunately only users can submit this quiz."
+msgstr "You are not logged in. Unfortunately only users can submit this quiz."
 
 #: ../main/templates/courses/units/quiz.html:190
 msgid "Ergebnis"
@@ -997,7 +1263,8 @@ msgid ""
 "Dieses Modul ist in der unteren Ebene und kann daher keine Kindelemente "
 "enthalten."
 msgstr ""
-"This module is in the lower hierarchy and cannot contain any course modules."
+"This module is in the lower hierarchy and cannot contain any course "
+"modules."
 
 #: ../main/templates/courses/units/syllabus.html:42
 msgid "Typ"
