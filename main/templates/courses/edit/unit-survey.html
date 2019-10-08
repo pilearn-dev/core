@@ -7,9 +7,9 @@
 <div class="grid -equal-columns">
   <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
     <div class="p3">
-      <h2>Menü</h2>
+      <h2>{{ _('Menü') }}</h2>
       <nav class="_nav _nav-v">
-        <a href="/c/{{ course.id }}/edit" class="f-bold mb3">Übersicht</a>
+        <a href="/c/{{ course.id }}/edit" class="f-bold mb3">{{ _('Übersicht') }}</a>
         {% for element in course.getMenu() %}
         {% if element.availible %}
         <a href="/c/{{ course.id }}/edit/unit/{{ element.id }}" class="{{ '-active' if element.id == data.id }}">{{ element.title }}</a>
@@ -32,21 +32,21 @@
     </div>
    </div>
    <div class="column9__lg column12 bs2-light p3">
-      <button class="_btn _btn--primary push-right _btn-lg js--savebtn" onclick="save()">Speichern</button>
+      <button class="_btn _btn--primary push-right _btn-lg js--savebtn" onclick="save()">{{ _('Speichern') }}</button>
 
       {% if data.isDisabled() %}
-      <button class="_btn _btn-outline _btn--primary push-right _btn-lg js--active" onclick="$(this).toggleClass('-active')">Verfügbar</button>
+      <button class="_btn _btn-outline _btn--primary push-right _btn-lg js--active" onclick="$(this).toggleClass('-active')">{{ _('Verfügbar') }}</button>
       {% else %}
-      <button class="_btn _btn-outline -active _btn--primary push-right _btn-lg js--active" onclick="$(this).toggleClass('-active')">Verfügbar</button>
+      <button class="_btn _btn-outline -active _btn--primary push-right _btn-lg js--active" onclick="$(this).toggleClass('-active')">{{ _('Verfügbar') }}</button>
       {% endif %}
 
       <div class="push-reset"></div>
       <input class="form ta-c" style="font-size: 2.5em; font-weight: bold;" id="title" value="{{ data.getTitle() }}">
-      <p>Diese Seite enthält eine Umfrage. Umfragen werden über unser Umfragesystem eingebunden und können dort bearbeitet werden:</p>
-      <a href="/sv/{{ data.getJSON().survey }}/edit" class="_btn _btn--primary _btn-xl">Umfrage bearbeiten</a>
+      <p>{{ _('Diese Seite enthält eine Umfrage. Umfragen werden über unser Umfragesystem eingebunden und können dort bearbeitet werden:') }}</p>
+      <a href="/sv/{{ data.getJSON().survey }}/edit" class="_btn _btn--primary _btn-xl">{{ _('Umfrage bearbeiten') }}</a>
       <script>
        function save() {
-         $(".js--savebtn").addClass("-loading").text("Speichere...");
+         $(".js--savebtn").addClass("-loading").text("{{ _('Speichern ...') }}");
          $.ajax({
            method: "POST",
            url: "/c/{{ course.id }}/edit/unit/{{ data.id }}",
@@ -57,13 +57,13 @@
              "content": {{ data.getJSON()|tojson }}
            }),
            success: function( result ) {
-             $(".js--savebtn").removeClass("-loading").text("Gespeichert.");
+             $(".js--savebtn").removeClass("-loading").text("{{ _('Gespeichert.') }}");
              setTimeout(function() {
-               $(".js--savebtn").text("Speichern");
+               $(".js--savebtn").text("{{ _('Speichern') }}");
              }, 1200);
            },
            error: function() {
-             $(".js--savebtn").removeClass("-loading").text("Fehler beim Speichern");
+             $(".js--savebtn").removeClass("-loading").text("{{ _('Fehler beim Speichern') }}");
            }
          });
        }

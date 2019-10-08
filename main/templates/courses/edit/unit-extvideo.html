@@ -7,9 +7,9 @@
 <div class="grid -equal-columns">
   <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
     <div class="p3">
-      <h2>Menü</h2>
+      <h2>{{ _('Menü') }}</h2>
       <nav class="_nav _nav-v">
-        <a href="/c/{{ course.id }}/edit" class="f-bold mb3">Übersicht</a>
+        <a href="/c/{{ course.id }}/edit" class="f-bold mb3">{{ _('Übersicht') }}</a>
         {% for element in course.getMenu() %}
         {% if element.availible %}
         <a href="/c/{{ course.id }}/edit/unit/{{ element.id }}" class="{{ '-active' if element.id == data.id }}">{{ element.title }}</a>
@@ -32,43 +32,43 @@
     </div>
    </div>
    <div class="column9__lg column12 bs2-light p3">
-      <button class="_btn _btn--primary push-right _btn-lg js--savebtn" onclick="save()">Speichern</button>
+      <button class="_btn _btn--primary push-right _btn-lg js--savebtn" onclick="save()">{{ _('Speichern') }}</button>
 
       {% if data.isDisabled() %}
-      <button class="_btn _btn-outline _btn--primary push-right _btn-lg js--active" onclick="$(this).toggleClass('-active')">Verfügbar</button>
+      <button class="_btn _btn-outline _btn--primary push-right _btn-lg js--active" onclick="$(this).toggleClass('-active')">{{ _('Verfügbar') }}</button>
       {% else %}
-      <button class="_btn _btn-outline -active _btn--primary push-right _btn-lg js--active" onclick="$(this).toggleClass('-active')">Verfügbar</button>
+      <button class="_btn _btn-outline -active _btn--primary push-right _btn-lg js--active" onclick="$(this).toggleClass('-active')">{{ _('Verfügbar') }}</button>
       {% endif %}
 
       <div class="push-reset"></div>
       <input class="form ta-c" style="font-size: 2.5em; font-weight: bold;" id="title" value="{{ data.getTitle() }}">
 
 
-      <p>Videos von externen Plattformen (Youtube, Vimeo, ...) sind mit einer Datenschutzfunktion ausgestattet und werden erst nach Knopfdruck geladen.</p>
-      <p>Bitte beachten &ndash; Nur Videos verwenden, wenn die Weitergabe für kommerzielle Zwecke erlaubt ist.</p>
-      <label for="c_platform" class="form">Plattform:</label>
+      <p>{{ _('Videos von externen Plattformen (YouTube, Vimeo, ...) sind mit einer Datenschutzfunktion ausgestattet und werden erst nach Knopfdruck geladen.') }}</p>
+      <p>{{ _('Bitte beachten &ndash; Nur Videos verwenden, wenn die Weitergabe für kommerzielle Zwecke erlaubt ist.') }}</p>
+      <label for="c_platform" class="form">{{ _('Plattform:') }}</label>
       <select id="c_platform" class="form">
-        <option{% if data.getJSON().platform == "youtube" %} selected{% endif %} value="youtube">Youtube</option>
-        <option{% if data.getJSON().platform == "vimeo" %} selected{% endif %} value="vimeo">Vimeo</option>
-        <option{% if data.getJSON().platform == "_link" %} selected{% endif %} value="_link">Direktlink</option>
+        <option{% if data.getJSON().platform == "youtube" %} selected{% endif %} value="youtube">{{ _('YouTube') }}</option>
+        <option{% if data.getJSON().platform == "vimeo" %} selected{% endif %} value="vimeo">{{ _('Vimeo') }}</option>
+        <option{% if data.getJSON().platform == "_link" %} selected{% endif %} value="_link">{{ _('Direktlink') }}</option>
       </select>
-      <label for="c_embed" class="form">Einbettcode</label>
+      <label for="c_embed" class="form">{{ _('Einbettcode:') }}</label>
       <input type="text" class="form" id="c_embed" value="{{ data.getJSON().embedcode }}">
       <div class="_card">
-        <div class="_card-title _card-subtitle"><a href="#!" data-toggle=".js--embedinfo" data-toggle-class="hide">Informationen zum Einbettcode</a></div>
+        <div class="_card-title _card-subtitle"><a href="#!" data-toggle=".js--embedinfo" data-toggle-class="hide">{{ _('Informationen zum Einbettcode') }}</a></div>
         <div class="_card-content js--embedinfo hide">
-          <p>Bei <strong>Youtube</strong> ist der Einbettcode derjenige Teil hinter dem <code>?v=</code>:</p>
+          <p>{{ _('Bei <strong>YouTube</strong> ist der Einbettcode derjenige Teil hinter dem <code>?v=</code>:') }}</p>
           <pre>https://www.youtube.com/watch?v=<span class="mark">abc123</span></pre>
-          <p>Bei <strong>Vimeo</strong> ist der Einbettcode derjenige Teil hinter dem Domainnamen:</p>
+          <p>{{ _('Bei <strong>Vimeo</strong> ist der Einbettcode derjenige Teil hinter dem Domainnamen:') }}</p>
           <pre>https://vimeo.com/<span class="mark">123</span></pre>
-          <p>Bei <strong>Direktlinks</strong> ist der Einbettcode der Direktlink</p>
+          <p>{{ _('Bei <strong>Direktlinks</strong> ist der Einbettcode der Direktlink') }}</p>
         </div>
       </div>
 
       <script>
 
        function save() {
-         $(".js--savebtn").addClass("-loading").text("Speichere...");
+         $(".js--savebtn").addClass("-loading").text("{{ _('Speichern ...') }}");
 
          platform = document.getElementById("c_platform").value;
          embedcode = document.getElementById("c_embed").value;
@@ -93,13 +93,13 @@
               }
            }),
            success: function( result ) {
-             $(".js--savebtn").removeClass("-loading").text("Gespeichert.");
+             $(".js--savebtn").removeClass("-loading").text("{{ _('Gespeichert.') }}");
              setTimeout(function() {
-               $(".js--savebtn").text("Speichern");
+               $(".js--savebtn").text("{{ _('Speichern') }}");
              }, 1200);
            },
            error: function() {
-             $(".js--savebtn").removeClass("-loading").text("Fehler beim Speichern");
+             $(".js--savebtn").removeClass("-loading").text("{{ _('Fehler beim Speichern') }}");
            }
          });
        }

@@ -7,9 +7,9 @@
 <div class="grid -equal-columns">
   <div class="column3__lg column12 br1__lg br-s__lg br-light__lg bb1 bb-s bb-light bb0__lg">
     <div class="p3">
-      <h2>Menü</h2>
+      <h2>{{ _('Menü') }}</h2>
       <nav class="_nav _nav-v">
-        <a href="/c/{{ course.id }}/edit" class="f-bold mb3">Übersicht</a>
+        <a href="/c/{{ course.id }}/edit" class="f-bold mb3">{{ _('Übersicht') }}</a>
         {% for element in course.getMenu() %}
         {% if element.availible %}
         <a href="/c/{{ course.id }}/edit/unit/{{ element.id }}" class="{{ '-active' if element.id == data.id }}">{{ element.title }}</a>
@@ -32,19 +32,19 @@
     </div>
    </div>
    <div class="column9__lg column12 bs2-light p3">
-      <a href="#!" class="_btn _btn-dark _btn-outline _btn-lg" onclick="$('.js--export-dialog-export').val(JSON.stringify(Respectable.data));$('#export_dialog').removeClass('hide')">Inhalt übertragen</a>
+      <a href="#!" class="_btn _btn-dark _btn-outline _btn-lg" onclick="$('.js--export-dialog-export').val(JSON.stringify(Respectable.data));$('#export_dialog').removeClass('hide')">{{ _('Inhalt übertragen') }}</a>
 
-      <button class="_btn _btn--primary push-right _btn-lg js--savebtn" onclick="save()">Speichern</button>
+      <button class="_btn _btn--primary push-right _btn-lg js--savebtn" onclick="save()">{{ _('Speichern') }}</button>
 
       {% if data.isDisabled() %}
-      <button class="_btn _btn-outline _btn--primary push-right _btn-lg js--active" onclick="$(this).toggleClass('-active')">Verfügbar</button>
+      <button class="_btn _btn-outline _btn--primary push-right _btn-lg js--active" onclick="$(this).toggleClass('-active')">{{ _('Verfügbar') }}</button>
       {% else %}
-      <button class="_btn _btn-outline -active _btn--primary push-right _btn-lg js--active" onclick="$(this).toggleClass('-active')">Verfügbar</button>
+      <button class="_btn _btn-outline -active _btn--primary push-right _btn-lg js--active" onclick="$(this).toggleClass('-active')">{{ _('Verfügbar') }}</button>
       {% endif %}
       {% if autoSave %}
-      <div class="fs-caption ta-r p1 col-dark-ddd">Automatisches Speichern ist <strong>aktiviert</strong>.<br><a href="/user/{{ user.id }}/{{ user.getDetail('name') }}/edit?page=preferences">Einstellungen</a></div>
+      <div class="fs-caption ta-r p1 col-dark-ddd">{{ _('Automatisches Speichern ist <strong>aktiviert</strong>.') }}<br><a href="/user/{{ user.id }}/{{ user.getDetail('name') }}/edit?page=preferences">{{ _('Einstellungen') }}</a></div>
       {% else %}
-      <div class="fs-caption ta-r p1 col-dark-ddd">Automatisches Speichern ist <strong>aus</strong>.<br><a href="/user/{{ user.id }}/{{ user.getDetail('name') }}/edit?page=preferences">Einstellungen</a></div>
+      <div class="fs-caption ta-r p1 col-dark-ddd">{{ _('Automatisches Speichern ist <strong>aus</strong>.') }}<br><a href="/user/{{ user.id }}/{{ user.getDetail('name') }}/edit?page=preferences">{{ _('Einstellungen') }}</a></div>
       {% endif %}
       <div class="push-reset"></div>
       <input class="form ta-c" style="font-size: 2.5em; font-weight: bold;" id="title" value="{{ data.getTitle() }}">
@@ -62,7 +62,7 @@
         Respectable.init();
 
        function save() {
-         $(".js--savebtn").addClass("-loading").text("Speichere...");
+         $(".js--savebtn").addClass("-loading").text("{{ _('Speichern ...') }}");
          $.ajax({
            method: "POST",
            url: "/c/{{ course.id }}/edit/unit/{{ data.id }}",
@@ -73,14 +73,14 @@
              "content": Respectable.data
            }),
            success: function( result ) {
-             $(".js--savebtn").removeClass("-loading").text("Gespeichert.");
+             $(".js--savebtn").removeClass("-loading").text("{{ _('Gespeichert.') }}");
              original_data = JSON.parse(JSON.stringify(Respectable.data));
              setTimeout(function() {
-               $(".js--savebtn").text("Speichern");
+               $(".js--savebtn").text("{{ _('Speichern') }}");
              }, 1200);
            },
            error: function() {
-             $(".js--savebtn").removeClass("-loading").text("Fehler beim Speichern");
+             $(".js--savebtn").removeClass("-loading").text("{{ _('Fehler beim Speichern') }}");
            }
          });
        }
@@ -91,7 +91,7 @@
 
       window.onbeforeunload = function() {
         if(JSON.stringify(Respectable.data) != JSON.stringify(original_data))
-          return "Seite wurde nicht gespeichert.";
+          return "{{ _('Seite wurde nicht gespeichert.') }}";
       }
      </script>
    </div>
@@ -99,31 +99,31 @@
 
 <div class="_dialog _dialog-backdrop _dialog-small hide" id="export_dialog">
   <a href='#!' onclick="$('#export_dialog').addClass('hide')" class='_xbtn _dialog-xbtn'>&times</a>
-  <h3>Inhalt der Seite übertragen</h3>
+  <h3>{{ _('Inhalt der Seite übertragen') }}</h3>
   <div class="js--export-dialog-page">
     <div class="_nav _nav-h">
-      <a href="#!" class="-active">Exportieren</a>
-      <a href="#!" data-toggle=".js--export-dialog-page" data-toggle-class="hide">Importieren</a>
+      <a href="#!" class="-active">{{ _('Exportieren') }}</a>
+      <a href="#!" data-toggle=".js--export-dialog-page" data-toggle-class="hide">{{ _('Importieren') }}</a>
     </div>
     <div class="p2">
-      <p>Kopiere den Quelltext dieser Seite und füge ihn auf der Seite ein, zu der du den Inhalt übertragen möchtest.</p>
-      <p class="fs-caption">Tipp: Markiere alles und nutze die Tastenkombination <kbd>Strg</kbd>+<kbd>C</kbd></p>
+      <p>{{ _('Kopiere den Quelltext dieser Seite und füge ihn auf der Seite ein, zu der du den Inhalt übertragen möchtest.') }}</p>
+      <p class="fs-caption">{{ _('Tipp: Markiere alles und nutze die Tastenkombination <kbd>Strg</kbd>+<kbd>C</kbd>') }}</p>
 
       <textarea class="form form-large js--export-dialog-export f-mono" readonly></textarea>
     </div>
   </div>
   <div class="js--export-dialog-page hide">
     <div class="_nav _nav-h">
-      <a href="#!" data-toggle=".js--export-dialog-page" data-toggle-class="hide">Exportieren</a>
-      <a href="#!" class="-active">Importieren</a>
+      <a href="#!" data-toggle=".js--export-dialog-page" data-toggle-class="hide">{{ _('Exportieren') }}</a>
+      <a href="#!" class="-active">{{ _('Importieren') }}</a>
     </div>
     <div class="p2">
-      <p>Füge den Quelltext der Seite, von der du die Inhalte übertragen möchtest, hier ein.</p>
-      <p class="fs-caption">Tipp: Nutze dafür die Tastenkombination <kbd>Strg</kbd>+<kbd>V</kbd></p>
+      <p>{{ _('Füge den Quelltext der Seite, von der du die Inhalte übertragen möchtest, hier ein.') }}</p>
+      <p class="fs-caption">{{ _('Tipp: Nutze dafür die Tastenkombination <kbd>Strg</kbd>+<kbd>V</kbd>') }}</p>
 
       <textarea class="form form-large js--export-dialog-import f-mono"></textarea>
 
-      <button class="_btn _btn--primary" onclick="Respectable.data = JSON.parse($('.js--export-dialog-import').val()); Respectable._update(); $('#export_dialog').addClass('hide')">Importieren</button>
+      <button class="_btn _btn--primary" onclick="Respectable.data = JSON.parse($('.js--export-dialog-import').val()); Respectable._update(); $('#export_dialog').addClass('hide')">{{ _('Importieren') }}</button>
     </div>
   </div>
 </div>

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-10-07 14:53+0200\n"
+"POT-Creation-Date: 2019-10-08 15:28+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -393,7 +393,7 @@ msgstr "twitter"
 #, python-format
 msgid "Texte und Bilder aus Kursen und Foren verfügbar unter %(license_link)s."
 msgstr ""
-"All texts and images from courses and forum articles are availible under "
+"All texts and images from courses and forum articles are available under "
 "%(license_link)s."
 
 #: ../main/templates/layout_new.html:189
@@ -616,7 +616,11 @@ msgid "Öffnen"
 msgstr "Open"
 
 #: ../main/templates/admin/index.html:15
-#: ../main/templates/admin/settings.html:5 ../main/view/admin.py:24
+#: ../main/templates/admin/settings.html:5
+#: ../main/templates/courses/edit/unit-info.html:45
+#: ../main/templates/courses/edit/unit-info.html:47
+#: ../main/templates/courses/edit/unit-quiz.html:46
+#: ../main/templates/courses/edit/unit-quiz.html:48 ../main/view/admin.py:24
 msgid "Einstellungen"
 msgstr "Settings"
 
@@ -645,14 +649,38 @@ msgstr ""
 #: ../main/templates/admin/settings.html:39
 #: ../main/templates/admin/settings.html:45
 #: ../main/templates/courses/edit/reorder.html:10
+#: ../main/templates/courses/edit/unit-extvideo.html:35
+#: ../main/templates/courses/edit/unit-extvideo.html:98
+#: ../main/templates/courses/edit/unit-info.html:37
+#: ../main/templates/courses/edit/unit-info.html:79
+#: ../main/templates/courses/edit/unit-pinboard.html:35
+#: ../main/templates/courses/edit/unit-pinboard.html:69
+#: ../main/templates/courses/edit/unit-quiz.html:38
+#: ../main/templates/courses/edit/unit-quiz.html:81
+#: ../main/templates/courses/edit/unit-survey.html:35
+#: ../main/templates/courses/edit/unit-survey.html:62
+#: ../main/templates/courses/edit/unit-syllabus.html:34
+#: ../main/templates/courses/edit/unit-syllabus.html:67
 msgid "Speichern"
 msgstr "Save"
 
 #: ../main/templates/admin/settings.html:26
+#: ../main/templates/courses/edit/unit-extvideo.html:71
+#: ../main/templates/courses/edit/unit-info.html:65
+#: ../main/templates/courses/edit/unit-pinboard.html:49
+#: ../main/templates/courses/edit/unit-quiz.html:67
+#: ../main/templates/courses/edit/unit-survey.html:49
+#: ../main/templates/courses/edit/unit-syllabus.html:54
 msgid "Speichern ..."
 msgstr "Saving ..."
 
 #: ../main/templates/admin/settings.html:37
+#: ../main/templates/courses/edit/unit-extvideo.html:96
+#: ../main/templates/courses/edit/unit-info.html:76
+#: ../main/templates/courses/edit/unit-pinboard.html:67
+#: ../main/templates/courses/edit/unit-quiz.html:78
+#: ../main/templates/courses/edit/unit-survey.html:60
+#: ../main/templates/courses/edit/unit-syllabus.html:65
 msgid "Gespeichert."
 msgstr "Saved."
 
@@ -774,6 +802,12 @@ msgstr "course id"
 
 #: ../main/templates/courses/_unit-nav.html:3
 #: ../main/templates/courses/edit/index.html:10
+#: ../main/templates/courses/edit/unit-extvideo.html:10
+#: ../main/templates/courses/edit/unit-info.html:10
+#: ../main/templates/courses/edit/unit-pinboard.html:10
+#: ../main/templates/courses/edit/unit-quiz.html:11
+#: ../main/templates/courses/edit/unit-survey.html:10
+#: ../main/templates/courses/edit/unit-syllabus.html:9
 msgid "Menü"
 msgstr "Menu"
 
@@ -794,6 +828,12 @@ msgstr "Cancel"
 #: ../main/templates/courses/edit/index.html:56
 #: ../main/templates/courses/edit/index.html:77
 #: ../main/templates/courses/edit/index.html:205
+#: ../main/templates/courses/edit/unit-extvideo.html:12
+#: ../main/templates/courses/edit/unit-info.html:12
+#: ../main/templates/courses/edit/unit-pinboard.html:12
+#: ../main/templates/courses/edit/unit-quiz.html:13
+#: ../main/templates/courses/edit/unit-survey.html:12
+#: ../main/templates/courses/edit/unit-syllabus.html:11
 #: ../main/templates/courses/index.html:4
 #: ../main/templates/courses/units/syllabus.html:16
 #: ../main/templates/courses/units/syllabus.html:34
@@ -1378,6 +1418,12 @@ msgid "Auswählen"
 msgstr "Choose"
 
 #: ../main/templates/courses/edit/index.html:242
+#: ../main/templates/courses/edit/unit-extvideo.html:102
+#: ../main/templates/courses/edit/unit-info.html:83
+#: ../main/templates/courses/edit/unit-pinboard.html:73
+#: ../main/templates/courses/edit/unit-quiz.html:85
+#: ../main/templates/courses/edit/unit-survey.html:66
+#: ../main/templates/courses/edit/unit-syllabus.html:71
 msgid "Fehler beim Speichern"
 msgstr "Error when saving"
 
@@ -1385,9 +1431,180 @@ msgstr "Error when saving"
 msgid "Kursmodule neu anordnen"
 msgstr "Reorder course modules"
 
-#: ../main/templates/courses/edit/reorder.html:33
-msgid "(ein/ausrücken)"
-msgstr "(toggle indentation)"
+#: ../main/templates/courses/edit/unit-extvideo.html:38
+#: ../main/templates/courses/edit/unit-extvideo.html:40
+#: ../main/templates/courses/edit/unit-info.html:40
+#: ../main/templates/courses/edit/unit-info.html:42
+#: ../main/templates/courses/edit/unit-pinboard.html:38
+#: ../main/templates/courses/edit/unit-pinboard.html:40
+#: ../main/templates/courses/edit/unit-quiz.html:41
+#: ../main/templates/courses/edit/unit-quiz.html:43
+#: ../main/templates/courses/edit/unit-survey.html:38
+#: ../main/templates/courses/edit/unit-survey.html:40
+#: ../main/templates/courses/edit/unit-syllabus.html:37
+#: ../main/templates/courses/edit/unit-syllabus.html:39
+msgid "Verfügbar"
+msgstr "available"
+
+#: ../main/templates/courses/edit/unit-extvideo.html:47
+msgid ""
+"Videos von externen Plattformen (YouTube, Vimeo, ...) sind mit einer "
+"Datenschutzfunktion ausgestattet und werden erst nach Knopfdruck geladen."
+msgstr ""
+"Movies included from external platforms (YouTube, Vimeo, ...) show a "
+"privacy-protection banner that needs to be explicitly dismissed before "
+"loading the movie."
+
+#: ../main/templates/courses/edit/unit-extvideo.html:48
+msgid ""
+"Bitte beachten &ndash; Nur Videos verwenden, wenn die Weitergabe für "
+"kommerzielle Zwecke erlaubt ist."
+msgstr ""
+"Attention &ndash; Only use movies, if their license permits you to use "
+"them for commercial use."
+
+#: ../main/templates/courses/edit/unit-extvideo.html:49
+msgid "Plattform:"
+msgstr "platform"
+
+#: ../main/templates/courses/edit/unit-extvideo.html:51
+msgid "YouTube"
+msgstr "YouTube"
+
+#: ../main/templates/courses/edit/unit-extvideo.html:52
+msgid "Vimeo"
+msgstr "Vimeo"
+
+#: ../main/templates/courses/edit/unit-extvideo.html:53
+msgid "Direktlink"
+msgstr "direct link"
+
+#: ../main/templates/courses/edit/unit-extvideo.html:55
+msgid "Einbettcode:"
+msgstr "video code"
+
+#: ../main/templates/courses/edit/unit-extvideo.html:58
+msgid "Informationen zum Einbettcode"
+msgstr "What is the 'video code'?"
+
+#: ../main/templates/courses/edit/unit-extvideo.html:60
+msgid ""
+"Bei <strong>YouTube</strong> ist der Einbettcode derjenige Teil hinter "
+"dem <code>?v=</code>:"
+msgstr ""
+"For <strong>YouTube</strong> videos, the video code is the URL part after"
+" the <code>?v=</code>:"
+
+#: ../main/templates/courses/edit/unit-extvideo.html:62
+msgid ""
+"Bei <strong>Vimeo</strong> ist der Einbettcode derjenige Teil hinter dem "
+"Domainnamen:"
+msgstr ""
+"For <strong>Vimeo</strong> videos, the video code is the URL part after "
+"the <code>vimeo.com</code> domain."
+
+#: ../main/templates/courses/edit/unit-extvideo.html:64
+msgid "Bei <strong>Direktlinks</strong> ist der Einbettcode der Direktlink"
+msgstr ""
+"When <strong>directly linking</strong> to the video, use the URL of the "
+"video as video code."
+
+#: ../main/templates/courses/edit/unit-info.html:35
+#: ../main/templates/courses/edit/unit-quiz.html:36
+msgid "Inhalt übertragen"
+msgstr "Transfer contents"
+
+#: ../main/templates/courses/edit/unit-info.html:45
+#: ../main/templates/courses/edit/unit-quiz.html:46
+msgid "Automatisches Speichern ist <strong>aktiviert</strong>."
+msgstr "Automatic saving is <strong>enabled</strong>."
+
+#: ../main/templates/courses/edit/unit-info.html:47
+#: ../main/templates/courses/edit/unit-quiz.html:48
+msgid "Automatisches Speichern ist <strong>aus</strong>."
+msgstr "Automatic saving is <strong>disabled</strong>."
+
+#: ../main/templates/courses/edit/unit-info.html:94
+#: ../main/templates/courses/edit/unit-quiz.html:96
+msgid "Seite wurde nicht gespeichert."
+msgstr "Attention. Contents have not been updated. Continue?"
+
+#: ../main/templates/courses/edit/unit-info.html:102
+#: ../main/templates/courses/edit/unit-quiz.html:104
+msgid "Inhalt der Seite übertragen"
+msgstr "Transfer this Module's contents"
+
+#: ../main/templates/courses/edit/unit-info.html:105
+#: ../main/templates/courses/edit/unit-info.html:117
+#: ../main/templates/courses/edit/unit-quiz.html:107
+#: ../main/templates/courses/edit/unit-quiz.html:119
+msgid "Exportieren"
+msgstr "Export"
+
+#: ../main/templates/courses/edit/unit-info.html:106
+#: ../main/templates/courses/edit/unit-info.html:118
+#: ../main/templates/courses/edit/unit-info.html:126
+#: ../main/templates/courses/edit/unit-quiz.html:108
+#: ../main/templates/courses/edit/unit-quiz.html:120
+#: ../main/templates/courses/edit/unit-quiz.html:128
+msgid "Importieren"
+msgstr "Import"
+
+#: ../main/templates/courses/edit/unit-info.html:109
+#: ../main/templates/courses/edit/unit-quiz.html:111
+msgid ""
+"Kopiere den Quelltext dieser Seite und füge ihn auf der Seite ein, zu der"
+" du den Inhalt übertragen möchtest."
+msgstr "Copy the source code of this page and paste it on the target page."
+
+#: ../main/templates/courses/edit/unit-info.html:110
+#: ../main/templates/courses/edit/unit-quiz.html:112
+msgid ""
+"Tipp: Markiere alles und nutze die Tastenkombination "
+"<kbd>Strg</kbd>+<kbd>C</kbd>"
+msgstr "Hint: Copy everything and use the key stroke <kbd>Ctrl</kbd>+<kbd>C</kbd>"
+
+#: ../main/templates/courses/edit/unit-info.html:121
+#: ../main/templates/courses/edit/unit-quiz.html:123
+msgid ""
+"Füge den Quelltext der Seite, von der du die Inhalte übertragen möchtest,"
+" hier ein."
+msgstr "Paste here the source code you want to import."
+
+#: ../main/templates/courses/edit/unit-info.html:122
+#: ../main/templates/courses/edit/unit-quiz.html:124
+msgid "Tipp: Nutze dafür die Tastenkombination <kbd>Strg</kbd>+<kbd>V</kbd>"
+msgstr "Hint: Use the key stroke <kbd>Strg</kbd>+<kbd>V</kbd> for this"
+
+#: ../main/templates/courses/edit/unit-pinboard.html:45
+msgid "ID/Link des Beitrags, der eingebettet werden soll:"
+msgstr "id/link of the post to be included"
+
+#: ../main/templates/courses/edit/unit-pinboard.html:54
+msgid ""
+"Dieser Link ist ungültig. Der Forenbeitrag muss sich im Kursforum für "
+"diesen Kurs befinden."
+msgstr "Invalid link. Chosen forum post must be in course forum for this course."
+
+#: ../main/templates/courses/edit/unit-survey.html:45
+msgid ""
+"Diese Seite enthält eine Umfrage. Umfragen werden über unser "
+"Umfragesystem eingebunden und können dort bearbeitet werden:"
+msgstr ""
+"This module is a survey. They are included via our survey system and can "
+"be edited there:"
+
+#: ../main/templates/courses/edit/unit-survey.html:46
+msgid "Umfrage bearbeiten"
+msgstr "Edit Survey"
+
+#: ../main/templates/courses/edit/unit-syllabus.html:44
+msgid ""
+"Diese Seite zeigt eine Übersicht über untergeordnete Kursmodule an. "
+"(Syllabus) Du kannst einen Text über der Übersicht anzeigen lassen."
+msgstr ""
+"This module is showing a summary of the subordinate modules (syllabus). You "
+"can show a text above the 'summary' heading."
 
 #: ../main/templates/courses/units/extvideo.html:18
 #: ../main/templates/courses/units/info.html:19
@@ -1745,3 +1962,6 @@ msgstr "New unit"
 #: ../main/view/courses.py:533
 msgid "Teilnahmeurkunde"
 msgstr "Confirmation of Participation"
+
+#~ msgid "(ein/ausrücken)"
+#~ msgstr "(toggle indentation)"
