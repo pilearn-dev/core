@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-10-08 15:28+0200\n"
+"POT-Creation-Date: 2019-10-08 22:50+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -734,6 +734,7 @@ msgstr ""
 
 #: ../main/templates/certificates/confirmation_of_participation.html:5
 #: ../main/templates/certificates/confirmation_of_participation.html:59
+#: ../main/templates/courses/result.html:10
 msgid "Teilnahmebestätigung"
 msgstr ""
 
@@ -862,6 +863,38 @@ msgid ""
 "Vielleicht gefallen dir auch weitere <a href=\"%(topic_link)s\">Kurse zum"
 " Thema %(topic_name)s</a> oder <a href=\"%(propose_link)s\">biete selber "
 "einen Kurs an</a>."
+msgstr ""
+
+#: ../main/templates/courses/result.html:8
+msgid "Ergebnisse für diesen Kurs"
+msgstr ""
+
+#: ../main/templates/courses/result.html:12
+#, python-format
+msgid ""
+"Wenn du mindestens 80%% der Kursinhalte besucht hast und mindestens 80%% "
+"der möglichen Punkte bei den Quizzen erzielt hast, erhältst du eine "
+"Teilnahmebestätigung."
+msgstr ""
+
+#: ../main/templates/courses/result.html:13
+msgid "Besuchte Inhalte"
+msgstr ""
+
+#: ../main/templates/courses/result.html:18
+msgid "Ergebnis der Quizze"
+msgstr ""
+
+#: ../main/templates/courses/result.html:26
+msgid "Teilnahmeurkunde erstellen"
+msgstr ""
+
+#: ../main/templates/courses/result.html:30
+msgid "Du willst den Namen ändern, der auf der Urkunde angezeigt wird?"
+msgstr ""
+
+#: ../main/templates/courses/result.html:30
+msgid "Benutzerprofil bearbeiten"
 msgstr ""
 
 #: ../main/templates/courses/admin/identity.html:10

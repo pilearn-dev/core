@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-10-08 15:28+0200\n"
+"POT-Creation-Date: 2019-10-08 22:50+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -772,6 +772,7 @@ msgstr "award"
 
 #: ../main/templates/certificates/confirmation_of_participation.html:5
 #: ../main/templates/certificates/confirmation_of_participation.html:59
+#: ../main/templates/courses/result.html:10
 msgid "Teilnahmebestätigung"
 msgstr "Confirmation of Participation"
 
@@ -908,6 +909,41 @@ msgstr ""
 "Maybe you'll also like our other <a href=\"%(topic_link)s\">courses in "
 "the topic %(topic_name)s</a> or you can <a "
 "href=\"%(propose_link)s\">offer your own course</a>."
+
+#: ../main/templates/courses/result.html:8
+msgid "Ergebnisse für diesen Kurs"
+msgstr "Results for this course"
+
+#: ../main/templates/courses/result.html:12
+#, python-format
+msgid ""
+"Wenn du mindestens 80%% der Kursinhalte besucht hast und mindestens 80%% "
+"der möglichen Punkte bei den Quizzen erzielt hast, erhältst du eine "
+"Teilnahmebestätigung."
+msgstr ""
+"If you have visited at least 80%% of the course contents and reached at "
+"least 80%% of the possible quiz points, you are eligible to obtain a "
+"Confirmation of Participation"
+
+#: ../main/templates/courses/result.html:13
+msgid "Besuchte Inhalte"
+msgstr "Visited modules"
+
+#: ../main/templates/courses/result.html:18
+msgid "Ergebnis der Quizze"
+msgstr "Results of quizzes"
+
+#: ../main/templates/courses/result.html:26
+msgid "Teilnahmeurkunde erstellen"
+msgstr "Create Confirmation of Participation"
+
+#: ../main/templates/courses/result.html:30
+msgid "Du willst den Namen ändern, der auf der Urkunde angezeigt wird?"
+msgstr "You want to change the name shown on the certificate?"
+
+#: ../main/templates/courses/result.html:30
+msgid "Benutzerprofil bearbeiten"
+msgstr "Edit your profile"
 
 #: ../main/templates/courses/admin/identity.html:10
 #: ../main/templates/courses/admin/membership.html:10
@@ -1603,8 +1639,8 @@ msgid ""
 "Diese Seite zeigt eine Übersicht über untergeordnete Kursmodule an. "
 "(Syllabus) Du kannst einen Text über der Übersicht anzeigen lassen."
 msgstr ""
-"This module is showing a summary of the subordinate modules (syllabus). You "
-"can show a text above the 'summary' heading."
+"This module is showing a summary of the subordinate modules (syllabus). "
+"You can show a text above the 'summary' heading."
 
 #: ../main/templates/courses/units/extvideo.html:18
 #: ../main/templates/courses/units/info.html:19
