@@ -1,0 +1,149 @@
+{% set pattern="individual" %}
+{% extends "layout_new.html" %}
+{% block body %}
+
+<!-- Header banner -->
+
+<div class="_banner _banner-with-gradient _banner--primary p16 p1__sm p6__md">
+  <div class="single-fluid">
+    <div class="p16 p0__sm p1__md">
+    <h1 class="fs-display3 mb8 ta-c"><span class="bb3s p2 bb-white bb0s__sm">{{ site_short_name }} {{ _('Teach') }}</span></h1>
+    <p class="p-lead fs-subtitle px32 px1__sm px1__md mb16 ta-c">{{ _('Nutze die Vorteile des Community-Wissens für deinen Unterricht!') }}</p>
+
+    <form action="{{ url_for('teach.try_it') }}" method="post" class="p4 horizontal-list al-c"><input class="form form-inline fs-heading b--primary-dd" name="group_name" placeholder="Name der Gruppe"><button class="_btn _btn--primary _btn-outline _btn-xl _btn-on-dark" type="submit">{{ _('Ausprobieren!') }}</button></form>
+    </div>
+  </div>
+</div>
+
+<!-- How it works? -->
+
+<div class="bg--primary-ll p16 p1__sm p6__md">
+  <div class="single-fluid">
+    <h2 class="ta-c fs-display2"><span class="bb3s p2 bb--primary-ddd bb0s__sm">{{ _('So funktioniert es:') }}</span></h2>
+
+    <div class="grid p8 p0__sm">
+
+        <div class="column3 hide__sm hide__md p3">
+            <svg xmlns="http://www.w3.org/2000/svg" width=750 height=750 viewBox="0 0 100 60">
+                <path d="M 2,2 h96 v30 h-96 z" fill="#f6f6f6" color="currentColor" />
+                <path d="M 8,28 h8 l-4,-6 l-4,6 m4,-6.5 h3 v-6 h-6 v6 h3" fill="white" color="currentColor" />
+                <path d="M 8,52 h8 m-4,-4 v8" fill="transparent" color="currentColor" />
+                <path d="M 22,58 h8 l-4,-6 l-4,6 m4,-6.5 h3 v-6 h-6 v6 h3" fill="white" color="currentColor" />
+                <path d="M 34,58 h8 l-4,-6 l-4,6 m4,-6.5 h3 v-6 h-6 v6 h3" fill="white" color="currentColor" />
+                <path d="M 46,58 h8 l-4,-6 l-4,6 m4,-6.5 h3 v-6 h-6 v6 h3" fill="white" color="currentColor" />
+                <path d="M 58,58 h8 l-4,-6 l-4,6 m4,-6.5 h3 v-6 h-6 v6 h3" fill="white" color="currentColor" />
+                <path d="M 70,58 h8 l-4,-6 l-4,6 m4,-6.5 h3 v-6 h-6 v6 h3" fill="white" color="currentColor" />
+            </svg>
+        </div>
+        <div class="column9 column12__sm p16">
+            <h3 class="fs-heading">{{ _('Lerngruppen erstellen und Mitglieder einladen') }}</h3>
+            <p>{{ _('Erstelle eine Lerngruppe für deinen Kurs mit wenigen Klicken.') }}</p>
+            <p>{{ _('Erlaube es Mitgliedern, über einen Einladungslink oder nach ihrer E-Mail-Adresse beizutreten.') }}</p>
+        </div>
+
+        <div class="column3 hide__sm hide__md p3">
+
+            <svg xmlns="http://www.w3.org/2000/svg" width=750 height=750 viewBox="0 0 100 60">
+                <path d="M 2,2 h96 v30 h-96 z" fill="#f6f6f6" color="currentColor" />
+                <path d="M 8,28 h8 l-4,-6 l-4,6 m4,-6.5 h3 v-6 h-6 v6 h3" fill="white" color="currentColor" />
+                <path d="M 22,28 h8 l-4,-6 l-4,6 m4,-6.5 h3 v-6 h-6 v6 h3" fill="white" color="currentColor" />
+                <path d="M 34,28 h8 l-4,-6 l-4,6 m4,-6.5 h3 v-6 h-6 v6 h3" fill="white" color="currentColor" />
+                <path d="M 46,28 h8 l-4,-6 l-4,6 m4,-6.5 h3 v-6 h-6 v6 h3" fill="white" color="currentColor" />
+                <path d="M 58,28 h8 l-4,-6 l-4,6 m4,-6.5 h3 v-6 h-6 v6 h3" fill="white" color="currentColor" />
+                <path d="M 70,28 h8 l-4,-6 l-4,6 m4,-6.5 h3 v-6 h-6 v6 h3" fill="white" color="currentColor" />
+                <path d="M 8,52 h8 m-4,-4 v8" fill="transparent" color="currentColor" />
+                <path d="M 22,58 h8 v-12 h-8 v12 m2,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4" fill="white" color="currentColor" />
+                <path d="M 34,58 h8 v-12 h-8 v12 m2,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4" fill="white" color="currentColor" />
+                <path d="M 46,58 h8 v-12 h-8 v12 m2,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4" fill="white" color="currentColor" />
+                <path d="M 58,58 h8 v-12 h-8 v12 m2,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4" fill="white" color="currentColor" />
+                <path d="M 70,58 h8 v-12 h-8 v12 m2,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4" fill="white" color="currentColor" />
+            </svg>
+
+        </div>
+        <div class="column9 column12__sm p16">
+            <h3 class="fs-heading">{{ _('Kurse der Gruppe zuweisen') }}</h3>
+            <p>{{ _('Du kannst dann %(site_name)s-Kurse als <em>Verpflichtend</em> oder <em>Zusätzlich</em> der Gruppe zuweisen.', site_name=site_short_name) }}</p>
+            <p>{{ _('Dafür steht jeder Kurs von dieser Webseite zur Verfügung.') }}</p>
+        </div>
+
+        <div class="column3 hide__sm hide__md p3">
+            <svg xmlns="http://www.w3.org/2000/svg" width=750 height=750 viewBox="0 0 100 60">
+                <path d="M 38,10 h8 l-4,-6 l-4,6 m4,-6.5 h3 v-6 h-6 v6 h3" fill="white" color="currentColor" />
+                <path d="M 52,10 h8 l-4,-6 l-4,6 m4,-6.5 h3 v-6 h-6 v6 h3" fill="white" color="currentColor" />
+                <path d="M 66,10 h8 l-4,-6 l-4,6 m4,-6.5 h3 v-6 h-6 v6 h3" fill="white" color="currentColor" />
+                <path d="M 82,10 h8 l-4,-6 l-4,6 m4,-6.5 h3 v-6 h-6 v6 h3" fill="white" color="currentColor" />
+
+                <path d="M 22,26 h8 v-12 h-8 v12 m2,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4" fill="white" color="currentColor" />
+                <path d="M 22,42 h8 v-12 h-8 v12 m2,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4" fill="white" color="currentColor" />
+                <path d="M 22,58 h8 v-12 h-8 v12 m2,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4" fill="white" color="currentColor" />
+
+                <path d="M 38,26 m0,-5 l3,3 l6,-6" fill="transparent" color="currentColor" />
+                <path d="M 38,42 m0,-5 l3,3 l6,-6" fill="transparent" color="currentColor" />
+                <path d="M 38,58 m0,-5 l3,3 l6,-6" fill="transparent" color="currentColor" />
+
+                <path d="M 52,26 m1,-8 l6,6 m-6,0 l6,-6" fill="transparent" color="red" />
+                <path d="M 52,42 m0,-5 l3,3 l6,-6" fill="transparent" color="currentColor" />
+                <path d="M 52,58 m0,-5 l3,3 l6,-6" fill="transparent" color="currentColor" />
+
+                <path d="M 66,26 m0,-5 l3,3 l6,-6" fill="transparent" color="currentColor" />
+                <path d="M 66,42 m0,-5 l3,3 l6,-6" fill="transparent" color="currentColor" />
+                <path d="M 66,58 m1,-8 l6,6 m-6,0 l6,-6" fill="transparent" color="red" />
+
+                <path d="M 82,26 m1,-8 l6,6 m-6,0 l6,-6" fill="transparent" color="red" />
+                <path d="M 82,42 m1,-8 l6,6 m-6,0 l6,-6" fill="transparent" color="red" />
+                <path d="M 82,58 m1,-8 l6,6 m-6,0 l6,-6" fill="transparent" color="red" />
+            </svg>
+        </div>
+        <div class="column9 column12__sm p16">
+            <h3 class="fs-heading">{{ _('Übersicht über die Erledigung der Kurse erhalten') }}</h3>
+            <p>{{ _('Erhalte detaillierte Berichte darüber, wie viele und welche der Kurse die Mitglieder der Lerngruppe erledigt haben.') }}</p>
+            <p>{{ _('Auch die Mitglieder der Lerngruppe können ihren Fortschritt sehen.') }}</p>
+        </div>
+
+        <div class="column3 hide__sm hide__md p3">
+            <svg xmlns="http://www.w3.org/2000/svg" width=750 height=750 viewBox="0 0 100 60">
+
+                <path d="M 10,20 h30 M 10,25 h15" fill="transparent" color="currentColor" stroke-width=1.5 />
+
+                <path d="M 15,50 h8 l-4,-6 l-4,6 m4,-6.5 h3 v-6 h-6 v6 h3" fill="white" color="currentColor" />
+                <path d="M 30,50 h8 v-12 h-8 v12 m2,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4" fill="white" color="currentColor" />
+
+                <path d="M 15,75 h8 l-4,-6 l-4,6 m4,-6.5 h3 v-6 h-6 v6 h3" fill="white" color="currentColor" />
+                <path d="M 30,75 h8 v-12 h-8 v12 m2,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4" fill="white" color="currentColor" />
+
+
+                <path d="M 60,75 v-45 h25 v45 m-25,-45 l10,-10 h25 v45 m0,-45 l-10,10 m-15,-5 h15" fill="transparent" color="currentColor" />
+                <path d="M 73,25 h8 v-12 h-8 v12 m2,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4 m-4,-2 h4" fill="white" color="currentColor" />
+                <path d="M 67.5,55 m0,-5 l3,3 l6,-6" fill="transparent" color="currentColor" />
+                <path d="M 68.5,70 m1,-8 l6,6 m-6,0 l6,-6" fill="transparent" color="red" />
+            </svg>
+        </div>
+        <div class="column9 column12__sm p16">
+            <h3 class="fs-heading">{{ _('Lösungen für Aufgaben einfordern und bewerten') }}</h3>
+            <p>{{ _('Du kannst auch den Mitgliedern Aufgaben stellen, die diese entweder selbstständig als erledigt markieren können oder für die sie eine von dir zu bewertende schriftliche Lösung abgeben müssen.') }}</p>
+        </div>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- Advantages -->
+
+<div class="bg-white p16 p1__sm p6__md">
+  <div class="single-fluid">
+    <h2 class="ta-c fs-display2"><span class="bb3s p2 bb--primary-ddd bb0s__sm">{{ _('Vorteile') }}</span></h2>
+
+    <div class="p8 p0__sm fs-base3">
+
+       <div class="ta-c fs-display1 my12 col-dark-dd">{{ _('Nutze das Wissen der Community für deinen Unterricht!') }}</div>
+       <div class="ta-c fs-display1 my12 col-dark-dd">{{ _('Freie Lizenz ermöglicht urheberrechtskonformen Unterricht!') }}</div>
+       <div class="ta-c fs-display1 my12 col-dark-dd">{{ _('Sieh, ob deine Lernenden tatsächlich die Kurse besuchen!') }}</div>
+       <div class="ta-c fs-display1 my12 col-dark-dd">{{ _('Sammle Lösungen digital ein und bewerte sie.') }}</div>
+
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

@@ -23,3 +23,4 @@ INSERT INTO settings VALUES
 ('Features', 'enable-mathjax', '1', 'Ob MathJax (mathematische Notation) geladen werden soll'),
 ('Features', 'enable-mathjax-tokens-block', '::( )::', 'Die MathJax-Begrenzungen (Blöcke)'),
 ('Features', 'enable-mathjax-tokens-inline', ':( ):', 'Die MathJax-Begrenzungen (Inline)'),
+('Features', 'enable-teaching-teams', 'no', 'Ob Teach (Team-Nutzung) erlaubt sein soll.')

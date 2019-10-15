@@ -8,7 +8,7 @@ from model.settings import Settings as S
 
 from controller import md, num as cnum
 from model import privileges as mprivileges, tags as mtags, user as muser, forum as mforum, proposal as mproposal, courses as mcourses, reviews as mreviews, post_templates as mpost_templates
-from view import auth as vauth, user as vuser, review as vreview, help as vhelp, courses as vcourses, forum as vforum, jsonapi as vjsonapi, survey as vsurvey, proposal as vproposal, tools as vtools, dialog as vdialog, modmsg as vmodmsg, helpdesk as vhelpdesk, upload, topbar as vtopbar, badges as vbadges, announcements as vannouncements, about as vabout, pull_requests as vpull_requests, admin as vadmin
+from view import auth as vauth, user as vuser, review as vreview, help as vhelp, courses as vcourses, forum as vforum, jsonapi as vjsonapi, survey as vsurvey, proposal as vproposal, tools as vtools, dialog as vdialog, modmsg as vmodmsg, helpdesk as vhelpdesk, upload, topbar as vtopbar, badges as vbadges, announcements as vannouncements, about as vabout, pull_requests as vpull_requests, admin as vadmin, teach as vteach
 
 from sha1 import md5
 
@@ -212,6 +212,10 @@ vabout.apply(app)
 
 app.register_blueprint(vtopbar.topbar, url_prefix='/topbar')
 app.register_blueprint(vproposal.proposal, url_prefix='/course/proposal')
+
+# Teach should only be loaded, when activated:
+if S.get("enable-teaching-teams") == "yes":
+    app.register_blueprint(vteach.teach, url_prefix='/teach')
 
 @app.route("/404")
 @app.errorhandler(404)

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-10-08 22:50+0200\n"
+"POT-Creation-Date: 2019-10-15 17:53+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -1670,6 +1670,96 @@ msgid ""
 "enthalten."
 msgstr ""
 
+#: ../main/templates/teach/index.html:10
+msgid "Teach"
+msgstr ""
+
+#: ../main/templates/teach/index.html:11
+msgid "Nutze die Vorteile des Community-Wissens für deinen Unterricht!"
+msgstr ""
+
+#: ../main/templates/teach/index.html:13
+msgid "Ausprobieren!"
+msgstr ""
+
+#: ../main/templates/teach/index.html:22
+msgid "So funktioniert es:"
+msgstr ""
+
+#: ../main/templates/teach/index.html:39
+msgid "Lerngruppen erstellen und Mitglieder einladen"
+msgstr ""
+
+#: ../main/templates/teach/index.html:40
+msgid "Erstelle eine Lerngruppe für deinen Kurs mit wenigen Klicken."
+msgstr ""
+
+#: ../main/templates/teach/index.html:41
+msgid ""
+"Erlaube es Mitgliedern, über einen Einladungslink oder nach ihrer E-Mail-"
+"Adresse beizutreten."
+msgstr ""
+
+#: ../main/templates/teach/index.html:64
+msgid "Kurse der Gruppe zuweisen"
+msgstr ""
+
+#: ../main/templates/teach/index.html:65
+#, python-format
+msgid ""
+"Du kannst dann %(site_name)s-Kurse als <em>Verpflichtend</em> oder "
+"<em>Zusätzlich</em> der Gruppe zuweisen."
+msgstr ""
+
+#: ../main/templates/teach/index.html:66
+msgid "Dafür steht jeder Kurs von dieser Webseite zur Verfügung."
+msgstr ""
+
+#: ../main/templates/teach/index.html:98
+msgid "Übersicht über die Erledigung der Kurse erhalten"
+msgstr ""
+
+#: ../main/templates/teach/index.html:99
+msgid ""
+"Erhalte detaillierte Berichte darüber, wie viele und welche der Kurse die"
+" Mitglieder der Lerngruppe erledigt haben."
+msgstr ""
+
+#: ../main/templates/teach/index.html:100
+msgid "Auch die Mitglieder der Lerngruppe können ihren Fortschritt sehen."
+msgstr ""
+
+#: ../main/templates/teach/index.html:122
+msgid "Lösungen für Aufgaben einfordern und bewerten"
+msgstr ""
+
+#: ../main/templates/teach/index.html:123
+msgid ""
+"Du kannst auch den Mitgliedern Aufgaben stellen, die diese entweder "
+"selbstständig als erledigt markieren können oder für die sie eine von dir"
+" zu bewertende schriftliche Lösung abgeben müssen."
+msgstr ""
+
+#: ../main/templates/teach/index.html:135
+msgid "Vorteile"
+msgstr ""
+
+#: ../main/templates/teach/index.html:139
+msgid "Nutze das Wissen der Community für deinen Unterricht!"
+msgstr ""
+
+#: ../main/templates/teach/index.html:140
+msgid "Freie Lizenz ermöglicht urheberrechtskonformen Unterricht!"
+msgstr ""
+
+#: ../main/templates/teach/index.html:141
+msgid "Sieh, ob deine Lernenden tatsächlich die Kurse besuchen!"
+msgstr ""
+
+#: ../main/templates/teach/index.html:142
+msgid "Sammle Lösungen digital ein und bewerte sie."
+msgstr ""
+
 #: ../main/templates/tour/pi-learn.html:2
 #, python-format
 msgid ""
@@ -1846,6 +1936,10 @@ msgstr ""
 
 #: ../main/view/courses.py:533
 msgid "Teilnahmeurkunde"
+msgstr ""
+
+#: ../main/view/teach.py:10
+msgid "Über Teach"
 msgstr ""
 
 #~ msgid "Willkommen bei %(site_name)s!"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-10-08 22:50+0200\n"
+"POT-Creation-Date: 2019-10-15 17:53+0200\n"
 "PO-Revision-Date: 2019-09-27 17:26+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -1787,6 +1787,105 @@ msgstr ""
 "This module is in the lower hierarchy and cannot contain any course "
 "modules."
 
+#: ../main/templates/teach/index.html:10
+msgid "Teach"
+msgstr "Teach"
+
+#: ../main/templates/teach/index.html:11
+msgid "Nutze die Vorteile des Community-Wissens für deinen Unterricht!"
+msgstr "Level up your lessons by using the community knowledge!"
+
+#: ../main/templates/teach/index.html:13
+msgid "Ausprobieren!"
+msgstr "Try it!"
+
+#: ../main/templates/teach/index.html:22
+msgid "So funktioniert es:"
+msgstr "How it works:"
+
+#: ../main/templates/teach/index.html:39
+msgid "Lerngruppen erstellen und Mitglieder einladen"
+msgstr "Create learnrooms and invite members"
+
+#: ../main/templates/teach/index.html:40
+msgid "Erstelle eine Lerngruppe für deinen Kurs mit wenigen Klicken."
+msgstr "Create a learnroom for your group in just a few steps."
+
+#: ../main/templates/teach/index.html:41
+msgid ""
+"Erlaube es Mitgliedern, über einen Einladungslink oder nach ihrer E-Mail-"
+"Adresse beizutreten."
+msgstr ""
+"Allow the groups' members to join via an invitation link or their e-mail "
+"address."
+
+#: ../main/templates/teach/index.html:64
+msgid "Kurse der Gruppe zuweisen"
+msgstr "Assign courses to the learnroom"
+
+#: ../main/templates/teach/index.html:65
+#, python-format
+msgid ""
+"Du kannst dann %(site_name)s-Kurse als <em>Verpflichtend</em> oder "
+"<em>Zusätzlich</em> der Gruppe zuweisen."
+msgstr ""
+"You can then assign %(site_name)s-courses to the group as either "
+"<em>mandatory</em> or <em>additonal</em>."
+
+#: ../main/templates/teach/index.html:66
+msgid "Dafür steht jeder Kurs von dieser Webseite zur Verfügung."
+msgstr "Every course of this website can be chosen for your groop"
+
+#: ../main/templates/teach/index.html:98
+msgid "Übersicht über die Erledigung der Kurse erhalten"
+msgstr "See how much your students completed"
+
+#: ../main/templates/teach/index.html:99
+msgid ""
+"Erhalte detaillierte Berichte darüber, wie viele und welche der Kurse die"
+" Mitglieder der Lerngruppe erledigt haben."
+msgstr ""
+"As a group owner you can see detailed reports explaining how many and which "
+"of the courses have been completed by individual members of the group."
+
+#: ../main/templates/teach/index.html:100
+msgid "Auch die Mitglieder der Lerngruppe können ihren Fortschritt sehen."
+msgstr "Not only you, but also the students themselves can see their progress."
+
+#: ../main/templates/teach/index.html:122
+msgid "Lösungen für Aufgaben einfordern und bewerten"
+msgstr "Demand and score task solutions"
+
+#: ../main/templates/teach/index.html:123
+msgid ""
+"Du kannst auch den Mitgliedern Aufgaben stellen, die diese entweder "
+"selbstständig als erledigt markieren können oder für die sie eine von dir"
+" zu bewertende schriftliche Lösung abgeben müssen."
+msgstr ""
+"You can also assign tasks to the group members that either can be marked as "
+"completed by the students themselves or for which they have to submit a "
+"written solution that will be graded by you."
+
+#: ../main/templates/teach/index.html:135
+msgid "Vorteile"
+msgstr "Advantages"
+
+#: ../main/templates/teach/index.html:139
+msgid "Nutze das Wissen der Community für deinen Unterricht!"
+msgstr "Use the community-knowledge for your class!"
+
+#: ../main/templates/teach/index.html:140
+msgid "Freie Lizenz ermöglicht urheberrechtskonformen Unterricht!"
+msgstr "Free license prevents copyright-problems in class!"
+
+#: ../main/templates/teach/index.html:141
+msgid "Sieh, ob deine Lernenden tatsächlich die Kurse besuchen!"
+msgstr "Verify, whether your students really do their tasks!"
+
+#: ../main/templates/teach/index.html:142
+msgid "Sammle Lösungen digital ein und bewerte sie."
+msgstr "Collect and grade solutions to assignments digitally."
+
 #: ../main/templates/tour/pi-learn.html:2
 #, python-format
 msgid ""
@@ -1998,6 +2097,10 @@ msgstr "New unit"
 #: ../main/view/courses.py:533
 msgid "Teilnahmeurkunde"
 msgstr "Confirmation of Participation"
+
+#: ../main/view/teach.py:10
+msgid "Über Teach"
+msgstr "About teach"
 
 #~ msgid "(ein/ausrücken)"
 #~ msgstr "(toggle indentation)"
