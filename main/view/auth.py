@@ -28,6 +28,9 @@ def register():
     if request.method == 'POST':
         if request.form['login_provider'] == "local_account":
             if re.match("[a-zA-Z0-9.+_-]+\@[a-zA-Z0-9.+_-]+\.[a-zA-Z]{2,10}", request.form['email']):
+                for banned_email_domain in ["@yeah.net", "@163.com"]:
+                    if request.form["email"].endswith(banned_email_domain):
+                        abort(500)
                 llin = muser.User.login(request.form['email'], request.form['password'])
                 if llin == -4:
                     data = muser.User.reset_deletion(request.form['email'], request.form['password'])
