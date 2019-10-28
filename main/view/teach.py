@@ -67,6 +67,9 @@ def guided_creation():
 
             db.session.add(tg)
             db.session.commit()
+
+            del session["teach-creation-step"]
+
             return redirect(url_for("teach.creation_complete", team=tg.token))
         else:
             return render_template("teach/create.html", title=_(u"Neue Lerngruppe erstellen"), thispage="teach", step=3)
