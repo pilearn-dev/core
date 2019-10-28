@@ -14,8 +14,44 @@
       <div class="push-reset"></div>
   </div>
   <div class="p8">
-    <h1>Teach Mitglieder</h1>
+    <h1 class="h-underlined">Mitglieder</h1>
+
+    <table class="meta-table">
+      <thead>
+        <tr>
+          <th>Mitglied</th>
+          <th>aktiv?</th>
+          <th>Admin?</th>
+          <th>Aktionen</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+      {% for member in members %}
+        <tr class="{{ '-inactive' if not member.active }}">
+          <td>{{ member.shown_name }}</td>
+          <td>{{ _("ja") if member.active else _("nein") }}</td>
+          <td>{{ _("ja") if member.is_admin else _("nein") }}</td>
+          <td class="{{ '-active' if not member.active }}">
+            <div class="_btnlist">
+              <button class="_btn _btn-xs _btn--primary _btn-outline js--role-change-btn" data-member-id="{{ member.user_id }}">Rolle ändern</button>
+              {% if not member.active %}
+              <button class="_btn _btn-xs _btn-danger _btn-outline js--remove-btn" data-member-id="{{ member.user_id }}">Entfernen</button>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+
+      </tbody>
+
+    </table>
   </div>
 </div>
+
+
+<div id="team-data" class="hide" data-id="{{ tg.id }}" data-token="{{ tg.token }}"></div>
+<script src="/static/new_js/teach.js" charset="utf-8"></script>
 
 {% endblock %}

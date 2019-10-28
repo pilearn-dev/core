@@ -3,7 +3,8 @@ from flask import Blueprint, request, session, redirect, url_for, abort, render_
 
 from flask_babel import _
 
-from model.teach import TeachGroup
+from model.teach import TeachGroup, TeachMember
+from model import user as muser
 from main.__init__ import db
 
 import time, random
@@ -90,12 +91,20 @@ def dashboard(team):
 @teach.route("/<team>/assignments")
 def assignments(team):
     tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
+    # Access control
+    TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).first_or_404()
+
     return render_template("teach/team/assignments.html", title=tg.name, thispage="teach", tg=tg)
 
 @teach.route("/<team>/members")
 def members(team):
     tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
-    return render_template("teach/team/members.html", title=tg.name, thispage="teach", tg=tg)
+    # Access control
+    TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).first_or_404()
+
+    members = TeachMember.query.filter(TeachMember.group_id == tg.id).all()
+
+    return render_template("teach/team/members.html", title=tg.name, thispage="teach", tg=tg, members=members)
 
 @teach.route("/<team>/admin")
 def admin(team):

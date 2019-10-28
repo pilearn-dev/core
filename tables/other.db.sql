@@ -37,4 +37,12 @@ CREATE TABLE teach_groups (
   org_email VARCHAR(150),
   active TINYINT,
   is_demo TINYINT
+);
+
+CREATE TABLE teach_members (
+  user_id INT,
+  group_id INT,
+  shown_name VARCHAR(150),
+  active TINYINT,
+  is_admin TINYINT
 )
