@@ -10,7 +10,7 @@
     <h1 class="fs-display3 mb8 ta-c"><span class="bb3s p2 bb-white bb0s__sm">{{ site_short_name }} {{ _('Teach') }}</span></h1>
     <p class="p-lead fs-subtitle px32 px1__sm px1__md mb16 ta-c">{{ _('Nutze die Vorteile des Community-Wissens für deinen Unterricht!') }}</p>
 
-    <form action="{{ url_for('teach.try_it') }}" method="post" class="p4 horizontal-list al-c"><input class="form form-inline fs-heading b--primary-dd" name="group_name" placeholder="Name der Gruppe"><button class="_btn _btn--primary _btn-outline _btn-xl _btn-on-dark" type="submit">{{ _('Ausprobieren!') }}</button></form>
+    <form action="/teach/try" method="post" class="p4 horizontal-list al-c"><input class="form form-inline fs-heading b--primary-dd" name="group_name" placeholder="Name der Gruppe"><button class="_btn _btn--primary _btn-outline _btn-xl _btn-on-dark" type="submit">{{ _('Ausprobieren!') }}</button></form>
     </div>
   </div>
 </div>

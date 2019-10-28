@@ -1,0 +1,104 @@
+{% set pattern="headless" %}
+{% extends "layout_new.html" %}
+{% block body %}
+
+<!-- Header banner -->
+
+<div class="bg--primary-dddd p2 col-white">
+  <div class="horizontal-list">
+    <a href="/teach" class="_btn _btn-on-dark">{{ _('Abbrechen') }}</a>
+    <a href="?start-from-beginning=1" class="_btn _btn-on-dark">{{ _('Zum Anfang') }}</a>
+    <h1 class="fs-base3 m0 ml2 p2 f-bold">{{ site_name }}</h1>
+  </div>
+</div>
+
+<div class="_banner _banner-with-gradient _banner--primary p16 p1__sm p6__md" style="min-height:100vh;">
+  <div class="single-fluid-tiny">
+    <div class="_progress-bar my0 _progress-bar--primary _progress-bar-sm bg-white b-dark-ll bb0s b-r0">
+      <div class="_progress-bar-slot b-r0 bg--primary-dddd" style="width: {{ 100*(step-1)/3 }}%"></div>
+    </div>
+    <div class="container bt0s mt0 col-black p8">
+
+      <h1 class="my4">Neue Lerngruppe erstellen</h1>
+
+      {% if step == 1 %}
+
+      <form action="/teach/create" method="post">
+        <div class="mb4">
+          <label class="form" for="name">{{ _('Name der Gruppe ') }}</label>
+          <div class="fs-caption">{{ _('Wähle einen Namen für diese Gruppe, unter dem die Mitglieder sie später finden werden.') }}</div>
+          <input class="form" id="name" name="group_name" placeholder="Name der Gruppe">
+        </div>
+        <button class="_btn _btn--primary" type="submit">{{ _('Weiter') }}</button>
+      </form>
+
+      {% elif step == 2 %}
+
+      <form action="/teach/create" method="post">
+
+        <div class="mb4">
+          <label class="form" for="org_name">{{ _('Name der Organisation') }}</label>
+          <div class="fs-caption">{{ _('Welche Organisation (auch Schule, Uni, ...) will hier Teach verwenden?') }}</div>
+          <input class="form" id="org_name" name="org_name" placeholder="Name der Organisation">
+        </div>
+
+        <div class="mb4">
+          <label class="form" for="org_rep_name">{{ _('Name der verantwortlichen Person') }}</label>
+          <div class="fs-caption">{{ _('Welche Person der obigen Organisation ist für diese Lerngruppe verantwortlich? Dies bist wahrscheinlich du.') }}</div>
+          <input class="form" id="org_rep_name" name="org_rep_name" placeholder="Name der verantwortlichen Person">
+        </div>
+
+        <div class="mb4">
+          <label class="form" for="org_email">{{ _('Kontakt-Email der Organisation') }}</label>
+          <div class="fs-caption">{{ _('Eine E-Mail, an die wir wichtige und auch teilweise kritische Nachrichten zu dieser Lerngruppe senden können.') }}</div>
+          <input class="form" id="org_email" name="org_email" placeholder="Email der Organisation/verantwortlichen Person" type="email">
+        </div>
+
+        <button class="_btn _btn--primary" type="submit">{{ _('Weiter') }}</button>
+      </form>
+
+      {% elif step == 3 %}
+
+      <p class="p-lead">{{ _('Bitte überprüfe deine Daten!') }}</p>
+
+      <table class="meta-table">
+        <tr>
+          <th>{{ _('Feld') }}</th>
+          <th>{{ _('Wert') }}</th>
+        </tr>
+        <tr>
+          <td><strong>{{ _('Name der Gruppe') }}</strong></td>
+          <td>{{ session.get("teach-creation--name") }}</td>
+        </tr>
+        <tr>
+          <td><strong>{{ _('Name der Organisation') }}</strong></td>
+          <td>{{ session.get("teach-creation--org_name") }}</td>
+        </tr>
+        <tr>
+          <td><strong>{{ _('Name der verantwortlichen Person') }}</strong></td>
+          <td>{{ session.get("teach-creation--org_rep_name") }}</td>
+        </tr>
+        <tr>
+          <td><strong>{{ _('Kontakt-Email der Organisation') }}</strong></td>
+          <td>{{ session.get("teach-creation--org_email") }}</td>
+        </tr>
+      </table>
+
+      <div class="my3">
+      {% if not user.isLoggedIn() %}
+      <p>Du musst ein Konto erstellen, bevor wir fortfahren können.</p>
+      <a href="/auth/login?continue=/teach/try" class="_btn _btn--primary _btn-lg" type="submit">{{ _('Anmelden und weiter') }}</a>
+      {% else %}
+      <form action="" method="post">
+      <button class="_btn _btn--primary" type="submit">{{ _('Weiter') }}</button>
+      </form>
+      {% endif %}
+      </div>
+
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -57,6 +57,9 @@
   {% endif %}
 </head>
 <body>
+
+{% if not pattern == "headless" %}
+
   <header class="_header _header-sm _header-bordered {{ 'p-st' if user.getPref('pinnedNav', False) == '1' }}">
     <div class="single-fluid d-f _header-container">
       <nav class="_header-items hide__lg hide__md">
@@ -152,13 +155,16 @@
         contentType: 'application/json; charset=utf-8',success:function(){K.parentNode.parentNode.parentNode.style.display='none';}});" class="_btn _btn-dark _btn-on-light">&times;</button></div></div>
   </div>
   {% endfor %}
-  {% if pattern=="individual" %}
+
+{% endif %}{# /headless #}
+  {% if pattern == "individual" or pattern == "headless" %}
     <main>
   {% else %}
     <main class="container single-fluid">
   {% endif %}
       {% block body %}{% endblock %}
     </main>
+{% if not pattern == "headless" %}
     <footer class="bg--primary-lll col-black anchor-dark mt3 mt1__sm">
     <div class="single-fluid p4">
       <div class="grid">
@@ -206,6 +212,9 @@
     <script>
       PiJS.topbar.init();
     </script>
+
+    {% endif %}{# /headless #}
+
     {% if user.isMod() %}
     <script src="/static/new_js/moderator.js" charset="utf-8"></script>
     {% endif %}
