@@ -1,11 +1,15 @@
 # coding: utf-8
-from flask import request, session, redirect, url_for, abort, render_template, jsonify
+from flask import Blueprint, request, session, redirect, url_for, abort, render_template, jsonify
 from model import user as muser, forum as mforum, courses as mcourses
 from controller import num as cnum, times as ctimes
 
 import json, time, datetime
 
-def announcements_list(forum_id):
+announcements = Blueprint('announcements', __name__)
+
+@announcements.before_request
+def announcements_precondition():
+    forum_id = request.view_args["forum_id"]
     cuser = muser.getCurrentUser()
     if not mforum.Forum.exists(forum_id):
         abort(404)
@@ -18,9 +22,14 @@ def announcements_list(forum_id):
         c = mcourses.Courses(f.id)
         if not (c.getCourseRole(cuser) or cuser.isMod()):
             abort(403)
+
+@announcements.route("/")
+def index(forum_id):
+    f = mforum.Forum(forum_id)
     return render_template("announcements/list.html", title=u"Ankündigungen", forum=f, announcements=mforum.ForumAnnouncement.byForum(f.id, True))
 
-def announcements_add(forum_id):
+@announcements.route("/add", methods=["GET", "POST"])
+def add(forum_id):
     cuser = muser.getCurrentUser()
     if not mforum.Forum.exists(forum_id):
         abort(404)
@@ -49,10 +58,11 @@ def announcements_add(forum_id):
             is_featured_banner = request.form.has_key("is_featured_banner")
             if is_featured_banner:
                 announcement.setDetail("is_featured_banner", True)
-        return redirect(url_for("announcements_list", forum_id=f.id))
+        return redirect(url_for("announcements.index", forum_id=f.id))
     else:
         return render_template("announcements/add.html", title=u"Ankündigungen", forum=f)
 
+@announcements.route("/edit/<int:announcement_id>", methods=["GET", "POST"])
 def announcements_edit(forum_id, announcement_id):
     cuser = muser.getCurrentUser()
     if not mforum.Forum.exists(forum_id):
@@ -99,11 +109,6 @@ def announcements_edit(forum_id, announcement_id):
             else:
                 an.setDetail("is_featured_banner", False)
 
-        return redirect(url_for("announcements_list", forum_id=f.id))
+        return redirect(url_for("announcements.index", forum_id=f.id))
     else:
         return render_template("announcements/edit.html", title=u"Ankündigungen", forum=f, a=an)
-
-def apply(app):
-    app.route('/announcements/<int:forum_id>')(announcements_list)
-    app.route('/announcements/<int:forum_id>/add', methods=["GET", "POST"])(announcements_add)
-    app.route('/announcements/<int:forum_id>/edit/<int:announcement_id>', methods=["GET", "POST"])(announcements_edit)

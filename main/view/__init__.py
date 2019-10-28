@@ -2,6 +2,7 @@
 
 from about import about
 from admin import admin
+from announcements import announcements
 from badges import badges
 from proposal import proposal
 from teach import teach
