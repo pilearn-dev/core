@@ -1,0 +1,21 @@
+{% set pattern="individual" %}
+{% extends "layout_new.html" %}
+{% block body %}
+
+<div class="container single-fluid p0">
+  <div class="_banner _banner--primary _banner-with-gradien p8 p5__sm">
+      <div class="fs-display1 push-left">{{ tg.name }}</div>
+      <div class="_btnlist _btnlist-close push-right">
+        <a class="_btn _btn-on-dar _btn-outline _btn--primary" href="{{ url_for('teach.dashboard', team=tg.token) }}">Dashboard</a>
+        <a class="_btn _btn-on-dar _btn-outline _btn--primary" href="{{ url_for('teach.assignments', team=tg.token) }}">Aufgaben</a>
+        <a class="_btn _btn-on-dar _btn-outline _btn--primary -active" href="{{ url_for('teach.members', team=tg.token) }}">Mitglieder</a>
+        <a class="_btn _btn-on-dar _btn-outline _btn--primary" href="{{ url_for('teach.admin', team=tg.token) }}">Einstellungen</a>
+      </div>
+      <div class="push-reset"></div>
+  </div>
+  <div class="p8">
+    <h1>Teach Mitglieder</h1>
+  </div>
+</div>
+
+{% endblock %}

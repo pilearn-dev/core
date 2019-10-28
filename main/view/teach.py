@@ -61,7 +61,7 @@ def guided_creation():
                 org_name = session["teach-creation--org_name"],
                 org_rep_name = session["teach-creation--org_rep_name"],
                 org_email = session["teach-creation--org_email"],
-                active = False,
+                active = True,
                 is_demo = True
             )
 
@@ -76,10 +76,25 @@ def guided_creation():
 
 @teach.route("/welcome/<team>")
 def creation_complete(team):
-    tg = TeachGroup.query.filter(TeachGroup.token == team).first_or_404()
+    tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
     return render_template("teach/welcome.html", title=_(u"Neue Lerngruppe erstellt"), thispage="teach", tg=tg)
 
 @teach.route("/<team>/dashboard")
 def dashboard(team):
-    tg = TeachGroup.query.filter(TeachGroup.token == team).first_or_404()
+    tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
     return render_template("teach/team/dashboard.html", title=tg.name, thispage="teach", tg=tg)
+
+@teach.route("/<team>/assignments")
+def assignments(team):
+    tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
+    return render_template("teach/team/assignments.html", title=tg.name, thispage="teach", tg=tg)
+
+@teach.route("/<team>/members")
+def members(team):
+    tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
+    return render_template("teach/team/members.html", title=tg.name, thispage="teach", tg=tg)
+
+@teach.route("/<team>/admin")
+def admin(team):
+    tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
+    return render_template("teach/team/admin.html", title=tg.name, thispage="teach", tg=tg)
