@@ -1,0 +1,11 @@
+Flask
+Flask-Babel
+Flask-Oauthlib
+Flask-Markdown
+
+Flask-Migrate
+Flask-SQLAlchemy
+
+Pillow
+pdfkit
+sentry-sdk
