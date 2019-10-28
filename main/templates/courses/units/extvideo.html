@@ -37,7 +37,7 @@
      {% endif %}
      <div class="_alert _alert-warning">
        <p><strong>{{ _('Disclaimer:') }}</strong>
-       {{ _('Dieses Video ist eventuell urheberrechtlich geschützt. &pi;-Learn übernimmt keine Verantwortung für unangemessene Inhalte. Melden Sie unangebrachte Inhalte oder Urheberrechtsverstöße im <a href="%(helpdesk_link)s">Helpdesk</a> und wir werden uns darum kümmern.', helpdesk_link='/helpdesk') }}</p>
+       {{ _('Dieses Video ist eventuell urheberrechtlich geschützt. &pi;-Learn übernimmt keine Verantwortung für unangemessene Inhalte. Melden Sie unangebrachte Inhalte oder Urheberrechtsverstöße im <a href="%(helpdesk_link)s">Helpdesk</a> und wir werden uns darum kümmern.', helpdesk_link=url_for('helpdesk.index')) }}</p>
      </div>
    </div>
  </div>

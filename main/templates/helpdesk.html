@@ -3,34 +3,102 @@
 {% if not user.isLoggedIn() %}
 <p>Du musst dich anmelden, um das Helpdesk nutzen zu können.</p>
 {% else %}
+<div class="p5">
 <h1>Helpdesk</h1>
 {% if not submit %}
 <p class="p-lead">Du wurdest zum Helpdesk verwiesen, hast ein Problem mit deinem Konto oder hast eine Sicherheitslücke entdeckt? Hier bist du richtig:</p>
-<form action="/helpdesk/submit" method="post">
-<label for="request-type" class="form">Typ der Anfrage</label>
-<select id="request-type" name="request-type" class="form" required>
-  <option disabled selected>Bitte wähle einen Typ für diese Anfrage</option>
-  <option value="Konten-Zusammenführung">Ich möchte zwei Konten zusammenführen.</option>
-  <option value="Sicherheitslücke_">Ich habe eine Sicherheitslücke entdeckt.</option>
-  {% if user.isMod() %}
-  <option value="Moderation">Moderations-Problem mit einem Benutzer(-konto)</option>
-  {% endif %}
-  <option value="Rechtsverstoß">Ich habe einen Rechtsverstoß gesehen.</option>
-  <option value="Urheberrechtsverstoß Dritter">Inhalte von &pi;-Learn werden ohne Genehmigung weiterverbreitet.</option>
-  <option value="Urheberrechtsverstoß auf &pi;-Learn">Ich möchte eine Urheberrechtsverletzung melden.</option>
-  <option value="Anderes">Anderes</option>
-</select>
+<form action="{{ url_for('helpdesk.submit') }}" method="post">
+  <div class="grid p1">
+    <div class="column6 column12__sm p2">
+      <h3 class="h-underlined">Art der Anfrage</h3>
 
-<label for="email" class="form">Deine E-Mail-Adresse</label>
-<input type="email" id="email" name="email" readonly value="{{ user.getDetail('email') }}" class="form">
+      <div class="_toollist">
 
-<label for="description" class="form">Füge bitte ergänzende Informationen hinzu, die uns helfen, dein Problem schneller zu lösen:</label>
-<textarea id="description" name="description" class="form">
-</textarea>
-<button class="_btn _btn--primary" type="submit">Absenden</button>
+        <label class="_toollist-item" for="request_type-merge">
+          <input type="radio" class="form-radio" id="request_type-merge" name="request-type" value="Konten-Zusammenführung">
+          <div class="_toollist-data">
+            <h4>Konten-Zusammenführung</h4>
+            <p class="fs-base1">Ich möchte zwei Benutzerkonten zusammenführen.</p>
+          </div>
+        </label>
+
+        {% if user.isDisabled() %}
+        <label class="_toollist-item" for="request_type-delete">
+          <input type="radio" class="form-radio" id="request_type-delete" name="request-type" value="Löschen (gesperrt)">
+          <div class="_toollist-data">
+            <h4>Löschen (gesperrt)</h4>
+            <p class="fs-base1">Ich möchte mein Konto löschen, bin aber gesperrt.</p>
+          </div>
+        </label>
+        {% endif %}
+
+        <label class="_toollist-item" for="request_type-secalert">
+          <input type="radio" class="form-radio" id="request_type-secalert" name="request-type" value="Sicherheitslücke_">
+          <div class="_toollist-data">
+            <h4>Sicherheitslücke</h4>
+            <p class="fs-base1">Ich habe eine Sicherheitslücke entdeckt.</p>
+            <p class="fs-base1 col-danger-ddd">Diese Meldung wird besonders vertraulich behandelt.</p>
+          </div>
+        </label>
+
+        {% if user.isMod() %}
+        <label class="_toollist-item" for="request_type-mod">
+          <input type="radio" class="form-radio" id="request_type-mod" name="request-type" value="Moderation">
+          <div class="_toollist-data">
+            <h4>Moderation</h4>
+            <p class="fs-base1">Moderations-Problem mit einem Benutzer(-konto)</p>
+            <p class="fs-base1 col-danger-ddd">Nur für Moderator*innen sichtbar.</p>
+          </div>
+        </label>
+        {% endif %}
+
+        <label class="_toollist-item" for="request_type-illegal">
+          <input type="radio" class="form-radio" id="request_type-illegal" name="request-type" value="Rechtsverstoß">
+          <div class="_toollist-data">
+            <h4>Rechtsverstoß</h4>
+            <p class="fs-base1">Ich habe einen Rechtsverstoß auf &pi;-Learn gesehen.</p>
+          </div>
+        </label>
+
+        <label class="_toollist-item" for="request_type-crother">
+          <input type="radio" class="form-radio" id="request_type-crother" name="request-type" value="Urheberrechtsverstoß Dritter">
+          <div class="_toollist-data">
+            <h4>Urheberrechtsverstoß Dritter</h4>
+            <p class="fs-base1">Inhalte von &pi;-Learn werden ohne Genehmigung weiterverbreitet.</p>
+          </div>
+        </label>
+
+        <label class="_toollist-item" for="request_type-crself">
+          <input type="radio" class="form-radio" id="request_type-crself" name="request-type" value="Urheberrechtsverstoß auf &pi;-Learn">
+          <div class="_toollist-data">
+            <h4>Urheberrechtsverstoß auf &pi;-Learn</h4>
+            <p class="fs-base1">Ich möchte eine Urheberrechtsverletzung melden.</p>
+          </div>
+        </label>
+
+        <label class="_toollist-item" for="request_type-other">
+          <input type="radio" class="form-radio" id="request_type-other" name="request-type" value="Anderes">
+          <div class="_toollist-data">
+            <h4>Anderes</h4>
+          </div>
+        </label>
+
+      </div>
+    </div>
+    <div class="column6 column12__sm p2">
+      <h3 class="h-underlined">Details</h3>
+      <label for="email" class="form mt5">Deine E-Mail-Adresse</label>
+      <input type="email" id="email" name="email" readonly value="{{ user.getDetail('email') }}" class="form">
+
+      <label for="description" class="form mt5">Füge bitte ergänzende Informationen hinzu, die uns helfen, dein Problem schneller zu lösen:</label>
+      <textarea id="description" name="description" style="min-height: 250px;" class="form mb5"></textarea>
+      <button class="_btn _btn--primary _btn-lg" type="submit">Absenden</button>
+    </div>
+  </div>
 </form>
 {% else %}
 <p>Vielen Dank für deine Nachricht. Wir werden uns schnellstmöglich zurückmelden.</p>
 {% endif %}
+</div>
 {% endif %}
 {% endblock %}
