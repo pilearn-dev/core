@@ -1,11 +1,15 @@
 # coding: utf-8
-from flask import render_template, abort, request, redirect, url_for
+from flask import Blueprint, render_template, abort, request, redirect, url_for
 from model import privileges as mprivileges, user as muser, help as mhelp
 import time, re
 
-def help_index():
+help = Blueprint('help', __name__)
+
+@help.route("/")
+def index():
     return render_template('help/index.html', title=u"Hilfe", thispage="help", help_cat=mhelp.HelpCategory)
 
+@help.route("/category:<caturl>", methods=["GET", "POST"])
 def help_cathome(caturl):
     if mhelp.HelpCategory.exists_url(caturl):
         cat = mhelp.HelpCategory.from_url(caturl)
@@ -39,7 +43,7 @@ def help_cathome(caturl):
     else:
         abort(404)
 
-
+@help.route("/<path:fullurl>", methods=["GET", "POST"])
 def help_any(fullurl):
     if mhelp.HelpEntry.exists_url(fullurl):
         entry = mhelp.HelpEntry.from_url(fullurl)
@@ -91,6 +95,7 @@ def help_any(fullurl):
     else:
         abort(404)
 
+@help.route("/new:<element>", methods=["GET", "POST"])
 def help_newelement(element):
     if element == "entry":
         cat = request.values.get("category", "@")
@@ -134,19 +139,20 @@ def h():
     data = sorted(data, key=lambda x:mprivileges.getOne(x["id"]))
     return render_template('help/privileges.html', data=data, title=u"Hilfe", thispage="help")
 
-def legal(): return render_template('legal/index.html', title=u"Hilfe", thispage="help")
-def legal_terms(): return render_template('legal/terms.html', title=u"Nutzungsbedingungen", thispage="help")
-def legal_privacy(): return render_template('legal/privacy.html', title=u"Datenschutz", thispage="help")
-def legal_warranty(): return render_template('legal/warranty.html', title=u"Haftung", thispage="help")
+legal = Blueprint('legal', __name__)
 
-def apply(app):
-    app.route("/help/")(help_index)
-    app.route("/help/category:<caturl>", methods=["GET", "POST"])(help_cathome)
-    app.route("/help/new:<element>", methods=["GET", "POST"])(help_newelement)
-    app.route("/help/<path:fullurl>", methods=["GET", "POST"])(help_any)
+@legal.route("/")
+def index():
+    return render_template('legal/index.html', title=u"Hilfe", thispage="help")
 
+@legal.route("/terms")
+def terms():
+    return render_template('legal/terms.html', title=u"Nutzungsbedingungen", thispage="help")
 
-    app.route("/legal")(legal)
-    app.route("/legal/terms")(legal_terms)
-    app.route("/legal/privacy")(legal_privacy)
-    app.route("/legal/warranty")(legal_warranty)
+@legal.route("/privacy")
+def privacy():
+    return render_template('legal/privacy.html', title=u"Datenschutz", thispage="help")
+
+@legal.route("/warranty")
+def warranty():
+    return render_template('legal/warranty.html', title=u"Haftung", thispage="help")
