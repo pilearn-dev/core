@@ -24,3 +24,17 @@ INSERT INTO settings VALUES
 ('Features', 'enable-mathjax-tokens-block', '::( )::', 'Die MathJax-Begrenzungen (Blöcke)'),
 ('Features', 'enable-mathjax-tokens-inline', ':( ):', 'Die MathJax-Begrenzungen (Inline)'),
 ('Features', 'enable-teaching-teams', 'no', 'Ob Teach (Team-Nutzung) erlaubt sein soll.')
+
+
+
+
+CREATE TABLE teach_groups (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  token VARCHAR(7),
+  name VARCHAR(75),
+  org_name VARCHAR(150),
+  org_rep_name VARCHAR(150),
+  org_email VARCHAR(150),
+  active TINYINT,
+  is_demo TINYINT
+)
