@@ -3,9 +3,13 @@ from flask import Blueprint, request, session, redirect, url_for, abort, render_
 
 from flask_babel import _
 
-import time
+from model.teach import TeachGroup
+from main.__init__ import db
+
+import time, random
 
 teach = Blueprint('teach', __name__)
+
 
 @teach.route("/")
 def index():
@@ -50,6 +54,32 @@ def guided_creation():
             return render_template("teach/create.html", title=_(u"Neue Lerngruppe erstellen"), thispage="teach", step=2)
 
     elif session.get("teach-creation-step") == 3:
-        return render_template("teach/create.html", title=_(u"Neue Lerngruppe erstellen"), thispage="teach", step=3)
+        if request.method == "POST":
+            tg = TeachGroup(
+                token = "".join(["abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"[random.randint(0, 62)] for i in range(8)]),
+                name = session["teach-creation--name"],
+                org_name = session["teach-creation--org_name"],
+                org_rep_name = session["teach-creation--org_rep_name"],
+                org_email = session["teach-creation--org_email"],
+                active = False,
+                is_demo = True
+            )
+
+            db.session.add(tg)
+            db.session.commit()
+            return redirect(url_for("teach.creation_complete", team=tg.token))
+        else:
+            return render_template("teach/create.html", title=_(u"Neue Lerngruppe erstellen"), thispage="teach", step=3)
 
     abort(500)
+
+
+@teach.route("/welcome/<team>")
+def creation_complete(team):
+    tg = TeachGroup.query.filter(TeachGroup.token == team).first_or_404()
+    return render_template("teach/welcome.html", title=_(u"Neue Lerngruppe erstellt"), thispage="teach", tg=tg)
+
+@teach.route("/<team>/dashboard")
+def dashboard(team):
+    tg = TeachGroup.query.filter(TeachGroup.token == team).first_or_404()
+    return render_template("teach/team/dashboard.html", title=tg.name, thispage="teach", tg=tg)

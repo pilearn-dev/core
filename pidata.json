@@ -1,1 +1,1 @@
-{"mail_service": "fileoutput", "mail_configuration": {"addr_base": "@pilearn.de", "user": "", "password": "", "smtp_srv": "", "smtp_port": 587}, "db_host": "sqlite:///databases/pilearn.db"}
+{"mail_service": "fileoutput", "mail_configuration": {"addr_base": "@pilearn.de", "user": "", "password": "", "smtp_srv": "", "smtp_port": 587}, "db_host": "sqlite:///C:\\Python27\\pilearn\\databases\\pilearn.db"}
