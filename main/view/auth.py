@@ -5,6 +5,8 @@ from controller import query as cquery, mail as cmail
 import json, time, re
 from flask_babel import _
 
+banned_email_domains = ["@yeah.net", "@163.com"]
+
 def login():
     error = False
     if request.method == 'POST':
@@ -28,7 +30,7 @@ def register():
     if request.method == 'POST':
         if request.form['login_provider'] == "local_account":
             if re.match("[a-zA-Z0-9.+_-]+\@[a-zA-Z0-9.+_-]+\.[a-zA-Z]{2,10}", request.form['email']):
-                for banned_email_domain in ["@yeah.net", "@163.com"]:
+                for banned_email_domain in banned_email_domains:
                     if request.form["email"].endswith(banned_email_domain):
                         abort(500)
                 llin = muser.User.login(request.form['email'], request.form['password'])
