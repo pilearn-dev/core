@@ -109,7 +109,7 @@ def course_related_proposal(id,label=None):
     course = mcourses.Courses(id)
     if course.getLabel() != label:
         return redirect(url_for("course_related_proposal", id=id, label=course.getLabel()))
-    return redirect(url_for("proposal_show", id=mproposal.Proposal.byCourse(id).id))
+    return redirect(url_for("proposal.single", id=mproposal.Proposal.byCourse(id).id))
 
 def course_admin(id,label=None, page="identity"):
     if not mcourses.Courses.exists(id):

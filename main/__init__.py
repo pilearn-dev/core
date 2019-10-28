@@ -8,7 +8,8 @@ from model.settings import Settings as S
 
 from controller import md, num as cnum
 from model import privileges as mprivileges, tags as mtags, user as muser, forum as mforum, proposal as mproposal, courses as mcourses, reviews as mreviews, post_templates as mpost_templates
-from view import auth as vauth, user as vuser, review as vreview, help as vhelp, courses as vcourses, forum as vforum, jsonapi as vjsonapi, survey as vsurvey, proposal as vproposal, tools as vtools, dialog as vdialog, modmsg as vmodmsg, helpdesk as vhelpdesk, upload, topbar as vtopbar, badges as vbadges, announcements as vannouncements, about as vabout, pull_requests as vpull_requests, admin as vadmin, teach as vteach
+from view import auth as vauth, user as vuser, review as vreview, help as vhelp, courses as vcourses, forum as vforum, jsonapi as vjsonapi, survey as vsurvey, tools as vtools, dialog as vdialog, modmsg as vmodmsg, helpdesk as vhelpdesk, upload, topbar as vtopbar, badges as vbadges, announcements as vannouncements, pull_requests as vpull_requests, admin as vadmin
+import view
 
 from sha1 import md5
 
@@ -192,7 +193,6 @@ def tour():
     return render_template("tour/pi-learn.html", title="Tour", topic=mcourses.Topic)
 
 vauth.apply(app)
-vadmin.apply(app)
 vuser.apply(app)
 vreview.apply(app)
 vhelp.apply(app)
@@ -206,16 +206,17 @@ vdialog.apply(app)
 vmodmsg.apply(app)
 vhelpdesk.apply(app)
 upload.apply(app)
-vbadges.apply(app)
 vannouncements.apply(app)
-vabout.apply(app)
 
-app.register_blueprint(vtopbar.topbar, url_prefix='/topbar')
-app.register_blueprint(vproposal.proposal, url_prefix='/course/proposal')
+app.register_blueprint(view.about, url_prefix='/about')
+app.register_blueprint(view.admin, url_prefix='/admin')
+app.register_blueprint(view.badges, url_prefix='/badges')
+app.register_blueprint(view.proposal, url_prefix='/course/proposal')
+app.register_blueprint(view.topbar, url_prefix='/topbar')
 
 # Teach should only be loaded, when activated:
 if S.get("enable-teaching-teams") == "yes":
-    app.register_blueprint(vteach.teach, url_prefix='/teach')
+    app.register_blueprint(view.teach, url_prefix='/teach')
 
 @app.route("/404")
 @app.errorhandler(404)

@@ -11,7 +11,7 @@ import json, time, pprint
 topbar = Blueprint('topbar', __name__)
 
 @topbar.route('/inbox')
-def topbar_inbox():
+def inbox():
     TYPES = {
       "helpdesk": "Helpdesk",
       "pm": "Moderatoren-Nachricht",
@@ -25,7 +25,7 @@ def topbar_inbox():
     return render_template("topbar/inbox.html", types=TYPES)
 
 @topbar.route('/rep-audit')
-def topbar_repaudit():
+def rep_audit():
     cuser = muser.getCurrentUser()
     dat = []
     for x in cuser.getTopbarAwards():
@@ -44,11 +44,11 @@ def topbar_repaudit():
     return render_template("topbar/rep-audit.html", data=dat, now=time.time(), changed=changed)
 
 @topbar.route('/user-info')
-def topbar_user_info():
+def user_info():
     return render_template("topbar/user-info.html")
 
 @topbar.route('/Update')
-def topbar_update():
+def Update():
     cuser = muser.getCurrentUser()
     return jsonify({
         "badges": cuser.hasUnknownBadges(),

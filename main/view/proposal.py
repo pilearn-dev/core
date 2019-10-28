@@ -7,7 +7,7 @@ import json
 proposal = Blueprint('proposal', __name__)
 
 @proposal.route("/<id>")
-def proposal_show(id):
+def single(id):
     if not mproposal.Proposal.exists(id):
         abort(404)
     data = mproposal.Proposal(id)
@@ -17,7 +17,7 @@ def proposal_show(id):
     return render_template('proposal/show.html', title=u"Kursvorschlag: " + data.getTitle(), thispage="course", data=data)
 
 @proposal.route("/<id>/delete", methods=["POST"])
-def proposal_delete(id):
+def delete(id):
     if not mproposal.Proposal.exists(id):
         abort(404)
     proposal = mproposal.Proposal(id)
@@ -30,7 +30,7 @@ def proposal_delete(id):
     return "{ok}"
 
 @proposal.route("/<id>/undelete", methods=["POST"])
-def proposal_undelete(id):
+def undelete(id):
     if not mproposal.Proposal.exists(id):
         abort(404)
     proposal = mproposal.Proposal(id)
@@ -42,7 +42,7 @@ def proposal_undelete(id):
     return "{ok}"
 
 @proposal.route("/<id>/close", methods=["POST"])
-def proposal_close(id):
+def close(id):
     if not mproposal.Proposal.exists(id):
         abort(404)
     proposal = mproposal.Proposal(id)
@@ -55,7 +55,7 @@ def proposal_close(id):
     return "{ok}"
 
 @proposal.route("/<id>/unclose", methods=["POST"])
-def proposal_unclose(id):
+def unclose(id):
     if not mproposal.Proposal.exists(id):
         abort(404)
     proposal = mproposal.Proposal(id)
@@ -67,7 +67,7 @@ def proposal_unclose(id):
     return "{ok}"
 
 @proposal.route("/<id>/commit", methods=["POST"])
-def proposal_commit(id):
+def commit(id):
     if not mproposal.Proposal.exists(id):
         abort(404)
     proposal = mproposal.Proposal(id)
@@ -79,7 +79,7 @@ def proposal_commit(id):
     return "{ok}"
 
 @proposal.route("/<id>/accept", methods=["POST"])
-def proposal_accept(id):
+def accept(id):
     if not mproposal.Proposal.exists(id):
         abort(404)
     proposal = mproposal.Proposal(id)
