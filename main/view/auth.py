@@ -20,6 +20,9 @@ def login():
             session['login'] = user_id
             session["login_time"] = time.time()
 
+            if request.values.has_key("continue"):
+                return redirect(request.values.get("continue"))
+
             return redirect(url_for('index'))
     return render_template('login.html', error=error, title=_("Anmelden"), thispage="login")
 
@@ -51,6 +54,10 @@ def register():
                     user_id = data
                     session['login'] = user_id
                     session["login_time"] = time.time()
+
+                    if request.values.has_key("continue"):
+                        return redirect(request.values.get("continue"))
+
                     return redirect(url_for('tour'))
             else:
                 error="format"
@@ -58,10 +65,10 @@ def register():
             session['login'] = user_id
             session["login_time"] = time.time()
 
-            if muser.User.from_id(user_id).getDetail("password") == "":
-                return redirect(url_for('user_page', id=user_id))
-            else:
-                return redirect(url_for('index'))
+            if request.values.has_key("continue"):
+                return redirect(request.values.get("continue"))
+
+            return redirect(url_for('index'))
     return render_template('register.html', error=error, title=_("Registrieren"), thispage="login")
 
 def reset_password():
