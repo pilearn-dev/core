@@ -1,10 +1,15 @@
 <div class="_banner _banner--primary _banner-with-gradient p8 p5__sm">
     <div class="fs-display1 push-left f-bold">{{ tg.name }}</div>
-    <div class="_btnlist _btnlist-close push-right">
-      <a class="_btn _btn-on-dark _btn--primary  {{ '_btn-lighter -active' if teach_page == 'dashboard' else '_btn-outline' }}" href="{{ url_for('teach.dashboard', team=tg.token) }}">Dashboard</a>
-      <a class="_btn _btn-on-dark _btn--primary  {{ '_btn-lighter -active' if teach_page == 'assignments' else '_btn-outline' }}" href="{{ url_for('teach.assignments', team=tg.token) }}">Aufgaben</a>
-      <a class="_btn _btn-on-dark _btn--primary {{ '_btn-lighter -active' if teach_page == 'members' else '_btn-outline' }}" href="{{ url_for('teach.members', team=tg.token) }}">Mitglieder</a>
-      <a class="_btn _btn-on-dark _btn--primary {{ '_btn-lighter -active' if teach_page == 'admin' else '_btn-outline' }}" href="{{ url_for('teach.admin', team=tg.token) }}">Einstellungen</a>
+    <div class="horizontal-list push-right">
+      <div class="_btnlist">
+        <a class="_btn _btn-on-dark _btn--primary  {{ '_btn-lighter -active' if teach_page == 'dashboard' else '_btn-outline' }}" href="{{ url_for('teach.dashboard', team=tg.token) }}">Dashboard</a>
+        <a class="_btn _btn-on-dark _btn--primary  {{ '_btn-lighter -active' if teach_page == 'assignments' else '_btn-outline' }}" href="{{ url_for('teach.assignments', team=tg.token) }}">Aufgaben</a>
+        {% if member.is_admin %}
+        <a class="_btn _btn-on-dark _btn--primary {{ '_btn-lighter -active' if teach_page == 'members' else '_btn-outline' }}" href="{{ url_for('teach.members', team=tg.token) }}">Mitglieder</a>
+        <a class="_btn _btn-on-dark _btn--primary {{ '_btn-lighter -active' if teach_page == 'admin' else '_btn-outline' }}" href="{{ url_for('teach.admin', team=tg.token) }}">Einstellungen</a>
+        {% endif %}
+        <a class="_btn _btn-on-dark _btn--primary f-italic {{ '_btn-lighter -active' if teach_page == 'profile' else '_btn-outline' }}" href="{{ url_for('teach.dashboard', team=tg.token) }}">{{ member.shown_name }}</a>
+      </div>
     </div>
     <div class="push-reset"></div>
 </div>

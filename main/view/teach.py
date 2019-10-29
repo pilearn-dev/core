@@ -11,7 +11,6 @@ import time, random
 
 teach = Blueprint('teach', __name__)
 
-
 @teach.route("/")
 def index():
     return render_template("teach/index.html", title=_(u"Über Teach"), thispage="teach")
@@ -86,25 +85,28 @@ def creation_complete(team):
 @teach.route("/<team>/dashboard")
 def dashboard(team):
     tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
-    return render_template("teach/team/dashboard.html", title=tg.name, thispage="teach", tg=tg)
+    # Access control
+    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).first_or_404()
+
+    return render_template("teach/team/dashboard.html", title=tg.name, thispage="teach", tg=tg, member=member)
 
 @teach.route("/<team>/assignments")
 def assignments(team):
     tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
     # Access control
-    TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).first_or_404()
+    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).first_or_404()
 
-    return render_template("teach/team/assignments.html", title=tg.name, thispage="teach", tg=tg)
+    return render_template("teach/team/assignments.html", title=tg.name, thispage="teach", tg=tg, member=member)
 
 @teach.route("/<team>/members")
 def members(team):
     tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
     # Access control
-    TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).first_or_404()
+    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).first_or_404()
 
     members = TeachMember.query.filter(TeachMember.group_id == tg.id).order_by(TeachMember.is_admin, TeachMember.user_id).all()
 
-    return render_template("teach/team/members.html", title=tg.name, thispage="teach", tg=tg, members=members)
+    return render_template("teach/team/members.html", title=tg.name, thispage="teach", tg=tg, members=members, member=member)
 
 @teach.route("/<team>/members/actions", methods=["POST"])
 def member_actions(team):
@@ -168,4 +170,6 @@ def member_actions(team):
 @teach.route("/<team>/admin")
 def admin(team):
     tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
-    return render_template("teach/team/admin.html", title=tg.name, thispage="teach", tg=tg)
+    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).first_or_404()
+
+    return render_template("teach/team/admin.html", title=tg.name, thispage="teach", tg=tg, member=member)
