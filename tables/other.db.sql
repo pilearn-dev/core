@@ -46,3 +46,11 @@ CREATE TABLE teach_members (
   active TINYINT,
   is_admin TINYINT
 )
+
+CREATE TABLE teach_invitations (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  group_id INT,
+  token VARCHAR(50),
+  expires_after INT,
+  left_uses_count SMALLINT
+)

@@ -25,3 +25,12 @@ class TeachGroup(db.Model):
     is_demo = db.Column(db.Boolean)
 
     #members = db.relationship('User', secondary=TeachMember, lazy='subquery', backref=db.backref('user', lazy=True))
+
+class TeachInvitations(db.Model):
+    __tablename__ = "teach_invitations"
+
+    id = db.Column(db.Integer, primary_key=True)
+    group_id = db.Column(db.Integer, db.ForeignKey("teach_groups.id"))
+    token = db.Column(db.String(8), primary_key=True)
+    expires_after = db.Column(db.DateTime)
+    left_uses_count = db.Column(db.Integer, nullable=True)
