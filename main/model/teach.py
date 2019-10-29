@@ -3,7 +3,7 @@ from main.__init__ import db
 class TeachMember(db.Model):
     __tablename__ = "teach_members"
 
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), primary_key=True)
+    user_id = db.Column(db.Integer, primary_key=True)
     group_id = db.Column(db.Integer, db.ForeignKey("teach_groups.id"), primary_key=True)
     shown_name = db.Column(db.String(150))
 

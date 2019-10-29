@@ -106,6 +106,65 @@ def members(team):
 
     return render_template("teach/team/members.html", title=tg.name, thispage="teach", tg=tg, members=members)
 
+@teach.route("/<team>/members/actions", methods=["POST"])
+def member_actions(team):
+    tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
+    # Access control + admin
+    TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).filter(TeachMember.is_admin == True).first_or_404()
+
+    member_id = request.json["member_id"]
+    action = request.json["action"]
+
+    # Validate that member is in the group
+    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == member_id).first_or_404()
+
+    member_user = muser.User.from_id(member.user_id)
+
+    if action == "remove":
+        if not member.active:
+            db.session.delete(member)
+            db.session.commit()
+
+            return jsonify({"result": "success"})
+        else:
+            return jsonify({"result": "error", "message": _(u"Zu löschendes Mitglied ist nicht inaktiv.")})
+
+    elif action == "deactivate":
+        if member.active:
+            member.active = False
+            db.session.commit()
+
+            return jsonify({"result": "success"})
+        else:
+            return jsonify({"result": "error", "message": _(u"Zu deaktivierendes Mitglied ist nicht aktiv.")})
+
+    elif action == "activate":
+        if not member.active:
+            member.active = True
+            db.session.commit()
+
+            return jsonify({"result": "success"})
+        else:
+            return jsonify({"result": "error", "message": _(u"Zu aktivierendes Mitglied ist nicht inaktiv.")})
+
+    elif action == "grantadmin":
+        if member.active and not member.is_admin:
+            member.is_admin = True
+            db.session.commit()
+
+            return jsonify({"result": "success"})
+        else:
+            return jsonify({"result": "error", "message": _(u"Zu adminisierendes Mitglied ist nicht aktiv/bereits Admin.")})
+
+    elif action == "revokeadmin":
+        if member.active and member.is_admin:
+            member.is_admin = False
+            db.session.commit()
+
+            return jsonify({"result": "success"})
+        else:
+            return jsonify({"result": "error", "message": _(u"Zu deadminisierendes Mitglied ist nicht aktiv/Admin.")})
+
 @teach.route("/<team>/admin")
 def admin(team):
     tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()

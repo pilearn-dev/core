@@ -15,8 +15,11 @@
   </div>
   <div class="p8">
     <h1 class="h-underlined">Mitglieder</h1>
-
-    <table class="meta-table">
+    {% if not tg.is_demo or members|length < 5 %}
+      <a class="_btn _btn--primary push-right" href="{{ url_for('teach.members', team=tg.token, invite=1) }}">Einladen</a>
+      <div class="push-reset"></div>
+    {% endif %}
+    <table class="meta-table" style="width: 100%;">
       <thead>
         <tr>
           <th>Mitglied</th>
@@ -30,15 +33,13 @@
 
       {% for member in members %}
         <tr class="{{ '-inactive' if not member.active }}">
-          <td>{{ member.shown_name }}</td>
-          <td>{{ _("ja") if member.active else _("nein") }}</td>
-          <td>{{ _("ja") if member.is_admin else _("nein") }}</td>
+          <td class="fs-base3 anchor-dark"><a href="{{ url_for('user_page', id=member.user_id) }}">{{ member.shown_name }}</a></td>
+          <td class="js--active">{{ _("ja") if member.active else _("nein") }}</td>
+          <td class="js--admin">{{ _("ja") if member.is_admin else _("nein") }}</td>
           <td class="{{ '-active' if not member.active }}">
             <div class="_btnlist">
               <button class="_btn _btn-xs _btn--primary _btn-outline js--role-change-btn" data-member-id="{{ member.user_id }}">Rolle ändern</button>
-              {% if not member.active %}
-              <button class="_btn _btn-xs _btn-danger _btn-outline js--remove-btn" data-member-id="{{ member.user_id }}">Entfernen</button>
-              {% endif %}
+              <button class="_btn _btn-xs _btn-danger _btn-outline js--remove-btn" data-member-id="{{ member.user_id }}" {{ 'disabled' if member.active }}>Entfernen</button>
             </div>
           </td>
         </tr>
