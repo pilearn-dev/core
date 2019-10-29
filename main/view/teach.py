@@ -102,7 +102,7 @@ def members(team):
     # Access control
     TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).first_or_404()
 
-    members = TeachMember.query.filter(TeachMember.group_id == tg.id).all()
+    members = TeachMember.query.filter(TeachMember.group_id == tg.id).order_by(TeachMember.is_admin, TeachMember.user_id).all()
 
     return render_template("teach/team/members.html", title=tg.name, thispage="teach", tg=tg, members=members)
 
