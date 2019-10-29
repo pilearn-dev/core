@@ -1,0 +1,31 @@
+{% set pattern="headless" %}
+{% extends "layout_new.html" %}
+{% block body %}
+
+<!-- Header banner -->
+
+<div class="_banner _banner-with-gradient _banner--primary p16 p1__sm p6__md" style="min-height:100vh;">
+  <div class="single-fluid-small">
+    <div class="container col-black p8">
+
+      <h1 class="my4 ta-c fs-display3">Willkommen!</h1>
+      <p class="p-lead ta-c">Herzlich Willkommen! Du bist erfolgreich dem Team beigetreten.</p>
+      <div class="ta-c">
+      <svg xmlns="http://www.w3.org/2000/svg" width=200 height=200 viewBox="0 0 100 100" class="d-ib col-success-dd">
+
+
+        <circle cx="50" cy="50" r="40" stroke="currentColor" fill="transparent" />
+
+        <path d="M 22.5,82.5 m0,-30 l18,18 l36,-36" fill="transparent" color="currentColor" />
+
+      </svg><br>
+        <a href="{{ url_for('teach.dashboard', team=tg.token) }}" class="_btn _btn--primary _btn-xl mt5">Weiter &raquo;</a>
+      </div>
+
+
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

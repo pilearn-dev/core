@@ -3,7 +3,7 @@ from flask import Blueprint, request, session, redirect, url_for, abort, render_
 
 from flask_babel import _
 
-from model.teach import TeachGroup, TeachMember
+from model.teach import TeachGroup, TeachMember, TeachInvitations
 from model import user as muser
 from main.__init__ import db
 
@@ -81,6 +81,50 @@ def guided_creation():
 def creation_complete(team):
     tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
     return render_template("teach/welcome.html", title=_(u"Neue Lerngruppe erstellt"), thispage="teach", tg=tg)
+
+
+@teach.route("/<team>/join/<token>", methods=["GET", "POST"])
+def join_the_team(team, token):
+    tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
+    token = TeachInvitations.query.filter(TeachInvitations.token == token).filter(TeachInvitations.group_id == tg.id).first_or_404()
+
+    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).first()
+
+    if member:
+        return redirect(url_for("teach.dashboard", team=tg.token))
+
+    invalid = None
+
+    if not(token.expires_after == None or token.expires_after < time.time()):
+        invalid = "expired"
+    if not(token.left_uses_count == None or token.left_uses_count > 0):
+        invalid = "expired"
+
+    if request.method == "POST" and not invalid:
+        if token.left_uses_count != None:
+            token.left_uses_count -= 1
+        new_member = TeachMember(
+            user_id = muser.getCurrentUser().id,
+            group_id = tg.id,
+            shown_name = request.form["shown_name"],
+            active = True,
+            is_admin = False
+        )
+        db.session.add(new_member)
+        db.session.commit()
+
+        return redirect(url_for("teach.join_complete", team=tg.token))
+    else:
+        return render_template("teach/team/join.html", title=tg.name, thispage="teach", tg=tg, token=token.token, invalid=invalid)
+
+@teach.route("/<team>/welcome")
+def join_complete(team):
+    tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
+    # Access control
+    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).first_or_404()
+
+    return render_template("teach/team/welcome.html", title=_(u"Neue Lerngruppe erstellt"), thispage="teach", tg=tg)
+
 
 @teach.route("/<team>/dashboard")
 def dashboard(team):

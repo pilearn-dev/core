@@ -1,0 +1,31 @@
+{% set pattern="headless" %}
+{% extends "layout_new.html" %}
+{% block body %}
+
+<div class="_banner _banner--primary _banner-with-gradient p16 py32 p5__sm" style="min-height: 100vh;">
+  <div class="single-fluid grid">
+      <div class="colbox-fill column12__sm p4">
+          <div class="fs-display3 f-bold">{{ tg.name }}</div>
+          <p class="fs-subtitle">Dies ist ein privater Lernraum. Du kannst auf diesen zugreifen, da du einen Zugriffslink von deiner Lehrkraft erhalten hast.</p>
+          {% if invalid == "expired" %}
+          <p>Der Zugriffslink ist bereits abgelaufen.</p>
+          {% else %}
+            {% if user.isLoggedIn() %}
+            <form action="" method="post" class="mt8">
+              <label class="form" for="shown_name">Name im Lernraum</label>
+              <div class="fs-caption">Unter diesem Namen wirst du im Lernraum für deine Mitlernenden und Lehrkräfte sichtbar sein. Du kannst dies später noch ändern.</div>
+              <input class="form" value="{{ user.getDetail('certificate_full_name') }}" name="shown_name" id="shown_name">
+              <button type="submit" class="_btn _btn--primary _btn-on-dark _btn-lighter mt5 _btn-xl">Beitreten</button>
+              <a href="/" class="_btn _btn--primary _btn-on-dark _btn-outline mt5 _btn-xl">Abbrechen</a>
+            </form>
+            {% else %}
+              <a href="{{ url_for('login', continue=url_for('teach.join_the_team', team=tg.token, token=token)) }}" type="submit" class="_btn _btn--primary _btn-on-dark _btn-lighter mt5 _btn-xl">Anmelden und weiter &raquo;</a>
+              <a href="/" class="_btn _btn--primary _btn-on-dark _btn-outline mt5 _btn-xl">Abbrechen</a>
+            {% endif %}
+          {% endif %}
+      </div>
+
+  </div>
+</div>
+
+{% endblock %}
