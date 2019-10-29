@@ -32,5 +32,5 @@ class TeachInvitations(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     group_id = db.Column(db.Integer, db.ForeignKey("teach_groups.id"))
     token = db.Column(db.String(8), primary_key=True)
-    expires_after = db.Column(db.DateTime)
+    expires_after = db.Column(db.DateTime, nullable=True)
     left_uses_count = db.Column(db.Integer, nullable=True)
