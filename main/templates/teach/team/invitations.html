@@ -1,0 +1,89 @@
+{% set pattern="individual" %}
+{% extends "layout_new.html" %}
+{% block body %}
+
+{% set teach_page = "members" %}
+
+<div class="container single-fluid p0">
+  {% include "teach/team/_header.html" %}
+  <div class="p8">
+    <h1 class="h-underlined">Einladungen</h1>
+
+    {% if new_code %}
+    <div class="_alert _alert-success p4">
+      <h3>Der neue Link</h3>
+      <p>Diesen Link musst du an deine Lernenden weitergeben:</p>
+      <pre><a href="{{ url_for('teach.join_the_team', team=tg.token, token=new_code, _external=True) }}">{{ url_for('teach.join_the_team', team=tg.token, token=new_code, _external=True) }}</a></pre>
+    </div>
+    {% endif %}
+
+    <table class="meta-table" style="width: 100%;">
+      <thead>
+        <tr>
+          <th>Link</th>
+          <th>gültig bis</th>
+          <th>Einsätze übrig</th>
+          <th>Aktionen</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+      {% for invitation in invitations %}
+        <tr class="{{ '-inactive' if (invitation.expires_after and invitation.expires_after < now) or (invitation.left_uses_count != None and invitation.left_uses_count == 0) }}">
+          <td class="fs-base3 anchor-dark"><a href="{{ url_for('teach.join_the_team', team=tg.token, token=invitation.token) }}">{{ invitation.token }}</a></td>
+          <td>{{ invitation.expires_after.strftime('%Y-%m-%d %H:%M') if invitation.expires_after != None else _('niemals') }}</td>
+          <td>{{ invitation.left_uses_count if invitation.left_uses_count != None else _('unbegrenzt') }}</td>
+          <td>
+            <button class="_btn _btn-danger _btn-sm _btn-outline js--delete-btn" data-id="{{ invitation.id }}">{{ _('Löschen') }}</button>
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td class="p8" colspan=4>
+
+            <div class="ta-c">
+              <svg viewBox="0 0 48 48" width="200px" height="200px" class="d-ib">
+                <circle cx="20" cy="20" r="14" fill="transparent" stroke="currentColor" />
+                <path d="M30,30 l12,12 M14,14 l12,12 M26,14 l-12,12" fill="transparent" stroke="currentColor" />
+              </svg>
+
+              <p class="fs-heading">Hier ist nichts.</p>
+              <p class="fs-base3">Anscheinend hast du noch keine Einladungslinks für diese Gruppe erstellt. Höchste Zeit, dies nachzuholen!</p>
+
+            </div>
+
+          </td>
+        </tr>
+      {% endfor %}
+
+      </tbody>
+
+    </table>
+
+    <div class="p6">
+      <h2>Neue Einladung erstellen</h2>
+      <form action="" method="post" class="p3">
+        <label class="form" for="expires_after">Gültig für/bis</label>
+        <select class="form" name="expires_after" id="expires_after">
+          <option value="-">{{ _('unbegrenzt') }}</option>
+          <option value="1h">{{ _('1 Stunde') }}</option>
+          <option value="2h">{{ _('2 Stunden') }}</option>
+          <option value="1d">{{ _('1 Tag') }}</option>
+          <option value="2d">{{ _('2 Tage') }}</option>
+          <option value="7d">{{ _('7 Tage') }}</option>
+        </select>
+        <label class="form" for="uses_count" min=0 max=1000>Mögliche Zahl der Verwendungen</label>
+        <input class="form" id="uses_count" name="uses_count" placeholder="Leer lassen, für unbegrenzt" type="number">
+        <input type="hidden" class="hide" name="action" value="new">
+        <button class="_btn _btn--primary _btn-outline js--delete-btn">Generieren</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<div id="team-data" class="hide" data-id="{{ tg.id }}" data-token="{{ tg.token }}"></div>
+<script src="/static/new_js/teach.js" charset="utf-8"></script>
+
+{% endblock %}

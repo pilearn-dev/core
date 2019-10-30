@@ -9,7 +9,7 @@
   <div class="p8">
     <h1 class="h-underlined">Mitglieder</h1>
     {% if not tg.is_demo or members|length < 5 %}
-      <a class="_btn _btn--primary push-right" href="{{ url_for('teach.members', team=tg.token, invite=1) }}">Einladen</a>
+      <a class="_btn _btn--primary push-right" href="{{ url_for('teach.member_invitations', team=tg.token) }}">Einladen</a>
       <div class="push-reset"></div>
     {% endif %}
     <table class="meta-table" style="width: 100%;">

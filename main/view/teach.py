@@ -7,7 +7,7 @@ from model.teach import TeachGroup, TeachMember, TeachInvitations
 from model import user as muser
 from main.__init__ import db
 
-import time, random
+import datetime, time, random
 
 teach = Blueprint('teach', __name__)
 
@@ -56,7 +56,7 @@ def guided_creation():
     elif session.get("teach-creation-step") == 3:
         if request.method == "POST":
             tg = TeachGroup(
-                token = "".join(["abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"[random.randint(0, 62)] for i in range(8)]),
+                token = "".join(["abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"[random.randint(0, 61)] for i in range(8)]),
                 name = session["teach-creation--name"],
                 org_name = session["teach-creation--org_name"],
                 org_rep_name = session["teach-creation--org_rep_name"],
@@ -95,9 +95,9 @@ def join_the_team(team, token):
 
     invalid = None
 
-    if not(token.expires_after == None or token.expires_after < time.time()):
+    if token.expires_after != None and token.expires_after < datetime.datetime.fromtimestamp(time.time()):
         invalid = "expired"
-    if not(token.left_uses_count == None or token.left_uses_count > 0):
+    if token.left_uses_count != None and token.left_uses_count <= 0:
         invalid = "expired"
 
     if request.method == "POST" and not invalid:
@@ -146,11 +146,66 @@ def assignments(team):
 def members(team):
     tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
     # Access control
-    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).first_or_404()
+    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).filter(TeachMember.is_admin == True).first_or_404()
 
     members = TeachMember.query.filter(TeachMember.group_id == tg.id).order_by(TeachMember.is_admin, TeachMember.user_id).all()
 
     return render_template("teach/team/members.html", title=tg.name, thispage="teach", tg=tg, members=members, member=member)
+
+@teach.route("/<team>/members/invitations", methods=["GET", "POST"])
+def member_invitations(team):
+    tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
+    # Access control
+    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).filter(TeachMember.is_admin == True).first_or_404()
+
+    new_code = None
+
+    if request.method == "POST":
+        if request.form.get("action", "") == "new":
+            expires_after, uses_count = request.form["expires_after"], request.form["uses_count"]
+
+            if len(uses_count) == 0:
+                uses_count = None
+            else:
+                uses_count = int(uses_count)
+
+            if expires_after == "-":
+                expires_after = None
+            else:
+                EXPIRE_LENGTHS = {
+                    "1h":      1 * 3600,
+                    "2h":      2 * 3600,
+                    "1d": 1 * 24 * 3600,
+                    "2d": 2 * 24 * 3600,
+                    "7d": 7 * 24 * 3600
+                }
+                expires_after = time.time() + EXPIRE_LENGTHS[expires_after]
+
+                expires_after = datetime.datetime.fromtimestamp(expires_after);
+
+            ti = TeachInvitations(
+                token = "".join(["abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"[random.randint(0, 61)] for i in range(50)]),
+                group_id = tg.id,
+                expires_after = expires_after,
+                left_uses_count = uses_count
+            )
+
+            new_code = ti.token
+
+            db.session.add(ti)
+            db.session.commit()
+        elif request.json.get("action", "") == "remove":
+
+            ti = TeachInvitations.query.filter(TeachInvitations.id == request.json["invitation_id"]).first_or_404()
+
+            db.session.delete(ti)
+            db.session.commit()
+
+            return jsonify({"result": "success"})
+
+    invitations = TeachInvitations.query.filter(TeachInvitations.group_id == tg.id).all()
+
+    return render_template("teach/team/invitations.html", title=tg.name, thispage="teach", tg=tg, invitations=invitations, member=member, new_code=new_code, now=datetime.datetime.fromtimestamp(time.time()))
 
 @teach.route("/<team>/members/actions", methods=["POST"])
 def member_actions(team):

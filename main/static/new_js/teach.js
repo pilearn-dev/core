@@ -97,3 +97,27 @@ PiJS.route(/^\/teach\/[a-zA-Z0-9]{8}\/members/, function() {
     PiJS.warnbox._generate("-primary", role_element, $this.parent(), true);
   })
 });
+
+PiJS.route(/^\/teach\/[a-zA-Z0-9]{8}\/members\/invitations/, function() {
+  $(".js--delete-btn").click(function() {
+    $this = $(this);
+    $this.addClass("-loading -active");
+    $.ajax({
+      url: "/teach/" + teach_group_token + "/members/invitations",
+      method: "POST",
+      contentType: "application/json; charset=utf-8",
+      data: JSON.stringify({
+        action: "remove",
+        invitation_id: $this.attr("data-id")
+      }),
+      success: function( r ) {
+        $this.removeClass("-loading -active");
+        if(r.result == "success") {
+          $this.parent().parent().remove();
+        } else {
+          PiJS.warnbox.error(r.message, $this.parent());
+        }
+      }
+    });
+  });
+})
