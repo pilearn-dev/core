@@ -119,7 +119,7 @@
 
           {% set delta = user.getRepDelta() %}
           {% set unknow_badges = user.hasUnknownBadges() %}
-          <a class="_header-icon p-r js--topbar-rep-audit" id="repscreen-trigger" href="#!" title="{{ _('Auszeichnungen') }}: {% if delta == 0 %}{{ _('Keine kürzliche Änderung deiner Reputation') }}{% else %}{{ _('Kürzliche Änderung der Reputation: %(amount)i', amount=dleta) }}{% endif %}{% if badges %}, {{ _('Neue Abzeichen') }}{% endif %}">
+          <a class="_header-icon p-r js--topbar-rep-audit" id="repscreen-trigger" href="#!" title="{{ _('Auszeichnungen') }}: {% if delta == 0 %}{{ _('Keine kürzliche Änderung deiner Reputation') }}{% else %}{{ _('Kürzliche Änderung der Reputation: %(amount)i', amount=delta) }}{% endif %}{% if badges %}, {{ _('Neue Abzeichen') }}{% endif %}">
             {% if delta > 0 %}<span class="_badge _badge-s-success -wbd p-a xa-r__sp ya-t__sp">+{{ num2suff(delta) }}</span>{% endif %}
             {% if unknow_badges %}<span class="_badge _badge-dot-success -wbd p-a xa-r__sp ya-b__sp">neue Abzeichen</span>{% endif %}
             <svg width="3em" height="3em" viewbox="3 3 45 45">
