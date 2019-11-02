@@ -59,6 +59,18 @@
 </div>
 {% endif %}
 <div class="container single-fluid">
+  {% if has_teach and teach_mine %}
+    <div class="p4 bb1s bb-dark-ll">
+      <button class="_btn _btn--primary _btn-outline push-right mt5 mr5" data-toggle=".js--region-changer" data-toggle-class="hide" data-toggle-self-class="-active">Wechseln</button>
+      <h1 class="fs-display2">{{ _('Öffentliches %(site_name)s', site_name=site_name) }}</h1>
+      <div class="_nav _nav-h hide js--region-changer">
+        <a href="{{ url_for('index') }}" class="-active">{{ _('Öffentliches %(site_name)s', site_name=site_name) }}</a>
+        {% for teach_page in teach_mine %}
+        <a href="{{ url_for('teach.dashboard', team=teach_page.token) }}"><i class="fa fa-shield"></i> {{ teach_page.name }}</a>
+        {% endfor %}
+      </div>
+    </div>
+  {% endif %}
     <div class="p4">
         <h1 class="-better-sorted"><span class="i">{{ _('Empfohlene Kurse') }}</span></h1>
         {% if not user.isLoggedIn() or user.getPref("gdpr:hideHomeCourseRecommendations", False) == "1" %}

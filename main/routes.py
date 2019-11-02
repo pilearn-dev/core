@@ -4,6 +4,9 @@ from model.settings import Settings as S
 
 from model import privileges as mprivileges, tags as mtags, user as muser, forum as mforum, proposal as mproposal, courses as mcourses, reviews as mreviews, post_templates as mpost_templates
 
+if S.get("enable-teaching-teams") == "yes":
+    from model.teach import TeachGroup, TeachMember
+
 from view import auth as vauth, user as vuser, review as vreview, help as vhelp, courses as vcourses, forum as vforum, jsonapi as vjsonapi, survey as vsurvey, tools as vtools, dialog as vdialog, modmsg as vmodmsg, helpdesk as vhelpdesk, upload, topbar as vtopbar, badges as vbadges, announcements as vannouncements, pull_requests as vpull_requests, admin as vadmin
 import view
 
@@ -20,7 +23,13 @@ from __init__ import app
 
 @app.route("/")
 def index():
-    return render_template('index.html', title=_("Startseite"), thispage="index", globalForum=mforum.Forum.from_id(0), topics=mcourses.Topic, _proposal=mproposal.Proposal, courses=mcourses.Courses)
+    teach_mine=None
+    has_teach = S.get("enable-teaching-teams") == "yes"
+
+    if has_teach:
+        teach_mine = TeachGroup.query.join(TeachMember).filter(TeachMember.user_id == muser.getCurrentUser().id, TeachMember.active == True, TeachGroup.active == True).all()
+
+    return render_template('index.html', title=_("Startseite"), thispage="index", globalForum=mforum.Forum.from_id(0), topics=mcourses.Topic, _proposal=mproposal.Proposal, courses=mcourses.Courses, has_teach=has_teach, teach_mine=teach_mine)
 
 @app.route("/hide-hero", methods=["POST"])
 def hide_hero():

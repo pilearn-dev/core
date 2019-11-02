@@ -2,6 +2,7 @@ from main.__init__ import db
 
 class TeachMember(db.Model):
     __tablename__ = "teach_members"
+    __table_args__ = {'extend_existing': True}
 
     user_id = db.Column(db.Integer, primary_key=True)
     group_id = db.Column(db.Integer, db.ForeignKey("teach_groups.id"), primary_key=True)
@@ -12,6 +13,7 @@ class TeachMember(db.Model):
 
 class TeachGroup(db.Model):
     __tablename__ = "teach_groups"
+    __table_args__ = {'extend_existing': True}
 
     id = db.Column(db.Integer, primary_key=True)
     token = db.Column(db.String(8), unique=True)
@@ -28,6 +30,7 @@ class TeachGroup(db.Model):
 
 class TeachInvitations(db.Model):
     __tablename__ = "teach_invitations"
+    __table_args__ = {'extend_existing': True}
 
     id = db.Column(db.Integer, primary_key=True)
     group_id = db.Column(db.Integer, db.ForeignKey("teach_groups.id"))
