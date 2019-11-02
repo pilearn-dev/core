@@ -1,0 +1,28 @@
+{% set pattern="individual" %}
+{% extends "layout_new.html" %}
+{% block body %}
+
+{% set teach_page = "profile" %}
+
+<div class="container single-fluid p0">
+  {% include "teach/team/_header.html" %}
+  <div class="p8">
+    <h1>Dein Profil in &quot;{{ tg.name }}&quot;</h1>
+
+    {% if saved %}
+    <div class="_alert _alert-success">
+      <p><strong>Erfolg.</strong> Dein Profil wurde erfolgreich aktualisiert.</p>
+    </div>
+    {% endif %}
+
+    <form action="" method="POST">
+      <label class="form" for="shown_name">Name im Lernraum</label>
+      <div class="fs-caption">Unter diesem Namen bist du im Lernraum für deine Mitlernenden und Lehrkräfte sichtbar.</div>
+      <input class="form" value="{{ member.shown_name }}" name="shown_name" id="shown_name">
+
+      <button class="_btn _btn--primary" type="submit">{{ _('Speichern') }}</button>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

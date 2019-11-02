@@ -269,6 +269,21 @@ def member_actions(team):
 @teach.route("/<team>/admin")
 def admin(team):
     tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
-    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).first_or_404()
+    # Access controll
+    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).filter(TeachMember.is_admin == True).first_or_404()
 
     return render_template("teach/team/admin.html", title=tg.name, thispage="teach", tg=tg, member=member)
+
+@teach.route("/<team>/profile", methods=["GET", "POST"])
+def my_profile(team):
+    tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
+    # Access controll
+    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).first_or_404()
+
+    saved = False
+    if request.method == "POST":
+        member.shown_name = request.form["shown_name"]
+        db.session.commit()
+        saved = True
+
+    return render_template("teach/team/profile.html", title=tg.name, thispage="teach", tg=tg, member=member, saved=saved)
