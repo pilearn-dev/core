@@ -266,13 +266,22 @@ def member_actions(team):
         else:
             return jsonify({"result": "error", "message": _(u"Zu deadminisierendes Mitglied ist nicht aktiv/Admin.")})
 
-@teach.route("/<team>/admin")
+@teach.route("/<team>/admin", methods=["GET", "POST"])
 def admin(team):
     tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
     # Access controll
     member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).filter(TeachMember.is_admin == True).first_or_404()
 
-    return render_template("teach/team/admin.html", title=tg.name, thispage="teach", tg=tg, member=member)
+    saved = False
+    if request.method == "POST":
+        tg.name = request.form["name"]
+        tg.org_name = request.form["org_name"]
+        tg.org_rep_name = request.form["org_rep_name"]
+        tg.org_email = request.form["org_email"]
+        db.session.commit()
+        saved = True
+
+    return render_template("teach/team/admin.html", title=tg.name, thispage="teach", tg=tg, member=member, saved=saved)
 
 @teach.route("/<team>/profile", methods=["GET", "POST"])
 def my_profile(team):

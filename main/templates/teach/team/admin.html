@@ -8,6 +8,37 @@
   {% include "teach/team/_header.html" %}
   <div class="p8">
     <h1>Teach Einstellungen</h1>
+
+    {% if saved %}
+    <div class="_alert _alert-success">
+      <p><strong>Erfolg.</strong> Der Lernraum wurde erfolgreich aktualisiert.</p>
+    </div>
+    {% endif %}
+
+    <form action="" method="POST">
+      <label class="form">Tarif</label>
+      <div class="py2">{% if tg.is_demo %}<span class="_badge _badge-s-dark">Demo</span>{% else %}<span class="_badge _badge-s--primary">Vollversion</span>{% endif %}</div>
+
+
+      <label class="form" for="name">Name des Lernraums</label>
+      <div class="fs-caption">Unter diesem Namen ist der Lernraum seine Mitglieder sichtbar.</div>
+      <input class="form" value="{{ tg.name }}" name="name" id="name">
+
+      <label class="form" for="org_name">Name der Organisation</label>
+      <div class="fs-caption">Welche Organisation (auch Schule, Uni, ...) will hier Teach verwenden?</div>
+      <input class="form" value="{{ tg.org_name }}" name="org_name" id="org_name">
+
+      <label class="form" for="org_rep_name">Name der verantwortlichen Person</label>
+      <div class="fs-caption">Welche Person der obigen Organisation ist für diese Lerngruppe verantwortlich? Dies bist wahrscheinlich du.</div>
+      <input class="form" value="{{ tg.org_rep_name }}" name="org_rep_name" id="org_rep_name">
+
+      <label class="form" for="org_email">Kontakt-Email der Organisation</label>
+      <div class="fs-caption">Eine E-Mail, an die wir wichtige und auch teilweise kritische Nachrichten zu dieser Lerngruppe senden können.</div>
+      <input class="form" value="{{ tg.org_email }}" name="org_email" id="org_email">
+
+      <button class="_btn _btn--primary" type="submit">{{ _('Speichern') }}</button>
+    </form>
+
   </div>
 </div>
 
