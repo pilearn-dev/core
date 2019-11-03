@@ -54,3 +54,32 @@ CREATE TABLE teach_invitations (
   expires_after INT,
   left_uses_count SMALLINT
 )
+
+CREATE TABLE teach_assignments (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  team_id INT,
+  token VARCHAR(16),
+  associated_course INT,
+  type TINYINT,
+  title VARCHAR(100),
+  comment TEXT,
+  max_points_for_completion SMALLINT,
+  active TINYINT,
+  available_after INT,
+  to_be_completed_before INT
+);
+
+CREATE TABLE teach_assignment_completions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  team_id INT,
+  assignment_id INT,
+  user_id INT,
+  token VARCHAR(16),
+  submission_comment TEXT,
+  submission_file_name VARCHAR(250),
+  submission_at INT,
+  is_submission_late TINYINT,
+  points_for_submission SMALLINT,
+  points_graded_by_teacher SMALLINT,
+  comment_by_teacher TEXT
+)
