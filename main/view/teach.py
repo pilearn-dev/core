@@ -3,7 +3,7 @@ from flask import Blueprint, request, session, redirect, url_for, abort, render_
 
 from flask_babel import _
 
-from model.teach import TeachGroup, TeachMember, TeachInvitations, TeachAssignments, TeachAssignmentTypes
+from model.teach import TeachGroup, TeachMember, TeachInvitations, TeachAssignments, TeachAssignmentTypes, TeachAssignmentCompletions
 from model import user as muser, courses as mcourses
 from main.__init__ import db
 
@@ -136,11 +136,42 @@ def assignments(team):
 
     assignments = TeachAssignments.query.filter(TeachAssignments.team_id == tg.id, TeachAssignments.active).all()
 
+    excluded_items = []
+    own_assignment_completions = TeachAssignmentCompletions.query.filter(TeachAssignmentCompletions.team_id == tg.id, TeachAssignmentCompletions.user_id == cuser.id)
+
+    excluded_items += [item.assignment_id for item in own_assignment_completions]
+
+
+    for item in assignments:
+        if item.id in excluded_items:
+            assignments.remove(item)
+
+
     return render_template("teach/team/assignments.html", title=tg.name, thispage="teach", tg=tg, member=member, assignments=assignments, course_maker=mcourses.Courses.__init__, TeachAssignmentTypes=TeachAssignmentTypes)
 
-@teach.route("/<team>/assignments/<assignment>")
+@teach.route("/<team>/assignments/<assignment>", methods=["GET", "POST"])
 def assignment_complete(team, assignment):
-    abort(404)
+    tg, member, cuser = team_access_control(team, muser.getCurrentUser())
+
+    assignment = TeachAssignments.query.filter(TeachAssignments.team_id == tg.id, TeachAssignments.active, TeachAssignments.token == assignment).first_or_404()
+
+    if request.method == "POST":
+        if assignment.type == TeachAssignmentTypes.CLICK_TO_RESOLVE:
+            ac = TeachAssignmentCompletions(
+                team_id = tg.id,
+                assignment_id = assignment.id,
+                user_id = cuser.id,
+                token = "".join(["abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"[random.randint(0, 61)] for i in range(16)])
+            )
+            ac.submission_at = datetime.datetime.now()
+            ac.is_submission_late = (assignment.to_be_completed_before is not None and ac.submission_at > assignment.to_be_completed_before)
+            ac.points_for_submission = assignment.max_points_for_completion
+
+            db.session.add(ac)
+            db.session.commit()
+            return redirect(url_for("teach.assignments", team=tg.token))
+
+    return render_template("teach/team/assignment_single.html", title=tg.name, thispage="teach", tg=tg, member=member, assignment=assignment, course_maker=mcourses.Courses.__init__, TeachAssignmentTypes=TeachAssignmentTypes)
 
 @teach.route("/<team>/assignments/<assignment>/grade")
 def assignment_grade(team, assignment):

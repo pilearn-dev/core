@@ -71,7 +71,7 @@ class TeachAssignmentCompletions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     team_id = db.Column(db.Integer, db.ForeignKey("teach_groups.id"))
     assignment_id = db.Column(db.Integer, db.ForeignKey("teach_assignments.id"))
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user_id = db.Column(db.Integer)#, db.ForeignKey("users.id"))
     token = db.Column(db.String(16), unique=True)
 
     submission_comment = db.Column(db.Text)

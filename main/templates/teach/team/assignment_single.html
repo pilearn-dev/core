@@ -1,0 +1,28 @@
+{% set pattern="individual" %}
+{% extends "layout_new.html" %}
+{% block body %}
+
+{% set teach_page = "assignments" %}
+
+<div class="container single-fluid p0">
+  {% include "teach/team/_header.html" %}
+  <div class="p8">
+    <h1>{{ assignment.title }}</h1>
+    {{ assignment.comment|markdown }}
+
+    <div class="content-box my4 p6">
+      <p>Für diese Aufgabe kannst du bis zu <span class="_badge _badge-s-dark">{{ assignment.max_points_for_completion }} {{ 'Punkt' if assignment.max_points_for_completion == 1 else 'Punkte' }}</span> erhalten.</p>
+
+
+      {% if assignment.type == TeachAssignmentTypes.CLICK_TO_RESOLVE %}
+      <p>Du hast diese Aufgabe erledigt?</p>
+      <form action="" method="POST">
+        <button class="_btn _btn--primary">Ja, abschließen</button>
+        <a href="{{ url_for('teach.assignments', team=tg.token) }}" class="_btn _btn--primary _btn-outline">Nein, zurück zur Übersicht</a>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
