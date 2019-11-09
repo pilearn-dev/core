@@ -119,26 +119,20 @@ def join_the_team(team, token):
 
 @teach.route("/<team>/welcome")
 def join_complete(team):
-    tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
-    # Access control
-    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).first_or_404()
+    tg, member, cuser = team_access_control(team, muser.getCurrentUser())
 
     return render_template("teach/team/welcome.html", title=_(u"Neue Lerngruppe erstellt"), thispage="teach", tg=tg)
 
 
 @teach.route("/<team>/dashboard")
 def dashboard(team):
-    tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
-    # Access control
-    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).first_or_404()
+    tg, member, cuser = team_access_control(team, muser.getCurrentUser())
 
     return render_template("teach/team/dashboard.html", title=tg.name, thispage="teach", tg=tg, member=member)
 
 @teach.route("/<team>/assignments")
 def assignments(team):
-    tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
-    # Access controle
-    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).first_or_404()
+    tg, member, cuser = team_access_control(team, muser.getCurrentUser())
 
     assignments = TeachAssignments.query.filter(TeachAssignments.team_id == tg.id, TeachAssignments.active).all()
 
@@ -158,9 +152,7 @@ def assignment_edit(team, assignment):
 
 @teach.route("/<team>/members")
 def members(team):
-    tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
-    # Access control
-    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).filter(TeachMember.is_admin == True).first_or_404()
+    tg, member, cuser = team_access_control(team, muser.getCurrentUser(), True)
 
     members = TeachMember.query.filter(TeachMember.group_id == tg.id).order_by(TeachMember.is_admin, TeachMember.user_id).all()
 
@@ -168,9 +160,7 @@ def members(team):
 
 @teach.route("/<team>/members/invitations", methods=["GET", "POST"])
 def member_invitations(team):
-    tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
-    # Access control
-    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).filter(TeachMember.is_admin == True).first_or_404()
+    tg, member, cuser = team_access_control(team, muser.getCurrentUser(), True)
 
     new_code = None
 
@@ -223,9 +213,7 @@ def member_invitations(team):
 
 @teach.route("/<team>/members/actions", methods=["POST"])
 def member_actions(team):
-    tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
-    # Access control + admin
-    TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).filter(TeachMember.is_admin == True).first_or_404()
+    tg, member, cuser = team_access_control(team, muser.getCurrentUser(), True)
 
     member_id = request.json["member_id"]
     action = request.json["action"]
@@ -282,9 +270,7 @@ def member_actions(team):
 
 @teach.route("/<team>/admin", methods=["GET", "POST"])
 def admin(team):
-    tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
-    # Access controll
-    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).filter(TeachMember.is_admin == True).first_or_404()
+    tg, member, cuser = team_access_control(team, muser.getCurrentUser(), True)
 
     saved = False
     if request.method == "POST":
@@ -299,9 +285,7 @@ def admin(team):
 
 @teach.route("/<team>/profile", methods=["GET", "POST"])
 def my_profile(team):
-    tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
-    # Access controll
-    member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).first_or_404()
+    tg, member, cuser = team_access_control(team, muser.getCurrentUser())
 
     saved = False
     if request.method == "POST":
@@ -310,3 +294,25 @@ def my_profile(team):
         saved = True
 
     return render_template("teach/team/profile.html", title=tg.name, thispage="teach", tg=tg, member=member, saved=saved)
+
+
+
+# Helper functions
+
+def team_access_control(team_token, current_user, requires_admin=False):
+    """
+        HELPER team_access_control (string team_token, model.User current_user, boolean requires_admin[default=False]) -> db[teach_group], db[teach_member], model.User current_user
+
+        Takes the team token and current user object and returns db objects for teach group and teach membership and the passed user object if authentication succeeded. Fails with 404 otherwise.
+
+        (Optionally) Also require admin rights in the team for successful validation.
+
+    """
+    tg = TeachGroup.query.filter(TeachGroup.token == team_token, TeachGroup.active == True).first_or_404()
+
+    if requires_admin:
+        member = TeachMember.query.filter(TeachMember.group_id == tg.id, TeachMember.user_id == current_user.id, TeachMember.active == True, TeachMember.is_admin == True).first_or_404()
+    else:
+        member = TeachMember.query.filter(TeachMember.group_id == tg.id, TeachMember.user_id == current_user.id, TeachMember.active == True).first_or_404()
+
+    return tg, member, current_user
