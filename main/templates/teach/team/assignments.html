@@ -8,6 +8,49 @@
   {% include "teach/team/_header.html" %}
   <div class="p8">
     <h1>Teach Aufgaben</h1>
+
+    <div class="grid -equal-columns">
+    {% for assignment in assignments %}
+      {% if loop.index % 2 == 0 %}
+      <div class="column6 column12__sm br3s br--primary br0s__sm"></div>
+      <div class="column6 column12__sm">
+      {% else %}
+      <div class="column6 column12__sm br3s br--primary br0s__sm">
+      {% endif %}
+        <div class="p6">
+          <div class="_card my6">
+              <div class="_card-title">{{ assignment.title }} <span class="_badge _badge-s-dark">{{ assignment.max_points_for_completion }} {{ 'Punkt' if assignment.max_points_for_completion == 1 else 'Punkte' }}</span></div>
+              <div class="_card-content">
+                  {{ assignment.comment|markdown }}
+                  {% if member.is_admin %}
+                  <div class="_btnlist">
+                    <a href="{{ url_for('teach.assignment_edit', team=tg.token, assignment=assignment.token) }}" class="_btn _btn-dark _btn-outline _btn-xs">Bearbeiten</a>
+                    {% if assignment.type == TeachAssignmentTypes.ASSIGNMENT_WITH_SUBMISSION %}
+                    <a href="{{ url_for('teach.assignment_grade', team=tg.token, assignment=assignment.token) }}" class="_btn _btn-dark _btn-outline _btn-xs">Bewerten</a>
+                    {% endif %}
+                  </div>
+                  {% endif %}
+              </div>
+              <div class="_card-footer">
+                  {% if assignment.associated_course %}
+                  <a href="{{ url_for('course_info', id=assignment.associated_course) }}" class="_btn _btn--primary _btn-lg">Zum Kurs</a>
+                  {% endif %}
+                  {% if assignment.type == TeachAssignmentTypes.CLICK_TO_RESOLVE %}
+                  <a href="{{ url_for('teach.assignment_complete', team=tg.token, assignment=assignment.token) }}" class="_btn _btn--primary _btn-lg">Abschließen</a>
+                  {% elif assignment.type == TeachAssignmentTypes.COURSE %}
+                  <a href="{{ url_for('teach.assignment_complete', team=tg.token, assignment=assignment.token) }}" class="_btn _btn--primary _btn-lg">Überprüfen und abschließen</a>
+                  {% elif assignment.type == TeachAssignmentTypes.ASSIGNMENT_WITH_SUBMISSION %}
+                  <a href="{{ url_for('teach.assignment_complete', team=tg.token, assignment=assignment.token) }}" class="_btn _btn--primary _btn-lg">Abgeben und abschließen</a>
+                  {% endif %}
+              </div>
+          </div>
+        </div>
+      </div>
+      {% if loop.index % 2 != 0 %}
+      <div class="column6 column12__sm"></div>
+      {% endif %}
+    {% endfor %}
+    </div>
   </div>
 </div>
 

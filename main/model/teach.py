@@ -51,7 +51,7 @@ class TeachAssignments(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     team_id = db.Column(db.Integer, db.ForeignKey("teach_groups.id"))
     token = db.Column(db.String(16), unique=True)
-    associated_course = db.Column(db.Integer, db.ForeignKey("courses.id"))
+    associated_course = db.Column(db.Integer)#, db.ForeignKey("courses.id"))
 
     type = db.Column(db.Enum(TeachAssignmentTypes))
     title = db.Column(db.String(100))
@@ -81,5 +81,5 @@ class TeachAssignmentCompletions(db.Model):
 
     points_for_submission = db.Column(db.SmallInteger)
     points_graded_by_teacher = db.Column(db.SmallInteger)
-    
+
     comment_by_teacher = db.Column(db.TEXT)

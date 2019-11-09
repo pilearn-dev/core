@@ -3,8 +3,8 @@ from flask import Blueprint, request, session, redirect, url_for, abort, render_
 
 from flask_babel import _
 
-from model.teach import TeachGroup, TeachMember, TeachInvitations
-from model import user as muser
+from model.teach import TeachGroup, TeachMember, TeachInvitations, TeachAssignments, TeachAssignmentTypes
+from model import user as muser, courses as mcourses
 from main.__init__ import db
 
 import datetime, time, random
@@ -137,10 +137,24 @@ def dashboard(team):
 @teach.route("/<team>/assignments")
 def assignments(team):
     tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
-    # Access control
+    # Access controle
     member = TeachMember.query.filter(TeachMember.group_id == tg.id).filter(TeachMember.user_id == muser.getCurrentUser().id).filter(TeachMember.active == True).first_or_404()
 
-    return render_template("teach/team/assignments.html", title=tg.name, thispage="teach", tg=tg, member=member)
+    assignments = TeachAssignments.query.filter(TeachAssignments.team_id == tg.id, TeachAssignments.active).all()
+
+    return render_template("teach/team/assignments.html", title=tg.name, thispage="teach", tg=tg, member=member, assignments=assignments, course_maker=mcourses.Courses.__init__, TeachAssignmentTypes=TeachAssignmentTypes)
+
+@teach.route("/<team>/assignments/<assignment>")
+def assignment_complete(team, assignment):
+    abort(404)
+
+@teach.route("/<team>/assignments/<assignment>/grade")
+def assignment_grade(team, assignment):
+    abort(404)
+
+@teach.route("/<team>/assignments/<assignment>/edit")
+def assignment_edit(team, assignment):
+    abort(404)
 
 @teach.route("/<team>/members")
 def members(team):
