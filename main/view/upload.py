@@ -46,6 +46,7 @@ def upload_remove_image(id, fn=None):
     if img.isDeleted():
         abort(404)
     path = img.getPath()
+    cu = muser.getCurrentUser()
     if cu.isMod() or cu.id == img.getDetail("user_id"):
         os.remove(os.path.join(UPLOAD_PATH, path))
         return "Ok."
