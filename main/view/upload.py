@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 UPLOAD_PATH = os.path.abspath("upload-images")
-USER_FILE_LIMIT = 20
+USER_FILE_LIMIT = 40
 
 def allowed_file(filename):
     return '.' in filename and \
