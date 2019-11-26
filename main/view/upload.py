@@ -27,7 +27,7 @@ def upload_dialog_new():
         abort(404)
     uc = mupload.UserUpload.has_by_user(cu)
     has_reached_limit = uc >= USER_FILE_LIMIT and not cu.isTeam()
-    return render_template("uploader/inline-dialog.html", cu=cu, has_reached_limit=has_reached_limit)
+    return render_template("uploader/inline-dialog.html", cu=cu, has_reached_limit=has_reached_limit, images=mupload.UserUpload.get_by_user(cu))
 
 def upload_get_image(id, fn=None):
     if not mupload.UserUpload.exists(id):

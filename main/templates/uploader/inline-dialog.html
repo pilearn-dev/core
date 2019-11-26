@@ -5,6 +5,28 @@
     <a href="#!" class="js--uploader-tab-upload">Neu hochladen</a>
   </div>
   <div class="p3 js--uploader-view-select">
+
+    <div class="grid">
+      <div class="p0 colbox-fill column12__sm">
+        <div class="grid p2">
+          {% for img in images %}
+            <button class="colbox150 p1 _btn _btn-on-light _btn--primary js--uploader-img-select" data-id="{{ img.id }}" data-url="{{ img.getPath() }}">
+              <img src="/upload/{{ img.id }}/{{ img.getPath() }}" alt="Bild {{ img.getPath() }}">
+            </button>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="column6 p2 column12__sm js--uploader-sidebar hide">
+        <h2 class="h-underlined">Informationen</h2>
+        <label class="form" for="js--uploader-name">Name</label>
+        <input readonly class="form" value="Teleskop" id="js--uploader-name">
+        <label class="form" for="js--uploader-description">Beschreibung</label>
+        <textarea class="form" id="js--uploader-description" placeholder="Beschreibe, was dieses Bild darstellt, damit es auch von Menschen verstanden wird, die nicht so gut sehen können."></textarea>
+        <button class="_btn _btn-danger _btn-outline">Löschen</button>
+        <button class="_btn _btn--primary">Auswählen</button>
+      </div>
+    </div>
+
   </div>
   <div class="p8 js--uploader-view-upload hide">
       <h1>Bild hochladen</h1>
@@ -31,11 +53,6 @@
       </form>
       {% endif %}
   </div>
-
-
-
-
-
 
 </div>
 <script src="/static/new_js/uploader.js"></script>
