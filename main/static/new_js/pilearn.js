@@ -34,7 +34,7 @@ var PiJS = {
     },
     fromURL: function(url, bd) {
       $.ajax({
-        method: "POST",
+        method: "GET",
         url: url,
         success: function( result ) {
           PiJS.dialog._generate(result, bd);
