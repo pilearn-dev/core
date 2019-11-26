@@ -1,0 +1,41 @@
+<div class="js--uploader">
+
+  <div class="_nav _nav-t">
+    <a href="#!" class="js--uploader-tab-select -active">Bild auswählen</a>
+    <a href="#!" class="js--uploader-tab-upload">Neu hochladen</a>
+  </div>
+  <div class="p3 js--uploader-view-select">
+  </div>
+  <div class="p8 js--uploader-view-upload hide">
+      <h1>Bild hochladen</h1>
+
+      {% if has_reached_limit %}
+      <div class="_alert _alert-danger">
+        <p><strong>Achtung.</strong> Du hast dein Upload-Limit erreicht.</p>
+      </div>
+      {% else %}
+      <form method="post" action="/upload/post" enctype="multipart/form-data">
+        <input type="file" name="file" class="form py16 px4 ta-c fs-heading my5">
+
+
+
+        <div class="_alert _alert-danger js--alert-type-forbidden hide">
+          <p><strong>Verboten.</strong> Dieser Dateityp ist nicht erlaubt. Erlaubt sind nur Bilder.</p>
+        </div>
+        <div class="_alert _alert-danger js--alert-none-selected hide">
+          <p><strong>Fehler.</strong> Bitte wähle eine Datei aus.</p>
+        </div>
+
+        <button type="submit" class="_btn _btn--primary _btn-lg">Weiter &raquo;</button>
+
+      </form>
+      {% endif %}
+  </div>
+
+
+
+
+
+
+</div>
+<script src="/static/new_js/uploader.js"></script>

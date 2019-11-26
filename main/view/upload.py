@@ -21,6 +21,14 @@ def upload_dialog():
             return render_template("uploader/dialog_select_first.html", cu=cu, images=mupload.UserUpload.get_by_user(cu), ufl=USER_FILE_LIMIT)
     return render_template("uploader/dialog.html", cu=cu)
 
+def upload_dialog_new():
+    cu = muser.getCurrentUser()
+    if muser.require_login() or cu.isDisabled():
+        abort(404)
+    uc = mupload.UserUpload.has_by_user(cu)
+    has_reached_limit = uc >= USER_FILE_LIMIT and not cu.isTeam()
+    return render_template("uploader/inline-dialog.html", cu=cu, has_reached_limit=has_reached_limit)
+
 def upload_get_image(id, fn=None):
     if not mupload.UserUpload.exists(id):
         abort(404)
@@ -82,6 +90,7 @@ def upload_post():
 
 def apply(app):
     app.route("/upload/dialog")(upload_dialog)
+    app.route("/upload/dialog/new")(upload_dialog_new)
     app.route("/upload/post", methods=["POST"])(upload_post)
     app.route("/upload/<int:id>/<fn>")(upload_get_image)
     app.route("/upload/<int:id>/info")(upload_get_image)
