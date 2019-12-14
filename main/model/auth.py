@@ -6,7 +6,7 @@ import json, urllib2
 OAUTH_CREDENTIALS = {
     "google": {
         "id": "960981775265-3hi6ojngqgscglu9eu18is576ou05m8i.apps.googleusercontent.com",
-        "secret": "UnjG8VIDvIJdNWLWiO6SN648"
+        "secret": "HKaRkWwqLJcuASrg6Gz52GkM"
     }
 }
 #========#
