@@ -1,6 +1,6 @@
 from flask import url_for, current_app, redirect, request
 from flask_oauthlib.client import OAuth
-import json, urllib2
+import json, urllib.request, urllib.error, urllib.parse
 
 # SECRET #
 OAUTH_CREDENTIALS = {

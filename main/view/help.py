@@ -7,7 +7,7 @@ help = Blueprint('help', __name__)
 
 @help.route("/")
 def index():
-    return render_template('help/index.html', title=u"Hilfe", thispage="help", help_cat=mhelp.HelpCategory)
+    return render_template('help/index.html', title="Hilfe", thispage="help", help_cat=mhelp.HelpCategory)
 
 @help.route("/category:<caturl>", methods=["GET", "POST"])
 def help_cathome(caturl):
@@ -37,9 +37,9 @@ def help_cathome(caturl):
                         caturl = request.form["url_part"]
 
                 return redirect(url_for("help_cathome", caturl=caturl, editor="no"))
-            return render_template('help/cathome--editor.html', title=u"Hilfe - Kategorie: " + cat.getTitle(), thispage="help", cat=cat)
+            return render_template('help/cathome--editor.html', title="Hilfe - Kategorie: " + cat.getTitle(), thispage="help", cat=cat)
         else:
-            return render_template('help/cathome.html', title=u"Hilfe - Kategorie: " + cat.getTitle(), thispage="help", cat=cat)
+            return render_template('help/cathome.html', title="Hilfe - Kategorie: " + cat.getTitle(), thispage="help", cat=cat)
     else:
         abort(404)
 
@@ -89,9 +89,9 @@ def help_any(fullurl):
 
                 return redirect(url_for("help_any", fullurl=fullurl, editor="no"))
                 #render_template('help/'+entry.getTemplate()+'--editor.html', title=u"Hilfe - " + entry.getTitle(), thispage="help", cat=cat, entry=entry, done=True)
-            return render_template('help/'+entry.getTemplate()+'--editor.html', title=u"Hilfe - " + entry.getTitle(), thispage="help", cat=cat, entry=entry, done=False)
+            return render_template('help/'+entry.getTemplate()+'--editor.html', title="Hilfe - " + entry.getTitle(), thispage="help", cat=cat, entry=entry, done=False)
         else:
-            return render_template('help/'+entry.getTemplate()+'.html', title=u"Hilfe - " + entry.getTitle(), thispage="help", cat=cat, entry=entry, privileges_data=sorted(mprivileges.getInformations(), key=lambda x:mprivileges.getOne(x["id"])))
+            return render_template('help/'+entry.getTemplate()+'.html', title="Hilfe - " + entry.getTitle(), thispage="help", cat=cat, entry=entry, privileges_data=sorted(mprivileges.getInformations(), key=lambda x:mprivileges.getOne(x["id"])))
     else:
         abort(404)
 
@@ -121,13 +121,13 @@ def help_newelement(element):
                 parent = None
             if request.method == "POST":
                 t = request.form.get("title", "Neuer Beitrag")
-                u = t.replace(u"π", "pi")
+                u = t.replace("π", "pi")
                 u = re.sub("[^a-zA-Z0-9- ]+", "", u)
                 u = re.sub("[ ]+", "-", u)
                 u = u.lower()[:50].strip("-")
                 x = mhelp.HelpEntry.create_new(cat.id, parent.id if parent else 0, t, u)
                 return redirect(url_for("help_any", fullurl=x.getUrl(), editor="yes"))
-            return render_template('help/new--entry.html', title=u"Hilfe", thispage="help", cat=cat, parent=parent)
+            return render_template('help/new--entry.html', title="Hilfe", thispage="help", cat=cat, parent=parent)
         else:
             abort(400)
     abort(404)
@@ -137,22 +137,22 @@ def help_newelement(element):
 def h():
     data = mprivileges.getInformations()
     data = sorted(data, key=lambda x:mprivileges.getOne(x["id"]))
-    return render_template('help/privileges.html', data=data, title=u"Hilfe", thispage="help")
+    return render_template('help/privileges.html', data=data, title="Hilfe", thispage="help")
 
 legal = Blueprint('legal', __name__)
 
 @legal.route("/")
 def index():
-    return render_template('legal/index.html', title=u"Hilfe", thispage="help")
+    return render_template('legal/index.html', title="Hilfe", thispage="help")
 
 @legal.route("/terms")
 def terms():
-    return render_template('legal/terms.html', title=u"Nutzungsbedingungen", thispage="help")
+    return render_template('legal/terms.html', title="Nutzungsbedingungen", thispage="help")
 
 @legal.route("/privacy")
 def privacy():
-    return render_template('legal/privacy.html', title=u"Datenschutz", thispage="help")
+    return render_template('legal/privacy.html', title="Datenschutz", thispage="help")
 
 @legal.route("/warranty")
 def warranty():
-    return render_template('legal/warranty.html', title=u"Haftung", thispage="help")
+    return render_template('legal/warranty.html', title="Haftung", thispage="help")

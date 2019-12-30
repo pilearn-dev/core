@@ -13,19 +13,19 @@ teach = Blueprint('teach', __name__)
 
 @teach.route("/")
 def index():
-    return render_template("teach/index.html", title=_(u"Über Teach"), thispage="teach")
+    return render_template("teach/index.html", title=_("Über Teach"), thispage="teach")
 
 @teach.route("/try", methods=["GET", "POST"])
 @teach.route("/create", methods=["GET", "POST"])
 def guided_creation():
     TIMEOUT = 3600
 
-    if session.get("teach-creation-last_activity", 0) + TIMEOUT < time.time() or request.values.has_key("start-from-beginning"):
-        if session.has_key("teach-creation-step"):
+    if session.get("teach-creation-last_activity", 0) + TIMEOUT < time.time() or "start-from-beginning" in request.values:
+        if "teach-creation-step" in session:
             del session["teach-creation-step"]
 
     session["teach-creation-last_activity"] = time.time()
-    if not session.has_key("teach-creation-step"):
+    if "teach-creation-step" not in session:
         if request.method == "POST":
             name = request.form.get("group_name")
 
@@ -35,7 +35,7 @@ def guided_creation():
 
             return redirect(url_for("teach.guided_creation"))
         else:
-            return render_template("teach/create.html", title=_(u"Neue Lerngruppe erstellen"), thispage="teach", step=1)
+            return render_template("teach/create.html", title=_("Neue Lerngruppe erstellen"), thispage="teach", step=1)
 
     elif session.get("teach-creation-step") == 2:
         if request.method == "POST":
@@ -51,7 +51,7 @@ def guided_creation():
 
             return redirect(url_for("teach.guided_creation"))
         else:
-            return render_template("teach/create.html", title=_(u"Neue Lerngruppe erstellen"), thispage="teach", step=2)
+            return render_template("teach/create.html", title=_("Neue Lerngruppe erstellen"), thispage="teach", step=2)
 
     elif session.get("teach-creation-step") == 3:
         if request.method == "POST":
@@ -72,7 +72,7 @@ def guided_creation():
 
             return redirect(url_for("teach.creation_complete", team=tg.token))
         else:
-            return render_template("teach/create.html", title=_(u"Neue Lerngruppe erstellen"), thispage="teach", step=3)
+            return render_template("teach/create.html", title=_("Neue Lerngruppe erstellen"), thispage="teach", step=3)
 
     abort(500)
 
@@ -80,7 +80,7 @@ def guided_creation():
 @teach.route("/welcome/<team>")
 def creation_complete(team):
     tg = TeachGroup.query.filter(TeachGroup.token == team).filter(TeachGroup.active == True).first_or_404()
-    return render_template("teach/welcome.html", title=_(u"Neue Lerngruppe erstellt"), thispage="teach", tg=tg)
+    return render_template("teach/welcome.html", title=_("Neue Lerngruppe erstellt"), thispage="teach", tg=tg)
 
 
 @teach.route("/<team>/join/<token>", methods=["GET", "POST"])
@@ -121,7 +121,7 @@ def join_the_team(team, token):
 def join_complete(team):
     tg, member, cuser = team_access_control(team, muser.getCurrentUser())
 
-    return render_template("teach/team/welcome.html", title=_(u"Neue Lerngruppe erstellt"), thispage="teach", tg=tg)
+    return render_template("teach/team/welcome.html", title=_("Neue Lerngruppe erstellt"), thispage="teach", tg=tg)
 
 
 @teach.route("/<team>/dashboard")
@@ -261,7 +261,7 @@ def member_actions(team):
 
             return jsonify({"result": "success"})
         else:
-            return jsonify({"result": "error", "message": _(u"Zu löschendes Mitglied ist nicht inaktiv.")})
+            return jsonify({"result": "error", "message": _("Zu löschendes Mitglied ist nicht inaktiv.")})
 
     elif action == "deactivate":
         if member.active:
@@ -270,7 +270,7 @@ def member_actions(team):
 
             return jsonify({"result": "success"})
         else:
-            return jsonify({"result": "error", "message": _(u"Zu deaktivierendes Mitglied ist nicht aktiv.")})
+            return jsonify({"result": "error", "message": _("Zu deaktivierendes Mitglied ist nicht aktiv.")})
 
     elif action == "activate":
         if not member.active:
@@ -279,7 +279,7 @@ def member_actions(team):
 
             return jsonify({"result": "success"})
         else:
-            return jsonify({"result": "error", "message": _(u"Zu aktivierendes Mitglied ist nicht inaktiv.")})
+            return jsonify({"result": "error", "message": _("Zu aktivierendes Mitglied ist nicht inaktiv.")})
 
     elif action == "grantadmin":
         if member.active and not member.is_admin:
@@ -288,7 +288,7 @@ def member_actions(team):
 
             return jsonify({"result": "success"})
         else:
-            return jsonify({"result": "error", "message": _(u"Zu adminisierendes Mitglied ist nicht aktiv/bereits Admin.")})
+            return jsonify({"result": "error", "message": _("Zu adminisierendes Mitglied ist nicht aktiv/bereits Admin.")})
 
     elif action == "revokeadmin":
         if member.active and member.is_admin:
@@ -297,7 +297,7 @@ def member_actions(team):
 
             return jsonify({"result": "success"})
         else:
-            return jsonify({"result": "error", "message": _(u"Zu deadminisierendes Mitglied ist nicht aktiv/Admin.")})
+            return jsonify({"result": "error", "message": _("Zu deadminisierendes Mitglied ist nicht aktiv/Admin.")})
 
 @teach.route("/<team>/admin", methods=["GET", "POST"])
 def admin(team):

@@ -15,7 +15,7 @@ class NumericDistribution:
             con = lite.connect('databases/'+self.filename)
             cur = con.cursor()
             cur.execute("SELECT "+self.column+" FROM "+self.table+" WHERE "+self.filter)
-            self.__data = sorted(list(map(lambda x: x[0], cur.fetchall())))
+            self.__data = sorted(list([x[0] for x in cur.fetchall()]))
             return self.__data
         except lite.Error as e:
             print(e)

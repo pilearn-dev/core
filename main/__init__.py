@@ -4,11 +4,11 @@ from flask import Flask, request, session, redirect, url_for, abort, render_temp
 
 import secrets, random
 
-from model.settings import Settings as S
+from .model.settings import Settings as S
 
-from controller import md, num as cnum
-from model import privileges as mprivileges, tags as mtags, user as muser, forum as mforum, proposal as mproposal, courses as mcourses, reviews as mreviews, post_templates as mpost_templates
-from sha1 import md5
+from .controller import md, num as cnum
+from .model import privileges as mprivileges, tags as mtags, user as muser, forum as mforum, proposal as mproposal, courses as mcourses, reviews as mreviews, post_templates as mpost_templates
+from .sha1 import md5
 
 import json
 
@@ -133,7 +133,7 @@ def prepare_request():
         session.pop('login', None)
         return redirect(url_for("index"))
 
-from routes import *
+from .routes import *
 
 if __name__ == '__main__':
     DebuggedApplication(app, evalex=True, console_path="/~dev/console", pin_security=False, show_hidden_frames=False)

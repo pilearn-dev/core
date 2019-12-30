@@ -14,7 +14,7 @@ class SettingsBlueprint:
             cur = con.cursor()
             cur.execute("UPDATE settings SET setting_value=? WHERE setting_key=?", (v, k))
             con.commit()
-            if k in self.Cache.keys():
+            if k in list(self.Cache.keys()):
                 del self.Cache[k]
             return True
         finally:
@@ -22,11 +22,10 @@ class SettingsBlueprint:
                 con.close()
 
     def get(self, k, vd=None):
-        if k in self.Cache.keys():
+        if k in list(self.Cache.keys()):
             entry = self.Cache[k]
             if time.time() - entry[1] < self.CacheDuration:
                 return entry[0]
-
         try:
             con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row

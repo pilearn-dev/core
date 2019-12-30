@@ -60,7 +60,7 @@ def render_email_html(text_old, contents):
                             k += "<td bgcolor=\"#E1ECF4\"><font size=\"1.5\" color=\"#39239d\">"+i+"</font></td>"
                     return "<table style=\"display: inline;\" cellpadding=\"5px\"><tr cellspacing=\"7.5px\">"+k+"</tr></table>"
 
-                line = _p(map(_i, c))
+                line = _p(list(map(_i, c)))
             text.append(line)
 
     text = "\n\n".join(text)
@@ -94,7 +94,7 @@ def send_textbased_email(to, subject, text, contents=None):
         server.ehlo()
         server.starttls()
         server.ehlo()
-        print pidata["mail_configuration"]["password"]
+        print((pidata["mail_configuration"]["password"]))
         server.login(pidata["mail_configuration"]["user"],bytearray(pidata["mail_configuration"]["password"], 'utf-8'))
         server.sendmail(senderaddr, to, msg.as_string())
         server.quit()

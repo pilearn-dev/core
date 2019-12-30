@@ -22,7 +22,7 @@ def login():
             session['login'] = user_id
             session["login_time"] = time.time()
 
-            if request.values.has_key("continue"):
+            if "continue" in request.values:
                 return redirect(request.values.get("continue"))
 
             return redirect(url_for('index'))
@@ -47,7 +47,7 @@ def register():
                     datao = muser.User.from_id(data)
                     datao.setDetail("name", "benutzer-" + str(datao.id))
                     datao.setDetail("realname", "benutzer-" + str(datao.id))
-                    if 3 <= len(user_name) and u"♦" not in user_name:
+                    if 3 <= len(user_name) and "♦" not in user_name:
                         datao.setDetail("realname", user_name)
                         datao.setDetail("name", user_name)
                 if data == -3:
@@ -57,7 +57,7 @@ def register():
                     session['login'] = user_id
                     session["login_time"] = time.time()
 
-                    if request.values.has_key("continue"):
+                    if "continue" in request.values:
                         return redirect(request.values.get("continue"))
 
                     return redirect(url_for('tour'))
@@ -67,7 +67,7 @@ def register():
             session['login'] = user_id
             session["login_time"] = time.time()
 
-            if request.values.has_key("continue"):
+            if "continue" in request.values:
                 return redirect(request.values.get("continue"))
 
             return redirect(url_for('index'))
@@ -81,7 +81,7 @@ def reset_password():
 
             url = url_for("reset_password_verify", id=data[0], _external=True)
 
-            cmail.send_textbased_email(request.form['email'], _(u"Dein Passwort-Zurücksetz-Code"), _(u"""Hallo,
+            cmail.send_textbased_email(request.form['email'], _("Dein Passwort-Zurücksetz-Code"), _("""Hallo,
 
 du hast eine Anfrage auf &pi;-Learn gesendet, um das Passwort für diese E-Mail-Adresse zurückzusetzen.
 
@@ -99,7 +99,7 @@ Wenn diese Anfrage nicht von dir stammt, kannst du diese E-Mail einfach löschen
 
             return redirect(url)
         error = "invalid"
-    return render_template('passwordreset.html', error=error, title=_(u"Passwort zurücksetzen"), thispage="login")
+    return render_template('passwordreset.html', error=error, title=_("Passwort zurücksetzen"), thispage="login")
 
 def reset_password_verify(id):
     if not muser.User.passwdreset_has_request(id):
@@ -111,7 +111,7 @@ def reset_password_verify(id):
             error = "success"
         else:
             error = "invalid-code"
-    return render_template('passwordreset_verify.html', error=error, title=_(u"Passwort zurücksetzen"), thispage="login")
+    return render_template('passwordreset_verify.html', error=error, title=_("Passwort zurücksetzen"), thispage="login")
 
 def logout():
     user = muser.getCurrentUser()

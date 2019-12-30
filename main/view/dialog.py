@@ -10,7 +10,7 @@ def _info(msg):
 
 def _dialog(item, route):
     d = mdialog.DIALOG_AREAS[item]
-    if route in d.keys():
+    if route in list(d.keys()):
         return jsonify(d[route])
     return _error("Zugriffspunkt nicht gefunden.")
 

@@ -113,7 +113,7 @@ class Vote:
             cur = con.cursor()
             cur.execute("SELECT id FROM election_votes WHERE election_id=?", (election_id,))
             data = cur.fetchall()
-            dn = list(map(lambda x:cls(x["id"]),data))
+            dn = list([cls(x["id"]) for x in data])
             return dn
         except lite.Error as e:
             print(e)
@@ -518,7 +518,7 @@ class Election:
             con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            STDTEXT = u"""Unser Konzept ist es, dass &pi;-Learn eine Community-kontrollierte Open Learning-Plattform sein soll. Dieses Konzept wird zum ersten durch die Reputation erfüllt, eine Punktzahl, die jedem Benutzer aufgrund der Qualität seiner Inhalte zugewiesen wird. Dieser Reputation entsprechen bestimmte Privilegien, mit denen die Benutzer helfen können, diese Seite zu verwalten.
+            STDTEXT = """Unser Konzept ist es, dass &pi;-Learn eine Community-kontrollierte Open Learning-Plattform sein soll. Dieses Konzept wird zum ersten durch die Reputation erfüllt, eine Punktzahl, die jedem Benutzer aufgrund der Qualität seiner Inhalte zugewiesen wird. Dieser Reputation entsprechen bestimmte Privilegien, mit denen die Benutzer helfen können, diese Seite zu verwalten.
 
 Weiterhin wollen wir, dass jeder sein Wissen gleichberechtigt mit anderen teilen darf und vermeiden es daher, den Inhalt durch von uns beauftragte Benutzer zu moderieren. Statdessen soll dieser Auftrag von den Benutzern dieser Webseite selbst kommen. Darum halten wir bei Bedarf Wahlen ab, um Moderatoren zu ernenen. Diesen Moderatoren kommt eine besondere Verantwortung zu, da sie Zugriff auf die höchsten Privilegien erhalten.
 
@@ -556,7 +556,7 @@ Moderatoren verwalten und kontrollieren ("moderieren") diese Webseite. Sie könn
             cur = con.cursor()
             cur.execute("SELECT * FROM elections ORDER BY id DESC")
             data = cur.fetchall()
-            l = list(map(lambda x:Election(x[0]), data))
+            l = list([Election(x[0]) for x in data])
             return l
         except lite.Error as e:
             return []

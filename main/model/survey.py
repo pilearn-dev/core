@@ -86,12 +86,12 @@ class Survey:
 
     def getResults(self):
         d = json.loads(self.getDetail("results"))
-        d = sorted(d.items(), key=lambda x:int(x[0]))
+        d = sorted(list(d.items()), key=lambda x:int(x[0]))
         return d
 
     def getLabel(self):
         label = self.getTitle()
-        label = label.replace(u"π", "pi")
+        label = label.replace("π", "pi")
         label = re.sub("[^a-zA-Z0-9- ]+", "", label)
         label = re.sub("[ ]+", "-", label)
         label = label.lower()[:50].strip("-")

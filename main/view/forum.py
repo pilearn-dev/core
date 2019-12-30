@@ -73,12 +73,12 @@ def forum_tag_options(id, tag, label=None):
                 errors = []
 
                 if len(excerpt) > 300:
-                    errors.append(u"Die Kurzbeschreibung ist zu lang. Maximal 300 Zeichen möglich. (aktuell: %i)" % len(excerpt))
+                    errors.append("Die Kurzbeschreibung ist zu lang. Maximal 300 Zeichen möglich. (aktuell: %i)" % len(excerpt))
                 else:
                     tagged.setDetail("excerpt", excerpt)
 
                 if len(deprecation_notice) > 150:
-                    errors.append(u"Die Kurzbeschreibung ist zu lang. Maximal 150 Zeichen möglich. (aktuell: %i)" % len(deprecation_notice))
+                    errors.append("Die Kurzbeschreibung ist zu lang. Maximal 150 Zeichen möglich. (aktuell: %i)" % len(deprecation_notice))
                 else:
                     tagged.setDetail("deprecation_notice", deprecation_notice)
 
@@ -144,7 +144,7 @@ def forum_new(id, label=None):
                     article.setDetail("last_activity_date", time.time())
                     article.setDetail("creation_date", time.time())
 
-                    article.addRevision(title, body, "|".join(["["+t+"]" for t in tags]), cuser, u"Ursprüngliche Version")
+                    article.addRevision(title, body, "|".join(["["+t+"]" for t in tags]), cuser, "Ursprüngliche Version")
 
                     for t in tags:
 
@@ -202,7 +202,7 @@ def forum_post_answer(forum_id, post_id, forum_label=None):
             else:
 
                 answer = mforum.Answer.createNew(forum_id, post_id, body, cuser)
-                answer.addRevision(body, cuser, u"Ursprüngliche Version")
+                answer.addRevision(body, cuser, "Ursprüngliche Version")
 
                 article.setDetail("last_activity_date", time.time())
                 answer.setDetail("last_activity_date", time.time())
@@ -261,10 +261,10 @@ def forum_post_mod(forum_id, post_id, forum_label=None):
         post_id = int(post_id)
     except:
         abort(404)
-    if "property" not in request.json.keys():
+    if "property" not in list(request.json.keys()):
         abort(404)
     property = request.json["property"]
-    if "new_value" not in request.json.keys():
+    if "new_value" not in list(request.json.keys()):
         abort(404)
     new_value = request.json["new_value"]
     if mforum.Forum.exists(forum_id):
@@ -452,7 +452,7 @@ def forum_post_rollback(forum_id, post_id, rev, forum_label=None):
             try:
                 rev = article.getRevisionById(rev)
             except Exception as e:
-                print("#", e)
+                print(("#", e))
                 abort(404)
             if form == {}:
                 rev["tags"] = [i[1:-1] for i in rev["tags"].split("|")]
@@ -463,7 +463,7 @@ def forum_post_rollback(forum_id, post_id, rev, forum_label=None):
                 article.setDetail("title", rev["title"])
                 article.setDetail("tags", rev["tags"])
                 print(rev)
-                article.addRevision(rev["title"], rev["content"], rev["tags"], cuser, u"Wiederherstellung einer früheren Version: " + comment)
+                article.addRevision(rev["title"], rev["content"], rev["tags"], cuser, "Wiederherstellung einer früheren Version: " + comment)
             return redirect(url_for("forum_view", id=post_id, forum_id=forum_id))
     abort(404)
 
@@ -538,10 +538,10 @@ def forum_answer_mod(forum_id, answer_id, forum_label=None):
         answer_id = int(answer_id)
     except:
         abort(404)
-    if "property" not in request.json.keys():
+    if "property" not in list(request.json.keys()):
         abort(404)
     property = request.json["property"]
-    if "new_value" not in request.json.keys():
+    if "new_value" not in list(request.json.keys()):
         abort(404)
     new_value = request.json["new_value"]
     if mforum.Forum.exists(forum_id):
@@ -675,7 +675,7 @@ def forum_answer_rollback(forum_id, answer_id, rev, forum_label=None):
             else:
                 comment = request.form["comment"]
                 answer.setDetail("content", rev["content"])
-                answer.addRevision(rev["content"], cuser, u"Wiederherstellung einer früheren Version: " + comment)
+                answer.addRevision(rev["content"], cuser, "Wiederherstellung einer früheren Version: " + comment)
             return redirect(url_for("forum_view", id=article.id, forum_id=forum_id) + "#answer-" + str(answer.id))
     abort(404)
 
@@ -1200,14 +1200,14 @@ def _validateQuestion(title, body, tags, cuser, forum_id):
     warnings = []
 
     if not cuser.isLoggedIn():
-        errors.append(u"Du musst dich anmelden, bevor du eine Frage stellen kannst.")
+        errors.append("Du musst dich anmelden, bevor du eine Frage stellen kannst.")
     elif cuser.isDisabled():
-        errors.append(u"Du bist gesperrt und darfst keine Fragen stellen.")
+        errors.append("Du bist gesperrt und darfst keine Fragen stellen.")
 
     if len(title) > 100:
-        errors.append(u"Der Titel ist zu lang. Höchstens 100 Zeichen möglich. (aktuell: %i)" % len(title))
+        errors.append("Der Titel ist zu lang. Höchstens 100 Zeichen möglich. (aktuell: %i)" % len(title))
     elif len(title) < 10:
-        errors.append(u"Der Titel ist zu kurz. Versuche das Problem ausführlich zu beschreiben. Mindestens zehn Zeichen erforderlich. (aktuell: %i)" % len(title))
+        errors.append("Der Titel ist zu kurz. Versuche das Problem ausführlich zu beschreiben. Mindestens zehn Zeichen erforderlich. (aktuell: %i)" % len(title))
 
     title = title.replace("<", "&lt;")
     title = title.replace("\"", "&quot;")
@@ -1220,18 +1220,18 @@ def _validateQuestion(title, body, tags, cuser, forum_id):
 
 
     if len(tags) > 5:
-        errors.append(u"Du hast zu viel Schlagwörter verwendet. Maximal 5 möglich. (aktuell: %i)" % len(tags))
+        errors.append("Du hast zu viel Schlagwörter verwendet. Maximal 5 möglich. (aktuell: %i)" % len(tags))
     elif len(tags) < 1:
-        errors.append(u"Füge mindestens ein Schlagwort hinzu. (aktuell: %i)" % len(tags))
+        errors.append("Füge mindestens ein Schlagwort hinzu. (aktuell: %i)" % len(tags))
     elif len(tags) < 2:
-        warnings.append(u"Du hast nur ein Schlagwort verwendet. Wir empfehlen mindestens ein kategorisierendes Schlagwort (diskussion, support, fehler oder verbesserungsidee) und ein thematisches Schlagwort (z.B. forum oder polynomdivision).")
+        warnings.append("Du hast nur ein Schlagwort verwendet. Wir empfehlen mindestens ein kategorisierendes Schlagwort (diskussion, support, fehler oder verbesserungsidee) und ein thematisches Schlagwort (z.B. forum oder polynomdivision).")
 
     for t in tags:
 
         if len(t) == 0:
-            errors.append(u"Ein Schlagwort darf nicht leer sein.")
+            errors.append("Ein Schlagwort darf nicht leer sein.")
         elif len(t) > 25:
-            errors.append(u"Ein Schlagwort darf nicht mehr als 25 Zeichen lang sein. ("+t+" hat %i)" % len(t))
+            errors.append("Ein Schlagwort darf nicht mehr als 25 Zeichen lang sein. ("+t+" hat %i)" % len(t))
 
 
         tagged = mtags.ForumTag.byName(t)
@@ -1240,12 +1240,12 @@ def _validateQuestion(title, body, tags, cuser, forum_id):
         if not tagged:
             continue
         if tagged.isModOnly() and not (cuser.isMod() or cuser.isTeam()):
-            errors.append(u"Das Schlagwort " + t + u" kann nur von ♦-Moderatoren hinzugefügt werden.")
+            errors.append("Das Schlagwort " + t + " kann nur von ♦-Moderatoren hinzugefügt werden.")
         if not tagged.isApplicable():
             if tagged.getDeprecationWarning():
-                errors.append(u"Das Schlagwort " + t + u" darf nicht verwendet werden: " + tagged.getDeprecationWarning())
+                errors.append("Das Schlagwort " + t + " darf nicht verwendet werden: " + tagged.getDeprecationWarning())
             else:
-                errors.append(u"Das Schlagwort " + t + u" darf nicht verwendet werden.")
+                errors.append("Das Schlagwort " + t + " darf nicht verwendet werden.")
         elif tagged.getDeprecationWarning():
             warnings.append(tagged.getDeprecationWarning())
 
@@ -1256,22 +1256,22 @@ def _validateBody(body, cuser, forum_id, isquestion=False):
     warnings = []
 
     if len(body) > 15000:
-        errors.append(u"Der Inhalt ist zu lang. Höchstens 15.000 Zeichen möglich. (aktuell: %i)" % len(body))
+        errors.append("Der Inhalt ist zu lang. Höchstens 15.000 Zeichen möglich. (aktuell: %i)" % len(body))
     elif len(body) > 10000:
-        warnings.append(u"Der Inhalt ist relativ lang (mehr als 10.000 Zeichen). Kannst du das nicht etwas kürzer fassen? (aktuell: %i)" % len(body))
+        warnings.append("Der Inhalt ist relativ lang (mehr als 10.000 Zeichen). Kannst du das nicht etwas kürzer fassen? (aktuell: %i)" % len(body))
     elif len(body) < 20:
         if isquestion:
-            errors.append(u"Der Inhalt ist zu kurz. Versuche das Problem ausführlich zu beschreiben. Mindestens zwanzig Zeichen erforderlich. (aktuell: %i)" % len(body))
+            errors.append("Der Inhalt ist zu kurz. Versuche das Problem ausführlich zu beschreiben. Mindestens zwanzig Zeichen erforderlich. (aktuell: %i)" % len(body))
         else:
-            errors.append(u"Der Inhalt ist zu kurz. Versuche ausführliche Antworten zu liefern, die erklären, wie und warum die Lösung korrekt ist. Mindestens zwanzig Zeichen erforderlich. (aktuell: %i)" % len(body))
+            errors.append("Der Inhalt ist zu kurz. Versuche ausführliche Antworten zu liefern, die erklären, wie und warum die Lösung korrekt ist. Mindestens zwanzig Zeichen erforderlich. (aktuell: %i)" % len(body))
     elif len(body) < 50:
         if isquestion:
-            warnings.append(u"Der Inhalt ist etwas kurz. Versuche das Problem ausführlich zu beschreiben. Mindestens fünfzig Zeichen empfohlen. (aktuell: %i)" % len(body))
+            warnings.append("Der Inhalt ist etwas kurz. Versuche das Problem ausführlich zu beschreiben. Mindestens fünfzig Zeichen empfohlen. (aktuell: %i)" % len(body))
         else:
-            warnings.append(u"Der Inhalt ist etwas kurz. Versuche ausführliche Antworten zu liefern, die erklären, wie und warum die Lösung korrekt ist.Mindestens fünfzig Zeichen empfohlen. (aktuell: %i)" % len(body))
+            warnings.append("Der Inhalt ist etwas kurz. Versuche ausführliche Antworten zu liefern, die erklären, wie und warum die Lösung korrekt ist.Mindestens fünfzig Zeichen empfohlen. (aktuell: %i)" % len(body))
 
     if (len(body) > 500 and body.count("\n\n") < 2) or (len(body) > 1500 and body.count("\n\n") < 4):
-        warnings.append(u"Bitte gliedere deinen Text in Abschnitte (zwei Zeilenumbrücke). Das ermöglicht es potentiellen Antwortenden deinen Text einfacher zu lesen.")
+        warnings.append("Bitte gliedere deinen Text in Abschnitte (zwei Zeilenumbrücke). Das ermöglicht es potentiellen Antwortenden deinen Text einfacher zu lesen.")
 
     return errors, warnings
 

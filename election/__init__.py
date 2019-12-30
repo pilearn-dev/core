@@ -8,7 +8,7 @@ import secrets, random
 
 from main.controller import md, num as cnum
 from main.model import privileges as mprivileges, tags as mtags, user as muser, reviews as mreviews, forum as mforum
-from model import Election, Nomination, Question, Vote
+from .model import Election, Nomination, Question, Vote
 import traceback as tb, json, datetime, time
 
 from main.sha1 import md5
@@ -88,7 +88,7 @@ def prepare_request():
 
 @app.route('/')
 def index():
-    return render_template("list.html", title=u"Wahlen", thispage="elections", data=Election.getAll(), Nomination=Nomination)
+    return render_template("list.html", title="Wahlen", thispage="elections", data=Election.getAll(), Nomination=Nomination)
 
 @app.route('/<int:id>')
 def vote(id):
@@ -164,7 +164,7 @@ def texts(id):
         abort(404)
     return render_template(
         "election-forum-templates.html",
-        title=u"Textvorschläge: " + e.getTitle(),
+        title="Textvorschläge: " + e.getTitle(),
         thispage="elections", e=e, Nomination=Nomination)
 
 @app.route('/<int:id>/get-ballot-data/<filename>', methods=["GET", "POST"])
@@ -194,7 +194,7 @@ def get_ballot_data(id, filename=None):
 
 
     cl = []
-    items = sorted(candidate_assoc.values(), key=lambda x:x[0])
+    items = sorted(list(candidate_assoc.values()), key=lambda x:x[0])
     for i in items:
         c = i[1].getCandidate()
         cl.append('"' + c.getDetail('name') + '.' + str(c.id) + '@pilearn.de"')
@@ -221,7 +221,7 @@ def candidate(id):
         pretext = ""
         if Nomination.exists(id, cuser):
             pretext = Nomination.from_user(id, cuser).getDetail("message")
-        return render_template("add-nomination.html", vote_name=e.getTitle(), vote_id=id, title=e.getTitle() + u" - Kandidatur bearbeiten", pretext=pretext, candminrep=e.getMinCandRep())
+        return render_template("add-nomination.html", vote_name=e.getTitle(), vote_id=id, title=e.getTitle() + " - Kandidatur bearbeiten", pretext=pretext, candminrep=e.getMinCandRep())
 
 @app.route('/<int:id>/api', methods=["POST"])
 def api(id):
@@ -281,7 +281,7 @@ def api(id):
             ids = command["results"].split(",")
             ids = [s.strip()[:-len("@pilearn.de")] for s in ids]
             ids = [s.split(".")[1] for s in ids]
-            ids = map(int, ids)
+            ids = list(map(int, ids))
         cand = e.getCandidates()
         for c in cand:
             if c.getDetail("state") == 1:

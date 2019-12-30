@@ -1,14 +1,14 @@
 # coding: utf-8
 
-from model.settings import Settings as S
+from .model.settings import Settings as S
 
-from model import privileges as mprivileges, tags as mtags, user as muser, forum as mforum, proposal as mproposal, courses as mcourses, reviews as mreviews, post_templates as mpost_templates
+from .model import privileges as mprivileges, tags as mtags, user as muser, forum as mforum, proposal as mproposal, courses as mcourses, reviews as mreviews, post_templates as mpost_templates
 
 if S.get("enable-teaching-teams") == "yes":
-    from model.teach import TeachGroup, TeachMember
+    from .model.teach import TeachGroup, TeachMember
 
-from view import auth as vauth, user as vuser, review as vreview, help as vhelp, courses as vcourses, forum as vforum, jsonapi as vjsonapi, survey as vsurvey, tools as vtools, dialog as vdialog, modmsg as vmodmsg, helpdesk as vhelpdesk, upload, topbar as vtopbar, badges as vbadges, announcements as vannouncements, pull_requests as vpull_requests, admin as vadmin
-import view
+from .view import auth as vauth, user as vuser, review as vreview, help as vhelp, courses as vcourses, forum as vforum, jsonapi as vjsonapi, survey as vsurvey, tools as vtools, dialog as vdialog, modmsg as vmodmsg, helpdesk as vhelpdesk, upload, topbar as vtopbar, badges as vbadges, announcements as vannouncements, pull_requests as vpull_requests, admin as vadmin
+from . import view
 
 import traceback as tb
 
@@ -19,7 +19,7 @@ from flask_babel import _
 
 from flask import request, session, redirect, url_for, abort, render_template, g, make_response
 
-from __init__ import app
+from .__init__ import app
 
 @app.route("/")
 def index():
@@ -125,7 +125,7 @@ def error404(x=None):
 
 @app.errorhandler(405)
 def error405(x=None):
-    return render_template('error405.html', title=u"405 Ungültiger Zugriff"), 405
+    return render_template('error405.html', title="405 Ungültiger Zugriff"), 405
 
 @app.route("/wp-login.php")
 @app.route("/backend")
@@ -133,12 +133,12 @@ def error405(x=None):
 @app.route("/wp-admin")
 @app.errorhandler(418)
 def error418(x=None):
-    return render_template('error418.html', title=u"418 Der Kaffee ist alle"), 418
+    return render_template('error418.html', title="418 Der Kaffee ist alle"), 418
 
 @app.route("/forbidden")
 @app.errorhandler(403)
 def error403(x=None):
-    return render_template('error403.html', title=u"403 Zugriff verboten"), 403
+    return render_template('error403.html', title="403 Zugriff verboten"), 403
 
 @app.route("/error")
 @app.errorhandler(500)

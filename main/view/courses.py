@@ -19,13 +19,13 @@ def courses_index():
             now_courses.append(c)
             if len(now_courses) == 5:
                 break
-    return render_template('courses/index.html', title=_(u"Kursüberblick"), thispage="courses", my_courses=my_courses, now_courses=now_courses)
+    return render_template('courses/index.html', title=_("Kursüberblick"), thispage="courses", my_courses=my_courses, now_courses=now_courses)
 
 def courses_propose():
     cuser = muser.getCurrentUser()
     if not cuser.isLoggedIn() or cuser.isDisabled(): abort(403)
     if request.method == "GET":
-        return render_template('courses/propose.html', title=u"Kurs vorschlagen", thispage="courses", topic=mcourses.Topic)
+        return render_template('courses/propose.html', title="Kurs vorschlagen", thispage="courses", topic=mcourses.Topic)
     elif request.method == "POST":
         if cuser.may("course_propose"):
             data = request.json
@@ -93,7 +93,7 @@ def courses_search():
         cnum = mcourses.Courses.queryNum(q, add)
         courses = mcourses.Courses.query(q, add, 0, 30)
     #print(cquery.buildSFTextQuery("text", s))
-    return render_template('courses/search.html', title=u"Kurse durchsuchen", thispage="courses", topic=mcourses.Topic, courses=courses, cnum=cnum)
+    return render_template('courses/search.html', title="Kurse durchsuchen", thispage="courses", topic=mcourses.Topic, courses=courses, cnum=cnum)
 
 def course_info(id,label=None):
     if not mcourses.Courses.exists(id):
@@ -179,12 +179,12 @@ def course_admin(id,label=None, page="identity"):
                 user_to_receive = muser.User(request.json["user"])
                 role_to_receive = request.json["role"]
                 if not role_to_receive in range(1, 5):
-                    return jsonify({ "result": "error", "error": u"Ungültige Ziel-Rolle" })
+                    return jsonify({ "result": "error", "error": "Ungültige Ziel-Rolle" })
                 if course.isEnrolled(user_to_receive):
                     course.setCourseRole(user_to_receive, role_to_receive)
                     return jsonify({ "result": "success"})
                 else:
-                    return jsonify({ "result": "error", "error": u"Nur möglich für Benutzer, die im Kurs eingeschrieben sind." })
+                    return jsonify({ "result": "error", "error": "Nur möglich für Benutzer, die im Kurs eingeschrieben sind." })
             elif request.json["action"] == "revoke-role":
                 user_to_receive = muser.User(request.json["user"])
                 if course.isEnrolled(user_to_receive) and course.getCourseRole(user_to_receive) != 1:
@@ -194,12 +194,12 @@ def course_admin(id,label=None, page="identity"):
                 user_to_receive = muser.User(request.json["user"])
                 if course.isEnrolled(user_to_receive) and course.getCourseRole(user_to_receive) == 1:
                     course.unenroll(user_to_receive)
-                    user_to_receive.customflag(u"Benutzer von " + cuser.getHTMLName(False) + u" (#" + str(cuser.id) + u") aus dem Kurs " + course.getTitle() + u" (#" + str(course.id) + ") geworfen.", muser.User.from_id(-1))
+                    user_to_receive.customflag("Benutzer von " + cuser.getHTMLName(False) + " (#" + str(cuser.id) + ") aus dem Kurs " + course.getTitle() + " (#" + str(course.id) + ") geworfen.", muser.User.from_id(-1))
                     return jsonify({ "result": "success"})
                 else:
-                    return jsonify({ "result": "error", "error": u"Nicht möglich: Benutzer nicht eingeschrieben oder Benutzer hat Rolle." })
+                    return jsonify({ "result": "error", "error": "Nicht möglich: Benutzer nicht eingeschrieben oder Benutzer hat Rolle." })
 
-            return jsonify({ "result": "error", "error": u"Ungültige Anfrage" })
+            return jsonify({ "result": "error", "error": "Ungültige Anfrage" })
         else:
             return render_template('courses/admin/membership.html', title=course.getTitle(), thispage="courses", course=course)
     else:
@@ -231,7 +231,7 @@ def course_enroll(id,label=None):
             if not user:
                 abort(400)
             course.enroll(user)
-            if request.form.has_key("add_another"):
+            if "add_another" in request.form:
                 return redirect(url_for("course_enroll", id=id, label=label))
             else:
                 return redirect(url_for("course_admin", id=id, label=label, page="membership"))
@@ -367,16 +367,16 @@ def unit_submit(unit_id,course_id,unit_label=None,course_label=None):
             k += 1
             if i["type"] == "text-answer":
                 MAX_SCORE += int(i["data"]["points"])
-                if str(k) in data.keys():
+                if str(k) in list(data.keys()):
                     _ = data[str(k)]
-                    if _.lower() in map(lambda x:x.lower(), i["data"]["correct"]):
+                    if _.lower() in [x.lower() for x in i["data"]["correct"]]:
                         TOTAL_SCORE += int(i["data"]["points"])
                         RESULT_DATA[k] = ({"max":i["data"]["points"], "sum":i["data"]["points"], "selection":_, "correct":i["data"]["correct"]})
                     else:
                         RESULT_DATA[k] = ({"max":i["data"]["points"], "sum":0, "selection":_, "correct":i["data"]["correct"]})
             elif i["type"] == "multiple-choice":
                 MAX_SCORE += int(i["data"]["points"])
-                if str(k) in data.keys():
+                if str(k) in list(data.keys()):
                     _ = data[str(k)]
                     if i["data"]["choices"][int(_)].startswith("*"):
                         TOTAL_SCORE += int(i["data"]["points"])
@@ -385,13 +385,13 @@ def unit_submit(unit_id,course_id,unit_label=None,course_label=None):
                         RESULT_DATA[k] = ({"max":i["data"]["points"], "sum":0, "selection":_, "correct":i["data"]["choices"]})
             elif i["type"] == "multiple-answer":
                 MAX_SCORE += int(i["data"]["points"])
-                if str(k) in data.keys():
+                if str(k) in list(data.keys()):
                     _ = data[str(k)]
                     total = float(len(i["data"]["choices"]))
                     correct = 0
                     Zid=0
                     for Z in i["data"]["choices"]:
-                        if Z.startswith("*") == (Zid in map(lambda x:int(x), _)):
+                        if Z.startswith("*") == (Zid in [int(x) for x in _]):
                             correct += 1
                         Zid += 1
                     pts = (correct/total)*int(i["data"]["points"])
@@ -411,7 +411,7 @@ def unit_submit(unit_id,course_id,unit_label=None,course_label=None):
 
         data = request.json
         answer = mforum.Answer.createNew(a.getDetail("forumID"), aid, data["comment"], muser.User(-1))
-        answer.addRevision(data["comment"], cuser, u"Ursprüngliche Version")
+        answer.addRevision(data["comment"], cuser, "Ursprüngliche Version")
 
         a.setDetail("last_activity_date", time.time())
         answer.setDetail("last_activity_date", time.time())
@@ -441,14 +441,14 @@ def unit_new(course_id):
     return url_for("unit_show", unit_id=x, course_id=course_id)
 
 def topic_index():
-    return render_template('topic/index.html', title=u"Themen", thispage="courses", topic=mcourses.Topic)
+    return render_template('topic/index.html', title="Themen", thispage="courses", topic=mcourses.Topic)
 
 def topic_view(name):
     if not mcourses.Topic.exists(name):
         abort(404)
     topicCourseList=mcourses.Topic.getCourseList(name)
     topic = mcourses.Topic.from_name(name)
-    return render_template('topic/courses.html', title=topic.getTitle()+u" – Kurse", thispage="courses", courses=topicCourseList, data=topic)
+    return render_template('topic/courses.html', title=topic.getTitle()+" – Kurse", thispage="courses", courses=topicCourseList, data=topic)
 
 def topic_edit(name):
     if not mcourses.Topic.exists(name):
@@ -458,7 +458,7 @@ def topic_edit(name):
     if not cuser.isMod():
         abort(404)
     if request.method == "GET":
-        return render_template('topic/edit.html', title=topic.getTitle()+u" – Bearbeiten", thispage="courses", data=topic)
+        return render_template('topic/edit.html', title=topic.getTitle()+" – Bearbeiten", thispage="courses", data=topic)
     else:
         data = request.json
         topic.setDetail("title", data["title"])
@@ -525,12 +525,12 @@ def course_result_confirmation_of_participation(id, label=None):
     eligibility_criteria = course.getViewRatings(cuser)
 
     if eligibility_criteria[0] < 80 or eligibility_criteria[1] < 80:
-        return u"Anforderungen nicht erfüllt: mind. 80%% besucht und mind. 80%% der Punkte bei Quizzen; du hast %i%% besucht und %i%% der Punkte" % (eligibility_criteria[1], eligibility_criteria[0])
+        return "Anforderungen nicht erfüllt: mind. 80%% besucht und mind. 80%% der Punkte bei Quizzen; du hast %i%% besucht und %i%% der Punkte" % (eligibility_criteria[1], eligibility_criteria[0])
 
     html = render_template("certificates/confirmation_of_participation.html", course_title=course.getTitle(), user_name=cuser.getDetail("certificate_full_name"), now=ctimes.stamp2germandate(time.time()), cwd=os.getcwd().replace("\\", "/"), course_id=course.id, user_id=cuser.id)
 
     pdf = pdfkit.from_string(html, False, options={
-        "title": _(u"Teilnahmeurkunde"),
+        "title": _("Teilnahmeurkunde"),
         'margin-top': '0mm',
         'margin-right': '0mm',
         'margin-bottom': '0mm',
@@ -549,24 +549,24 @@ def _validateCourse(title, shortdesc, longdesc, requirements):
     errors = []
 
     if 5 > len(title):
-        errors.append(u"Der Titel des Kurses ist zu kurz. Mindestens 5 Zeichen erforderlich. (aktuell: %i)" % len(title))
+        errors.append("Der Titel des Kurses ist zu kurz. Mindestens 5 Zeichen erforderlich. (aktuell: %i)" % len(title))
     if 80 < len(title):
-        errors.append(u"Der Titel des Kurses ist zu lang. Höchstens 80 Zeichen möglich. (aktuell: %i)" % len(title))
+        errors.append("Der Titel des Kurses ist zu lang. Höchstens 80 Zeichen möglich. (aktuell: %i)" % len(title))
 
     if 5 > len(shortdesc):
-        errors.append(u"Die Kurzbeschreibung ist zu kurz. Mindestens 15 Zeichen erforderlich. (aktuell: %i)" % len(shortdesc))
+        errors.append("Die Kurzbeschreibung ist zu kurz. Mindestens 15 Zeichen erforderlich. (aktuell: %i)" % len(shortdesc))
     if 280 < len(shortdesc):
-        errors.append(u"Die Kurzbeschreibung ist zu lang. Höchstens 280 Zeichen möglich. (aktuell: %i)" % len(shortdesc))
+        errors.append("Die Kurzbeschreibung ist zu lang. Höchstens 280 Zeichen möglich. (aktuell: %i)" % len(shortdesc))
 
     if 5 > len(longdesc):
-        errors.append(u"Die Kurzbeschreibung ist zu kurz. Mindestens 50 Zeichen erforderlich. (aktuell: %i)" % len(longdesc))
+        errors.append("Die Kurzbeschreibung ist zu kurz. Mindestens 50 Zeichen erforderlich. (aktuell: %i)" % len(longdesc))
     if 15000 < len(longdesc):
-        errors.append(u"Die Kurzbeschreibung ist zu lang. Höchstens 15000 Zeichen möglich. (aktuell: %i)" % len(longdesc))
+        errors.append("Die Kurzbeschreibung ist zu lang. Höchstens 15000 Zeichen möglich. (aktuell: %i)" % len(longdesc))
 
     if 5 > len(requirements):
-        errors.append(u"Die Kurzbeschreibung ist zu kurz. Mindestens 10 Zeichen erforderlich. (aktuell: %i)" % len(requirements))
+        errors.append("Die Kurzbeschreibung ist zu kurz. Mindestens 10 Zeichen erforderlich. (aktuell: %i)" % len(requirements))
     if 7500 < len(requirements):
-        errors.append(u"Die Kurzbeschreibung ist zu lang. Höchstens 7500 Zeichen möglich. (aktuell: %i)" % len(requirements))
+        errors.append("Die Kurzbeschreibung ist zu lang. Höchstens 7500 Zeichen möglich. (aktuell: %i)" % len(requirements))
 
     return errors
 

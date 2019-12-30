@@ -26,7 +26,7 @@ class User:
         "admin_active": "Administrator",
         "admin_retired": "Administrator (ehemalig)",
         "robot": "Roboter",
-        "betaaccess": u"αβγδ"
+        "betaaccess": "αβγδ"
     }
     possibleLabels = ["beta", "mod_active", "mod_retired", "admin_active", "admin_retired", "robot", "betaaccess"]
 
@@ -86,7 +86,7 @@ class User:
         allowed = []
         for t in text:
             if t == " ":
-                if last_char in u".!?" and allowed[-2] not in "0123456789":
+                if last_char in ".!?" and allowed[-2] not in "0123456789":
                     sentences += 1
             if sentences >= 4:
                 break
@@ -128,7 +128,7 @@ class User:
                 session["preference:"+key] = d["value"]
             return d["value"]
         except lite.Error as e:
-            print e
+            print(e)
             return default
         finally:
             if con:
@@ -151,7 +151,7 @@ class User:
                 session["preference:"+key] = value
             return True
         except lite.Error as e:
-            print e
+            print(e)
             return False
         finally:
             if con:
@@ -196,9 +196,9 @@ class User:
             raise SyntaxError(self.id)
         if self.isMod():
             if with_border:
-                name = name + u" <span title='Moderator'>♦</span>"
+                name = name + " <span title='Moderator'>♦</span>"
             else:
-                name = name + u" ♦"
+                name = name + " ♦"
         return name
 
     def getBanReason(self):
@@ -817,7 +817,7 @@ class User:
             con.row_factory = lite.Row
             cur = con.cursor()
             cur.execute("SELECT id, provider, email FROM login_methods WHERE user_id=?", (self.id,))
-            return map(dict,cur.fetchall())
+            return list(map(dict,cur.fetchall()))
         except lite.Error as e:
             return []
         finally:
@@ -870,7 +870,7 @@ class User:
             con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute(u"INSERT INTO login_methods (user_id, provider, email, password) VALUES (?, ?, ?, ?)", (self.id, type, email, passtoken))
+            cur.execute("INSERT INTO login_methods (user_id, provider, email, password) VALUES (?, ?, ?, ?)", (self.id, type, email, passtoken))
             con.commit()
             return True
         except lite.Error as e:
@@ -1003,14 +1003,14 @@ class User:
             con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute(u"SELECT * FROM user WHERE email=?", (email,))
+            cur.execute("SELECT * FROM user WHERE email=?", (email,))
             if cur.fetchone():
                 return -3
-            cur.execute(u"INSERT INTO user (name, realname, email, banned, role, reputation, aboutme, deleted, mergeto, labels, member_since) VALUES (?, ?, ?, 0, 1, 1, '', 0, 0, '[]', ?)", (realname, realname, email, time.time()))
+            cur.execute("INSERT INTO user (name, realname, email, banned, role, reputation, aboutme, deleted, mergeto, labels, member_since) VALUES (?, ?, ?, 0, 1, 1, '', 0, 0, '[]', ?)", (realname, realname, email, time.time()))
             data = cur.lastrowid
             if password is not None:
                 password = sha1(password)
-                cur.execute(u"INSERT INTO login_methods (user_id, provider, email, password) VALUES (?, ?, ?, ?)", (data, "local_account", email, password))
+                cur.execute("INSERT INTO login_methods (user_id, provider, email, password) VALUES (?, ?, ?, ?)", (data, "local_account", email, password))
             con.commit()
             return data
         except lite.Error as e:
@@ -1026,9 +1026,9 @@ class User:
             con = lite.connect('databases/pilearn.db')
             con.row_factory = lite.Row
             cur = con.cursor()
-            cur.execute(u"UPDATE user SET deleted=0 WHERE email=? AND password=?", (email, sha1(password)))
+            cur.execute("UPDATE user SET deleted=0 WHERE email=? AND password=?", (email, sha1(password)))
             con.commit()
-            cur.execute(u"SELECT id FROM user WHERE email=? AND password=?", (email, sha1(password)))
+            cur.execute("SELECT id FROM user WHERE email=? AND password=?", (email, sha1(password)))
             data = cur.fetchone()["id"]
             return data
         except lite.Error as e:
@@ -1113,7 +1113,7 @@ class User:
             cur = con.cursor()
             cur.execute("SELECT * FROM user WHERE role=? AND banned=1", (role,))
             data = cur.fetchall()
-            data = list(map(lambda x:User.from_id(x["id"]), data))
+            data = list([User.from_id(x["id"]) for x in data])
             return data
         except lite.Error as e:
             print(e)
@@ -1154,7 +1154,7 @@ class User:
             cur = con.cursor()
             cur.execute(sql)
             data = cur.fetchall()
-            data = list(map(lambda x:User.from_id(x["id"]), data))
+            data = list([User.from_id(x["id"]) for x in data])
             return data
         except lite.Error as e:
             print(e)

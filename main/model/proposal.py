@@ -88,7 +88,7 @@ class Proposal:
         return mcourses.Topic(self.getDetail("topicid"))
 
     def getCourse(self):
-        print(self.getDetail("courseid"))
+        print((self.getDetail("courseid")))
         return mcourses.Courses(self.getDetail("courseid"))
 
     def getProposer(self):
