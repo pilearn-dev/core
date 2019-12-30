@@ -48,7 +48,7 @@ def execute_query (
 for user in select_query("user","SELECT id,deleted FROM user WHERE deleted != 0 AND Not mergeto AND reputation < 100 LIMIT 10"):
     destroyed = (user[1] == 2)
     user = user[0]
-    print("Begin Deleting user",user)
+    print(("Begin Deleting user",user))
     if destroyed:
         print("~ Destroying user (per mod action)")
     print("---")
