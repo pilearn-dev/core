@@ -147,7 +147,6 @@ def error403(x=None):
 @app.errorhandler(505)
 def error500(x=None):
     data = tb.format_exc()
-    data = data.decode("utf-8") # for python 2
     return render_template('error500.html', data=data, title="500 Server-Fehler"), 500
 
 @app.errorhandler(503)
