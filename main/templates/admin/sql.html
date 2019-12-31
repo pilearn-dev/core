@@ -26,7 +26,7 @@
     <h2 class="p2 bg-dark-lll mb0">{{ _('Neue Abfrage') }}</h2>
     <form action="" method="post">
         <textarea class="form f-mono b-r0 my0" name="sql">{{ request.form.get("sql", "") }}</textarea>
-        <label for="is_bulk" class="form m2"><input type="checkbox" class="form-checkbox" id="is_bulk" name="is_bulk" {{ 'checked' if request.form.has_key("is_bulk") }}> {{ _('Dies ist eine Massenabfrage. (Kann keine Ergebnisse anzeigen)') }}</label>
+        <label for="is_bulk" class="form m2"><input type="checkbox" class="form-checkbox" id="is_bulk" name="is_bulk" {{ 'checked' if "is_bulk" in request.form) }}> {{ _('Dies ist eine Massenabfrage. (Kann keine Ergebnisse anzeigen)') }}</label>
         <button type="submit" class="_btn _btn-lg _btn--primary">{{ _('Ausführen') }}</button>
     </form>
 </div>
