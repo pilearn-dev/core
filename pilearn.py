@@ -1,10 +1,10 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 import os, sys
 sys.path.append("./main")
 sys.path.append("./election")
 sys.path.append("./chat")
 
-from werkzeug.wsgi import DispatcherMiddleware
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from main import app as main
 from election import app as election
 #from pychat import app as chat

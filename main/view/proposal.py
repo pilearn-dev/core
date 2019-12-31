@@ -14,7 +14,7 @@ def single(id):
     cuser = muser.getCurrentUser()
     if data.isDeleted() and not cuser.isMod():
         abort(404)
-    return render_template('proposal/show.html', title=u"Kursvorschlag: " + data.getTitle(), thispage="course", data=data)
+    return render_template('proposal/show.html', title="Kursvorschlag: " + data.getTitle(), thispage="course", data=data)
 
 @proposal.route("/<id>/delete", methods=["POST"])
 def delete(id):
@@ -93,7 +93,7 @@ def accept(id):
 
         owner = proposal.getProposer()
 
-        cmail.send_textbased_email(owner.getDetail("email"), u"Dein Kursvorschlag für '" + proposal.getTitle() + u"' war erfolgreich!", u"""Hallo %s,
+        cmail.send_textbased_email(owner.getDetail("email"), "Dein Kursvorschlag für '" + proposal.getTitle() + "' war erfolgreich!", """Hallo %s,
 
 dein Kursvorschlag für einen Kurs
 

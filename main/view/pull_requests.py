@@ -49,7 +49,7 @@ def course_single_branch(id, course_id,course_label=None):
     if not (branch.getDetail("author") == cuser.id or cuser.isMod()) or cuser.isDisabled() or branch.getDetail("course_id") != course.id:
         abort(404)
 
-    return render_template('courses/pull-requests/branch.html', title="Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch)
+    return render_template('courses/pull-requests/branch.html', title="Branch #" + str(branch.id) + " für " + course.getTitle(), thispage="courses", course=course, branch=branch)
 
 def branch_item(unit_id, override_id, branch_id, course_id,course_label=None):
     if not mcourses.Courses.exists(course_id):
@@ -68,9 +68,9 @@ def branch_item(unit_id, override_id, branch_id, course_id,course_label=None):
     data = _mkdata(unit_id, override_id, course_id, branch)
 
     if branch.getDetail("pull_request") or branch.isAbandoned():
-        return render_template('courses/pull-requests/item.static/' + data["type"] + '.html', title="Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch, data=data, unit_id=unit_id, override_id=override_id, int=int)
+        return render_template('courses/pull-requests/item.static/' + data["type"] + '.html', title="Branch #" + str(branch.id) + " für " + course.getTitle(), thispage="courses", course=course, branch=branch, data=data, unit_id=unit_id, override_id=override_id, int=int)
     else:
-        return render_template('courses/pull-requests/item/' + data["type"] + '.html', title="Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch, data=data, unit_id=unit_id, override_id=override_id)
+        return render_template('courses/pull-requests/item/' + data["type"] + '.html', title="Branch #" + str(branch.id) + " für " + course.getTitle(), thispage="courses", course=course, branch=branch, data=data, unit_id=unit_id, override_id=override_id)
 
 def branch_update_item(unit_id, override_id, branch_id, course_id,course_label=None):
     if not mcourses.Courses.exists(course_id):
@@ -195,7 +195,7 @@ def branch_unit_reorder(branch_id, course_id,course_label=None):
 
         return "ok"
     else:
-        return render_template('courses/pull-requests/reorder.html', title="Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch)
+        return render_template('courses/pull-requests/reorder.html', title="Branch #" + str(branch.id) + " für " + course.getTitle(), thispage="courses", course=course, branch=branch)
 
 def branch_submit(branch_id, course_id,course_label=None):
     if not mcourses.Courses.exists(course_id):
@@ -219,7 +219,7 @@ def branch_submit(branch_id, course_id,course_label=None):
         branch.setDetail("pull_request", pr.id)
         return jsonify({"url": url_for("course_single_pr", id=pr.id, course_id=course.id, course_label=course.getLabel())})
     else:
-        return render_template('courses/pull-requests/submit.html', title="Neues Pull Request zu Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch)
+        return render_template('courses/pull-requests/submit.html', title="Neues Pull Request zu Branch #" + str(branch.id) + " für " + course.getTitle(), thispage="courses", course=course, branch=branch)
 
 def branch_cancel(branch_id, course_id,course_label=None):
     if not mcourses.Courses.exists(course_id):
@@ -239,7 +239,7 @@ def branch_cancel(branch_id, course_id,course_label=None):
         branch.setDetail("abandoned_date", time.time())
         return jsonify({"url": url_for("course_single_branch", id=branch.id, course_id=course.id, course_label=course.getLabel())})
     else:
-        return render_template('courses/pull-requests/cancel.html', title="Verwerfen: Branch #" + str(branch.id) + u" für " + course.getTitle(), thispage="courses", course=course, branch=branch)
+        return render_template('courses/pull-requests/cancel.html', title="Verwerfen: Branch #" + str(branch.id) + " für " + course.getTitle(), thispage="courses", course=course, branch=branch)
 
 
 def course_prs(course_id,course_label=None):
@@ -252,7 +252,7 @@ def course_prs(course_id,course_label=None):
 
     open_prs, closed_prs = mpull_requests.PullRequest.getByCourse(course.id, True), mpull_requests.PullRequest.getByCourse(course.id, False)
 
-    return render_template('courses/pull-requests/prs.html', title=u"Pull Requests für " + course.getTitle(), thispage="courses", course=course, open_prs=open_prs, closed_prs=closed_prs)
+    return render_template('courses/pull-requests/prs.html', title="Pull Requests für " + course.getTitle(), thispage="courses", course=course, open_prs=open_prs, closed_prs=closed_prs)
 
 
 def course_single_pr(id, course_id,course_label=None):
@@ -270,7 +270,7 @@ def course_single_pr(id, course_id,course_label=None):
     if pr.isHiddenAsSpam() and not cuser.isLoggedIn() or pr.getDetail("course_id") != course.id:
         abort(404)
 
-    return render_template('courses/pull-requests/pr.html', title="PR #" + str(pr.id) + u" für " + course.getTitle(), thispage="courses", course=course, pr=pr, branch=branch)
+    return render_template('courses/pull-requests/pr.html', title="PR #" + str(pr.id) + " für " + course.getTitle(), thispage="courses", course=course, pr=pr, branch=branch)
 
 def course_decide_pr(id, course_id,course_label=None):
     if not mcourses.Courses.exists(course_id):
@@ -293,7 +293,7 @@ def course_decide_pr(id, course_id,course_label=None):
     if not(cuser.isMod() or course.getCourseRole(cuser) >= 3):
         abort(403)
 
-    if request.json["decision"] not in range(-1, 2):
+    if request.json["decision"] not in list(range(-1, 2)):
         abort(400)
 
     if request.json["as_abuse"] not in [True, False]:
@@ -309,7 +309,7 @@ def course_decide_pr(id, course_id,course_label=None):
 
     if request.json["decision"] == 1:
         au = branch.getAuthor()
-        au.setReputationChange("pr", u"[Pull Request #"+str(pr.id)+ u" für " + course.getTitle() + "](/c/"+str(course.id)+"/pull-request/" + str(pr.id) + ")", branch.getDetail("delta_factor"))
+        au.setReputationChange("pr", "[Pull Request #"+str(pr.id)+ " für " + course.getTitle() + "](/c/"+str(course.id)+"/pull-request/" + str(pr.id) + ")", branch.getDetail("delta_factor"))
         au.regetRep()
         branch.apply()
 

@@ -38,7 +38,7 @@ def tools_user_flags_index():
         d["user"] = muser.User.from_id(d["item_id"])
         return d
 
-    flagged = map(_prepare, flagged)
+    flagged = list(map(_prepare, flagged))
 
     return render_template("tools/user_flag_list.html", title="Werkzeuge - Benutzermeldungen", thispage="tools", flagged=flagged)
 
@@ -60,7 +60,7 @@ def tools_user_flags_item(id):
         d["flagger"] = muser.User.from_id(d["flagger_id"])
         return d
 
-    flags = map(_prepare, flags)
+    flags = list(map(_prepare, flags))
 
     has_open_flags = mreviews.CustomQueue.getItemOpenFlagsCount(id) != 0
 
@@ -120,7 +120,7 @@ def tools_forum_flags_index():
           d["post"] = mforum.Answer(d["item_id"])
         return d
 
-    flagged = map(_prepare, flagged)
+    flagged = list(map(_prepare, flagged))
 
     return render_template("tools/forum_flag_list.html", title="Werkzeuge - Beitragsmeldungen", thispage="tools", flagged=flagged)
 
@@ -149,7 +149,7 @@ def tools_forum_flags_item(id):
         d["flagger"] = muser.User.from_id(d["flagger_id"])
         return d
 
-    flags = map(_prepare, flags)
+    flags = list(map(_prepare, flags))
 
     has_open_flags = mreviews.CustomQueue.getItemOpenFlagsCount(id) != 0
 

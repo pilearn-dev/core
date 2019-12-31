@@ -26,7 +26,7 @@ def announcements_precondition():
 @announcements.route("/")
 def index(forum_id):
     f = mforum.Forum(forum_id)
-    return render_template("announcements/list.html", title=u"Ankündigungen", forum=f, announcements=mforum.ForumAnnouncement.byForum(f.id, True))
+    return render_template("announcements/list.html", title="Ankündigungen", forum=f, announcements=mforum.ForumAnnouncement.byForum(f.id, True))
 
 @announcements.route("/add", methods=["GET", "POST"])
 def add(forum_id):
@@ -47,7 +47,7 @@ def add(forum_id):
         link=request.form["link"]
         title=request.form["title"]
         event_from=dc(request.form["event_from"])
-        if not request.form.has_key("event_until"):
+        if "event_until" not in request.form:
             event_until=None
         else:
             event_until=dc(request.form["event_until"]) if request.form["event_until"] else None
@@ -55,12 +55,12 @@ def add(forum_id):
         show_until=dc(request.form["shown_until"])
         announcement = mforum.ForumAnnouncement.createNew(f.id,title,link,show_from,show_until,event_from,event_until)
         if cuser.isDev() and f.id == 0:
-            is_featured_banner = request.form.has_key("is_featured_banner")
+            is_featured_banner = "is_featured_banner" in request.form
             if is_featured_banner:
                 announcement.setDetail("is_featured_banner", True)
         return redirect(url_for("announcements.index", forum_id=f.id))
     else:
-        return render_template("announcements/add.html", title=u"Ankündigungen", forum=f)
+        return render_template("announcements/add.html", title="Ankündigungen", forum=f)
 
 @announcements.route("/edit/<int:announcement_id>", methods=["GET", "POST"])
 def announcements_edit(forum_id, announcement_id):
@@ -88,7 +88,7 @@ def announcements_edit(forum_id, announcement_id):
         link=request.form["link"]
         title=request.form["title"]
         event_from=dc(request.form["event_from"])
-        if not request.form.has_key("event_until"):
+        if "event_until" not in request.form:
             event_until=None
         else:
             event_until=dc(request.form["event_until"]) if request.form["event_until"] else None
@@ -103,7 +103,7 @@ def announcements_edit(forum_id, announcement_id):
         an.setDetail("show_until",show_until)
 
         if cuser.isDev() and f.id == 0:
-            is_featured_banner = request.form.has_key("is_featured_banner")
+            is_featured_banner = "is_featured_banner" in request.form
             if is_featured_banner:
                 an.setDetail("is_featured_banner", True)
             else:
@@ -111,4 +111,4 @@ def announcements_edit(forum_id, announcement_id):
 
         return redirect(url_for("announcements.index", forum_id=f.id))
     else:
-        return render_template("announcements/edit.html", title=u"Ankündigungen", forum=f, a=an)
+        return render_template("announcements/edit.html", title="Ankündigungen", forum=f, a=an)

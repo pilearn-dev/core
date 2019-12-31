@@ -27,7 +27,7 @@ try:
 
 except lite.Error as e:
 
-    print("Error %s:" % e.args)
+    print(("Error %s:" % e.args))
     sys.exit(1)
 
 finally:

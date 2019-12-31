@@ -83,7 +83,7 @@ def survey_results(id, label=None):
             subm = survey.getSubmissions()
             for s in subm:
                 s = json.loads(s[0])
-                for field, value in s.items():
+                for field, value in list(s.items()):
                     r = RESULT[int(field)]
                     if r["type"] == "text-answer":
                         if value:

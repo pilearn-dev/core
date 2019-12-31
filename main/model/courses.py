@@ -61,7 +61,7 @@ class Courses:
         return pattern
 
     def getForum(self):
-        import forum as mforum
+        from . import forum as mforum
         return mforum.Forum(self.id)
 
     def getActivePRCount(self):
@@ -87,7 +87,7 @@ class Courses:
             all = cur.fetchall()
             if all is None:
                 return []
-            all = list(map(lambda x: Courses(x["id"]), all))
+            all = list([Courses(x["id"]) for x in all])
             return all
         except lite.Error as e:
             return []
@@ -105,7 +105,7 @@ class Courses:
             all = cur.fetchall()
             if all is None:
                 return []
-            all = list(map(lambda x: Courses(x["id"]), all))
+            all = list([Courses(x["id"]) for x in all])
             return all
         except lite.Error as e:
             return []
@@ -123,7 +123,7 @@ class Courses:
             all = cur.fetchall()
             if all is None:
                 return []
-            all = list(map(lambda x: Courses(x["id"]), all))
+            all = list([Courses(x["id"]) for x in all])
             return all
         except lite.Error as e:
             return []
@@ -155,7 +155,7 @@ class Courses:
             all = cur.fetchall()
             if all is None:
                 return []
-            all = list(map(lambda x: Courses(x["id"]), all))
+            all = list([Courses(x["id"]) for x in all])
             return all
         except lite.Error as e:
             return []
@@ -173,7 +173,7 @@ class Courses:
             all = cur.fetchall()
             if all is None:
                 return []
-            all = list(map(lambda x: Courses(x["id"]), all))
+            all = list([Courses(x["id"]) for x in all])
             return all
         except lite.Error as e:
             return []
@@ -194,7 +194,7 @@ class Courses:
             all = cur.fetchall()
             if all is None:
                 return []
-            all = list(map(lambda x: Courses(x["id"]), all))
+            all = list([Courses(x["id"]) for x in all])
             return all
         except lite.Error as e:
             return []
@@ -244,7 +244,7 @@ class Courses:
 
     def getLabel(self):
         label = self.getTitle()
-        label = label.replace(u"π", "pi")
+        label = label.replace("π", "pi")
         label = re.sub("[^a-zA-Z0-9- ]+", "", label)
         label = re.sub("[ ]+", "-", label)
         label = label.lower()[:50].strip("-")
@@ -557,7 +557,7 @@ class Units:
 
     def getLabel(self):
         label = self.getTitle()
-        label = label.replace(u"π", "pi")
+        label = label.replace("π", "pi")
         label = re.sub("[^a-zA-Z0-9- ]+", "", label)
         label = re.sub("[ ]+", "-", label)
         label = label.lower()[:50].strip("-")
@@ -722,7 +722,7 @@ class Topic:
             all = cur.fetchall()
             if all is None:
                 return []
-            all = list(map(lambda x: Topic(x["id"]), all))
+            all = list([Topic(x["id"]) for x in all])
             return all
         except lite.Error as e:
             return []
@@ -740,7 +740,7 @@ class Topic:
             all = cur.fetchall()
             if all is None:
                 return []
-            all = list(map(lambda x: Courses(x["id"]), all))
+            all = list([Courses(x["id"]) for x in all])
             return all
         except lite.Error as e:
             return []

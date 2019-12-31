@@ -348,7 +348,7 @@ class Branch:
             con.commit()
             return rowid
         except lite.Error as e:
-            print e
+            print(e)
             return False
         finally:
             if con:

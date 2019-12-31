@@ -36,7 +36,7 @@ def sql():
 
     if request.method == "POST":
         sql = request.form["sql"]
-        is_bulk = request.form.has_key("is_bulk")
+        is_bulk = "is_bulk" in request.form
 
         try:
             con = lite.connect('databases/pilearn.db')
@@ -57,4 +57,4 @@ def sql():
         except lite.Warning as e:
                 lr = [["Warning:", str(e)]]
 
-    return render_template("admin/sql.html", title=_("Administration") + ": " + _(u"SQL ausführen"), lr=lr, columns=columns)
+    return render_template("admin/sql.html", title=_("Administration") + ": " + _("SQL ausführen"), lr=lr, columns=columns)

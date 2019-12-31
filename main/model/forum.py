@@ -6,16 +6,16 @@ from model.settings import Settings as S
 
 from model import user as muser, courses as mcourses
 from controller import times as ctimes, placeholder as cplaceholder
-import tags as mtags
+from . import tags as mtags
 import markdown
 
 class Answer:
 
     FREEZONS = [
-        u"Diese Antwort wurde eingefroren, **bis alle Streitigkeiten über den Inhalt beendet sind**.",
-        u"Diese Antwort wurde eingefroren, da sie eine **hohe Anzahl an Kommentaren** angezogen hat, die entfernt werden mussten.",
-        u"Diese Antwort ist **kein gutes Beispiel für eine Antwort in diesem Forum**, kann aber aufgrund ihrer Verbreitung nicht entfernt werden. Daher wurde die Antwort *in der Zeit stehen gelassen* und kann nicht verändert werden.",
-        u""
+        "Diese Antwort wurde eingefroren, **bis alle Streitigkeiten über den Inhalt beendet sind**.",
+        "Diese Antwort wurde eingefroren, da sie eine **hohe Anzahl an Kommentaren** angezogen hat, die entfernt werden mussten.",
+        "Diese Antwort ist **kein gutes Beispiel für eine Antwort in diesem Forum**, kann aber aufgrund ihrer Verbreitung nicht entfernt werden. Daher wurde die Antwort *in der Zeit stehen gelassen* und kann nicht verändert werden.",
+        ""
     ]
 
     def __init__(self, id):
@@ -446,15 +446,15 @@ class Answer:
     def getDeleteMessage(self):
         del_reason = self.getDetail("deletionReason")
         if del_reason == "owner":
-            return u"<strong>gelöscht</strong> von seinem Urheber"
+            return "<strong>gelöscht</strong> von seinem Urheber"
         elif del_reason == "spam":
-            return u"<strong>gelöscht</strong> als Werbung/beleidigender/missbräuchlicher Inhalt"
+            return "<strong>gelöscht</strong> als Werbung/beleidigender/missbräuchlicher Inhalt"
         elif del_reason == "offensive":
-            return u"<strong>gelöscht</strong> als Werbung/beleidigender/missbräuchlicher Inhalt"
+            return "<strong>gelöscht</strong> als Werbung/beleidigender/missbräuchlicher Inhalt"
         elif del_reason == "dangerous":
-            return u"<strong>gelöscht</strong> als Werbung/beleidigender/missbräuchlicher Inhalt"
+            return "<strong>gelöscht</strong> als Werbung/beleidigender/missbräuchlicher Inhalt"
         elif del_reason == "queue":
-            return u"<strong>gelöscht</strong> aufgrund des Votums in einer Moderationsliste"
+            return "<strong>gelöscht</strong> aufgrund des Votums in einer Moderationsliste"
         elif del_reason == "vote":
             try:
                 con = lite.connect('databases/pilearn.db')
@@ -480,14 +480,14 @@ class Answer:
                     else:
                         voter_html += "<a href='/u/" + str(flagger.id) + "'>" + flagger.getHTMLName(False) + "</a>"
 
-                return u"<strong>gelöscht</strong> von " + voter_html + " " + ctimes.stamp2shortrelative(maxtime)
+                return "<strong>gelöscht</strong> von " + voter_html + " " + ctimes.stamp2shortrelative(maxtime)
             except lite.Error as e:
-                return u"<strong>gelöscht</strong>"
+                return "<strong>gelöscht</strong>"
             finally:
                 if con:
                     con.close()
         else:
-            return u"<strong>gelöscht</strong>"
+            return "<strong>gelöscht</strong>"
 
     def isDestroyed(self):
         return self.getDetail("deleted") == 2
@@ -576,7 +576,7 @@ class Answer:
                 cur.execute("SELECT id FROM answers WHERE author=? AND deleted=0", (user.id,))
             else:
                 cur.execute("SELECT id FROM answers WHERE author=?", (user.id,))
-            data = list(map(lambda x: cls(x["id"]), cur.fetchall()))
+            data = list([cls(x["id"]) for x in cur.fetchall()])
             return data
         except lite.Error as e:
             return []
@@ -587,19 +587,19 @@ class Answer:
 class Article:
 
     FREEZONS = [
-        u"Dieser Beitrag wurde eingefroren, **bis alle Streitigkeiten über den Inhalt beendet sind**.",
-        u"Dieser Beitrag wurde eingefroren, da er eine **hohe Anzahl an Kommentaren** angezogen hat, die entfernt werden mussten.",
-        u"Dieser Beitrag ist **kein gutes Beispiel für einen Beitrag in diesem Forum**, kann aber aufgrund seiner Verbreitung nicht entfernt werden. Daher wurden der Beitrag und seine Antworten *in der Zeit stehen gelassen* und kann nicht verändert werden.",
-        u""
+        "Dieser Beitrag wurde eingefroren, **bis alle Streitigkeiten über den Inhalt beendet sind**.",
+        "Dieser Beitrag wurde eingefroren, da er eine **hohe Anzahl an Kommentaren** angezogen hat, die entfernt werden mussten.",
+        "Dieser Beitrag ist **kein gutes Beispiel für einen Beitrag in diesem Forum**, kann aber aufgrund seiner Verbreitung nicht entfernt werden. Daher wurden der Beitrag und seine Antworten *in der Zeit stehen gelassen* und kann nicht verändert werden.",
+        ""
     ]
 
     CLOSURE_LABELS = {
-        "off-topic": u"nicht in dieses Forum passend",
-        "off-topic_glob": u"nicht in dieses Forum passend",
-        "off-topic_course": u"nicht in dieses Forum passend",
-        "unclear": u"unklar",
-        "too-specific": u"zu spezifisch",
-        "too-broad": u"zu allgemein"
+        "off-topic": "nicht in dieses Forum passend",
+        "off-topic_glob": "nicht in dieses Forum passend",
+        "off-topic_course": "nicht in dieses Forum passend",
+        "unclear": "unklar",
+        "too-specific": "zu spezifisch",
+        "too-broad": "zu allgemein"
     }
 
     OFF_TOPIC_REASONS = [
@@ -607,36 +607,36 @@ class Article:
         {
             "for_global": True,
             "for_course": False,
-            "text": u"Dieser Beitrag enthält keine Frage zu &pi;-Learn im Rahmen der [*Informationen über das globale Forum*](/help/forum/global) und passt daher nicht in dieses globale Forum."
+            "text": "Dieser Beitrag enthält keine Frage zu &pi;-Learn im Rahmen der [*Informationen über das globale Forum*](/help/forum/global) und passt daher nicht in dieses globale Forum."
         },
         {
             "for_global": True,
             "for_course": False,
-            "text": u"Dieser Beitrag enthält Fragen zu kursspezifischen Inhalten und gehört daher in das jeweilige [Kursforum](/help/forum/local)."
+            "text": "Dieser Beitrag enthält Fragen zu kursspezifischen Inhalten und gehört daher in das jeweilige [Kursforum](/help/forum/local)."
         }, ### --- course ---
         {
             "for_global": False,
             "for_course": True,
-            "text": u"Dieser Beitrag enthält **keine Frage zum Kurs _<$>_** im Rahmen der [*Informationen über Kursforen*](/help/forum/local) und passt daher nicht in dieses Forum."
+            "text": "Dieser Beitrag enthält **keine Frage zum Kurs _<$>_** im Rahmen der [*Informationen über Kursforen*](/help/forum/local) und passt daher nicht in dieses Forum."
         },
         {
             "for_global": False,
             "for_course": True,
-            "text": u"Dieser Beitrag enthält Fragen zu &pi;-Learn selber und gehört daher in das [globale Forum](/f/0)."
+            "text": "Dieser Beitrag enthält Fragen zu &pi;-Learn selber und gehört daher in das [globale Forum](/f/0)."
         }
     ]
 
     CLOSURE_TEXTS = {
-        "duplicate": u"Andere Benutzer hatten dieses Problem auch und **fanden bereits eine Antwort**.\n\nWenn die folgenden Beiträge nicht helfen, dieses Problem zu lösen, *bearbeite* diesen Beitrag und beschreibe, WIESO diese Lösungsvorschläge dir nicht geholfen haben:",
-        "off-topic": u"Dieser Beitrag passt nicht in dieses Forum.",
-        "unclear": u"Wir verstehen die Frage-/Problemstellung des Autors nicht. Bitte bearbeite diesen Beitrag, um **alle wichtigen Informationen verständlich darzubieten**.\n\nHäufig hilft es, *konkrete Informationen*, wie das Problem *nachzuvollziehen* ist, hinzuzufügen.",
-        "too-broad": u"Beiträge, **deren Lösung ein Buch füllen könnte** oder die **keine eindeutige Antwort** haben, sind für unser Format nicht geeignet.\n\nHäufig hilft es, die Fragestellung an ein **konkretes, praktisches Problem** anzuwenden.",
-        "too-specific": u"Beiträge, die **nur die Lösung aber keinen Lösungsweg** für ein Problem anfordern, sind für unser Format nicht geeignet, da diese nur einer **sehr eingeschränkten Zielgruppe** helfen.\n\nHäufig hilft es, **das Problem zu abstrahieren** und nach dem *Wie* oder *Warum* anstatt nach dem *Wer*, *Was*, *Wann* oder *Wo* zu fragen."
+        "duplicate": "Andere Benutzer hatten dieses Problem auch und **fanden bereits eine Antwort**.\n\nWenn die folgenden Beiträge nicht helfen, dieses Problem zu lösen, *bearbeite* diesen Beitrag und beschreibe, WIESO diese Lösungsvorschläge dir nicht geholfen haben:",
+        "off-topic": "Dieser Beitrag passt nicht in dieses Forum.",
+        "unclear": "Wir verstehen die Frage-/Problemstellung des Autors nicht. Bitte bearbeite diesen Beitrag, um **alle wichtigen Informationen verständlich darzubieten**.\n\nHäufig hilft es, *konkrete Informationen*, wie das Problem *nachzuvollziehen* ist, hinzuzufügen.",
+        "too-broad": "Beiträge, **deren Lösung ein Buch füllen könnte** oder die **keine eindeutige Antwort** haben, sind für unser Format nicht geeignet.\n\nHäufig hilft es, die Fragestellung an ein **konkretes, praktisches Problem** anzuwenden.",
+        "too-specific": "Beiträge, die **nur die Lösung aber keinen Lösungsweg** für ein Problem anfordern, sind für unser Format nicht geeignet, da diese nur einer **sehr eingeschränkten Zielgruppe** helfen.\n\nHäufig hilft es, **das Problem zu abstrahieren** und nach dem *Wie* oder *Warum* anstatt nach dem *Wer*, *Was*, *Wann* oder *Wo* zu fragen."
     }
 
     PROTECTION_MESSAGE = {
-        "wiki": u"**Dieser Beitrag und seine exzellenten Antworten sind gemeinschaftlich entstanden.**\n\nEs können keine weiteren Antworten hinzugefügt werden; siehst du etwas, das *verändert, aktualisiert oder ergänzt* werden muss, **bearbeite es**!",
-        "answer": u"Antworten auf &pi;-Learn **müssen bestmöglich versuchen, das Problem zu lösen**. Um Rückfragen zu stellen, darf man nur Kommentare verwenden.\n\nUm diese Regel durchzusetzen, also *SPAM, &quot;Ich auch&quot; oder &quot;Danke&quot;-Antworten zu vermeiden*, benötigt man **mindestens 10 Reputationspunkte um diesen Beitrag zu beantworten**."
+        "wiki": "**Dieser Beitrag und seine exzellenten Antworten sind gemeinschaftlich entstanden.**\n\nEs können keine weiteren Antworten hinzugefügt werden; siehst du etwas, das *verändert, aktualisiert oder ergänzt* werden muss, **bearbeite es**!",
+        "answer": "Antworten auf &pi;-Learn **müssen bestmöglich versuchen, das Problem zu lösen**. Um Rückfragen zu stellen, darf man nur Kommentare verwenden.\n\nUm diese Regel durchzusetzen, also *SPAM, &quot;Ich auch&quot; oder &quot;Danke&quot;-Antworten zu vermeiden*, benötigt man **mindestens 10 Reputationspunkte um diesen Beitrag zu beantworten**."
     }
 
     def __init__(self, id):
@@ -704,7 +704,7 @@ class Article:
             else:
                 cur.execute("SELECT * FROM article_revisions WHERE forumID=? AND articleID=? AND type='edit' ORDER BY id ASC", (self.getDetail("forumID"), self.id))
                 data = cur.fetchall()[id-1]
-                print(data["editor"])
+                print((data["editor"]))
             data = {
                 "revid": (self.getRevisionCount() if id == "latest" else id),
                 "id": data["id"],
@@ -896,12 +896,12 @@ class Article:
     def getHTMLTitle(self):
         title = ""
         if self.isDestroyed():
-            title += u"<del>"
+            title += "<del>"
         title += self.getDetail("title")
         if self.isClosed():
-            title += u" (geschlossen)"
+            title += " (geschlossen)"
         if self.isDestroyed():
-            title += u"</del> (zerstört)"
+            title += "</del> (zerstört)"
         return title
 
     def hasAccepted(self):
@@ -994,13 +994,13 @@ class Article:
         if majority_reason["id"] == 1:
             links_ = []
             for link in links:
-                links_.append(u"["+Article(link).getTitle()+u"](/f/"+str(self.getDetail("forumID"))+u"/"+link+u")")
-            links = u"- " + (u"\n- ".join(links_))
-            text += u"Dieser Beitrag **hat bereits eine Antwort**:\n\n"+self.CLOSURE_TEXTS[majority_reason]+"\n\n"+links+"\n\n"
+                links_.append("["+Article(link).getTitle()+"](/f/"+str(self.getDetail("forumID"))+"/"+link+")")
+            links = "- " + ("\n- ".join(links_))
+            text += "Dieser Beitrag **hat bereits eine Antwort**:\n\n"+self.CLOSURE_TEXTS[majority_reason]+"\n\n"+links+"\n\n"
         elif majority_reason == "off-topic":
             rs_ = []
             for r in reasons:
-                rs_.append("&quot;" + r["text"] + "&quot; <span class='name-list'>&ndash; " + (", ".join(list(map(lambda x:muser.User.safe(x).getHTMLName(), r["voters"])))) + "</span>")
+                rs_.append("&quot;" + r["text"] + "&quot; <span class='name-list'>&ndash; " + (", ".join(list([muser.User.safe(x).getHTMLName() for x in r["voters"]]))) + "</span>")
             text += "Dieser Beitrag wurde als **"+self.CLOSURE_LABELS[majority_reason] +"** geschlossen\n\n- " + ("\n- ".join(rs_)) + "\n\n"
         else:
             text += "Dieser Beitrag wurde als **"+self.CLOSURE_LABELS[majority_reason] +"** geschlossen\n\n"+self.CLOSURE_TEXTS[majority_reason]+"\n\n"
@@ -1026,7 +1026,7 @@ class Article:
 
     def getLabel(self):
         label = self.getTitle()
-        label = label.replace(u"π", "pi")
+        label = label.replace("π", "pi")
         label = re.sub("[^a-zA-Z0-9- ]+", "", label)
         label = re.sub("[ ]+", "-", label)
         label = label.lower()[:50].strip("-")
@@ -1101,7 +1101,7 @@ class Article:
             cur = con.cursor()
             cur.execute("SELECT id FROM answers WHERE forumID=? AND articleID=? ORDER BY isAcceptedAnswer DESC, deleted ASC, score DESC, RANDOM()", (self.getDetail("forumID"), self.id))
             data = cur.fetchall()
-            return list(map(lambda x:Answer(x[0]), data))
+            return list([Answer(x[0]) for x in data])
         except lite.Error as e:
             return []
         finally:
@@ -1128,17 +1128,17 @@ class Article:
     def getDeleteMessage(self):
         del_reason = self.getDetail("deletionReason")
         if del_reason == "owner":
-            return u"<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong> von seinem Urheber</h3>"
+            return "<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong> von seinem Urheber</h3>"
         elif del_reason == "spam":
-            return u"<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong> als Werbung/beleidigender/missbräuchlicher Inhalt</h3>"
+            return "<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong> als Werbung/beleidigender/missbräuchlicher Inhalt</h3>"
         elif del_reason == "offensive":
-            return u"<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong> als Werbung/beleidigender/missbräuchlicher Inhalt</h3>"
+            return "<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong> als Werbung/beleidigender/missbräuchlicher Inhalt</h3>"
         elif del_reason == "dangerous":
-            return u"<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong> als Werbung/beleidigender/missbräuchlicher Inhalt</h3>"
+            return "<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong> als Werbung/beleidigender/missbräuchlicher Inhalt</h3>"
         elif del_reason == "queue":
-            return u"<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong> aufgrund des Votums in einer Moderationsliste</h3>"
+            return "<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong> aufgrund des Votums in einer Moderationsliste</h3>"
         elif del_reason == "auto:closed":
-            return u"<h3 class=\"m0 f-sans fs-subheading\">automatisch <strong>gelöscht</strong> wegen Inaktivität (DeleteInactiveClosed)</h3>"
+            return "<h3 class=\"m0 f-sans fs-subheading\">automatisch <strong>gelöscht</strong> wegen Inaktivität (DeleteInactiveClosed)</h3>"
         elif del_reason == "vote":
             try:
                 con = lite.connect('databases/pilearn.db')
@@ -1164,14 +1164,14 @@ class Article:
                     else:
                         voter_html += "<a href='/u/" + str(flagger.id) + "'>" + flagger.getHTMLName(False) + "</a>"
 
-                return u"<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong> von " + voter_html + " " + ctimes.stamp2shortrelative(maxtime) + "</h3>"
+                return "<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong> von " + voter_html + " " + ctimes.stamp2shortrelative(maxtime) + "</h3>"
             except lite.Error as e:
-                return u"<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong></h3>"
+                return "<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong></h3>"
             finally:
                 if con:
                     con.close()
         else:
-            return u"<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong></h3>"
+            return "<h3 class=\"m0 f-sans fs-subheading\"><strong>gelöscht</strong></h3>"
 
     def isDestroyed(self):
         return self.getDetail("deleted") == 2
@@ -1244,10 +1244,10 @@ class Article:
           cur.execute("INSERT INTO closure_flags (item_id, queue_id, state, flagger_id, type, reason, comment) VALUES (?, ?, 0, ?, ?, ?, ?)", (self.id, qid, who.id, "vote", msg["reason"], msg["message"]))
           con.commit()
           tps = {
-                  "off-topic": u"nicht in dieses Forum passend",
-                  "unclear": u"unklar",
-                  "too-specific": u"zu spezifisch",
-                  "too-broad": u"zu allgemein"
+                  "off-topic": "nicht in dieses Forum passend",
+                  "unclear": "unklar",
+                  "too-specific": "zu spezifisch",
+                  "too-broad": "zu allgemein"
               }
           cur.execute("SELECT * FROM closure_flags WHERE item_id=? AND type='vote' AND state=0", (self.id, ))
           con.commit()
@@ -1282,7 +1282,7 @@ class Article:
               closureEventCount = len(cur.fetchall())
               print(closureEventCount)
               if closureEventCount >= maxClosureThreshold:
-                  self.customflag(u"**[automatisch]**: *Umstrittene Schließung* - Dieser Beitrag wurde mehrfach geschlossen und wieder geöffnet.", muser.User.from_id(-2))
+                  self.customflag("**[automatisch]**: *Umstrittene Schließung* - Dieser Beitrag wurde mehrfach geschlossen und wieder geöffnet.", muser.User.from_id(-2))
           return True
         except SyntaxError as e:#lite.Error as e:
           print(e)
@@ -1523,7 +1523,7 @@ class Article:
                 cur.execute("SELECT id FROM articles WHERE deleted=0")
             else:
                 cur.execute("SELECT id FROM articles")
-            data = list(map(lambda x: cls(x["id"]), cur.fetchall()))
+            data = list([cls(x["id"]) for x in cur.fetchall()])
             return data
         except lite.Error as e:
             print(e)
@@ -1542,7 +1542,7 @@ class Article:
                 cur.execute("SELECT id FROM articles WHERE author=? AND deleted=0", (user.id,))
             else:
                 cur.execute("SELECT id FROM articles WHERE author=?", (user.id,))
-            data = list(map(lambda x: cls(x["id"]), cur.fetchall()))
+            data = list([cls(x["id"]) for x in cur.fetchall()])
             return data
         except lite.Error as e:
             return []
@@ -1603,9 +1603,9 @@ class Forum:
                 else:
                     cur.execute("SELECT id FROM articles WHERE forumID=? " + sort_sql, (self.id, ))
             data = cur.fetchall()
-            return list(map(lambda x:Article(x[0]), data))
+            return list([Article(x[0]) for x in data])
         except lite.Error as e:
-            print e
+            print(e)
             return []
         finally:
             if con:
@@ -1638,7 +1638,7 @@ class Forum:
 
             cur.execute("SELECT * FROM closure_reasons WHERE active=1 AND parent IS ?", (level, ))
             data = cur.fetchall()
-            data = map(lambda x:dict(x), data)
+            data = [dict(x) for x in data]
             final_data = []
             for d in data:
                 if d["not_in_global_forum"]==1 and self.id == 0:
@@ -1668,7 +1668,7 @@ class Forum:
                 "id": self.id,
                 "label":"global",
                 "name": "globales Forum",
-                "byline": u"für alle Fragen zu " + S.get("site-short-name") + u" selber und für Fehlermeldungen oder Verbesserungsideen"
+                "byline": "für alle Fragen zu " + S.get("site-short-name") + " selber und für Fehlermeldungen oder Verbesserungsideen"
             }
 
     @classmethod

@@ -8,7 +8,7 @@ import time as t
 
 
 def duration2text(dur):
-    lang = ["zwei", "drei", "vier", u"fünf", "sechs", "sieben", "acht", "neun", "zehn", "elf", u"zwölf"]
+    lang = ["zwei", "drei", "vier", "fünf", "sechs", "sieben", "acht", "neun", "zehn", "elf", "zwölf"]
     if dur == 1:
       return "eine Sekunde"
     if dur <= 12:
@@ -163,7 +163,7 @@ def stamp2relative(stamp, is_delta=False):
             prefix = "seit "
         else:
             prefix = "vor "
-    lang = ["zwei", "drei", "vier", u"fünf", "sechs", "sieben", "acht", "neun", "zehn", "elf", u"zwölf"]
+    lang = ["zwei", "drei", "vier", "fünf", "sechs", "sieben", "acht", "neun", "zehn", "elf", "zwölf"]
     delta = abs(relta)
     if delta < 10:
         suffix = "wenigen Sekunden"
@@ -186,7 +186,7 @@ def stamp2relative(stamp, is_delta=False):
         elif delta < 50:
             suffix = "einer dreiviertel Stunde"
         elif delta < 55:
-            suffix = u"fünfzig Minuten"
+            suffix = "fünfzig Minuten"
         else:
             delta = int(0.5+delta / 60.0)
             if delta == 1:

@@ -107,7 +107,7 @@ class ReviewQueue:
             cur.execute("SELECT state FROM "+self.core_table+"_queue WHERE id=?", (id,))
             return cur.fetchone()[0] == 1
         except lite.Error as e:
-            print(e + ":")
+            print((e + ":"))
             return False
         finally:
             if con:

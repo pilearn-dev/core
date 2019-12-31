@@ -7,7 +7,7 @@ import markdown as md
 
 from sha1 import sha1
 import json, time
-import urllib, urllib2
+import urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse
 
 helpdesk = Blueprint('helpdesk', __name__)
 
@@ -30,13 +30,13 @@ def submit():
 
     id = str(int(time.time()))
 
-    cmail.send_textbased_email("team@pilearn.de", u"HD #" + id + u" von Benutzer #" + str(cuser.id), u"Es gibt eine neue Support-Anfrage.\n\nTyp: " + rt + u"\n\nKommentar:\n\n" + escape(rc) + u"\n\n---\n\nAntwort an: " + rm + (" (mod)" if cuser.isMod() else "") + (" (team)" if cuser.isTeam() else ""))
+    cmail.send_textbased_email("team@pilearn.de", "HD #" + id + " von Benutzer #" + str(cuser.id), "Es gibt eine neue Support-Anfrage.\n\nTyp: " + rt + "\n\nKommentar:\n\n" + escape(rc) + "\n\n---\n\nAntwort an: " + rm + (" (mod)" if cuser.isMod() else "") + (" (team)" if cuser.isTeam() else ""))
 
     time.sleep(1)
 
     if secure:
-        cmail.send_textbased_email(rm, "Support-Anfrage #"+id+" entgegengenommen", u"Hallo " + cuser.getDetail("realname") + u",\n\nwir haben deine Support-Anfrage vom Typ " + rt + u" entgegengenommen. Sie hat die Kennung #"+id+u".\n\nWenn du noch etwas hinzufügen möchtest, sende eine E-Mail mit dieser Kennung an team@pilearn.de.\n\nViele Grüße\n\n&pi;-Learn Team")
+        cmail.send_textbased_email(rm, "Support-Anfrage #"+id+" entgegengenommen", "Hallo " + cuser.getDetail("realname") + ",\n\nwir haben deine Support-Anfrage vom Typ " + rt + " entgegengenommen. Sie hat die Kennung #"+id+".\n\nWenn du noch etwas hinzufügen möchtest, sende eine E-Mail mit dieser Kennung an team@pilearn.de.\n\nViele Grüße\n\n&pi;-Learn Team")
     else:
-        cmail.send_textbased_email(rm, "Support-Anfrage #"+id+" entgegengenommen", u"Hallo " + cuser.getDetail("realname") + u",\n\nwir haben deine Support-Anfrage vom Typ " + rt + u" entgegengenommen. Sie hat die Kennung #"+id+u". Folgendes ist dein Kommentar:\n\n"+rc+u"\n\nWenn du noch etwas hinzufügen möchtest, sende eine E-Mail mit dieser Kennung an team@pilearn.de.\n\nViele Grüße\n\n&pi;-Learn Team")
+        cmail.send_textbased_email(rm, "Support-Anfrage #"+id+" entgegengenommen", "Hallo " + cuser.getDetail("realname") + ",\n\nwir haben deine Support-Anfrage vom Typ " + rt + " entgegengenommen. Sie hat die Kennung #"+id+". Folgendes ist dein Kommentar:\n\n"+rc+"\n\nWenn du noch etwas hinzufügen möchtest, sende eine E-Mail mit dieser Kennung an team@pilearn.de.\n\nViele Grüße\n\n&pi;-Learn Team")
 
     return redirect(url_for("helpdesk.index", submit=True))

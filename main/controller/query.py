@@ -1,5 +1,5 @@
 # coding: utf-8
-WORD_CHAR = u"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-+äöüÄÖÜß"
+WORD_CHAR = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-+äöüÄÖÜß"
 
 def buildSFTextQuery(fieldName, s):
     FLAG_DIRECT = False

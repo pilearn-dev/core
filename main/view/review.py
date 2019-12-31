@@ -9,9 +9,9 @@ def wrap_func(cb):
 
 QUEUES = {
     "post-closure": {
-        "name": u"Beiträge schließen",
+        "name": "Beiträge schließen",
         "url": "post-closure",
-        "desc": u"Entscheide ob Beiträge geschlossen werden sollen.",
+        "desc": "Entscheide ob Beiträge geschlossen werden sollen.",
         "queue": mreviews.PostClosure,
         "item_function": wrap_func(mforum.Article),
         "critical_open": 10,
@@ -19,20 +19,20 @@ QUEUES = {
         "template_inwork": "review/post-closure.html",
         "template_outcome": "review/post-closure-outcome.html",
         "flag_reasons": {
-            "off-topic": u"nicht in dieses Forum passend",
-            "unclear": u"unklar",
-            "too-specific": u"zu spezifisch",
-            "too-broad": u"zu allgemein",
-            "other": u"in diesem Forum nicht mehr erwünscht",
-            "duplicate": u"bereits gefragt und beantwortet"
+            "off-topic": "nicht in dieses Forum passend",
+            "unclear": "unklar",
+            "too-specific": "zu spezifisch",
+            "too-broad": "zu allgemein",
+            "other": "in diesem Forum nicht mehr erwünscht",
+            "duplicate": "bereits gefragt und beantwortet"
         },
-        "queue_results": [u"FEHLER!", u"Überspringen", u"schließen", u"bearbeiten", u"nicht schließen", u"Beitrag wurde gelöscht", u"Außerhalb dieser Liste geschlossen"],
+        "queue_results": ["FEHLER!", "Überspringen", "schließen", "bearbeiten", "nicht schließen", "Beitrag wurde gelöscht", "Außerhalb dieser Liste geschlossen"],
         "may_ban": lambda u: u.isMod()
     },
     "post-reopen": {
-        "name": u"Beiträge wieder öffnen",
+        "name": "Beiträge wieder öffnen",
         "url": "post-reopen",
-        "desc": u"Entscheide ob geschlossene Beiträge wieder geöffnet werden sollen.",
+        "desc": "Entscheide ob geschlossene Beiträge wieder geöffnet werden sollen.",
         "queue": mreviews.PostReopen,
         "item_function": wrap_func(mforum.Article),
         "critical_open": 5,
@@ -40,18 +40,18 @@ QUEUES = {
         "template_inwork": "review/post-reopen.html",
         "template_outcome": "review/post-reopen-outcome.html",
         "flag_reasons": {
-            "voted": u"Benutzer stimmten für das erneute Öffnen dieses Beitrags",
-            "edited": u"Beitrag wurde nach der Schließung bearbeitet",
-            "popular": u"Beitrag ist sehr populär",
-            "disputed": u"Beitrag wurde schon zuvor geschlossen und danach wieder geöffnet."
+            "voted": "Benutzer stimmten für das erneute Öffnen dieses Beitrags",
+            "edited": "Beitrag wurde nach der Schließung bearbeitet",
+            "popular": "Beitrag ist sehr populär",
+            "disputed": "Beitrag wurde schon zuvor geschlossen und danach wieder geöffnet."
         },
-        "queue_results": [u"FEHLER!", u"Überspringen", u"öffnen", u"geschlossen lassen", u"Beitrag wurde gelöscht", u"Außerhalb dieser Liste geöffnet"],
+        "queue_results": ["FEHLER!", "Überspringen", "öffnen", "geschlossen lassen", "Beitrag wurde gelöscht", "Außerhalb dieser Liste geöffnet"],
         "may_ban": lambda u: u.isMod()
     },
     "post-deletion": {
-        "name": u"Beiträge löschen",
+        "name": "Beiträge löschen",
         "url": "post-deletion",
-        "desc": u"Entscheide ob Beiträge gelöscht werden sollen oder sogar gefährlich sind.",
+        "desc": "Entscheide ob Beiträge gelöscht werden sollen oder sogar gefährlich sind.",
         "queue": mreviews.PostDeletion,
         "item_function": wrap_func(mforum.Article),
         "critical_open": 5,
@@ -59,28 +59,28 @@ QUEUES = {
         "template_inwork": "review/post-deletion.html",
         "template_outcome": "review/post-deletion-outcome.html",
         "flag_reasons": {
-            "delvote": u"Andere Benutzer verlangen die Löschung dieses Beitrags.",
-            "spam": u"Andere Benutzer meinen, dass dies SPAM sein könnte.",
-            "offensive": u"Andere Benutzer meinen, dass dies beleidigend sein könnte.",
-            "autospam": u"Dieser Beitrag ist möglicherweise SPAM. **BITTE VORSICHTIG ÜBERPRÜFEN**",
-            "autooffensive": u"Dieser Beitrag ist möglicherweise beleidigend. **BITTE VORSICHTIG ÜBERPRÜFEN**",
-            "autofilter": u"Dieser Beitrag erfüllt eventuell unsere Qualitätsstandards nicht."
+            "delvote": "Andere Benutzer verlangen die Löschung dieses Beitrags.",
+            "spam": "Andere Benutzer meinen, dass dies SPAM sein könnte.",
+            "offensive": "Andere Benutzer meinen, dass dies beleidigend sein könnte.",
+            "autospam": "Dieser Beitrag ist möglicherweise SPAM. **BITTE VORSICHTIG ÜBERPRÜFEN**",
+            "autooffensive": "Dieser Beitrag ist möglicherweise beleidigend. **BITTE VORSICHTIG ÜBERPRÜFEN**",
+            "autofilter": "Dieser Beitrag erfüllt eventuell unsere Qualitätsstandards nicht."
         },
-        "queue_results": [u"FEHLER!", u"Überspringen", u"löschen", u"ist gefährlich", u"bearbeiten", u"keine Probleme gefunden", u"Beitrag wurde bearbeitet.", u"Beitrag wurde gelöscht."],
+        "queue_results": ["FEHLER!", "Überspringen", "löschen", "ist gefährlich", "bearbeiten", "keine Probleme gefunden", "Beitrag wurde bearbeitet.", "Beitrag wurde gelöscht."],
         "may_ban": lambda u: u.isMod()
     }
 }
 def review_start():
     cuser = muser.getCurrentUser()
-    return render_template("review/start.html", thispage="review", title="Moderationslisten", queues=QUEUES.values())
+    return render_template("review/start.html", thispage="review", title="Moderationslisten", queues=list(QUEUES.values()))
 
 def review_end(queue, action):
-    if queue not in QUEUES.keys():
+    if queue not in list(QUEUES.keys()):
         abort(404)
-    return render_template("review/end.html", thispage="review", title="Moderationslisten", queues=QUEUES.values(), action=action, single_queue=QUEUES[queue])
+    return render_template("review/end.html", thispage="review", title="Moderationslisten", queues=list(QUEUES.values()), action=action, single_queue=QUEUES[queue])
 
 def flags_review(queue, id):
-    if queue not in QUEUES.keys():
+    if queue not in list(QUEUES.keys()):
         abort(404)
     review = QUEUES[queue]
     cuser = muser.getCurrentUser()
@@ -137,7 +137,7 @@ def flags_review(queue, id):
         return render_template(review["template_outcome"], thispage="review", title="Moderationslisten - "+review["name"], data=dat, flag_reasons=flag_reasons, flag_comments=flag_comments, reviews=reviews, tos=tos, reviewqueue=review)
 
 def flags_action(queue, id):
-    if queue not in QUEUES.keys():
+    if queue not in list(QUEUES.keys()):
         abort(404)
     review = QUEUES[queue]
     cuser = muser.getCurrentUser()
@@ -155,11 +155,11 @@ def flags_action(queue, id):
     was_audit = 0#
     if queue == "post-closure":
         tps = {
-            "off-topic": u"nicht in dieses Forum passend",
-            "unclear": u"unklar",
-            "too-specific": u"zu spezifisch",
-            "too-broad": u"zu allgemein",
-            "other": u"in diesem Forum nicht mehr erwünscht"
+            "off-topic": "nicht in dieses Forum passend",
+            "unclear": "unklar",
+            "too-specific": "zu spezifisch",
+            "too-broad": "zu allgemein",
+            "other": "in diesem Forum nicht mehr erwünscht"
         }
         if result == 2:
             reason = data["reason"]
@@ -240,7 +240,7 @@ def flags_action(queue, id):
         return url_for("review_end", queue=queue, action="test-failure")
 
 def flags_ban(queue):
-    if queue not in QUEUES.keys():
+    if queue not in list(QUEUES.keys()):
         abort(404)
     review = QUEUES[queue]
     cuser = muser.getCurrentUser()

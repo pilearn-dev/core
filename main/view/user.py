@@ -9,7 +9,7 @@ from sha1 import sha1
 import json, time
 
 def user_index():
-    return render_template('user/index.html', title=u"Benutzer", thispage="user", users=muser.User)
+    return render_template('user/index.html', title="Benutzer", thispage="user", users=muser.User)
 
 def user_page(id, name=None):
     try:
@@ -59,16 +59,16 @@ def user_edit_page(id, name=None):
                 return render_template("user/edit/profile.html", data=user, thispage="user", title="Profil bearbeiten " + user.getHTMLName(False))
 
             elif request.values.get("page", "profile") == "login":
-                return render_template("user/edit/login.html", data=user, thispage="user", title=u"Anmeldedaten für " + user.getHTMLName(False), current_time=time.time())
+                return render_template("user/edit/login.html", data=user, thispage="user", title="Anmeldedaten für " + user.getHTMLName(False), current_time=time.time())
 
             elif request.values.get("page", "profile") == "preferences":
-                return render_template("user/edit/preferences.html", data=user, thispage="user", title=u"Einstellungen für " + user.getHTMLName(False))
+                return render_template("user/edit/preferences.html", data=user, thispage="user", title="Einstellungen für " + user.getHTMLName(False))
 
             elif request.values.get("page", "profile") == "email":
-                return render_template("user/edit/mail-settings.html", data=user, thispage="user", title=u"E-Mail-Einstellungen für " + user.getHTMLName(False))
+                return render_template("user/edit/mail-settings.html", data=user, thispage="user", title="E-Mail-Einstellungen für " + user.getHTMLName(False))
 
             elif request.values.get("page", "profile") == "dev" and cuser.isDev():
-                return render_template("user/edit/dev.html", data=user, thispage="user", title=u"Entwickleroptionen für " + user.getHTMLName(False), roles=muser.getRoles())
+                return render_template("user/edit/dev.html", data=user, thispage="user", title="Entwickleroptionen für " + user.getHTMLName(False), roles=muser.getRoles())
 
             elif request.values.get("page", "profile") == "login-alter":
                 if user.id != cuser.id:
@@ -77,40 +77,40 @@ def user_edit_page(id, name=None):
                 current_time=time.time()
                 if session.get("login_time", 0) + 100 * 60 <= current_time:
                     return "<p>Das Zeitfenster zur Aktualisierung von Zugangsdaten ist abgelaufen. <a href='?page=login'>Den Anweisungen hier folgen.</a></p>", 403
-                if request.values.has_key("remove"):
+                if "remove" in request.values:
                     if request.method == "POST":
                         user.loginMethod_remove(request.values.get("remove"))
                         return redirect(url_for("user_edit_page", id=user.id, name=user.getDetail("name"), page="login"))
                     else:
-                        return render_template("user/edit/login-alter__confirm-delete.html", data=user, thispage="user", title=u"Anmeldedaten aktualisieren für " + user.getHTMLName(False))
-                elif request.values.has_key("add"):
+                        return render_template("user/edit/login-alter__confirm-delete.html", data=user, thispage="user", title="Anmeldedaten aktualisieren für " + user.getHTMLName(False))
+                elif "add" in request.values:
                     if request.values.get("add") == "local_account":
                         if request.method == "POST":
                             if request.form["password"] != request.form["password-dupl"]:
-                                return render_template("user/edit/login-alter__add-local-account.html", data=user, thispage="user", title=u"Anmeldedaten hinzufügen für " + user.getHTMLName(False), error="not-match")
+                                return render_template("user/edit/login-alter__add-local-account.html", data=user, thispage="user", title="Anmeldedaten hinzufügen für " + user.getHTMLName(False), error="not-match")
                             user.loginMethod_add("local_account", request.form["email"], sha1(request.form["password"]))
                             return redirect(url_for("user_edit_page", id=user.id, name=user.getDetail("name"), page="login"))
                         else:
-                            return render_template("user/edit/login-alter__add-local-account.html", data=user, thispage="user", title=u"Anmeldedaten hinzufügen für " + user.getHTMLName(False))
+                            return render_template("user/edit/login-alter__add-local-account.html", data=user, thispage="user", title="Anmeldedaten hinzufügen für " + user.getHTMLName(False))
 
                     elif request.values.get("add") == "oauth:google":
-                        return render_template("user/edit/login-alter__google.html", data=user, thispage="user", title=u"Anmeldedaten aktualisieren für " + user.getHTMLName(False))
-                elif request.values.has_key("change"):
+                        return render_template("user/edit/login-alter__google.html", data=user, thispage="user", title="Anmeldedaten aktualisieren für " + user.getHTMLName(False))
+                elif "change" in request.values:
                     method = user.loginMethod_get(request.values.get("change"))
                     if method["provider"] == "local_account":
                         if request.method == "POST":
                             if request.form["password"] != request.form["password-dupl"]:
-                                return render_template("user/edit/login-alter__local-account.html", data=user, thispage="user", title=u"Anmeldedaten bearbeiten für " + user.getHTMLName(False), error="not-match", method=method)
+                                return render_template("user/edit/login-alter__local-account.html", data=user, thispage="user", title="Anmeldedaten bearbeiten für " + user.getHTMLName(False), error="not-match", method=method)
                             user.loginMethod_change(method["id"], request.form["email"], sha1(request.form["password"]))
                             return redirect(url_for("user_edit_page", id=user.id, name=user.getDetail("name"), page="login"))
                         else:
-                            return render_template("user/edit/login-alter__local-account.html", data=user, thispage="user", title=u"Anmeldedaten bearbeiten für " + user.getHTMLName(False), method=method)
+                            return render_template("user/edit/login-alter__local-account.html", data=user, thispage="user", title="Anmeldedaten bearbeiten für " + user.getHTMLName(False), method=method)
 
                     elif request.values.get("change") == "oauth:google":
-                        return render_template("user/edit/login-alter__google.html", data=user, thispage="user", title=u"Anmeldedaten aktualisieren für " + user.getHTMLName(False))
+                        return render_template("user/edit/login-alter__google.html", data=user, thispage="user", title="Anmeldedaten aktualisieren für " + user.getHTMLName(False))
 
             elif request.values.get("page", "profile") == "delete":
-                return render_template("user/edit/delete.html", data=user, thispage="user", title=u"Konto löschen " + user.getHTMLName(False), current_time=time.time())
+                return render_template("user/edit/delete.html", data=user, thispage="user", title="Konto löschen " + user.getHTMLName(False), current_time=time.time())
 
             else:
                 abort(404)
@@ -138,13 +138,13 @@ def user_activity_page(id, name=None):
             return redirect(url_for("user_activity_page", id=id, name=user.getDetail("name")))
         else:
             if request.values.get("page", "summary") == "summary":
-                return render_template("user/activity/summary.html", data=user, thispage="user", title=u"Aktivität " + user.getHTMLName(False), courses=mcourses.Courses)
+                return render_template("user/activity/summary.html", data=user, thispage="user", title="Aktivität " + user.getHTMLName(False), courses=mcourses.Courses)
 
             elif request.values.get("page", "summary") == "courses":
                 return render_template("user/activity/courses.html", data=user, thispage="user", title="Kurse von " + user.getHTMLName(False), mcourses=mcourses.Courses, mproposals=mproposal.Proposal, prs=mpull_requests.PullRequest.getByUser(user.id, None))
 
             elif request.values.get("page", "summary") == "forum":
-                return render_template("user/activity/forum.html", data=user, thispage="user", title=u"Forenbeiträge von " + user.getHTMLName(False), mquestions=mforum.Article, manswers=mforum.Answer, mquestion=lambda x:mforum.Article(x))
+                return render_template("user/activity/forum.html", data=user, thispage="user", title="Forenbeiträge von " + user.getHTMLName(False), mquestions=mforum.Article, manswers=mforum.Answer, mquestion=lambda x:mforum.Article(x))
 
             elif request.values.get("page", "summary") == "reputation":
                 return render_template("user/activity/reputation.html", data=user, thispage="user", title="Reputation von " + user.getHTMLName(False))
@@ -251,7 +251,7 @@ def user_del_page(id, name=None):
         if name != user.getDetail("name"):
             return redirect(url_for("user_del_page", id=id, name=user.getDetail("name")))
         else:
-            return render_template("user/delete.html", data=user, thispage="user", title=u"Benutzer löschen: " + user.getHTMLName(False), current_time=time.time())
+            return render_template("user/delete.html", data=user, thispage="user", title="Benutzer löschen: " + user.getHTMLName(False), current_time=time.time())
     else:
         abort(404)
 
@@ -272,11 +272,11 @@ def flag_user(id):
                 if cuser.may("general_reportUser") or cuser.id == user.id:
                     reason, message = data["reason"], data["message"]
                     rL = {
-                        "disturb": u"störendes Verhalten",
-                        "spam": u"SPAM",
-                        "offensive": u"Beleidigung",
-                        "other": u"Supportanfrage",
-                        "rulebreak": u"Regelverletzung"
+                        "disturb": "störendes Verhalten",
+                        "spam": "SPAM",
+                        "offensive": "Beleidigung",
+                        "other": "Supportanfrage",
+                        "rulebreak": "Regelverletzung"
                     }
                     reason = "**" + rL[reason] + "**: "
                     data = reason + message
@@ -311,10 +311,10 @@ def delete_user(id):
                 data = request.json
                 if not data["destroy"]:
                     user.setDetail("deleted", 1)
-                    user.addAnnotation("delete", u"Benutzerkonto wurde durch Moderator gelöscht: " + data["reason"], cuser, time.time())
+                    user.addAnnotation("delete", "Benutzerkonto wurde durch Moderator gelöscht: " + data["reason"], cuser, time.time())
                 else:
                     user.setDetail("deleted", 2)
-                    user.addAnnotation("delete", u"Benutzerkonto wurde durch Moderator zerstört: " + data["reason"], cuser, time.time())
+                    user.addAnnotation("delete", "Benutzerkonto wurde durch Moderator zerstört: " + data["reason"], cuser, time.time())
                 return "{ok}"
             else:
                 user.setDetail("deleted", 1)
@@ -324,7 +324,7 @@ def delete_user(id):
         else:
             if cuser.isMod() and request.values.get("action")=="prevent":
                 user.setDetail("deleted", 0)
-                user.addAnnotation("custom", u"Löschung des Benutzerkontos verhindert", cuser, time.time())
+                user.addAnnotation("custom", "Löschung des Benutzerkontos verhindert", cuser, time.time())
                 return "{ok}"
             else:
                 return "Der Benutzer wurde nicht gefunden. Vielleicht wurde er bereits gelöscht.", 404
@@ -359,16 +359,16 @@ def edit_user(id):
     profile_projects = data["profile_projects"]
 
     errors = []
-    if 3 <= len(user_name) <= 30 and u"♦" not in user_name:
+    if 3 <= len(user_name) <= 30 and "♦" not in user_name:
         user.setDetail("realname", user_name)
         user.setDetail("name", user_name)
     else:
-        if u"♦" in user_name:
-            errors.append(u"Der Benutzername darf das ♦-Zeichen nicht enthalten!")
+        if "♦" in user_name:
+            errors.append("Der Benutzername darf das ♦-Zeichen nicht enthalten!")
         if 3 > len(user_name):
-            errors.append(u"Der Benutzername ist zu kurz. Mindestens drei Zeichen erforderlich. (aktuell: %i)" % len(user_name))
+            errors.append("Der Benutzername ist zu kurz. Mindestens drei Zeichen erforderlich. (aktuell: %i)" % len(user_name))
         if 30 < len(user_name):
-            errors.append(u"Der Benutzername ist zu lang. Höchstens 30 Zeichen möglich. (aktuell: %i)" % len(user_name))
+            errors.append("Der Benutzername ist zu lang. Höchstens 30 Zeichen möglich. (aktuell: %i)" % len(user_name))
 
     if certificate_full_name is not None:
         if len(certificate_full_name) == 0:
@@ -377,9 +377,9 @@ def edit_user(id):
             user.setDetail("certificate_full_name", certificate_full_name)
         else:
             if 6 > len(certificate_full_name):
-                errors.append(u"Der Vollständige Name (für Urkunden, ...) ist zu kurz. Mindestens sechs Zeichen erforderlich. (aktuell: %i)" % len(certificate_full_name))
+                errors.append("Der Vollständige Name (für Urkunden, ...) ist zu kurz. Mindestens sechs Zeichen erforderlich. (aktuell: %i)" % len(certificate_full_name))
             if 120 < len(certificate_full_name):
-                errors.append(u"Der Vollständige Name (für Urkunden, ...) ist zu lang. Höchstens 120 Zeichen möglich. (aktuell: %i)" % len(certificate_full_name))
+                errors.append("Der Vollständige Name (für Urkunden, ...) ist zu lang. Höchstens 120 Zeichen möglich. (aktuell: %i)" % len(certificate_full_name))
 
     if email is not None:
         if "@" in email:
@@ -387,27 +387,27 @@ def edit_user(id):
             if 75 > len(email_username) > 1 and 75 > len(email_host) > 4 and "." in email_host:
                 user.setDetail("email", email)
             else:
-                errors.append(u"Die E-Mail-Adresse ist ungültig.")
+                errors.append("Die E-Mail-Adresse ist ungültig.")
         else:
-            errors.append(u"Die E-Mail-Adresse ist ungültig.")
+            errors.append("Die E-Mail-Adresse ist ungültig.")
 
     if len(profile_text) <= 5000:
         user.setDetail("aboutme", profile_text)
     else:
-        errors.append(u"Der Profiltext ist zu lang. Höchstens 5000 Zeichen möglich. (aktuell: %i)" % len(profile_text))
+        errors.append("Der Profiltext ist zu lang. Höchstens 5000 Zeichen möglich. (aktuell: %i)" % len(profile_text))
 
     if "javascript:" not in profile_image and len(profile_image) <= 5000:
         user.setDetail("profile_image", profile_image)
     else:
         if "javascript:" in profile_image:
-            errors.append(u"Der Link für das Profilbild enthält unerlaubte Zeichenfolgen.")
+            errors.append("Der Link für das Profilbild enthält unerlaubte Zeichenfolgen.")
         if len(profile_image) > 5000:
-            errors.append(u"Der Link für das Profilbild ist zu lang. Höchstens 5000 Zeichen möglich. (aktuell: %i)" % len(profile_image))
+            errors.append("Der Link für das Profilbild ist zu lang. Höchstens 5000 Zeichen möglich. (aktuell: %i)" % len(profile_image))
 
     if len(profile_place) <= 100:
         user.setDetail("profile_place", profile_place)
     else:
-        errors.append(u"Die Eingabe für den Wohnort ist zu lang. Höchstens 100 Zeichen möglich. (aktuell: %i)" % len(profile_place))
+        errors.append("Die Eingabe für den Wohnort ist zu lang. Höchstens 100 Zeichen möglich. (aktuell: %i)" % len(profile_place))
 
     if len(profile_website) > 8 and profile_website.startswith("http://"):
         profile_website = profile_website[len("http://"):]
@@ -417,7 +417,7 @@ def edit_user(id):
     if len(profile_website) <= 150:
         user.setDetail("profile_website", profile_website)
     else:
-        errors.append(u"Die Eingabe für die Webseite ist zu lang. Höchstens 150 Zeichen möglich. (aktuell: %i)" % len(profile_website))
+        errors.append("Die Eingabe für die Webseite ist zu lang. Höchstens 150 Zeichen möglich. (aktuell: %i)" % len(profile_website))
 
     if profile_twitter == "":
         user.setDetail("profile_twitter", profile_twitter)
@@ -425,16 +425,16 @@ def edit_user(id):
         user.setDetail("profile_twitter", profile_twitter)
     else:
         if 2 > len(profile_twitter):
-            errors.append(u"Die Eingabe für den Twitter-Account ist zu kurz. Mindestens zwei Zeichen nötig. (aktuell: %i)" % len(profile_twitter))
+            errors.append("Die Eingabe für den Twitter-Account ist zu kurz. Mindestens zwei Zeichen nötig. (aktuell: %i)" % len(profile_twitter))
         elif profile_twitter[1] != "@":
-            errors.append(u"Die Eingabe für den Twitter-Account ist ungültig. Es fehlt das @-Zeichen")
+            errors.append("Die Eingabe für den Twitter-Account ist ungültig. Es fehlt das @-Zeichen")
         if 150 < len(profile_twitter):
-            errors.append(u"Die Eingabe für den Twitter-Account ist zu lang. Höchstens 150 Zeichen möglich. (aktuell: %i)" % len(profile_twitter))
+            errors.append("Die Eingabe für den Twitter-Account ist zu lang. Höchstens 150 Zeichen möglich. (aktuell: %i)" % len(profile_twitter))
 
     if len(profile_projects) <= 750:
         user.setDetail("profile_projects", profile_projects)
     else:
-        errors.append(u"Die Eingabe für deine Projekte ist zu lang. Höchstens 750 Zeichen möglich. (aktuell: %i)" % len(profile_projects))
+        errors.append("Die Eingabe für deine Projekte ist zu lang. Höchstens 750 Zeichen möglich. (aktuell: %i)" % len(profile_projects))
 
     if len(errors):
         return jsonify({

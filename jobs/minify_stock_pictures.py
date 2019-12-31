@@ -23,7 +23,7 @@ def resizeImage(infile, output_dir="", size=(512,384)):
             im.thumbnail(size, PIL.Image.ANTIALIAS)
             im.save(os.path.join(output_dir,outfile+extension),"JPEG")
         except IOError:
-            print "cannot reduce image for ", infile
+            print(("cannot reduce image for ", infile))
 
 
 if __name__=="__main__":

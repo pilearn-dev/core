@@ -15,7 +15,7 @@ def msg_new_thread(user):
     if request.method == "GET":
         tpl = mmodmsg.getTemplates()
 
-        return render_template('modmsg/new-thread.html', title=u"Benutzer kontaktieren", thispage="user", u=u, templates=tpl)
+        return render_template('modmsg/new-thread.html', title="Benutzer kontaktieren", thispage="user", u=u, templates=tpl)
     elif request.method == "POST":
         try:
             template, message, suspend, suspension_reason, suspension_length = \
@@ -30,10 +30,10 @@ def msg_new_thread(user):
 
             prefix = "Hallo " + u.getDetail("realname") + ",\n\n"
             suffix = ""
-            postfix = u"\n\nViele Grüße,\n\n&pi;-Learn Moderatorenteam"
+            postfix = "\n\nViele Grüße,\n\n&pi;-Learn Moderatorenteam"
 
             if suspend:
-                suffix = u"\n\nUm weiteres Verhalten dieser Art zu verhindern, haben wir beschlossen, dein Konto für " + str(suspension_length) + u" Tage zu suspendieren. Während dieser Zeit wird ein Hinweis auf deinem Profil angezeigt und du wirst dich nicht anmelden können. Anschließend bist du aber ohne Einschränkungen wieder willkommen, solange du dich an die Regeln hältst."
+                suffix = "\n\nUm weiteres Verhalten dieser Art zu verhindern, haben wir beschlossen, dein Konto für " + str(suspension_length) + " Tage zu suspendieren. Während dieser Zeit wird ein Hinweis auf deinem Profil angezeigt und du wirst dich nicht anmelden können. Anschließend bist du aber ohne Einschränkungen wieder willkommen, solange du dich an die Regeln hältst."
 
             message = prefix + message + suffix + postfix
 
@@ -43,10 +43,10 @@ def msg_new_thread(user):
             mmodmsg.UserMsg.new(thread.id, cuser.id, u.id, message, template=template)
 
             if suspend:
-                title = u"Sperrung auf π-Learn"
-                ban_line = u"\n\n~~Hinweis~~: Zusammen mit dieser Nachricht wurdest du für " + str(suspension_length) + u" Tage gesperrt."
+                title = "Sperrung auf π-Learn"
+                ban_line = "\n\n~~Hinweis~~: Zusammen mit dieser Nachricht wurdest du für " + str(suspension_length) + " Tage gesperrt."
             else:
-                title = u"Neue Moderatorennachricht auf π-Learn"
+                title = "Neue Moderatorennachricht auf π-Learn"
                 ban_line = ""
 
             if template != 0:
@@ -56,7 +56,7 @@ def msg_new_thread(user):
             else:
                 subject_line = ""
 
-            cmail.send_textbased_email(u.getDetail("email"), title, u"Hallo " + u.getDetail("realname") + u",\n\ndu hast eine ~~wichtige~~ neue Nachricht von einem Moderatoren erhalten, die du unbedingt durchlesen solltest." + subject_line + ban_line + u"\n\n.{# Zur Nachricht -> " + URL + "#}")
+            cmail.send_textbased_email(u.getDetail("email"), title, "Hallo " + u.getDetail("realname") + ",\n\ndu hast eine ~~wichtige~~ neue Nachricht von einem Moderatoren erhalten, die du unbedingt durchlesen solltest." + subject_line + ban_line + "\n\n.{# Zur Nachricht -> " + URL + "#}")
 
             if template != 0:
                 t = mmodmsg.getTemplateById(template)
@@ -73,7 +73,7 @@ def msg_new_thread(user):
                 ban_end = int(time.time()) + 5 + 60 * 60 * 24 * int(suspension_length)
                 u.setDetail("ban_end", ban_end)
 
-                u.addAnnotation("ban", "**Sperrung** " + suspension_reason + u" für " + str(suspension_length) + "d", cuser, time.time())
+                u.addAnnotation("ban", "**Sperrung** " + suspension_reason + " für " + str(suspension_length) + "d", cuser, time.time())
 
             return URL
         except Exception as e:
@@ -97,9 +97,9 @@ def msg_view_single(user, thread_id):
     if thread.getDetail("contacted_user") != int(user) or (not cuser.isMod() and thread.getDetail("contacted_user") != cuser.id):
         abort(404)
     if request.values.get("mod", False) and cuser.isMod():
-        return render_template('modmsg/view_single_mod.html', title=u"[mod] Nachrichtenverlauf", thispage="user", thread=thread)
+        return render_template('modmsg/view_single_mod.html', title="[mod] Nachrichtenverlauf", thispage="user", thread=thread)
 
-    return render_template('modmsg/view_single.html', title=u"Nachrichtenverlauf", thispage="user", thread=thread)
+    return render_template('modmsg/view_single.html', title="Nachrichtenverlauf", thispage="user", thread=thread)
 
 def msg_add_response(user, thread_id):
     cuser = muser.getCurrentUser()
@@ -121,13 +121,13 @@ def msg_add_response(user, thread_id):
         cu = thread.getInitiator()
         cu.notify("pm", "Neue Antwort zu privater Nachricht von " + cuser.getDetail("realname"), URL)
 
-        cmail.send_textbased_email(cu.getDetail("email"), u"Antwort auf Moderatorennachricht auf π-Learn", u"Hallo " + cu.getDetail("realname") + u",\n\nes gibt eine neue Antwort in einem privaten Nachrichtenverlauf, den du eröffnet hast.\n\n{# Zur Nachricht -> " + URL + u"#}")
+        cmail.send_textbased_email(cu.getDetail("email"), "Antwort auf Moderatorennachricht auf π-Learn", "Hallo " + cu.getDetail("realname") + ",\n\nes gibt eine neue Antwort in einem privaten Nachrichtenverlauf, den du eröffnet hast.\n\n{# Zur Nachricht -> " + URL + "#}")
     else:
         mmodmsg.UserMsg.new(thread.id, cuser.id, thread.getDetail("contacted_user"), request.form["response"])
         cu = thread.getContacted()
         cu.notify("pm", "Neue Antwort zu privater Nachricht", URL)
 
-        cmail.send_textbased_email(cu.getDetail("email"), u"Antwort auf Moderatorennachricht auf π-Learn", u"Hallo " + cu.getDetail("realname") + u",\n\nes gibt eine neue Antwort in einem privaten Nachrichtenverlauf zwischen dem Moderatorenteam und dir.\n\n{# Zur Nachricht -> " + URL + u"#}")
+        cmail.send_textbased_email(cu.getDetail("email"), "Antwort auf Moderatorennachricht auf π-Learn", "Hallo " + cu.getDetail("realname") + ",\n\nes gibt eine neue Antwort in einem privaten Nachrichtenverlauf zwischen dem Moderatorenteam und dir.\n\n{# Zur Nachricht -> " + URL + "#}")
 
     return redirect(URL)
 
