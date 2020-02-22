@@ -58,7 +58,7 @@
     </h1>
     <div class="p2">
       {% if data.getDetail("aboutme") != "" %}
-      {{ data.getDetail("aboutme")|markdown }}
+      {{ (data.getDetail("aboutme").replace("\n", "\0")|striptags).replace("\0", "\n")|markdown }}
       {% else %}
       <p class="f-italic col-dark-ddd fs-base3">
           Dieser Benutzer hat noch nichts über sich geschrieben.
