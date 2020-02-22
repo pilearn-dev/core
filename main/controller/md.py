@@ -49,7 +49,7 @@ class MDExtPostProcessor(Postprocessor):
         return new_lines
 
 def md_apply(app):
-    md = Markdown(app, extensions=[])
+    md = Markdown(app, extensions=["table"])
 
     @md.extend()
     class ExtensionPostRegisterer(Extension):
