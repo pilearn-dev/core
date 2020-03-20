@@ -66,6 +66,21 @@ def guided_creation():
             )
 
             db.session.add(tg)
+
+            db.session.commit()
+
+            cuser = muser.getCurrentUser()
+
+            new_member = TeachMember(
+                user_id = cuser.id,
+                group_id = tg.id,
+                shown_name = cuser.getDetail("realname"),
+                active = True,
+                is_admin = True
+            )
+            
+            db.session.add(new_member)
+            
             db.session.commit()
 
             del session["teach-creation-step"]
