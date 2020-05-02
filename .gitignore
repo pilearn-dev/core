@@ -10,6 +10,7 @@ build_css.py
 *.db
 *.json
 pidata.json
+version.json
 !privileges.json
 !privilege_data.json
 !version.json
