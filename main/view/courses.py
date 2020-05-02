@@ -162,8 +162,8 @@ def course_admin(id,label=None, page="identity"):
 
             return "true"
         else:
-            directories = os.listdir(os.path.join(os.getcwd(),"main/static/CourseStockImages"))
-            files = [(i, os.listdir(os.path.join(os.getcwd(),"main/static/CourseStockImages",i))) for i in directories]
+            directories = os.listdir(os.path.join(os.getcwd(),"main/static/CourseStockImages_small"))
+            files = [(i, os.listdir(os.path.join(os.getcwd(),"main/static/CourseStockImages_small",i))) for i in directories]
             return render_template('courses/admin/picture.html', title=course.getTitle(), thispage="courses", course=course, files=files)
     elif page == "announcements":
         return render_template("announcements/list.html", title=course.getTitle(), forum=mforum.Forum(course.id), announcements=mforum.ForumAnnouncement.byForum(course.id, True), thispage="courses")
