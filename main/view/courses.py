@@ -17,7 +17,7 @@ def courses_index():
     for c in course_list[::-1]:
         if not c.id in my_course_ids:
             now_courses.append(c)
-            if len(now_courses) == 5:
+            if len(now_courses) == 8:
                 break
     return render_template('courses/index.html', title=_("Kursüberblick"), thispage="courses", my_courses=my_courses, now_courses=now_courses)
 
