@@ -95,7 +95,7 @@ def send_textbased_email(to, subject, text, contents=None):
         server.starttls()
         server.ehlo()
         print((pidata["mail_configuration"]["password"]))
-        server.login(pidata["mail_configuration"]["user"],bytearray(pidata["mail_configuration"]["password"], 'utf-8'))
+        server.login(pidata["mail_configuration"]["user"],pidata["mail_configuration"]["password"])
         server.sendmail(senderaddr, to, msg.as_string())
         server.quit()
 
