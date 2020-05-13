@@ -46,7 +46,7 @@
   _paq.push(['trackPageView']);
   _paq.push(['enableLinkTracking']);
   (function() {
-    var u="//analytics.velja.de/";
+    var u="{{ matomo_site_url }}";
     _paq.push(['setTrackerUrl', u+'matomo.php']);
     _paq.push(['setSiteId', '{{ matomo_site_id }}']);
     var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
@@ -196,7 +196,7 @@
         </div>
         <div class="column12 p1">
           <p>{{ _('Diese Webseite nutzt die &pi;-Learn-Software in der Version %(version)s. Design, System und Logo &copy; &pi;-Learn', version=__version__) }}</p>
-          {% if matomo_site_id != "no" %}
+          {% if matomo_site_id != "no" and matomo_site_url != "" %}
           <p class="o5">{{ _('%(site_name)s nutzt statt den üblichen externen Anbietern die datenschutzfreundliche Alternative %(matomo_link)s , um Statistiken zu Seitenaufrufen zu erhalten. Wenn du das nicht möchtest, kannst du %(matomo_disable_link)s  der Speicherung widersprechen.', site_name=site_name, matomo_link='<a href="https://matomo.org">Matomo</a>'|safe, matomo_disable_link='<a href="https://analytics.velja.de/index.php?module=CoreAdminHome&action=optOut&language=de&backgroundColor=ffffff&fontColor=5f5f5f&fontSize=16px&fontFamily=%22Source%20Sans%20Pro%22%2C%22Open%20Sans%22%2C%22Helvetica%20Neue%22%2CHelvetica%2CArial%2Csans-serif">'|safe + _('hier') + '</a>'|safe) }}</p>
           {% endif %}
         </div>
