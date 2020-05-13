@@ -1,6 +1,7 @@
 # coding: utf-8
 from flask import render_template, redirect, abort, url_for, request, jsonify, make_response
 from model import privileges as mprivileges, courses as mcourses, user as muser, survey as msurvey, proposal as mproposal, forum as mforum
+from model.settings import Settings as S
 from controller import query as cquery, times as ctimes
 import json, time, os, re
 
@@ -24,6 +25,7 @@ def courses_index():
 def courses_propose():
     cuser = muser.getCurrentUser()
     if not cuser.isLoggedIn() or cuser.isDisabled(): abort(403)
+    if S.get("limit-course-creation") == "yes" and not cuser.isTeam(): abort(403)
     if request.method == "GET":
         return render_template('courses/propose.html', title="Kurs vorschlagen", thispage="courses", topic=mcourses.Topic)
     elif request.method == "POST":
@@ -45,6 +47,13 @@ def courses_propose():
                 return jsonify({"result": "errors", "errors": errors})
 
             p = mproposal.Proposal.createNew(topic.id, title, shortdesc, longdesc, requirements, cuser)
+            
+            if S.get("limit-course-creation") == "yes":
+                p.createCourse()
+                p = mproposal.Proposal(p.id)
+                p.setDetail("deleted", 1)
+                return jsonify({"result": "success", "url":url_for("course_info", id=p.getDetail("courseid"))})
+            
             if p:
                 return jsonify({"result": "success", "url":url_for("proposal_show", id=p.id)})
             return jsonify({"result": "error", "error": "Ein Fehler ist aufgetreten."})

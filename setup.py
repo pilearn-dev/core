@@ -227,6 +227,7 @@ seeds_settings = [
     ["Zugang", "access-private-notice", "", "Die Nachricht, die für Unbefugte angezeigt wird"],
     ["Zugang", "access-allow-password", "1", "Ob die Zugriffsbeschränkung mit einem Passwort umgangen werden kann"],
     ["Zugang", "access-allow-password-value", "", "Das Passwort, mit dem die Beschränkung umgangen werden könnte"],
+    ["Features", "limit-course-creation", "no", "Hiermit haben nur Nutzer mit der Team-Rolle die Berechtigung, Kurse zu erstellen."],
     ["Features", "enable-mathjax", "1", "Ob MathJax (mathematische Notation) geladen werden soll"],
     ["Features", "enable-mathjax-tokens-block", "[math] [/math]", "Die MathJax-Begrenzungen (Blöcke)"],
     ["Features", "enable-mathjax-tokens-inline", "[m] [/m]", "Die MathJax-Begrenzungen (Inline)"],
