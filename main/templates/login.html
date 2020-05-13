@@ -18,10 +18,12 @@
   {% endif %}
   <p>{{ _("Melde dich mit einem bereits existierenden Benutzerkonto an.") }}</p>
   <p>{{ _('Du hast noch kein Benutzerkonto?') }} {{ _('Dann kannst du <a href="%(register_link)s">ein neues Benutzerkonto erstellen</a>.', register_link='/auth/register') }}</p>
+  {% if oauth.google %}
   <h2 class="fs-base3 col-dark-dd ta-c">{{ _('Externe Dienste') }}</h2>
   <div class="grid">
       <a href="/auth/oauth-provider/google" class="_btn _btn-service _btn-service-google">{{ _('Google-Anmeldung') }}</a>
   </div>
+  {% endif %}
   <h2 class="fs-base3 col-dark-dd ta-c">{{ _("%(site_name)s-Konto", site_name=site_short_name) }}</h2>
   <form action="" method="POST">
     <label for="login_email" class="form">{{ _('E-Mail-Adresse') }}:</label>

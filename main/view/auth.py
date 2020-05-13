@@ -26,7 +26,7 @@ def login():
                 return redirect(request.values.get("continue"))
 
             return redirect(url_for('index'))
-    return render_template('login.html', error=error, title=_("Anmelden"), thispage="login")
+    return render_template('login.html', error=error, title=_("Anmelden"), thispage="login", oauth=mauth.OAUTH_CREDENTIALS)
 
 def register():
     error = False
@@ -71,7 +71,7 @@ def register():
                 return redirect(request.values.get("continue"))
 
             return redirect(url_for('index'))
-    return render_template('register.html', error=error, title=_("Registrieren"), thispage="login")
+    return render_template('register.html', error=error, title=_("Registrieren"), thispage="login", oauth=mauth.OAUTH_CREDENTIALS)
 
 def reset_password():
     error = False
@@ -203,4 +203,7 @@ def apply(app):
     app.route('/oauth2callback/<provider>')(oauth_callback)
 
     mauth.apply(app)
-    mauth.google.tokengetter(get_google_oauth_token)
+    try:
+        mauth.google.tokengetter(get_google_oauth_token)
+    except:
+        pass

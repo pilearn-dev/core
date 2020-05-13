@@ -16,10 +16,14 @@
     </div>
     {% endif %}
     <p>Klicke auf den Google-Button, um zu Google weitergeleitet zu werden und die Konten zu verknüpfen.</p>
+    {% if oauth.google %}
     <form action="/auth/oauth-provider/google" method="POST">
       <input type="hidden" name="override" value="true">
       <button type="submit" class="_btn _btn-service _btn-service-google">Google-Anmeldung</button>
     </form>
+    {% else %}
+    <p>Google-Anmeldung ist deaktiviert. Wie bist du eigentlich hergekommen?</p>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

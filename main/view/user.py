@@ -1,6 +1,6 @@
 # coding: utf-8
 from flask import request, session, redirect, url_for, abort, render_template, jsonify
-from model import privileges as mprivileges, tags as mtags, user as muser, reviews as mreviews, forum as mforum, post_templates as mposttemplates, courses as mcourses, badges as mbadges, proposal as mproposal, pull_requests as mpull_requests
+from model import privileges as mprivileges, tags as mtags, user as muser, reviews as mreviews, forum as mforum, post_templates as mposttemplates, courses as mcourses, badges as mbadges, proposal as mproposal, pull_requests as mpull_requests, auth as mauth
 from controller import num as cnum, times as ctimes
 
 import markdown as md
@@ -59,7 +59,7 @@ def user_edit_page(id, name=None):
                 return render_template("user/edit/profile.html", data=user, thispage="user", title="Profil bearbeiten " + user.getHTMLName(False))
 
             elif request.values.get("page", "profile") == "login":
-                return render_template("user/edit/login.html", data=user, thispage="user", title="Anmeldedaten für " + user.getHTMLName(False), current_time=time.time())
+                return render_template("user/edit/login.html", data=user, thispage="user", title="Anmeldedaten für " + user.getHTMLName(False), current_time=time.time(), oauth=mauth.OAUTH_CREDENTIALS)
 
             elif request.values.get("page", "profile") == "preferences":
                 return render_template("user/edit/preferences.html", data=user, thispage="user", title="Einstellungen für " + user.getHTMLName(False))
@@ -94,7 +94,7 @@ def user_edit_page(id, name=None):
                             return render_template("user/edit/login-alter__add-local-account.html", data=user, thispage="user", title="Anmeldedaten hinzufügen für " + user.getHTMLName(False))
 
                     elif request.values.get("add") == "oauth:google":
-                        return render_template("user/edit/login-alter__google.html", data=user, thispage="user", title="Anmeldedaten aktualisieren für " + user.getHTMLName(False))
+                        return render_template("user/edit/login-alter__google.html", data=user, thispage="user", title="Anmeldedaten aktualisieren für " + user.getHTMLName(False), oauth=mauth.OAUTH_CREDENTIALS)
                 elif "change" in request.values:
                     method = user.loginMethod_get(request.values.get("change"))
                     if method["provider"] == "local_account":

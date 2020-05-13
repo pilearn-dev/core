@@ -52,7 +52,9 @@
     {% if session.get("login_time", 0) + GRANT_TIME * 60 > current_time %}
       <div class="_btnlist">
         <a href="?page=login-alter&add=local_account" class="_btn _btn--primary">Lokal (mit Email und Passwort)</a>
+        {% if oauth.google %}
         <a href="?page=login-alter&add=oauth:google" class="_btn _btn--primary">Anmeldung mit Google</a>
+        {% endif %}
       </div>
     {% else %}
     <div class="_alert _alert-danger">
