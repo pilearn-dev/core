@@ -5,7 +5,6 @@ import sqlite3 as lite
 from flask import request, session, url_for
 from sha1 import sha1
 from model import privileges as mprivileges, user as muser
-from model.settings import Settings as S
 
 from flask_babel import _
 

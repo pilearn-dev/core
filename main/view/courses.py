@@ -27,6 +27,8 @@ def courses_propose():
     if not cuser.isLoggedIn() or cuser.isDisabled(): abort(403)
     if S.get("limit-course-creation") == "yes" and not cuser.isTeam(): abort(403)
     if request.method == "GET":
+        if S.get("limit-course-creation") == "yes":
+            return render_template('courses/propose.html', title="Kurs erstellen", thispage="courses", topic=mcourses.Topic)
         return render_template('courses/propose.html', title="Kurs vorschlagen", thispage="courses", topic=mcourses.Topic)
     elif request.method == "POST":
         if cuser.may("course_propose"):
