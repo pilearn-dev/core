@@ -6,9 +6,11 @@
   <a href="/courses">Übersicht</a>
   <a href="/course/search">Suchen</a>
   <a href="/topics">Themen</a>
-  <a href="/course/propose" class="-active">Vorschlagen</a>
+  {% if not limit_course_creation or user.isTeam() %}
+  <a href="/course/propose">{{ _('Erstellen') if limit_course_creation else _('Vorschlagen') }}</a>
+  {% endif %}
 </div>
-<h1>Kurse vorschlagen</h1>
+<h1>{{ _('Kurse erstellen') if limit_course_creation else _('Kurse vorschlagen') }}</h1>
 {% if user.may("course_propose") %}
 <div class="p3">
   <div class="p1 js--slide1">
@@ -73,11 +75,15 @@
 
       <p>Keine Sorge, die meisten eingegebenen Informationen kannst du später noch ändern.</p>
 
+      {% if not limit_course_creation %}
       <p>Bitte beachte auch diese drei Hinweise, die entscheiden, ob ein Kurs angenommen wird:</p>
+      {% else %}
+      <p>Bitte beachte auch diese drei Hinweise:</p>
+      {% endif %}
       <ul>
-        <li><strong>Prüfe ob dieser Kurs bereits existiert.</strong> Mehrere Kurse zum genau gleichen Thema sind unnötig. <a href="/course/search">Suche</a> nach Kursen und überprüfe auch auf der Startseite, ob es bereits ähnliche Kursvorschläge gibt.</li>
-        <li><strong>Beachte unsere <a href="/help/faq/course-hints" target="_blank">Hinweise zum Umfang und Inhalt eines {{ site_short_name }}-Kurses.</a></strong></li>
-        <li><strong>Vermeide Fehler.</strong> Die Kursinformationen sollten (größtenteils) fehlerfrei sein. Überprüfe sie noch einmal vor dem Abschicken.</li>
+          <li><strong>Prüfe ob dieser Kurs bereits existiert.</strong> Mehrere Kurse zum genau gleichen Thema sind unnötig. <a href="/course/search">Suche</a> nach Kursen und überprüfe auch auf der Startseite, ob es bereits ähnliche Kursvorschläge gibt.</li>
+          <li><strong>Beachte unsere <a href="/help/faq/course-hints" target="_blank">Hinweise zum Umfang und Inhalt eines {{ site_short_name }}-Kurses.</a></strong></li>
+          <li><strong>Vermeide Fehler.</strong> Die Kursinformationen sollten (größtenteils) fehlerfrei sein. Überprüfe sie noch einmal vor dem Abschicken.</li>
       </ul>
     </div>
 
@@ -356,14 +362,19 @@
           </div>
       </div>
     </div>
-
+    {% if not limit_course_creation %}
     <p class="p-lead">Du bist jetzt bereit, den Kursvorschlag abzusenden!</p>
     <p>Als nächstes überprüfen wir, ob es sich überhaupt lohnt, so einen Kurs anzubieten. Da es schade für deinen Aufwand wäre, versuchen wir sicherzustellen, dass wenigstens ein paar Benutzer an deinem Kurs teilnehmen.</p>
     <p>Dafür wird dieser Vorschlag auf der Startseite angezeigt, mit der Bitte, dass Benutzer, die an diesem Kurs teilnehmen würden, dies durch einen Knopfdruck versprechen.</p>
-    <p>Wenn innerhalb eines Monats genug Teilnehmer dies versprechen, wirst du informiert, dass du jetzt den Kurs bearbeiten kannst</p>
+    <p>Wenn innerhalb eines Monats genug Teilnehmer dies versprechen, wirst du informiert, dass du jetzt den Kurs bearbeiten kannst.</p>
+    {% else %}
+    <p class="p-lead">Du bist jetzt bereit, den Kurs zu erstellen!</p>
+    <p>Drücke auf "Kurs erstellen", um deinen Kurs zu erstellen und zur Kursseite zu gelangen.</p>
+    <p>Keine Sorge: Der Kurs wird erst nur für dich sichtbar sein, bis du ihn für andere veröffentlichst.</p>
+    {% endif %}
       <div class="push-right">
           <button class="_btn _btn--primary _btn-lg _btn-outline" onclick="$('.js--slide5').addClass('hide');$('.js--slide4').removeClass('hide');">&laquo; Zurück</button>
-          <button class="_btn _btn--primary _btn-lg" onclick="propose();" id="submit-btn">Kursvorschlag absenden</button>
+          <button class="_btn _btn--primary _btn-lg" onclick="propose();" id="submit-btn">{{ _('Kurs erstellen') if limit_course_creation else _('Kursvorschlag absenden') }}</button>
       </div>
       <div class="push-reset"></div>
   </div>
