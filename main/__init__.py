@@ -90,7 +90,8 @@ def prepare_template_context():
         "matomo_site_id": S.get("logging-matomo-id"),
         "matomo_site_url": S.get("logging-matomo-url"),
         "featured_announcements": mforum.ForumAnnouncement.byForumFeatured(0),
-        "language": S.get("site-language", "de")
+        "language": S.get("site-language", "de"),
+        "limit_course_creation": S.get("limit-course-creation")=="yes"
     }
 
 @babel.localeselector

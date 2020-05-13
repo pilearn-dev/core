@@ -4,7 +4,9 @@
   <a href="/courses" class="-active">{{ _('Übersicht') }}</a>
   <a href="/course/search">{{ _('Suchen') }}</a>
   <a href="/topics">{{ _('Themen') }}</a>
-  <a href="/course/propose">{{ _('Vorschlagen') }}</a>
+  {% if not limit_course_creation or user.isTeam() %}
+  <a href="/course/propose">{{ _('Erstellen') if limit_course_creation else _('Vorschlagen') }}</a>
+  {% endif %}
 </div>
 <h1 class="fs-display2 ta-c">{{ _('Kurse') }}</h1>
 <h2 class="fs-title">{{ _('Meine Kurse') }}</h2>

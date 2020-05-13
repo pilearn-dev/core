@@ -6,7 +6,9 @@
   <a href="/courses">Übersicht</a>
   <a href="/course/search">Suchen</a>
   <a href="/topics">Themen</a>
-  <a href="/course/propose" class="-active">Vorschlagen</a>
+  {% if not limit_course_creation or user.isTeam() %}
+  <a href="/course/propose">{{ _('Erstellen') if limit_course_creation else _('Vorschlagen') }}</a>
+  {% endif %}
 </div>
 <h1>Kurse vorschlagen</h1>
 {% if user.may("course_propose") %}
