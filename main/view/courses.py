@@ -57,7 +57,7 @@ def courses_propose():
                 return jsonify({"result": "success", "url":url_for("course_info", id=p.getDetail("courseid"))})
             
             if p:
-                return jsonify({"result": "success", "url":url_for("proposal_show", id=p.id)})
+                return jsonify({"result": "success", "url":url_for("proposal.single", id=p.id)})
             return jsonify({"result": "error", "error": "Ein Fehler ist aufgetreten."})
         else:
             abort(405)
